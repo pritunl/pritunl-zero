@@ -14,6 +14,7 @@ Usage: pritunl-zero COMMAND
 
 Commands:
   version  Show version
+  mongo    Set MongoDB URI
   set      Set a setting
 `
 
@@ -29,9 +30,18 @@ func main() {
 	case "version":
 		fmt.Printf("pritunl-zero v%s\n", constants.Version)
 		break
+	case "mongo":
+		err := cmd.Mongo()
+		if err != nil {
+			panic(err)
+		}
+		break
 	case "set":
 		Init()
-		cmd.SettingsSet()
+		err := cmd.SettingsSet()
+		if err != nil {
+			panic(err)
+		}
 		break
 	default:
 		fmt.Println(help)
