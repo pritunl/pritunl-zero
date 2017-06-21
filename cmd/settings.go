@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"flag"
+	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -22,6 +23,10 @@ func Mongo() (err error) {
 	if err != nil {
 		return
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"mongo_uri": config.Config.MongoUri,
+	}).Info("cmd.settings: Set MongoDB URI")
 
 	return
 }

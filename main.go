@@ -31,6 +31,8 @@ func main() {
 		fmt.Printf("pritunl-zero v%s\n", constants.Version)
 		break
 	case "mongo":
+		logger.Init()
+
 		err := cmd.Mongo()
 		if err != nil {
 			panic(err)
