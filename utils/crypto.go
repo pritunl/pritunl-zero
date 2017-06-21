@@ -2,8 +2,8 @@ package utils
 
 import (
 	"crypto/rand"
-	"github.com/autoabs/autoabs/errortypes"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"math/big"
 	mathrand "math/rand"
 )
