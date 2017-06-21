@@ -3,6 +3,7 @@ package logger
 import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"os"
 	"path"
@@ -21,7 +22,7 @@ func (s *fileSender) Parse(entry *logrus.Entry) {
 	fileLock.Lock()
 	defer fileLock.Unlock()
 
-	pth := path.Join("pritunl-zero.log")
+	pth := path.Join(constants.LogPath)
 
 	file, err := os.OpenFile(pth, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
