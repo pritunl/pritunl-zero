@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/requires"
+	"time"
 )
 
 const help = `
@@ -48,4 +49,6 @@ func main() {
 	default:
 		fmt.Println(help)
 	}
+
+	time.Sleep(1 * time.Second)
 }
