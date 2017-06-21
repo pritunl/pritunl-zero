@@ -12,7 +12,6 @@ import (
 
 var (
 	confPath        = "/etc/pritunl-zero.json"
-	mongoUriDefault = "mongodb://localhost:27017/pritunl-zero"
 )
 
 var Config = &ConfigData{}
@@ -53,10 +52,6 @@ func (c *ConfigData) Load(path string) (err error) {
 			errors.Wrap(err, "config: File unmarshal error"),
 		}
 		return
-	}
-
-	if c.MongoUri == "" {
-		c.MongoUri = mongoUriDefault
 	}
 
 	c.loaded = true
