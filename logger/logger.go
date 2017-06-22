@@ -2,6 +2,8 @@ package logger
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/requires"
 	"os"
 )
 
@@ -19,6 +21,10 @@ func initSender() {
 		for {
 			entry := <-buffer
 
+			if constants.Interrupt {
+				return
+			}
+
 			if len(entry.Message) > 7 && entry.Message[:7] == "logger:" {
 				continue
 			}
@@ -31,10 +37,17 @@ func initSender() {
 }
 
 func Init() {
-	initSender()
-
 	logrus.SetFormatter(&formatter{})
 	logrus.AddHook(&logHook{})
 	logrus.SetOutput(os.Stderr)
 	logrus.SetLevel(logrus.InfoLevel)
+}
+
+func init() {
+	module := requires.New("logger")
+	module.After("config")
+
+	module.Handler = func() {
+		initSender()
+	}
 }
