@@ -31,7 +31,7 @@ export default class Main extends React.Component<{}, {}> {
 						<Loading size="small"/>
 					</div>
 					<div className="pt-navbar-group pt-align-right">
-						<ReactRouter.Link to="/console/settings" style={css.link}>
+						<ReactRouter.Link to="/settings" style={css.link}>
 							<button
 								className="pt-button pt-minimal pt-icon-cog"
 							>Settings</button>
@@ -43,7 +43,7 @@ export default class Main extends React.Component<{}, {}> {
 					</div>
 				</nav>
 
-				<ReactRouter.Route path="/console/settings" render={() => (
+				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>
 				)}/>
 			</div>
