@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Loading from './Loading';
 
 document.body.className = 'root pt-dark';
 
@@ -21,6 +22,7 @@ export default class Main extends React.Component<{}, {}> {
 					<div className="pt-navbar-heading"
 						style={css.heading}
 					>Pritunl Zero</div>
+					<Loading size="small"/>
 				</div>
 				<div className="pt-navbar-group pt-align-right">
 					<button
