@@ -34,6 +34,7 @@ func main() {
 	case "node":
 		switch flag.Arg(1) {
 		case "management":
+			Init()
 			cmd.ManagementNode()
 			return
 		}
