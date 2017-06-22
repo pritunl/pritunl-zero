@@ -21,7 +21,11 @@
         background-color: #293742;
       }
 
-      .login-form {
+      form {
+        margin: 0;
+      }
+
+      .pt-card {
         padding: 50px;
         min-width: 200px;
         max-width: 300px;
@@ -31,26 +35,113 @@
         transform: translateY(-50%);
       }
 
-      .login-form input {
+      .pt-card input {
         width: 100%;
       }
 
-      .login-form button {
-        display: block;
-        width: 100%;
-        margin: 15px auto 0 auto;
+      #alert {
+        display: none;
+        margin-bottom: 15px;
+        transition: background-color ease-in-out 0.1s,
+          background-color ease-in-out 0.1s;
+      }
+
+      #alert.flash {
+        background-color: rgba(255, 255, 255, 0.50);
       }
     </style>
   </head>
   <body class="pt-dark pt-focus-disabled">
-    <div class="login-form pt-card pt-elevation-2">
-      <label class="pt-label">
-        <input class="pt-input" type="text" placeholder="Username"/>
-      </label>
-      <label class="pt-label">
-        <input class="pt-input" type="password" placeholder="Password"/>
-      </label>
-      <button type="button" class="pt-button">Login</button>
+    <div class="pt-card pt-elevation-2">
+      <div id="alert" class="pt-callout"></div>
+      <form id="login-form">
+        <label class="pt-label">
+          <input id="username" class="pt-input"
+            type="text" placeholder="Username"/>
+        </label>
+        <label class="pt-label">
+          <input id="password" class="pt-input"
+            type="password" placeholder="Password"/>
+        </label>
+        <input id="submit" class="pt-button" type="submit" value="Login">
+      </form>
     </div>
+    <script type="text/javascript">
+      var alertElm = document.getElementById('alert');
+      var loginFormElm = document.getElementById('login-form');
+      var usernameElm = document.getElementById('username');
+      var passwordElm = document.getElementById('password');
+      var submitElm = document.getElementById('submit');
+
+      var flashAlert = function() {
+        var alertClass = alertElm.className;
+        var alertClassFlash = alertClass + ' flash';
+
+        alertElm.className = alertClassFlash;
+        setTimeout(function() {
+          alertElm.className = alertClass;
+          setTimeout(function() {
+            alertElm.className = alertClassFlash;
+            setTimeout(function() {
+              alertElm.className = alertClass;
+            }.bind(this), 150);
+          }.bind(this), 150);
+        }.bind(this), 150);
+      };
+
+      var setAlert = function(alert, intent) {
+        intent = intent || 'default';
+
+        if (alert) {
+          alertElm.className = 'pt-callout pt-intent-' + intent;
+          alertElm.innerHTML = alert;
+          if (alertElm.style.display === 'block') {
+            flashAlert(alertElm);
+          } else {
+            alertElm.style.display = 'block';
+          }
+        } else {
+          alertElm.style.display = 'none';
+        }
+      };
+
+      loginFormElm.onsubmit = function(evt) {
+        evt.preventDefault();
+        submitElm.disabled = true;
+        var username = usernameElm.value;
+        var password = passwordElm.value;
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              window.location = '/';
+            } else if (xmlhttp.status === 202) {
+              window.location = JSON.parse(xmlhttp.response)['redirect'];
+            } else {
+              var errorMsg;
+
+              try {
+                errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+              } catch(error) {
+                errorMsg = 'Server error occurred.';
+              }
+
+              setAlert(errorMsg, 'danger');
+              submitElm.disabled = false;
+            }
+          }
+        };
+
+        xmlhttp.open('POST', '/auth/session', true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send(JSON.stringify({
+          'username': username,
+          'password': password
+        }));
+
+        return false;
+      };
+    </script>
   </body>
 </html>
