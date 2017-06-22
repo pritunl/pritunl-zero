@@ -17,6 +17,7 @@ Commands:
   version  Show version
   mongo    Set MongoDB URI
   set      Set a setting
+  node     Start node
 `
 
 func Init() {
@@ -25,30 +26,35 @@ func Init() {
 }
 
 func main() {
+	defer time.Sleep(1 * time.Second)
+
 	flag.Parse()
 
 	switch flag.Arg(0) {
+	case "node":
+		switch flag.Arg(1) {
+		case "management":
+			cmd.ManagementNode()
+			return
+		}
 	case "version":
 		fmt.Printf("pritunl-zero v%s\n", constants.Version)
-		break
+		return
 	case "mongo":
 		logger.Init()
-
 		err := cmd.Mongo()
 		if err != nil {
 			panic(err)
 		}
-		break
+		return
 	case "set":
 		Init()
 		err := cmd.SettingsSet()
 		if err != nil {
 			panic(err)
 		}
-		break
-	default:
-		fmt.Println(help)
+		return
 	}
 
-	time.Sleep(1 * time.Second)
+	fmt.Println(help)
 }
