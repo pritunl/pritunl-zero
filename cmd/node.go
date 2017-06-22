@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/handlers"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 )
