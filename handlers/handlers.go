@@ -69,6 +69,7 @@ func Register(engine *gin.Engine) {
 		fileServer = http.FileServer(fs)
 
 		engine.GET("/", staticTestingGet)
+		engine.GET("/login.html", staticTestingGet)
 		engine.GET("/config.js", staticTestingGet)
 		engine.GET("/build.js", staticTestingGet)
 		engine.GET("/app/*path", staticTestingGet)
