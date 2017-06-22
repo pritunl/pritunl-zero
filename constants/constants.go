@@ -17,3 +17,7 @@ const (
 	StaticCache            = false
 	RetryDelay             = 3 * time.Second
 )
+
+var (
+	Interrupt = false
+)
