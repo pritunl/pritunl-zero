@@ -16,22 +16,30 @@ var (
 )
 
 func RandStr(n int) (str string, err error) {
-	input, err := RandBytes(int(math.Ceil(float64(n) * 1.5)))
-	if err != nil {
-		return
+	for i := 0; i < 10; i++ {
+		input, e := RandBytes(int(math.Ceil(float64(n) * 1.25)))
+		if e != nil {
+			err = e
+			return
+		}
+
+		output := base64.RawStdEncoding.EncodeToString(input)
+		output = randRe.ReplaceAllString(output, "")
+
+		if len(output) < n {
+			continue
+		}
+
+		str = output[:n]
+		break
 	}
 
-	output := base64.RawStdEncoding.EncodeToString(input)
-	output = randRe.ReplaceAllString(output, "")
-
-	if len(output) < n {
+	if str == "" {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "utils: Random generate error"),
 		}
 		return
 	}
-
-	str = output[:n]
 
 	return
 }
