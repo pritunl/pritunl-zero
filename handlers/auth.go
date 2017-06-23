@@ -68,5 +68,5 @@ func logoutGet(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/")
+	c.Redirect(302, "/login")
 }
