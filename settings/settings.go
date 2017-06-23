@@ -2,10 +2,8 @@
 package settings
 
 import (
-	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -13,11 +11,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
-)
-
-var (
-	registry = map[string]interface{}{}
 )
 
 func Commit(db *database.Database, group interface{}, fields set.Set) (
@@ -80,19 +73,6 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 	if err != nil {
 		err = database.ParseError(err)
 		return
-	}
-
-	return
-}
-
-func parseFindError(inErr error) (err error) {
-	if inErr != nil {
-		switch inErr.(type) {
-		case *database.NotFoundError:
-			err = nil
-		default:
-			err = inErr
-		}
 	}
 
 	return
@@ -183,52 +163,36 @@ func setDefaults(obj interface{}) {
 	return
 }
 
-func update(group string, data interface{}) (err error) {
+func Update(name string) (err error) {
 	db := database.GetDatabase()
 	defer db.Close()
-	coll := db.Settings()
 
-	err = parseFindError(coll.FindOneId(group, data))
+	coll := db.Settings()
+	group := registry[name]
+	data := group.New()
+
+	err = database.IgnoreNotFoundError(coll.FindOneId(name, data))
 	if err != nil {
 		return
 	}
 
-	setDefaults(data)
+	group.Update(data)
 
 	return
-}
-
-func Update(name string) {
-	group, ok := registry[name]
-	if !ok {
-		return
-	}
-
-	for {
-		err := update(name, group)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("database: Update")
-		} else {
-			break
-		}
-
-		time.Sleep(constants.RetryDelay)
-	}
-}
-
-func register(name string, group interface{}) {
-	registry[name] = group
 }
 
 func init() {
 	module := requires.New("settings")
 	module.After("database")
 
-	module.Handler = func() {
+	module.Handler = func() (err error) {
 		for name := range registry {
-			Update(name)
+			err = Update(name)
+			if err != nil {
+				return
+			}
 		}
+
+		return
 	}
 }
