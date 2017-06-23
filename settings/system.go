@@ -12,7 +12,9 @@ type system struct {
 }
 
 func newSystem() interface{} {
-	return &system{}
+	return &system{
+		Id: "system",
+	}
 }
 
 func updateSystem(data interface{}) {
