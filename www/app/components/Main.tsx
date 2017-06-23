@@ -40,6 +40,12 @@ export default class Main extends React.Component<{}, {}> {
 							className="pt-button pt-minimal pt-icon-refresh"
 							onClick={() => {}}
 						>Refresh</button>
+						<button
+							className="pt-button pt-minimal pt-icon-log-out"
+							onClick={() => {
+								window.location.href = '/logout';
+							}}
+						>Logout</button>
 					</div>
 				</nav>
 
