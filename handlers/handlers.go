@@ -108,12 +108,12 @@ func Register(engine *gin.Engine) {
 
 		sessGroup.GET("/", staticTestingGet)
 		engine.GET("/login", staticTestingGet)
-		authGroup.GET("/config.js", staticTestingGet)
-		authGroup.GET("/build.js", staticTestingGet)
-		authGroup.GET("/app/*path", staticTestingGet)
-		authGroup.GET("/dist/*path", staticTestingGet)
-		authGroup.GET("/styles/*path", staticTestingGet)
-		authGroup.GET("/node_modules/*path", staticTestingGet)
-		authGroup.GET("/jspm_packages/*path", staticTestingGet)
+		engine.GET("/config.js", staticTestingGet)
+		engine.GET("/build.js", staticTestingGet)
+		engine.GET("/app/*path", staticTestingGet)
+		engine.GET("/dist/*path", staticTestingGet)
+		engine.GET("/styles/*path", staticTestingGet)
+		engine.GET("/node_modules/*path", staticTestingGet)
+		engine.GET("/jspm_packages/*path", staticTestingGet)
 	}
 }
