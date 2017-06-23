@@ -9,10 +9,12 @@ import (
 // Get mongodb error code from error
 func GetErrorCode(err error) (errCode int) {
 	switch err := err.(type) {
-		case *mgo.LastError:
+	case *mgo.LastError:
 		errCode = err.Code
-		case *mgo.QueryError:
+		break
+	case *mgo.QueryError:
 		errCode = err.Code
+		break
 	}
 
 	return
@@ -34,10 +36,26 @@ func ParseError(err error) (newErr error) {
 		newErr = &DuplicateKeyError{
 			errors.New("database: Duplicate key"),
 		}
+		break
 	default:
 		newErr = &UnknownError{
 			errors.Wrap(err, fmt.Sprintf(
 				"database: Unknown error %d", errCode)),
+		}
+	}
+
+	return
+}
+
+// Ignore not found error
+func IgnoreNotFoundError(err error) (newErr error) {
+	if err != nil {
+		switch err.(type) {
+		case *NotFoundError:
+			newErr = nil
+			break
+		default:
+			newErr = err
 		}
 	}
 
