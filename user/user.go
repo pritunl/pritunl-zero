@@ -66,7 +66,7 @@ func (u *User) Insert(db *database.Database) (
 }
 
 func (u *User) SetPassword(password string) (err error) {
-	if u.Type != "local" {
+	if u.Type != Local {
 		err = &errortypes.UnknownError{
 			errors.New("user: User type cannot store password"),
 		}
@@ -87,7 +87,7 @@ func (u *User) SetPassword(password string) (err error) {
 }
 
 func (u *User) CheckPassword(password string) bool {
-	if u.Type != "local" || u.Password == "" {
+	if u.Type != Local || u.Password == "" {
 		return false
 	}
 
@@ -116,7 +116,7 @@ func init() {
 			logrus.Info("setup: Creating default super user")
 
 			usr := User{
-				Type:          "local",
+				Type:          Local,
 				Username:      "pritunl",
 				Administrator: "super",
 			}
