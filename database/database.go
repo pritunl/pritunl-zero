@@ -36,6 +36,11 @@ func (d *Database) getCollection(name string) (coll *Collection) {
 	return
 }
 
+func (d *Database) Users() (coll *Collection) {
+	coll = d.getCollection("users")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
