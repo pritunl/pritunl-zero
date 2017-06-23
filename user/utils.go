@@ -5,7 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, userId bson.ObjectId) (
+func Find(db *database.Database, userId bson.ObjectId) (
 	usr *User, err error) {
 
 	coll := db.Users()

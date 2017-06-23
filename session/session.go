@@ -24,7 +24,7 @@ func (s *Session) Remove(db *database.Database) (err error) {
 }
 
 func (s *Session) GetUser(db *database.Database) (usr *user.User, err error) {
-	usr, err = user.Get(db, s.UserId)
+	usr, err = user.Find(db, s.UserId)
 	if err != nil {
 		return
 	}
