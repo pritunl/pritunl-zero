@@ -196,13 +196,13 @@ func init() {
 	module := requires.New("database")
 	module.After("config")
 
-	module.Handler = func() {
+	module.Handler = func() (err error) {
 		for {
-			err := Connect()
-			if err != nil {
+			e := Connect()
+			if e != nil {
 				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("database: Connection")
+					"error": e,
+				}).Error("database: Connection error")
 			} else {
 				break
 			}
@@ -210,30 +210,16 @@ func init() {
 			time.Sleep(constants.RetryDelay)
 		}
 
-		for {
-			err := addCollections()
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("database: Add collections")
-			} else {
-				break
-			}
-
-			time.Sleep(constants.RetryDelay)
+		err = addCollections()
+		if err != nil {
+			return
 		}
 
-		for {
-			err := addIndexes()
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("database: Add indexes")
-			} else {
-				break
-			}
-
-			time.Sleep(constants.RetryDelay)
+		err = addIndexes()
+		if err != nil {
+			return
 		}
+
+		return
 	}
 }

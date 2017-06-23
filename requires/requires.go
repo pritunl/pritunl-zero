@@ -16,7 +16,7 @@ type Module struct {
 	name    string
 	before  set.Set
 	after   set.Set
-	Handler func()
+	Handler func() (err error)
 }
 
 func (m *Module) Before(name string) {
@@ -125,7 +125,11 @@ Loop:
 
 	i := modules.Front()
 	for i != nil {
-		i.Value.(*Module).Handler()
+		err := i.Value.(*Module).Handler()
+		if err != nil {
+			panic(err)
+		}
+
 		i = i.Next()
 	}
 }

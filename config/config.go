@@ -115,10 +115,10 @@ func GetModTime() (mod time.Time, err error) {
 func init() {
 	module := requires.New("config")
 
-	module.Handler = func() {
-		err := Load()
+	module.Handler = func() (err error) {
+		err = Load()
 		if err != nil {
-			panic(err)
+			return
 		}
 
 		save := false
@@ -136,8 +136,10 @@ func init() {
 		if save {
 			err = Save()
 			if err != nil {
-				panic(err)
+				return
 			}
 		}
+
+		return
 	}
 }

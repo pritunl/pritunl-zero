@@ -2,14 +2,16 @@ package cmd
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/handlers"
 	"net/http"
 	"time"
 )
 
-func ManagementNode() {
+func ManagementNode() (err error) {
 	if constants.Production {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -36,8 +38,13 @@ func ManagementNode() {
 		"production": constants.Production,
 	}).Info("cmd.app: Starting management node")
 
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
-		panic(err)
+		err = &errortypes.UnknownError{
+			errors.Wrap(err, "node: Server listen failed"),
+		}
+		return
 	}
+
+	return
 }

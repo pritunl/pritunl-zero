@@ -47,7 +47,8 @@ func init() {
 	module := requires.New("logger")
 	module.After("config")
 
-	module.Handler = func() {
+	module.Handler = func() (err error) {
 		initSender()
+		return
 	}
 }
