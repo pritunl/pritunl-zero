@@ -41,6 +41,11 @@ func (d *Database) Users() (coll *Collection) {
 	return
 }
 
+func (d *Database) Sessions() (coll *Collection) {
+	coll = d.getCollection("sessions")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
