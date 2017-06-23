@@ -63,13 +63,14 @@ func Register(engine *gin.Engine) {
 		store = stre
 
 		engine.GET("/", staticIndexGet)
+		engine.GET("/login", staticLoginGet)
 		engine.GET("/static/*path", staticGet)
 	} else {
 		fs := gin.Dir(constants.StaticTestingRoot, false)
 		fileServer = http.FileServer(fs)
 
 		engine.GET("/", staticTestingGet)
-		engine.GET("/login.html", staticTestingGet)
+		engine.GET("/login", staticTestingGet)
 		engine.GET("/config.js", staticTestingGet)
 		engine.GET("/build.js", staticTestingGet)
 		engine.GET("/app/*path", staticTestingGet)

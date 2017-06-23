@@ -38,6 +38,10 @@ func staticIndexGet(c *gin.Context) {
 	staticPath(c, "/index.html")
 }
 
+func staticLoginGet(c *gin.Context) {
+	staticPath(c, "/login.html")
+}
+
 func staticGet(c *gin.Context) {
 	staticPath(c, "/static"+c.Params.ByName("path"))
 }
@@ -49,6 +53,9 @@ func staticTestingGet(c *gin.Context) {
 			pth = "config.js"
 		} else if c.Request.URL.Path == "/build.js" {
 			pth = "build.js"
+		} else if c.Request.URL.Path == "/login" {
+			c.Request.URL.Path = "/login.html"
+			pth = "login.html"
 		} else {
 			pth = "index.html"
 		}
