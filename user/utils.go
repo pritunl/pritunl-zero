@@ -18,3 +18,21 @@ func Get(db *database.Database, userId bson.ObjectId) (
 
 	return
 }
+
+func HasSuper(db *database.Database) (exists bool, err error) {
+	coll := db.Users()
+
+	count, err := coll.Find(bson.M{
+		"administrator": "super",
+	}).Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	if count > 0 {
+		exists = true
+	}
+
+	return
+}

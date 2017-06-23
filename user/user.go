@@ -1,10 +1,12 @@
 package user
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/requires"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -95,4 +97,41 @@ func (u *User) CheckPassword(password string) bool {
 	}
 
 	return true
+}
+
+func init() {
+	module := requires.New("user")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		exists, err := HasSuper(db)
+		if err != nil {
+			return
+		}
+
+		if !exists {
+			logrus.Info("setup: Creating default super user")
+
+			usr := User{
+				Type:          "local",
+				Username:      "pritunl",
+				Administrator: "super",
+			}
+
+			err = usr.SetPassword("pritunl")
+			if err != nil {
+				return
+			}
+
+			err = usr.Insert(db)
+			if err != nil {
+				return
+			}
+		}
+
+		return
+	}
 }
