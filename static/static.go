@@ -97,7 +97,15 @@ func (s *Store) addDir(dir string) (err error) {
 func (s *Store) parseFiles() {
 	for _, file := range s.Files {
 		data := &bytes.Buffer{}
-		writer := gzip.NewWriter(data)
+
+		writer, err := gzip.NewWriterLevel(data, gzip.BestCompression)
+		if err != nil {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "static: Gzip error"),
+			}
+			return
+		}
+
 		writer.Write(file.Data)
 		writer.Close()
 		file.GzipData = data.Bytes()
