@@ -16,6 +16,8 @@ const css = {
 	} as React.CSSProperties,
 	heading: {
 		marginRight: '11px',
+		fontSize: '18px',
+		fontWeight: 'bold',
 	} as React.CSSProperties,
 };
 
