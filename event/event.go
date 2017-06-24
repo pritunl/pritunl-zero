@@ -97,6 +97,21 @@ func Publish(db *database.Database, channel string, data interface{}) (
 	return
 }
 
+func PublishDispatch(db *database.Database, typ string) (
+	err error) {
+
+	evt := &Dispatch{
+		Type: typ,
+	}
+
+	err = Publish(db, "dispatch", evt)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func Subscribe(db *database.Database, channels []string,
 	duration time.Duration, onMsg func(*Event) bool) (err error) {
 
