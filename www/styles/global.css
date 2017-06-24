@@ -17,6 +17,10 @@
   background-color: #293742;
 }
 
+.pt-button:disabled, .pt-button.pt-disabled {
+  cursor: default !important;
+}
+
 .pt-text-intent-primary {
   color: #106ba3;
 }
@@ -43,6 +47,15 @@
 }
 .pt-dark .pt-text-intent-danger {
   color: #f55656;
+}
+
+.pt-border {
+  border-width: 1px;
+  border-color: rgba(16, 22, 26, 0.15);
+}
+
+.pt-dark .pt-border {
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 /*******************************
