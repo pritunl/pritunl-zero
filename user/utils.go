@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -30,6 +31,39 @@ func GetUsername(db *database.Database, typ, username string) (
 		"username": username,
 	}, usr)
 	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
+	users []*User, count int, err error) {
+
+	coll := db.Users()
+	users = []*User{}
+
+	qury := coll.Find(query)
+
+	count, err = qury.Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
+
+	cursor := qury.Skip(skip).Limit(pageCount).Iter()
+
+	usr := &User{}
+	for cursor.Next(usr) {
+		users = append(users, usr)
+		usr = &User{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
