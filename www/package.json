@@ -9,6 +9,7 @@
     "@types/react": "15.0.30",
     "@types/react-addons-css-transition-group": "15.0.2",
     "@types/react-dom": "15.5.0",
+    "@types/react-router": "4.0.11",
     "@types/react-router-dom": "4.0.4",
     "@types/superagent": "3.5.0",
     "events": "1.1.1",
