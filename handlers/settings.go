@@ -11,11 +11,14 @@ type settingsData struct {
 	ElasticAddress string `json:"elastic_address"`
 }
 
-func settingsGet(c *gin.Context) {
-	data := &settingsData{
+func getSettingsData() *settingsData {
+	return &settingsData{
 		ElasticAddress: settings.Elastic.Address,
 	}
+}
 
+func settingsGet(c *gin.Context) {
+	data := getSettingsData()
 	c.JSON(200, data)
 }
 
@@ -31,9 +34,10 @@ func settingsPut(c *gin.Context) {
 
 	settings.Elastic.Address = data.ElasticAddress
 	fields := set.NewSet(
-		"elastic_address",
+		"address",
 	)
-	settings.Commit(db, "elastic", fields)
+	settings.Commit(db, settings.Elastic, fields)
 
+	data = getSettingsData()
 	c.JSON(200, data)
 }
