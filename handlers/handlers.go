@@ -97,6 +97,8 @@ func Register(engine *gin.Engine) {
 	authGroup.GET("/settings", settingsGet)
 	authGroup.PUT("/settings", settingsPut)
 
+	authGroup.GET("/user", usersGet)
+
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)
 		if err != nil {
