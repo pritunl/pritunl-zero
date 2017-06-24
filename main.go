@@ -35,7 +35,10 @@ func main() {
 		switch flag.Arg(1) {
 		case "management":
 			Init()
-			cmd.ManagementNode()
+			err := cmd.ManagementNode()
+			if err != nil {
+				panic(err)
+			}
 			return
 		}
 	case "version":
