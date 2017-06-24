@@ -93,6 +93,8 @@ export default class Settings extends React.Component<{}, State> {
 							className="pt-input"
 							style={css.input}
 							type="text"
+							autoCapitalize="off"
+							spellCheck={false}
 							placeholder="Enter Elasticsearch address"
 							value={this.state.settings.elastic_address}
 							onChange={(evt): void => {
