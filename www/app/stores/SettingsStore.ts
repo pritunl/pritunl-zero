@@ -5,11 +5,15 @@ import * as SettingsTypes from '../types/SettingsTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
 class SettingsStore extends Events.EventEmitter {
-	_settings: SettingsTypes.Settings = {};
+	_settings: SettingsTypes.Settings = {
+		elastic_address: '',
+	};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get settings(): SettingsTypes.Settings {
-		return this._settings;
+		return {
+			...this._settings,
+		};
 	}
 
 	emitChange(): void {
