@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/settings"
 )
 
@@ -37,6 +38,8 @@ func settingsPut(c *gin.Context) {
 		"address",
 	)
 	settings.Commit(db, settings.Elastic, fields)
+
+	event.PublishDispatch(db, "settings.change")
 
 	data = getSettingsData()
 	c.JSON(200, data)
