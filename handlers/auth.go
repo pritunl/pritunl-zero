@@ -23,7 +23,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	usr, err := user.FindUsername(db, user.Local, data.Username)
+	usr, err := user.GetUsername(db, user.Local, data.Username)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:

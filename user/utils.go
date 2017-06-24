@@ -5,7 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func Find(db *database.Database, userId bson.ObjectId) (
+func Get(db *database.Database, userId bson.ObjectId) (
 	usr *User, err error) {
 
 	coll := db.Users()
@@ -19,7 +19,7 @@ func Find(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func FindUsername(db *database.Database, typ, username string) (
+func GetUsername(db *database.Database, typ, username string) (
 	usr *User, err error) {
 
 	coll := db.Users()
