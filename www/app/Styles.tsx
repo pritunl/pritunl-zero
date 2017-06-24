@@ -96,7 +96,7 @@ interface Styles {
 	colors: Colors;
 }
 
-let colors = {
+const colors = {
 	white: Blueprint.Colors.WHITE,
 	black: Blueprint.Colors.BLACK,
 	blue1: Blueprint.Colors.BLUE1,
@@ -186,8 +186,20 @@ let colors = {
 	violet5: Blueprint.Colors.VIOLET5,
 };
 
-let styles: Styles = {
-	colors: colors,
+const styles = {
+	page: {
+		margin: '0 auto',
+		padding: '30px',
+		minWidth: '760px',
+		maxWidth: '1100px',
+	} as React.CSSProperties,
+	pageHeader: {
+		fontSize: '24px',
+		paddingBottom: '8px',
+		marginBottom: '20px',
+		borderBottomStyle: 'solid',
+	} as React.CSSProperties,
+	colors: colors as Colors,
 };
 
 export default styles
