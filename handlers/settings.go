@@ -13,7 +13,7 @@ type settingsData struct {
 
 func settingsGet(c *gin.Context) {
 	data := &settingsData{
-		ElasticAddress: settings.Elastic.Address + "test",
+		ElasticAddress: settings.Elastic.Address,
 	}
 
 	c.JSON(200, data)
