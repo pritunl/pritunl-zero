@@ -48,6 +48,8 @@ cp jspm_packages/system.js dist/static/
 sed -i 's|../resources/icons/||g' dist/static/blueprint.css
 mv build.js dist/static/app.js
 mv build.js.map dist/static/app.js.map
+cp index_dist.html dist/index.html
+cp login.html dist/login.html
 ```
 
 #### intellij settings
