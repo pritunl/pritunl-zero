@@ -92,6 +92,11 @@ func Register(engine *gin.Engine) {
 	dbGroup.POST("/auth/session", authSessionPost)
 	authGroup.GET("/logout", logoutGet)
 
+	authGroup.GET("/event", eventGet)
+
+	authGroup.GET("/settings", settingsGet)
+	authGroup.PUT("/settings", settingsPut)
+
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)
 		if err != nil {
