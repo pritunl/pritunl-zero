@@ -55,7 +55,7 @@ export function commit(settings: SettingsTypes.Settings): Promise<void> {
 			.put('/settings')
 			.send(settings)
 			.set('Accept', 'application/json')
-			.end((err: any): void => {
+			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
 				if (err) {
@@ -63,6 +63,11 @@ export function commit(settings: SettingsTypes.Settings): Promise<void> {
 					reject(err);
 					return;
 				}
+
+				Dispatcher.dispatch({
+					type: SettingsTypes.SYNC,
+					data: res.body,
+				});
 
 				resolve();
 			});
