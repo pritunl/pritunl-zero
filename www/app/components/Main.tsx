@@ -46,6 +46,16 @@ export default class Main extends React.Component<{}, {}> {
 								window.location.href = '/logout';
 							}}
 						>Logout</button>
+						<button
+							className="pt-button pt-minimal pt-icon-moon"
+							onClick={(): void => {
+								if (document.body.className.indexOf('pt-dark') === -1) {
+									document.body.className = 'root pt-dark';
+								} else {
+									document.body.className = 'root';
+								}
+							}}
+						/>
 					</div>
 				</nav>
 
