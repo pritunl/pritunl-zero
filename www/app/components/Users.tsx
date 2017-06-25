@@ -10,6 +10,15 @@ interface State {
 	users: UserTypes.Users;
 }
 
+const css = {
+	users: {
+		width: '100%',
+		display: 'table',
+		borderSpacing: '0 5px',
+		marginTop: '-5px',
+	} as React.CSSProperties,
+};
+
 export default class Users extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);

@@ -10,10 +10,12 @@ interface Props {
 
 const css = {
 	card: {
+		display: 'table-row',
 		width: '100%',
-		padding: '9px',
+		padding: 0,
 	} as React.CSSProperties,
 	tag: {
+		height: '20px',
 		margin: '0 5px',
 	},
 	select: {
@@ -22,15 +24,29 @@ const css = {
 		minHeight: '18px',
 	} as React.CSSProperties,
 	name: {
-		flex: '0 0 30%',
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '9px',
 	} as React.CSSProperties,
 	type: {
-		flex: '0 0 10%',
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '9px',
 	} as React.CSSProperties,
 	lastActivity: {
-		flex: '0 0 25%',
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '9px',
+		whiteSpace: 'nowrap',
 	} as React.CSSProperties,
 	roles: {
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '0 9px 9px 9px',
+	} as React.CSSProperties,
+	role: {
+		margin: '9px 5px 0 5px',
+		height: '20px',
 	} as React.CSSProperties,
 	nameLink: {
 		margin: '0 5px 0 0',
@@ -42,25 +58,25 @@ export default class User extends React.Component<Props, {}> {
 		let user = this.props.user;
 
 		return <div
-			className="pt-card layout horizontal"
+			className="pt-card"
 			style={css.card}
 		>
-			<div className="layout horizontal" style={css.name}>
-				<label className="pt-control pt-checkbox" style={css.select}>
-					<input type="checkbox"/>
-					<span className="pt-control-indicator"/>
-				</label>
-				<div>
+			<div style={css.name}>
+				<div className="layout horizontal">
+					<label className="pt-control pt-checkbox" style={css.select}>
+						<input type="checkbox"/>
+						<span className="pt-control-indicator"/>
+					</label>
 					<a style={css.nameLink}>
 						{user.username}
 					</a>
-				</div>
-				<div
-					className="pt-tag pt-intent-danger"
-					style={css.tag}
-					hidden={!user.administrator}
-				>
-					admin
+					<span
+						className="pt-tag pt-intent-danger"
+						style={css.tag}
+						hidden={!user.administrator}
+					>
+						admin
+					</span>
 				</div>
 			</div>
 			<div className="layout horizontal" style={css.type}>
