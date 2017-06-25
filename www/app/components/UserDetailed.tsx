@@ -1,9 +1,16 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import Styles from '../Styles';
-import * as MiscUtils from '../utils/MiscUtils';
 import * as UserActions from '../actions/UserActions';
 import * as UserTypes from '../types/UserTypes';
+import UserStore from '../stores/UserStore';
+import Page from './Page';
+import PageHeader from './PageHeader';
+import PagePanel from './PagePanel';
+import PageInput from './PageInput';
+import PageInputButton from './PageInputButton';
+import PageSwitch from './PageSwitch';
+import PageSave from './PageSave';
 
 interface Props {
 	userId: string;
@@ -18,13 +25,6 @@ interface State {
 }
 
 const css = {
-	input: {
-		width: '100%',
-		maxWidth: '310px',
-	} as React.CSSProperties,
-	button: {
-		marginLeft: '10px',
-	} as React.CSSProperties,
 	role: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
@@ -39,16 +39,24 @@ export default class UserDetailed extends React.Component<Props, State> {
 			disabled: false,
 			message: '',
 			addRole: '',
-			user: null,
+			user: UserStore.user,
 		};
 	}
 
 	componentDidMount(): void {
-		UserActions.get(this.props.userId).then((user: UserTypes.User) => {
-			this.setState({
-				...this.state,
-				user: user,
-			});
+		UserActions.load(this.props.userId);
+		UserStore.addChangeListener(this.onChange);
+	}
+
+	componentWillUnmount(): void {
+		UserActions.unload();
+		UserStore.removeChangeListener(this.onChange);
+	}
+
+	onChange = (): void => {
+		this.setState({
+			...this.state,
+			user: UserStore.user,
 		});
 	}
 
@@ -147,79 +155,77 @@ export default class UserDetailed extends React.Component<Props, State> {
 			);
 		}
 
-		return <div style={Styles.page}>
-			<div className="pt-border" style={Styles.pageHeader}>
-				<h2>User Info</h2>
-			</div>
-			<div className="layout horizontal">
-				<div className="flex">
-					<label className="pt-label">
-						Username
-						<input
-							className="pt-input"
-							style={css.input}
-							type="text"
-							autoCapitalize="off"
-							spellCheck={false}
-							placeholder="Enter Elasticsearch address"
-							value={user.username}
-							onChange={(evt): void => {
-								this.set('username', evt.target.value);
-							}}
-						/>
-					</label>
-				</div>
-				<div className="flex">
+		return <Page>
+			<PageHeader title="User Info"/>
+			<div className="layout horizontal wrap">
+				<PagePanel className="layout vertical">
+					<PageInput
+						label="Username"
+						type="text"
+						placeholder="Enter username"
+						value={user.username}
+						onChange={(val): void => {
+							this.set('username', val);
+						}}
+					/>
+					<PageInput
+						label="Password"
+						type="password"
+						placeholder="Change password"
+						value={user.password}
+						onChange={(val): void => {
+							this.set('password', val);
+						}}
+					/>
+					<PageSwitch
+						label="Administrator"
+						checked={user.administrator === 'super'}
+						onToggle={(): void => {
+							if (user.administrator === 'super') {
+								this.set('administrator', '');
+							} else {
+								this.set('administrator', 'super');
+							}
+						}}
+					/>
+				</PagePanel>
+				<PagePanel>
 					<label className="pt-label">
 						Roles
 						<div>
 							{roles}
 						</div>
 					</label>
-					<div className="pt-control-group">
-						<input
-							className="pt-input"
-							type="text"
-							autoCapitalize="off"
-							spellCheck={false}
-							placeholder="Add role"
-							value={this.state.addRole}
-							onChange={(evt): void => {
-								this.setState({
-									...this.state,
-									addRole: evt.target.value,
-								});
-							}}
-							onKeyPress={(evt): void => {
-								if (evt.key === 'Enter') {
-									this.onAddRole();
-								}
-							}}
-						/>
-						<button
-							className="pt-button"
-							onClick={this.onAddRole}
-						>Add</button>
-					</div>
-				</div>
+					<PageInputButton
+						label="Add"
+						type="text"
+						placeholder="Add role"
+						value={this.state.addRole}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addRole: val,
+							});
+						}}
+						onSubmit={this.onAddRole}
+					/>
+				</PagePanel>
 			</div>
-			<div className="layout horizontal">
-				<div className="flex"/>
-				<div>
-					<span hidden={!this.state.message}>
-						{this.state.message}
-					</span>
-					<button
-						className="pt-button pt-intent-success pt-icon-tick"
-						style={css.button}
-						type="button"
-						disabled={!this.state.changed || this.state.disabled}
-						onClick={this.onSave}
-					>
-						Save
-					</button>
-				</div>
-			</div>
-		</div>;
+			<PageSave
+				message={this.state.message}
+				changed={this.state.changed}
+				disabled={this.state.disabled}
+				onCancel={(): void => {
+					this.setState({
+						...this.state,
+						changed: false,
+						message: 'Your changes have been discarded',
+						addRole: '',
+						user: UserStore.user,
+					});
+				}}
+				onSave={this.onSave}
+			/>
+		</Page>;
 	}
 }
