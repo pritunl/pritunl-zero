@@ -10,6 +10,27 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
+export function get(userId: string): Promise<UserTypes.User> {
+	let loader = new Loader().loading();
+
+	return new Promise<UserTypes.User>((resolve, reject): void => {
+		SuperAgent
+			.get('/user/' + userId)
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.error('Failed to load user');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body);
+			});
+	});
+}
+
 function _sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
