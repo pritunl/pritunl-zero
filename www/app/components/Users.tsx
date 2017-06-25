@@ -54,7 +54,7 @@ export default class Users extends React.Component<{}, State> {
 			<div className="pt-border" style={Styles.pageHeader}>
 				<h2>Users</h2>
 			</div>
-			<div className="layout horizontal">
+			<div style={css.users}>
 				{usersDom}
 			</div>
 		</div>;
