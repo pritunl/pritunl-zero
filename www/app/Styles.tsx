@@ -189,8 +189,8 @@ const colors = {
 const styles = {
 	page: {
 		margin: '0 auto',
-		padding: '30px',
-		minWidth: '760px',
+		padding: '30px 20px',
+		minWidth: '750px',
 		maxWidth: '1100px',
 	} as React.CSSProperties,
 	pageHeader: {
