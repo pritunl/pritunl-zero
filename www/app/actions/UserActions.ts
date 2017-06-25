@@ -87,6 +87,28 @@ export function sync(): Promise<void> {
 	return _sync();
 }
 
+export function commit(user: UserTypes.User): Promise<UserTypes.User> {
+	let loader = new Loader().loading();
+
+	return new Promise<UserTypes.User>((resolve, reject): void => {
+		SuperAgent
+			.put('/user/' + user.id)
+			.send(user)
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.error('Failed to commit user');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body);
+			});
+	});
+}
+
 export function remove(id: string): void {
 	Dispatcher.dispatch({
 		type: UserTypes.REMOVE,
