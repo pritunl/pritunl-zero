@@ -1,6 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import Styles from '../Styles';
+import * as ReactRouter from 'react-router-dom';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as UserTypes from '../types/UserTypes';
 
@@ -79,9 +79,9 @@ export default class User extends React.Component<Props, {}> {
 						<input type="checkbox"/>
 						<span className="pt-control-indicator"/>
 					</label>
-					<a style={css.nameLink}>
+					<ReactRouter.Link to={'/user/' + user.id} style={css.nameLink}>
 						{user.username}
-					</a>
+					</ReactRouter.Link>
 					<span
 						className="pt-tag pt-intent-danger"
 						style={css.tag}
