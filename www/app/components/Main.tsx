@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as ReactRouter from 'react-router-dom';
 import Loading from './Loading';
+import Users from './Users';
 import Settings from './Settings';
 
 document.body.className = 'root pt-dark';
@@ -33,6 +34,11 @@ export default class Main extends React.Component<{}, {}> {
 						<Loading size="small"/>
 					</div>
 					<div className="pt-navbar-group pt-align-right">
+						<ReactRouter.Link to="/users" style={css.link}>
+							<button
+								className="pt-button pt-minimal pt-icon-people"
+							>Users</button>
+						</ReactRouter.Link>
 						<ReactRouter.Link to="/settings" style={css.link}>
 							<button
 								className="pt-button pt-minimal pt-icon-cog"
@@ -61,6 +67,9 @@ export default class Main extends React.Component<{}, {}> {
 					</div>
 				</nav>
 
+				<ReactRouter.Route path="/users" render={() => (
+					<Users/>
+				)}/>
 				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>
 				)}/>
