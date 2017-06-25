@@ -25,16 +25,14 @@ const css = {
 		flex: '0 0 30%',
 	} as React.CSSProperties,
 	type: {
-		flex: '0 0 30%',
+		flex: '0 0 10%',
 	} as React.CSSProperties,
 	lastActivity: {
-		flex: '0 0 30%',
+		flex: '0 0 25%',
 	} as React.CSSProperties,
 	roles: {
-		flex: '0 0 30%',
 	} as React.CSSProperties,
 	nameLink: {
-		fontSize: '16px',
 		margin: '0 5px 0 0',
 	} as React.CSSProperties,
 };
@@ -62,7 +60,7 @@ export default class User extends React.Component<Props, {}> {
 					style={css.tag}
 					hidden={!user.administrator}
 				>
-					administrator
+					admin
 				</div>
 			</div>
 			<div className="layout horizontal" style={css.type}>
@@ -71,8 +69,7 @@ export default class User extends React.Component<Props, {}> {
 			<div className="layout horizontal" style={css.lastActivity}>
 				{MiscUtils.formatDate(user.last_active)}
 			</div>
-			<div className="layout horizontal" style={css.roles}>
-
+			<div className="flex" style={css.roles}>
 			</div>
 		</div>;
 	}
