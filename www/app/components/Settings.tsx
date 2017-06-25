@@ -1,9 +1,13 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import Styles from '../Styles';
 import * as SettingsTypes from '../types/SettingsTypes';
 import SettingsStore from '../stores/SettingsStore';
 import * as SettingsActions from '../actions/SettingsActions';
+import Page from './Page';
+import PageHeader from './PageHeader';
+import PagePanel from './PagePanel';
+import PageInput from './PageInput';
+import PageSave from './PageSave';
 
 interface State {
 	changed: boolean;
@@ -11,16 +15,6 @@ interface State {
 	message: string,
 	settings: SettingsTypes.Settings;
 }
-
-const css = {
-	input: {
-		width: '100%',
-		maxWidth: '310px',
-	} as React.CSSProperties,
-	button: {
-		marginLeft: '10px',
-	} as React.CSSProperties,
-};
 
 export default class Settings extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
@@ -81,64 +75,37 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	render(): JSX.Element {
-		return <div style={Styles.page}>
-			<div className="pt-border" style={Styles.pageHeader}>
-				<h2>Settings</h2>
-			</div>
-			<div className="layout horizontal">
-				<div className="flex">
-					<label className="pt-label">
-						Elasticsearch Address
-						<input
-							className="pt-input"
-							style={css.input}
-							type="text"
-							autoCapitalize="off"
-							spellCheck={false}
-							placeholder="Enter Elasticsearch address"
-							value={this.state.settings.elastic_address}
-							onChange={(evt): void => {
-								this.set('elastic_address', evt.target.value);
-							}}
-						/>
-					</label>
-				</div>
-				<div className="flex">
-				</div>
-			</div>
-			<div className="layout horizontal">
-				<div className="flex"/>
-				<div>
-					<span hidden={!this.state.message}>
-						{this.state.message}
-					</span>
-					<button
-						className="pt-button pt-icon-cross"
-						style={css.button}
-						type="button"
-						disabled={!this.state.changed || this.state.disabled}
-						onClick={(): void => {
-							this.setState({
-								...this.state,
-								changed: false,
-								message: 'Your changes have been discarded',
-								settings: SettingsStore.settings,
-							})
+		return <Page>
+			<PageHeader title="User Info"/>
+			<div className="layout horizontal wrap">
+				<PagePanel>
+					<PageInput
+						label="Elasticsearch Address"
+						type="text"
+						placeholder="Enter Elasticsearch address"
+						value={this.state.settings.elastic_address}
+						onChange={(val): void => {
+							this.set('elastic_address', val);
 						}}
-					>
-						Cancel
-					</button>
-					<button
-						className="pt-button pt-intent-success pt-icon-tick"
-						style={css.button}
-						type="button"
-						disabled={!this.state.changed || this.state.disabled}
-						onClick={this.onSave}
-					>
-						Save
-					</button>
-				</div>
+					/>
+				</PagePanel>
+				<PagePanel>
+				</PagePanel>
 			</div>
-		</div>;
+			<PageSave
+				message={this.state.message}
+				changed={this.state.changed}
+				disabled={this.state.disabled}
+				onCancel={(): void => {
+					this.setState({
+						...this.state,
+						changed: false,
+						message: 'Your changes have been discarded',
+						settings: SettingsStore.settings,
+					});
+				}}
+				onSave={this.onSave}
+			/>
+		</Page>;
 	}
 }
