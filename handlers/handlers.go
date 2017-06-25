@@ -60,6 +60,24 @@ func sessionHand(required bool) gin.HandlerFunc {
 	}
 }
 
+func activeHand(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	sess := c.MustGet("session").(*session.Session)
+
+	usr, err := sess.GetUser(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	err = usr.SetActive(db)
+	if err != nil {
+		return
+	}
+
+	c.Next()
+}
+
 func recoveryHand(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -87,17 +105,20 @@ func Register(engine *gin.Engine) {
 	authGroup := dbGroup.Group("")
 	authGroup.Use(sessionHand(true))
 
+	activeAuthGroup := authGroup.Group("")
+	activeAuthGroup.Use(activeHand)
+
 	engine.GET("/check", checkGet)
 
 	dbGroup.POST("/auth/session", authSessionPost)
-	authGroup.GET("/logout", logoutGet)
+	activeAuthGroup.GET("/logout", logoutGet)
 
-	authGroup.GET("/event", eventGet)
+	activeAuthGroup.GET("/event", eventGet)
 
-	authGroup.GET("/settings", settingsGet)
-	authGroup.PUT("/settings", settingsPut)
+	activeAuthGroup.GET("/settings", settingsGet)
+	activeAuthGroup.PUT("/settings", settingsPut)
 
-	authGroup.GET("/user", usersGet)
+	activeAuthGroup.GET("/user", usersGet)
 
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)
