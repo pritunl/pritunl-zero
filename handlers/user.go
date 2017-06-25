@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/user"
@@ -42,12 +43,53 @@ func userGet(c *gin.Context) {
 	c.JSON(200, usr)
 }
 
+func userPut(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	data := &userData{}
+
+	userId, ok := utils.ParseObjectId(c.Param("user_id"))
+	if !ok {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	usr, err := user.Get(db, userId)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	usr.Username = data.Username
+	usr.Roles = data.Roles
+	usr.Administrator = data.Administrator
+	usr.Permissions = data.Permissions
+
+	err = usr.CommitFields(db, set.NewSet(
+		"username",
+		"roles",
+		"administrator",
+		"permissions",
+	))
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.JSON(200, usr)
+}
+
 func usersGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
 	pageStr := c.Query("page")
 	page, _ := strconv.Atoi(pageStr)
-	pageCountStr := c.Query("page_ount")
+	pageCountStr := c.Query("page_count")
 	pageCount, _ := strconv.Atoi(pageCountStr)
 
 	query := &bson.M{}
