@@ -56,6 +56,18 @@ const css = {
 export default class User extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		let user = this.props.user;
+		let roles: JSX.Element[] = [];
+
+		for (let role of user.roles) {
+			roles.push(
+				<div
+					className="pt-tag pt-intent-primary"
+					style={css.role}
+				>
+					{role}
+				</div>
+			);
+		}
 
 		return <div
 			className="pt-card"
@@ -86,6 +98,7 @@ export default class User extends React.Component<Props, {}> {
 				{MiscUtils.formatDate(user.last_active)}
 			</div>
 			<div className="flex" style={css.roles}>
+				{roles}
 			</div>
 		</div>;
 	}
