@@ -1,8 +1,6 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'user.sync';
-export const UPDATE = 'user.update';
 export const TRAVERSE = 'user.traverse';
-export const REMOVE = 'user.remove';
 export const CHANGE = 'user.change';
 
 export interface User {

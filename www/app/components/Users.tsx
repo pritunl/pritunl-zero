@@ -2,7 +2,7 @@
 import * as React from 'react';
 import Styles from '../Styles';
 import * as UserTypes from '../types/UserTypes';
-import UserStore from '../stores/UserStore';
+import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
 import User from './User';
 
@@ -23,23 +23,23 @@ export default class Users extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
-			users: UserStore.users,
+			users: UsersStore.users,
 		};
 	}
 
 	componentDidMount(): void {
 		UserActions.sync();
-		UserStore.addChangeListener(this.onChange);
+		UsersStore.addChangeListener(this.onChange);
 	}
 
 	componentWillUnmount(): void {
-		UserStore.removeChangeListener(this.onChange);
+		UsersStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
 		this.setState({
 			...this.state,
-			users: UserStore.users,
+			users: UsersStore.users,
 		});
 	}
 

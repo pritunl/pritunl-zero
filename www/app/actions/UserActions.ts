@@ -5,7 +5,7 @@ import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
 import Loader from '../Loader';
 import * as UserTypes from '../types/UserTypes';
-import UserStore from '../stores/UserStore';
+import UsersStore from '../stores/UsersStore';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
@@ -41,8 +41,8 @@ function _sync(): Promise<void> {
 		SuperAgent
 			.get('/user')
 			.query({
-				page: UserStore.page,
-				page_count: UserStore.pageCount,
+				page: UsersStore.page,
+				page_count: UsersStore.pageCount,
 			})
 			.set('Accept', 'application/json')
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -107,17 +107,6 @@ export function commit(user: UserTypes.User): Promise<UserTypes.User> {
 				resolve(res.body);
 			});
 	});
-}
-
-export function remove(id: string): void {
-	Dispatcher.dispatch({
-		type: UserTypes.REMOVE,
-		data: {
-			id: id,
-		},
-	});
-
-	Alert.info('User successfully removed');
 }
 
 EventDispatcher.register((action: UserTypes.UserDispatch) => {
