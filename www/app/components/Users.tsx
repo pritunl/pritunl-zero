@@ -4,6 +4,7 @@ import Styles from '../Styles';
 import * as UserTypes from '../types/UserTypes';
 import UserStore from '../stores/UserStore';
 import * as UserActions from '../actions/UserActions';
+import User from './User';
 
 interface State {
 	users: UserTypes.Users;
@@ -37,7 +38,7 @@ export default class Users extends React.Component<{}, State> {
 		let usersDom: JSX.Element[] = [];
 
 		for (let user of this.state.users) {
-			usersDom.push(<div>{user.username}</div>)
+			usersDom.push(<User key={user.id} user={user}/>)
 		}
 
 		return <div style={Styles.page}>
