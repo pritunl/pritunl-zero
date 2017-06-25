@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/requires"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type User struct {
@@ -16,6 +17,7 @@ type User struct {
 	Type          string        `bson:"type" json:"type"`
 	Username      string        `bson:"username" json:"username"`
 	Password      string        `bson:"password" json:"-"`
+	LastActive    time.Time     `bson:"last_active" json:"last_active"`
 	Roles         []string      `bson:"roles" json:"roles"`
 	Administrator string        `bson:"administrator" json:"administrator"`
 	Permissions   []string      `bson:"permissions" json:"permissions"`
@@ -97,6 +99,17 @@ func (u *User) CheckPassword(password string) bool {
 	}
 
 	return true
+}
+
+func (u *User) SetActive(db *database.Database) (err error) {
+	u.LastActive = time.Now()
+
+	err = u.CommitFields(db, set.NewSet("last_active"))
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func init() {
