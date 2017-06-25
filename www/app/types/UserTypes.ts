@@ -10,6 +10,7 @@ export interface User {
 	type?: string;
 	username?: string;
 	password?: string;
+	last_active?: string;
 	roles?: string[];
 	administrator: string;
 	permissions?: string[];
