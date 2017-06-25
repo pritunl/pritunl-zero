@@ -12,7 +12,8 @@ interface Props {
 interface State {
 	changed: boolean;
 	disabled: boolean;
-	message: string,
+	message: string;
+	addRole: string;
 	user: UserTypes.User;
 }
 
@@ -24,6 +25,10 @@ const css = {
 	button: {
 		marginLeft: '10px',
 	} as React.CSSProperties,
+	role: {
+		margin: '9px 5px 0 5px',
+		height: '20px',
+	} as React.CSSProperties,
 };
 
 export default class UserDetailed extends React.Component<Props, State> {
@@ -33,6 +38,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 			changed: false,
 			disabled: false,
 			message: '',
+			addRole: '',
 			user: null,
 		};
 	}
@@ -51,6 +57,14 @@ export default class UserDetailed extends React.Component<Props, State> {
 			...this.state,
 			disabled: true,
 		});
+		UserActions.commit(this.state.user).then((): void => {
+			this.setState({
+				...this.state,
+				message: 'Your changes have been saved',
+				changed: false,
+				disabled: false,
+			})
+		});
 	}
 
 	set = (name: string, val: any): void => {
@@ -68,11 +82,69 @@ export default class UserDetailed extends React.Component<Props, State> {
 		});
 	}
 
+	onAddRole = (): void => {
+		let roles = this.state.user.roles.slice(0);
+
+		if (roles.indexOf(this.state.addRole) === -1) {
+			roles.push(this.state.addRole);
+		}
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addRole: '',
+			user: {
+				...this.state.user,
+				roles: roles,
+			},
+		});
+	}
+
+	onRemoveRole = (role: string): void => {
+		let roles = this.state.user.roles.slice(0);
+
+		let i = roles.indexOf(role);
+		if (i === -1) {
+			return;
+		}
+
+		roles.splice(i, 1);
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addRole: '',
+			user: {
+				...this.state.user,
+				roles: roles,
+			},
+		});
+	}
+
 	render(): JSX.Element {
 		let user = this.state.user;
-
 		if (!user) {
 			return <div/>;
+		}
+
+		let roles: JSX.Element[] = [];
+		for (let role of user.roles) {
+			roles.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.role}
+				>
+					{role}
+					<button
+						className="pt-tag-remove"
+						onClick={(): void => {
+							this.onRemoveRole(role);
+						}}
+					/>
+				</div>
+			);
 		}
 
 		return <div style={Styles.page}>
@@ -98,6 +170,37 @@ export default class UserDetailed extends React.Component<Props, State> {
 					</label>
 				</div>
 				<div className="flex">
+					<label className="pt-label">
+						Roles
+						<div>
+							{roles}
+						</div>
+					</label>
+					<div className="pt-control-group">
+						<input
+							className="pt-input"
+							type="text"
+							autoCapitalize="off"
+							spellCheck={false}
+							placeholder="Add role"
+							value={this.state.addRole}
+							onChange={(evt): void => {
+								this.setState({
+									...this.state,
+									addRole: evt.target.value,
+								});
+							}}
+							onKeyPress={(evt): void => {
+								if (evt.key === 'Enter') {
+									this.onAddRole();
+								}
+							}}
+						/>
+						<button
+							className="pt-button"
+							onClick={this.onAddRole}
+						>Add</button>
+					</div>
 				</div>
 			</div>
 			<div className="layout horizontal">
