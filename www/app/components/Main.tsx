@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactRouter from 'react-router-dom';
 import Loading from './Loading';
 import Users from './Users';
+import UserDetailed from './UserDetailed';
 import Settings from './Settings';
 
 document.body.className = 'root pt-dark';
@@ -69,6 +70,9 @@ export default class Main extends React.Component<{}, {}> {
 
 				<ReactRouter.Route path="/users" render={() => (
 					<Users/>
+				)}/>
+				<ReactRouter.Route path="/user/:userId" render={(props) => (
+					<UserDetailed userId={props.match.params['userId']}/>
 				)}/>
 				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>
