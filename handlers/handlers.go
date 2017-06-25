@@ -119,6 +119,7 @@ func Register(engine *gin.Engine) {
 	activeAuthGroup.PUT("/settings", settingsPut)
 
 	activeAuthGroup.GET("/user", usersGet)
+	activeAuthGroup.GET("/user/:user_id", userGet)
 
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)

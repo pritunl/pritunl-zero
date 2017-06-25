@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
 )
@@ -21,6 +22,24 @@ type userData struct {
 type usersData struct {
 	Users []*user.User `json:"users"`
 	Count int          `json:"count"`
+}
+
+func userGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	userId, ok := utils.ParseObjectId(c.Param("user_id"))
+	if !ok {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	usr, err := user.Get(db, userId)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.JSON(200, usr)
 }
 
 func usersGet(c *gin.Context) {
