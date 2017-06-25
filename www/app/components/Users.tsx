@@ -1,10 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import Styles from '../Styles';
 import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
 import User from './User';
+import Page from './Page';
+import PageHeader from './PageHeader';
 
 interface State {
 	users: UserTypes.Users;
@@ -13,9 +14,9 @@ interface State {
 const css = {
 	users: {
 		width: '100%',
+		marginTop: '-5px',
 		display: 'table',
 		borderSpacing: '0 5px',
-		marginTop: '-5px',
 	} as React.CSSProperties,
 };
 
@@ -50,13 +51,11 @@ export default class Users extends React.Component<{}, State> {
 			usersDom.push(<User key={user.id} user={user}/>)
 		}
 
-		return <div style={Styles.page}>
-			<div className="pt-border" style={Styles.pageHeader}>
-				<h2>Users</h2>
-			</div>
+		return <Page>
+			<PageHeader title="Users"/>
 			<div style={css.users}>
 				{usersDom}
 			</div>
-		</div>;
+		</Page>;
 	}
 }
