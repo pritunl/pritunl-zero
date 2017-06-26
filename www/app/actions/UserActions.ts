@@ -130,7 +130,29 @@ export function commit(user: UserTypes.User): Promise<UserTypes.User> {
 				loader.done();
 
 				if (err) {
-					Alert.errorRes(res, 'Failed to commit user');
+					Alert.errorRes(res, 'Failed to save user');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body);
+			});
+	});
+}
+
+export function create(user: UserTypes.User): Promise<UserTypes.User> {
+	let loader = new Loader().loading();
+
+	return new Promise<UserTypes.User>((resolve, reject): void => {
+		SuperAgent
+			.post('/user')
+			.send(user)
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to create user');
 					reject(err);
 					return;
 				}
