@@ -50,7 +50,7 @@ func (u *User) Validate(db *database.Database) (
 		return
 	}
 
-	if u.Administrator != "super" {
+	if u.Administrator != "super" && u.Id != "" {
 		exists, e := hasSuperSkip(db, u.Id)
 		if e != nil {
 			err = e
