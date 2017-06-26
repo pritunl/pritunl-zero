@@ -83,7 +83,7 @@ export default class Settings extends React.Component<{}, State> {
 
 	render(): JSX.Element {
 		return <Page>
-			<PageHeader title="User Info"/>
+			<PageHeader title="Settings"/>
 			<PageSplit>
 				<PagePanel>
 					<PageInput
