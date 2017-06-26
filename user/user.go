@@ -23,6 +23,52 @@ type User struct {
 	Permissions   []string      `bson:"permissions" json:"permissions"`
 }
 
+func (u *User) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if !types.Contains(u.Type) {
+		errData = &errortypes.ErrorData{
+			Error:   "user_type_invalid",
+			Message: "User type is not valid",
+		}
+		return
+	}
+
+	if u.Username == "" {
+		errData = &errortypes.ErrorData{
+			Error:   "user_username_invalid",
+			Message: "User username is not valid",
+		}
+		return
+	}
+
+	if u.Type == Local && u.Password == "" {
+		errData = &errortypes.ErrorData{
+			Error:   "user_password_missing",
+			Message: "User password is not set",
+		}
+		return
+	}
+
+	if u.Administrator != "super" {
+		exists, e := hasSuperSkip(db, u.Id)
+		if e != nil {
+			err = e
+			return
+		}
+
+		if !exists {
+			errData = &errortypes.ErrorData{
+				Error:   "user_missing_super",
+				Message: "Missing super administrator",
+			}
+			return
+		}
+	}
+
+	return
+}
+
 func (u *User) Commit(db *database.Database) (err error) {
 	coll := db.Users()
 

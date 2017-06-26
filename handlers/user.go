@@ -87,6 +87,17 @@ func userPut(c *gin.Context) {
 		fields.Add("password")
 	}
 
+	errData, err := usr.Validate(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
 	err = usr.CommitFields(db, fields)
 	if err != nil {
 		c.AbortWithError(500, err)
