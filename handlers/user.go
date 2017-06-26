@@ -66,6 +66,7 @@ func userPut(c *gin.Context) {
 		return
 	}
 
+	usr.Type = data.Type
 	usr.Username = data.Username
 	usr.Roles = data.Roles
 	usr.Administrator = data.Administrator
