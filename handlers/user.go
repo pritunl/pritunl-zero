@@ -70,12 +70,24 @@ func userPut(c *gin.Context) {
 	usr.Administrator = data.Administrator
 	usr.Permissions = data.Permissions
 
-	err = usr.CommitFields(db, set.NewSet(
+	fields := set.NewSet(
 		"username",
 		"roles",
 		"administrator",
 		"permissions",
-	))
+	)
+
+	if data.Password != "" {
+		err = usr.SetPassword(data.Password)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		fields.Add("password")
+	}
+
+	err = usr.CommitFields(db, fields)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
