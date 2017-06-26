@@ -10,10 +10,10 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
-export function get(userId: string): Promise<UserTypes.User> {
+export function load(userId: string): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<UserTypes.User>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.get('/user/' + userId)
 			.set('Accept', 'application/json')
@@ -26,8 +26,21 @@ export function get(userId: string): Promise<UserTypes.User> {
 					return;
 				}
 
-				resolve(res.body);
+				Dispatcher.dispatch({
+					type: UserTypes.LOAD,
+					data: {
+						user: res.body,
+					},
+				});
+
+				resolve();
 			});
+	});
+}
+
+export function unload(): void {
+	Dispatcher.dispatch({
+		type: UserTypes.UNLOAD,
 	});
 }
 
