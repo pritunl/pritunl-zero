@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -103,6 +104,8 @@ func userPut(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
+
+	event.PublishDispatch(db, "user.change")
 
 	c.JSON(200, usr)
 }
