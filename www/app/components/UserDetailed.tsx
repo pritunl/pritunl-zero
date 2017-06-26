@@ -72,7 +72,13 @@ export default class UserDetailed extends React.Component<Props, State> {
 				message: 'Your changes have been saved',
 				changed: false,
 				disabled: false,
-			})
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
 		});
 	}
 

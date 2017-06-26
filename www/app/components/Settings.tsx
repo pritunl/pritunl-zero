@@ -57,6 +57,12 @@ export default class Settings extends React.Component<{}, State> {
 				changed: false,
 				disabled: false,
 			})
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
 		});
 	}
 
