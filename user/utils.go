@@ -87,3 +87,26 @@ func HasSuper(db *database.Database) (exists bool, err error) {
 
 	return
 }
+
+func hasSuperSkip(db *database.Database, skipId bson.ObjectId) (
+	exists bool, err error) {
+
+	coll := db.Users()
+
+	count, err := coll.Find(&bson.M{
+		"_id": &bson.M{
+			"$ne": skipId,
+		},
+		"administrator": "super",
+	}).Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	if count > 0 {
+		exists = true
+	}
+
+	return
+}
