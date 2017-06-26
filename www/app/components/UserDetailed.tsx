@@ -7,6 +7,7 @@ import UserStore from '../stores/UserStore';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
+import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
@@ -157,7 +158,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 
 		return <Page>
 			<PageHeader title="User Info"/>
-			<div className="layout horizontal wrap">
+			<PageSplit>
 				<PagePanel className="layout vertical">
 					<PageInput
 						label="Username"
@@ -210,7 +211,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 				</PagePanel>
-			</div>
+			</PageSplit>
 			<PageSave
 				message={this.state.message}
 				changed={this.state.changed}

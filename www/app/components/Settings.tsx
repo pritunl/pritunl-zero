@@ -6,6 +6,7 @@ import * as SettingsActions from '../actions/SettingsActions';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
+import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 
@@ -77,7 +78,7 @@ export default class Settings extends React.Component<{}, State> {
 	render(): JSX.Element {
 		return <Page>
 			<PageHeader title="User Info"/>
-			<div className="layout horizontal wrap">
+			<PageSplit>
 				<PagePanel>
 					<PageInput
 						label="Elasticsearch Address"
@@ -91,7 +92,7 @@ export default class Settings extends React.Component<{}, State> {
 				</PagePanel>
 				<PagePanel>
 				</PagePanel>
-			</div>
+			</PageSplit>
 			<PageSave
 				message={this.state.message}
 				changed={this.state.changed}
