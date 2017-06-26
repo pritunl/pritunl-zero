@@ -52,7 +52,9 @@ export default class Users extends React.Component<{}, State> {
 		}
 
 		return <Page>
-			<PageHeader title="Users"/>
+			<PageHeader>
+				Users
+			</PageHeader>
 			<div style={css.users}>
 				{usersDom}
 			</div>

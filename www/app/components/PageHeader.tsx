@@ -1,10 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-interface Props {
-	title: string;
-}
-
 const css = {
 	header: {
 		fontSize: '24px',
@@ -14,10 +10,10 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class PageHeader extends React.Component<Props, {}> {
+export default class PageHeader extends React.Component<{}, {}> {
 	render(): JSX.Element {
 		return <div className="pt-border" style={css.header}>
-			<h2>{this.props.title}</h2>
+			<h2>{this.props.children}</h2>
 		</div>;
 	}
 }
