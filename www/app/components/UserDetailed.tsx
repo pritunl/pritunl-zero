@@ -150,11 +150,12 @@ export default class UserDetailed extends React.Component<Props, State> {
 				<div
 					className="pt-tag pt-tag-removable pt-intent-primary"
 					style={css.role}
+					key={role}
 				>
 					{role}
 					<button
 						className="pt-tag-remove"
-						onClick={(): void => {
+						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
 					/>
