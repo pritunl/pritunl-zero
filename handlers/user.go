@@ -110,6 +110,54 @@ func userPut(c *gin.Context) {
 	c.JSON(200, usr)
 }
 
+func userPost(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	data := &userData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	usr := &user.User{
+		Type:          data.Type,
+		Username:      data.Username,
+		Roles:         data.Roles,
+		Administrator: data.Administrator,
+		Permissions:   data.Permissions,
+	}
+
+	if data.Password != "" {
+		err = usr.SetPassword(data.Password)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+	}
+
+	errData, err := usr.Validate(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	err = usr.Insert(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "user.change")
+
+	c.JSON(200, usr)
+}
+
 func usersGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
