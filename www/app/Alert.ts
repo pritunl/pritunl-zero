@@ -28,8 +28,13 @@ export function error(message: string): void {
 }
 
 export function errorRes(res: SuperAgent.Response, message: string): void {
+	try {
+		message = res.body.error_msg || message;
+	} catch(err) {
+	}
+
 	toaster.show({
 		intent: Blueprint.Intent.DANGER,
-		message: res.body.error_msg || message,
+		message: message,
 	});
 }
