@@ -67,7 +67,7 @@ function _sync(): Promise<void> {
 				}
 
 				if (err) {
-					Alert.error('Failed to sync users');
+					Alert.error('Failed to load users');
 					reject(err);
 					return;
 				}
