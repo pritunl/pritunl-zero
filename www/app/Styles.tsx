@@ -187,18 +187,6 @@ const colors = {
 };
 
 const styles = {
-	page: {
-		margin: '0 auto',
-		padding: '30px 20px',
-		minWidth: '750px',
-		maxWidth: '1100px',
-	} as React.CSSProperties,
-	pageHeader: {
-		fontSize: '24px',
-		paddingBottom: '8px',
-		marginBottom: '20px',
-		borderBottomStyle: 'solid',
-	} as React.CSSProperties,
 	colors: colors as Colors,
 };
 
