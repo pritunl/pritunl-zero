@@ -14,10 +14,6 @@ const css = {
 		width: '100%',
 		padding: 0,
 	} as React.CSSProperties,
-	tag: {
-		height: '20px',
-		margin: '0 5px',
-	},
 	select: {
 		margin: '2px 0 0 0',
 		paddingTop: '1px',
@@ -44,7 +40,7 @@ const css = {
 		display: 'table-cell',
 		padding: '0 9px 9px 9px',
 	} as React.CSSProperties,
-	role: {
+	tag: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
@@ -62,7 +58,8 @@ export default class User extends React.Component<Props, {}> {
 			roles.push(
 				<div
 					className="pt-tag pt-intent-primary"
-					style={css.role}
+					style={css.tag}
+					key={role}
 				>
 					{role}
 				</div>
@@ -82,13 +79,6 @@ export default class User extends React.Component<Props, {}> {
 					<ReactRouter.Link to={'/user/' + user.id} style={css.nameLink}>
 						{user.username}
 					</ReactRouter.Link>
-					<span
-						className="pt-tag pt-intent-danger"
-						style={css.tag}
-						hidden={!user.administrator}
-					>
-						admin
-					</span>
 				</div>
 			</div>
 			<div className="layout horizontal" style={css.type}>
@@ -98,6 +88,13 @@ export default class User extends React.Component<Props, {}> {
 				{MiscUtils.formatDate(user.last_active)}
 			</div>
 			<div className="flex" style={css.roles}>
+				<span
+					className="pt-tag pt-intent-danger"
+					style={css.tag}
+					hidden={!user.administrator}
+				>
+					admin
+				</span>
 				{roles}
 			</div>
 		</div>;
