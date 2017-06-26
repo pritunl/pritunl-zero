@@ -48,10 +48,10 @@ export function sync(): Promise<void> {
 }
 
 export function commit(
-		settings: SettingsTypes.Settings): Promise<SettingsTypes.Settings> {
+		settings: SettingsTypes.Settings): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<SettingsTypes.Settings>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.put('/settings')
 			.send(settings)
