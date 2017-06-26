@@ -11,6 +11,24 @@ import * as MiscUtils from '../utils/MiscUtils';
 let syncId: string;
 
 export function load(userId: string): Promise<void> {
+	if (!userId) {
+		let user = {
+			id: null,
+			type: 'local',
+			roles: [],
+			permissions: [],
+		} as UserTypes.User;
+
+		Dispatcher.dispatch({
+			type: UserTypes.LOAD,
+			data: {
+				user: user,
+			},
+		});
+
+		return Promise.resolve();
+	}
+
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
