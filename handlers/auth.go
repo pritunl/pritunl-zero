@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/user"
 )
@@ -27,7 +28,7 @@ func authSessionPost(c *gin.Context) {
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
-			c.JSON(401, &errorData{
+			c.JSON(401, &errortypes.ErrorData{
 				Error:   "auth_invalid",
 				Message: "Authencation credentials are invalid",
 			})
@@ -40,7 +41,7 @@ func authSessionPost(c *gin.Context) {
 
 	valid := usr.CheckPassword(data.Password)
 	if !valid {
-		c.JSON(401, &errorData{
+		c.JSON(401, &errortypes.ErrorData{
 			Error:   "auth_invalid",
 			Message: "Authencation credentials are invalid",
 		})

@@ -35,3 +35,8 @@ type ExecError struct {
 type DatabaseError struct {
 	errors.DropboxError
 }
+
+type ErrorData struct {
+	Error   string `json:"error"`
+	Message string `json:"error_msg"`
+}
