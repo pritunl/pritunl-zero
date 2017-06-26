@@ -1,6 +1,5 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import Styles from '../Styles';
 import * as UserActions from '../actions/UserActions';
 import * as UserTypes from '../types/UserTypes';
 import UserStore from '../stores/UserStore';
