@@ -34,10 +34,9 @@ func settingsPut(c *gin.Context) {
 	}
 
 	settings.Elastic.Address = data.ElasticAddress
-	fields := set.NewSet(
+	settings.Commit(db, settings.Elastic, set.NewSet(
 		"address",
-	)
-	settings.Commit(db, settings.Elastic, fields)
+	))
 
 	event.PublishDispatch(db, "settings.change")
 
