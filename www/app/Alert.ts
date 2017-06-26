@@ -1,4 +1,5 @@
 /// <reference path="./References.d.ts"/>
+import * as SuperAgent from 'superagent';
 import * as Blueprint from '@blueprintjs/core';
 
 let toaster = Blueprint.Toaster.create({
@@ -23,5 +24,12 @@ export function error(message: string): void {
 	toaster.show({
 		intent: Blueprint.Intent.DANGER,
 		message: message,
+	});
+}
+
+export function errorRes(res: SuperAgent.Response, message: string): void {
+	toaster.show({
+		intent: Blueprint.Intent.DANGER,
+		message: res.body.error_msg || message,
 	});
 }

@@ -21,7 +21,7 @@ export function load(userId: string): Promise<void> {
 				loader.done();
 
 				if (err) {
-					Alert.error('Failed to load user');
+					Alert.errorRes(res, 'Failed to load user');
 					reject(err);
 					return;
 				}
@@ -67,7 +67,7 @@ function _sync(): Promise<void> {
 				}
 
 				if (err) {
-					Alert.error('Failed to load users');
+					Alert.errorRes(res, 'Failed to load users');
 					reject(err);
 					return;
 				}
@@ -112,7 +112,7 @@ export function commit(user: UserTypes.User): Promise<UserTypes.User> {
 				loader.done();
 
 				if (err) {
-					Alert.error('Failed to commit user');
+					Alert.errorRes(res, 'Failed to commit user');
 					reject(err);
 					return;
 				}

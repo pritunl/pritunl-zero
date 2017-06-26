@@ -28,7 +28,7 @@ function _sync(): Promise<void> {
 				}
 
 				if (err) {
-					Alert.error('Failed to sync builds');
+					Alert.errorRes(res, 'Failed to sync builds');
 					reject(err);
 					return;
 				}
@@ -60,7 +60,7 @@ export function commit(
 				loader.done();
 
 				if (err) {
-					Alert.error('Failed to commit settings');
+					Alert.errorRes(res, 'Failed to commit settings');
 					reject(err);
 					return;
 				}
