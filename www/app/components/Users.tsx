@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
@@ -53,7 +54,18 @@ export default class Users extends React.Component<{}, State> {
 
 		return <Page>
 			<PageHeader>
-				Users
+				<div className="layout horizontal">
+					<h2>Users</h2>
+					<div className="flex"/>
+					<div>
+						<ReactRouter.Link
+							className="pt-button pt-intent-success pt-icon-add"
+							to="/user"
+						>
+							New
+						</ReactRouter.Link>
+					</div>
+				</div>
 			</PageHeader>
 			<div style={css.users}>
 				{usersDom}
