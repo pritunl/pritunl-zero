@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
+	"time"
 )
 
 type userData struct {
@@ -19,6 +20,8 @@ type userData struct {
 	Roles         []string      `json:"roles"`
 	Administrator string        `json:"administrator"`
 	Permissions   []string      `json:"permissions"`
+	Disabled      bool          `json:"disabled"`
+	ActiveUntil   time.Time     `json:"active_until"`
 }
 
 type usersData struct {
@@ -71,6 +74,8 @@ func userPut(c *gin.Context) {
 	usr.Roles = data.Roles
 	usr.Administrator = data.Administrator
 	usr.Permissions = data.Permissions
+	usr.Disabled = data.Disabled
+	usr.ActiveUntil = data.ActiveUntil
 
 	fields := set.NewSet(
 		"username",
@@ -127,6 +132,8 @@ func userPost(c *gin.Context) {
 		Roles:         data.Roles,
 		Administrator: data.Administrator,
 		Permissions:   data.Permissions,
+		Disabled:      data.Disabled,
+		ActiveUntil:   data.ActiveUntil,
 	}
 
 	if data.Password != "" {

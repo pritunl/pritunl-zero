@@ -20,6 +20,8 @@ type User struct {
 	LastActive    time.Time     `bson:"last_active" json:"last_active"`
 	Roles         []string      `bson:"roles" json:"roles"`
 	Administrator string        `bson:"administrator" json:"administrator"`
+	Disabled      bool          `bson:"disabled" json:"disabled"`
+	ActiveUntil   time.Time     `bson:"active_until" json:"active_until"`
 	Permissions   []string      `bson:"permissions" json:"permissions"`
 }
 
