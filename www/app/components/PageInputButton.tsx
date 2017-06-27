@@ -14,11 +14,14 @@ interface Props {
 }
 
 const css = {
+	group: {
+		marginBottom: '15px',
+	} as React.CSSProperties,
 };
 
 export default class PageInputButton extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div className="pt-control-group">
+		return <div className="pt-control-group" style={css.group}>
 			<input
 				className="pt-input"
 				type={this.props.type}
