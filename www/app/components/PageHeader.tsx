@@ -13,7 +13,7 @@ const css = {
 export default class PageHeader extends React.Component<{}, {}> {
 	render(): JSX.Element {
 		return <div className="pt-border" style={css.header}>
-			<h2>{this.props.children}</h2>
+			{this.props.children}
 		</div>;
 	}
 }

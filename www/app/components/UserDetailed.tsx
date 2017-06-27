@@ -164,7 +164,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 
 		return <Page>
 			<PageHeader>
-				User Info
+				<h2>{userId ? 'User Info' : 'New User'}</h2>
 			</PageHeader>
 			<PageSplit>
 				<PagePanel className="layout vertical">
