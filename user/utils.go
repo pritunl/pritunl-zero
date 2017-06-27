@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -62,6 +63,43 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
 	}
 
 	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func Remove(db *database.Database, userIds []bson.ObjectId) (
+	errData *errortypes.ErrorData, err error) {
+
+	coll := db.Users()
+
+	count, err := coll.Find(bson.M{
+		"_id": &bson.M{
+			"$nin": userIds,
+		},
+		"administrator": "super",
+	}).Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	if count == 0 {
+		errData = &errortypes.ErrorData{
+			Error:   "user_remove_super",
+			Message: "Cannot remove all super administrators",
+		}
+		return
+	}
+
+	_, err = coll.RemoveAll(&bson.M{
+		"_id": &bson.M{
+			"$in": userIds,
+		},
+	})
 	if err != nil {
 		err = database.ParseError(err)
 		return

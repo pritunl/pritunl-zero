@@ -122,6 +122,7 @@ func Register(engine *gin.Engine) {
 	activeAuthGroup.GET("/user/:user_id", userGet)
 	activeAuthGroup.PUT("/user/:user_id", userPut)
 	activeAuthGroup.POST("/user", userPost)
+	activeAuthGroup.DELETE("/user", usersDelete)
 
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)

@@ -182,3 +182,29 @@ func usersGet(c *gin.Context) {
 
 	c.JSON(200, data)
 }
+
+func usersDelete(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	userIds := []bson.ObjectId{}
+
+	err := c.Bind(&userIds)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	errData, err := user.Remove(db, userIds)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	event.PublishDispatch(db, "user.change")
+
+	c.Status(200)
+}
