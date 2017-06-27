@@ -118,10 +118,10 @@ export function sync(): Promise<void> {
 	return _sync();
 }
 
-export function commit(user: UserTypes.User): Promise<UserTypes.User> {
+export function commit(user: UserTypes.User): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<UserTypes.User>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.put('/user/' + user.id)
 			.send(user)
@@ -135,15 +135,15 @@ export function commit(user: UserTypes.User): Promise<UserTypes.User> {
 					return;
 				}
 
-				resolve(res.body);
+				resolve();
 			});
 	});
 }
 
-export function create(user: UserTypes.User): Promise<UserTypes.User> {
+export function create(user: UserTypes.User): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<UserTypes.User>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.post('/user')
 			.send(user)
@@ -157,7 +157,29 @@ export function create(user: UserTypes.User): Promise<UserTypes.User> {
 					return;
 				}
 
-				resolve(res.body);
+				resolve();
+			});
+	});
+}
+
+export function remove(userIds: string[]): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.delete('/user')
+			.send(userIds)
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to delete users');
+					reject(err);
+					return;
+				}
+
+				resolve();
 			});
 	});
 }
