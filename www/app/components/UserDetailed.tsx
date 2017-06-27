@@ -217,7 +217,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						label="Administrator"
 						checked={user.administrator === 'super'}
 						onToggle={(): void => {
-							if (user.administrator === 'super') {
+							if (this.state.user.administrator === 'super') {
 								this.set('administrator', '');
 							} else {
 								this.set('administrator', 'super');
