@@ -121,6 +121,10 @@ export default class UserDetailed extends React.Component<Props, State> {
 	onAddRole = (): void => {
 		let roles = this.state.user.roles.slice(0);
 
+		if (!this.state.addRole) {
+			return;
+		}
+
 		if (roles.indexOf(this.state.addRole) === -1) {
 			roles.push(this.state.addRole);
 		}
@@ -258,11 +262,11 @@ export default class UserDetailed extends React.Component<Props, State> {
 				}}
 				onSave={this.onSave}
 			/> : <PageNew
-					message={this.state.message}
-					changed={this.state.changed}
-					disabled={this.state.disabled}
-					onSave={this.onNew}
-				/>}
+				message={this.state.message}
+				changed={this.state.changed}
+				disabled={this.state.disabled}
+				onSave={this.onNew}
+			/>}
 		</Page>;
 	}
 }
