@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
@@ -9,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -175,9 +177,27 @@ func usersGet(c *gin.Context) {
 	pageCountStr := c.Query("page_count")
 	pageCount, _ := strconv.Atoi(pageCountStr)
 
-	query := &bson.M{}
+	query := bson.M{}
 
-	users, count, err := user.GetAll(db, query, page, pageCount)
+	username := strings.TrimSpace(c.Query("username"))
+	if username != "" {
+		query["username"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", username),
+			"$options": "i",
+		}
+	}
+
+	administrator := c.Query("administrator")
+	switch administrator {
+	case "true":
+		query["administrator"] = "super"
+		break
+	case "false":
+		query["administrator"] = ""
+		break
+	}
+
+	users, count, err := user.GetAll(db, &query, page, pageCount)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
