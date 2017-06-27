@@ -24,8 +24,17 @@ const css = {
 		display: 'table',
 		borderSpacing: '0 5px',
 	} as React.CSSProperties,
+	header: {
+		marginTop: '-19px',
+	} as React.CSSProperties,
+	heading: {
+		margin: '19px 0 0 0',
+	} as React.CSSProperties,
 	button: {
-		marginLeft: '10px',
+		margin: '10px 0 0 10px',
+	} as React.CSSProperties,
+	buttonFirst: {
+		margin: '10px 0 0 0',
 	} as React.CSSProperties,
 };
 
@@ -121,15 +130,15 @@ export default class Users extends React.Component<{}, State> {
 
 		return <Page>
 			<PageHeader>
-				<div className="layout horizontal">
-					<h2>Users</h2>
+				<div className="layout horizontal wrap" style={css.header}>
+					<h2 style={css.heading}>Users</h2>
 					<div className="flex"/>
 					<div>
 						<ConfirmButton
 							label="Delete Selected"
 							className="pt-intent-danger pt-icon-delete"
 							progressClassName="pt-intent-danger"
-							style={css.button}
+							style={css.buttonFirst}
 							disabled={!this.selected || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
