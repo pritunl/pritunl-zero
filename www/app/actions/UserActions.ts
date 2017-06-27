@@ -72,6 +72,7 @@ function _sync(): Promise<void> {
 		SuperAgent
 			.get('/user')
 			.query({
+				...UsersStore.filter,
 				page: UsersStore.page,
 				page_count: UsersStore.pageCount,
 			})
@@ -108,6 +109,17 @@ export function traverse(page: number): Promise<void> {
 		type: UserTypes.TRAVERSE,
 		data: {
 			page: page,
+		},
+	});
+
+	return _sync();
+}
+
+export function filter(filter: UserTypes.Filter): Promise<void> {
+	Dispatcher.dispatch({
+		type: UserTypes.FILTER,
+		data: {
+			filter: filter,
 		},
 	});
 

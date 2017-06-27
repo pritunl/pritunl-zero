@@ -8,6 +8,7 @@ class UsersStore extends Events.EventEmitter {
 	_users: UserTypes.Users = [];
 	_page: number;
 	_pageCount: number;
+	_filter: UserTypes.Filter = null;
 	_count: number;
 	_token = Dispatcher.register((this._callback).bind(this));
 
@@ -21,6 +22,10 @@ class UsersStore extends Events.EventEmitter {
 
 	get pageCount(): number {
 		return this._pageCount || 50;
+	}
+
+	get filter(): UserTypes.Filter {
+		return this._filter;
 	}
 
 	get count(): number {
@@ -43,6 +48,11 @@ class UsersStore extends Events.EventEmitter {
 		this._page = page;
 	}
 
+	_filterCallback(filter: UserTypes.Filter): void {
+		this._filter = filter;
+		this.emitChange();
+	}
+
 	_sync(users: UserTypes.Users, count: number): void {
 		this._count = count;
 		this._users = users;
@@ -53,6 +63,10 @@ class UsersStore extends Events.EventEmitter {
 		switch (action.type) {
 			case UserTypes.TRAVERSE:
 				this._traverse(action.data.page);
+				break;
+
+			case UserTypes.FILTER:
+				this._filterCallback(action.data.filter);
 				break;
 
 			case UserTypes.SYNC:

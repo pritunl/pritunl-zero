@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'user.sync';
 export const TRAVERSE = 'user.traverse';
+export const FILTER = 'user.filter';
 export const LOAD = 'user.load';
 export const UNLOAD = 'user.unload';
 export const CHANGE = 'user.change';
@@ -18,6 +19,11 @@ export interface User {
 	permissions?: string[];
 }
 
+export interface Filter {
+	administrator?: boolean;
+	roles?: string[];
+}
+
 export type Users = User[];
 
 export interface UserDispatch {
@@ -28,6 +34,7 @@ export interface UserDispatch {
 		users?: User[];
 		page?: number;
 		pageCount?: number;
+		filter?: Filter;
 		count?: number;
 	};
 }
