@@ -69,7 +69,6 @@ func userPut(c *gin.Context) {
 		return
 	}
 
-	usr.Type = data.Type
 	usr.Username = data.Username
 	usr.Roles = data.Roles
 	usr.Administrator = data.Administrator
@@ -82,9 +81,11 @@ func userPut(c *gin.Context) {
 		"roles",
 		"administrator",
 		"permissions",
+		"disabled",
+		"active_until",
 	)
 
-	if data.Password != "" {
+	if usr.Type == user.Local && data.Password != "" {
 		err = usr.SetPassword(data.Password)
 		if err != nil {
 			c.AbortWithError(500, err)
@@ -127,7 +128,7 @@ func userPost(c *gin.Context) {
 	}
 
 	usr := &user.User{
-		Type:          data.Type,
+		Type:          user.Local,
 		Username:      data.Username,
 		Roles:         data.Roles,
 		Administrator: data.Administrator,
@@ -136,16 +137,12 @@ func userPost(c *gin.Context) {
 		ActiveUntil:   data.ActiveUntil,
 	}
 
-	if data.Password != "" {
+	if usr.Type == user.Local && data.Password != "" {
 		err = usr.SetPassword(data.Password)
 		if err != nil {
 			c.AbortWithError(500, err)
 			return
 		}
-	}
-
-	if usr.Type != user.Local {
-		usr.Password = ""
 	}
 
 	errData, err := usr.Validate(db)
