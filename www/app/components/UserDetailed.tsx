@@ -10,6 +10,7 @@ import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
+import PageDateTime from './PageDateTime';
 import PageSave from './PageSave';
 import PageNew from './PageNew';
 
@@ -213,6 +214,25 @@ export default class UserDetailed extends React.Component<Props, State> {
 							this.set('password', val);
 						}}
 					/>
+					<label className="pt-label">
+						Roles
+						<div>
+							{roles}
+						</div>
+					</label>
+					<PageInputButton
+						label="Add"
+						type="text"
+						placeholder="Add role"
+						value={this.state.addRole}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addRole: val,
+							});
+						}}
+						onSubmit={this.onAddRole}
+					/>
 					<PageSwitch
 						label="Administrator"
 						checked={user.administrator === 'super'}
@@ -233,24 +253,12 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 				</PagePanel>
 				<PagePanel>
-					<label className="pt-label">
-						Roles
-						<div>
-							{roles}
-						</div>
-					</label>
-					<PageInputButton
-						label="Add"
-						type="text"
-						placeholder="Add role"
-						value={this.state.addRole}
+					<PageDateTime
+						label="Active Until"
+						value={user.active_until}
 						onChange={(val): void => {
-							this.setState({
-								...this.state,
-								addRole: val,
-							});
+							this.set('active_until', val);
 						}}
-						onSubmit={this.onAddRole}
 					/>
 				</PagePanel>
 			</PageSplit>
