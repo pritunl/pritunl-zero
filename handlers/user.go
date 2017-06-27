@@ -137,6 +137,10 @@ func userPost(c *gin.Context) {
 		}
 	}
 
+	if usr.Type != user.Local {
+		usr.Password = ""
+	}
+
 	errData, err := usr.Validate(db)
 	if err != nil {
 		c.AbortWithError(500, err)
