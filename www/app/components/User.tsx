@@ -4,8 +4,12 @@ import * as ReactRouter from 'react-router-dom';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as UserTypes from '../types/UserTypes';
 
+type OnSelect = () => void;
+
 interface Props {
 	user: UserTypes.User;
+	selected: boolean;
+	onSelect: OnSelect;
 }
 
 const css = {
@@ -73,7 +77,11 @@ export default class User extends React.Component<Props, {}> {
 			<div style={css.name}>
 				<div className="layout horizontal">
 					<label className="pt-control pt-checkbox" style={css.select}>
-						<input type="checkbox"/>
+						<input
+							type="checkbox"
+							checked={this.props.selected}
+							onChange={this.props.onSelect}
+						/>
 						<span className="pt-control-indicator"/>
 					</label>
 					<ReactRouter.Link to={'/user/' + user.id} style={css.nameLink}>
