@@ -5,6 +5,7 @@ import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
 import User from './User';
+import UsersFilter from './UsersFilter';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import ConfirmButton from './ConfirmButton';
@@ -13,6 +14,7 @@ type Selected = {[key: string]: boolean};
 
 interface State {
 	users: UserTypes.Users;
+	filter: UserTypes.Filter;
 	selected: Selected;
 	disabled: boolean;
 }
@@ -43,6 +45,7 @@ export default class Users extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			users: UsersStore.users,
+			filter: UsersStore.filter,
 			selected: {},
 			disabled: false,
 		};
@@ -80,6 +83,7 @@ export default class Users extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			users: users,
+			filter: UsersStore.filter,
 			selected: selected,
 		});
 	}
@@ -125,7 +129,7 @@ export default class Users extends React.Component<{}, State> {
 						selected: selected,
 					});
 				}}
-			/>)
+			/>);
 		}
 
 		return <Page>
@@ -134,11 +138,25 @@ export default class Users extends React.Component<{}, State> {
 					<h2 style={css.heading}>Users</h2>
 					<div className="flex"/>
 					<div>
+						<button
+							className="pt-button pt-intent-primary pt-icon-filter"
+							style={css.buttonFirst}
+							type="button"
+							onClick={(): void => {
+								if (this.state.filter === null) {
+									UserActions.filter({});
+								} else {
+									UserActions.filter(null);
+								}
+							}}
+						>
+							Filters
+						</button>
 						<ConfirmButton
 							label="Delete Selected"
 							className="pt-intent-danger pt-icon-delete"
 							progressClassName="pt-intent-danger"
-							style={css.buttonFirst}
+							style={css.button}
 							disabled={!this.selected || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
@@ -152,6 +170,12 @@ export default class Users extends React.Component<{}, State> {
 					</div>
 				</div>
 			</PageHeader>
+			<UsersFilter
+				filter={this.state.filter}
+				onFilter={(filter): void => {
+					UserActions.filter(filter);
+				}}
+			/>
 			<div style={css.users}>
 				{usersDom}
 			</div>
