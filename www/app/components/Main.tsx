@@ -71,6 +71,9 @@ export default class Main extends React.Component<{}, {}> {
 				<ReactRouter.Route path="/users" render={() => (
 					<Users/>
 				)}/>
+				<ReactRouter.Route exact path="/user" render={() => (
+					<UserDetailed/>
+				)}/>
 				<ReactRouter.Route path="/user/:userId" render={(props) => (
 					<UserDetailed userId={props.match.params['userId']}/>
 				)}/>
