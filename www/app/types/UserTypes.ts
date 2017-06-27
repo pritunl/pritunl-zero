@@ -12,7 +12,9 @@ export interface User {
 	password?: string;
 	last_active?: string;
 	roles?: string[];
-	administrator: string;
+	administrator?: string;
+	disabled?: boolean;
+	active_until?: string;
 	permissions?: string[];
 }
 

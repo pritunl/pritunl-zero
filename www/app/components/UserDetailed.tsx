@@ -224,6 +224,13 @@ export default class UserDetailed extends React.Component<Props, State> {
 							}
 						}}
 					/>
+					<PageSwitch
+						label="Disabled"
+						checked={user.disabled}
+						onToggle={(): void => {
+							this.set('disabled', !this.state.user.disabled);
+						}}
+					/>
 				</PagePanel>
 				<PagePanel>
 					<label className="pt-label">
