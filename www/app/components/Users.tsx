@@ -7,6 +7,7 @@ import * as UserActions from '../actions/UserActions';
 import User from './User';
 import Page from './Page';
 import PageHeader from './PageHeader';
+import ConfirmButton from './ConfirmButton';
 
 type Selected = {[key: string]: boolean};
 
@@ -124,15 +125,14 @@ export default class Users extends React.Component<{}, State> {
 					<h2>Users</h2>
 					<div className="flex"/>
 					<div>
-						<button
-							className="pt-button pt-intent-danger pt-icon-delete"
+						<ConfirmButton
+							label="Delete Selected"
+							className="pt-intent-danger pt-icon-delete"
+							progressClassName="pt-intent-danger"
 							style={css.button}
-							type="button"
 							disabled={!this.selected || this.state.disabled}
-							onClick={this.onDelete}
-						>
-							Delete Selected
-						</button>
+							onConfirm={this.onDelete}
+						/>
 						<ReactRouter.Link
 							className="pt-button pt-intent-success pt-icon-add"
 							style={css.button}
