@@ -11,9 +11,10 @@ import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
 import PageSave from './PageSave';
+import PageNew from './PageNew';
 
 interface Props {
-	userId: string;
+	userId?: string;
 }
 
 interface State {
@@ -44,13 +45,13 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	componentDidMount(): void {
-		UserActions.load(this.props.userId);
 		UserStore.addChangeListener(this.onChange);
+		UserActions.load(this.props.userId);
 	}
 
 	componentWillUnmount(): void {
-		UserActions.unload();
 		UserStore.removeChangeListener(this.onChange);
+		UserActions.unload();
 	}
 
 	onChange = (): void => {
@@ -69,6 +70,27 @@ export default class UserDetailed extends React.Component<Props, State> {
 			this.setState({
 				...this.state,
 				message: 'Your changes have been saved',
+				changed: false,
+				disabled: false,
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
+		});
+	}
+
+	onNew = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+		UserActions.create(this.state.user).then((): void => {
+			this.setState({
+				...this.state,
+				message: 'User has been created',
 				changed: false,
 				disabled: false,
 			});
@@ -138,6 +160,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
+		let userId = this.props.userId;
 		let user = this.state.user;
 		if (!user) {
 			return <div/>;
@@ -220,7 +243,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 				</PagePanel>
 			</PageSplit>
-			<PageSave
+			{userId ? <PageSave
 				message={this.state.message}
 				changed={this.state.changed}
 				disabled={this.state.disabled}
@@ -234,7 +257,12 @@ export default class UserDetailed extends React.Component<Props, State> {
 					});
 				}}
 				onSave={this.onSave}
-			/>
+			/> : <PageNew
+					message={this.state.message}
+					changed={this.state.changed}
+					disabled={this.state.disabled}
+					onSave={this.onNew}
+				/>}
 		</Page>;
 	}
 }
