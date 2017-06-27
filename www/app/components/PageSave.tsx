@@ -13,6 +13,9 @@ interface Props {
 }
 
 const css = {
+	message: {
+		marginTop: '6px',
+	} as React.CSSProperties,
 	box: {
 		marginTop: '15px',
 	} as React.CSSProperties,
@@ -29,7 +32,7 @@ export default class PageSave extends React.Component<Props, {}> {
 		return <div className="layout horizontal" style={css.box}>
 			<div className="flex"/>
 			<div className="layout horizontal">
-				<span hidden={!this.props.message}>
+				<span style={css.message} hidden={!this.props.message}>
 					{this.props.message}
 				</span>
 				<div style={css.buttons}>
