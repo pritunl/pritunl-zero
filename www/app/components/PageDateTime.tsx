@@ -32,27 +32,29 @@ export default class PageDateTime extends React.Component<Props, {}> {
 			dateStyle.opacity = 0.5;
 		}
 
-		return <div style={css.group}>
-			<label className="pt-label" style={css.label}>
-				{this.props.label}
-			</label>
-			<div style={dateStyle}>
-				<BlueprintDateTime.DateTimePicker
-					value={date}
-					timePickerProps={{
-						showArrowButtons: true,
-					}}
-					datePickerProps={{
-						showActionsBar: true,
-					}}
-					onChange={(date: Date): void => {
-						if (date) {
-							this.props.onChange(date.toJSON());
-						} else {
-							this.props.onChange(null);
-						}
-					}}
-				/>
+		return <div>
+			<div style={css.group}>
+				<label className="pt-label" style={css.label}>
+					{this.props.label}
+				</label>
+				<div style={dateStyle}>
+					<BlueprintDateTime.DateTimePicker
+						value={date}
+						timePickerProps={{
+							showArrowButtons: true,
+						}}
+						datePickerProps={{
+							showActionsBar: true,
+						}}
+						onChange={(date: Date): void => {
+							if (date) {
+								this.props.onChange(date.toJSON());
+							} else {
+								this.props.onChange(null);
+							}
+						}}
+					/>
+				</div>
 			</div>
 		</div>;
 	}
