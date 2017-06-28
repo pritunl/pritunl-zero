@@ -168,12 +168,12 @@ func init() {
 		db := database.GetDatabase()
 		defer db.Close()
 
-		exists, err := HasSuper(db)
+		count, err := Count(db)
 		if err != nil {
 			return
 		}
 
-		if !exists {
+		if count == 0 {
 			logrus.Info("setup: Creating default super user")
 
 			usr := User{

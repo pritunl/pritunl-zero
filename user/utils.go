@@ -108,19 +108,13 @@ func Remove(db *database.Database, userIds []bson.ObjectId) (
 	return
 }
 
-func HasSuper(db *database.Database) (exists bool, err error) {
+func Count(db *database.Database) (count int, err error) {
 	coll := db.Users()
 
-	count, err := coll.Find(bson.M{
-		"administrator": "super",
-	}).Count()
+	count, err = coll.Count()
 	if err != nil {
 		err = database.ParseError(err)
 		return
-	}
-
-	if count > 0 {
-		exists = true
 	}
 
 	return
