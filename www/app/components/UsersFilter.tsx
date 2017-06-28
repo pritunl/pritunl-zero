@@ -102,6 +102,26 @@ export default class UsersFilter extends React.Component<Props, State> {
 					this.props.onFilter(filter);
 				}}
 			/>
+			<SwitchNull
+				style={css.check}
+				label="Disabled"
+				checked={this.props.filter.disabled}
+				onToggle={(): void => {
+					let filter = {
+						...this.props.filter,
+					};
+
+					if (filter.disabled === undefined) {
+						filter.disabled = true;
+					} else if (filter.disabled === true) {
+						filter.disabled = false;
+					} else {
+						delete filter.disabled
+					}
+
+					this.props.onFilter(filter);
+				}}
+			/>
 		</div>;
 	}
 }

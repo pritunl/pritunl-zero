@@ -22,6 +22,7 @@ export interface User {
 export interface Filter {
 	username?: string;
 	administrator?: boolean;
+	disabled?: boolean;
 	role?: string;
 }
 
