@@ -70,9 +70,16 @@ export default class User extends React.Component<Props, {}> {
 			);
 		}
 
+		let cardStyle = {
+			...css.card,
+		};
+		if (user.disabled) {
+			cardStyle.opacity = 0.6;
+		}
+
 		return <div
 			className="pt-card"
-			style={css.card}
+			style={cardStyle}
 		>
 			<div style={css.name}>
 				<div className="layout horizontal">
