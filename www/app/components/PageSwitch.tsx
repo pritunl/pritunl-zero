@@ -13,9 +13,6 @@ const css = {
 	label: {
 		display: 'inline-block',
 	} as React.CSSProperties,
-	input: {
-		width: '100%',
-	} as React.CSSProperties,
 };
 
 export default class PageSwitch extends React.Component<Props, {}> {
