@@ -78,6 +78,10 @@ func userPut(c *gin.Context) {
 	usr.Disabled = data.Disabled
 	usr.ActiveUntil = data.ActiveUntil
 
+	if usr.Disabled {
+		usr.ActiveUntil = time.Time{}
+	}
+
 	fields := set.NewSet(
 		"username",
 		"roles",
@@ -137,6 +141,10 @@ func userPost(c *gin.Context) {
 		Permissions:   data.Permissions,
 		Disabled:      data.Disabled,
 		ActiveUntil:   data.ActiveUntil,
+	}
+
+	if usr.Disabled {
+		usr.ActiveUntil = time.Time{}
 	}
 
 	if usr.Type == user.Local && data.Password != "" {
