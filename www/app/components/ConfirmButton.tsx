@@ -143,7 +143,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				onClose={this.closeDialog}
 			>
 				<div className="pt-dialog-body">
-					Confirm action
+					Confirm {this.props.label}
 				</div>
 				<div className="pt-dialog-footer">
 					<div className="pt-dialog-footer-actions">
