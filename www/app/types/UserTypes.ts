@@ -20,8 +20,9 @@ export interface User {
 }
 
 export interface Filter {
+	username?: string;
 	administrator?: boolean;
-	roles?: string[];
+	role?: string;
 }
 
 export type Users = User[];
