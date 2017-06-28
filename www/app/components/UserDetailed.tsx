@@ -130,6 +130,8 @@ export default class UserDetailed extends React.Component<Props, State> {
 			roles.push(this.state.addRole);
 		}
 
+		roles.sort();
+
 		this.setState({
 			...this.state,
 			changed: true,
