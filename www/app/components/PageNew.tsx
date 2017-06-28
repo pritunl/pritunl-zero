@@ -1,14 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-type OnCancel = () => void;
-type OnSave = () => void;
-
 interface Props {
 	message: string;
 	changed: boolean;
 	disabled: boolean;
-	onSave: OnSave;
+	onSave: () => void;
 }
 
 const css = {
