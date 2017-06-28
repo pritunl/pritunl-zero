@@ -26,7 +26,7 @@ const css = {
 	name: {
 		verticalAlign: 'top',
 		display: 'table-cell',
-		padding: '9px',
+		padding: '8px',
 	} as React.CSSProperties,
 	type: {
 		verticalAlign: 'top',
@@ -42,10 +42,10 @@ const css = {
 	roles: {
 		verticalAlign: 'top',
 		display: 'table-cell',
-		padding: '0 9px 9px 9px',
+		padding: '0 8px 8px 8px',
 	} as React.CSSProperties,
 	tag: {
-		margin: '9px 5px 0 5px',
+		margin: '8px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
 	nameLink: {
@@ -93,7 +93,7 @@ export default class User extends React.Component<Props, {}> {
 				{user.type}
 			</div>
 			<div className="layout horizontal" style={css.lastActivity}>
-				{MiscUtils.formatDate(user.last_active)}
+				{MiscUtils.formatDate(user.last_active) || 'Inactive'}
 			</div>
 			<div className="flex" style={css.roles}>
 				<span
