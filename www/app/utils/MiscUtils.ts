@@ -11,7 +11,7 @@ export function zeroPad(num: number, width: number): string {
 }
 
 export function formatDate(dateStr: string): string {
-	if (dateStr === '0001-01-01T00:00:00Z') {
+	if (!dateStr || dateStr === '0001-01-01T00:00:00Z') {
 		return '';
 	}
 
