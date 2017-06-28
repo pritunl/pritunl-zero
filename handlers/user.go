@@ -210,6 +210,16 @@ func usersGet(c *gin.Context) {
 		break
 	}
 
+	disabled := c.Query("disabled")
+	switch disabled {
+	case "true":
+		query["disabled"] = true
+		break
+	case "false":
+		query["disabled"] = false
+		break
+	}
+
 	users, count, err := user.GetAll(db, &query, page, pageCount)
 	if err != nil {
 		c.AbortWithError(500, err)
