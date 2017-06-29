@@ -67,15 +67,24 @@ export default class Subscription extends React.Component<{}, State> {
 					description="Subscribe to Zero ($50/month)"
 					panelLabel="Subscribe"
 					token={(token): void => {
-						console.log(token);
+						SubscriptionActions.checkout(
+							'zero',
+							token.id,
+							token.email,
+						).then((message: string): void => {
+							this.setState({
+								...this.state,
+								message: message,
+							});
+						});
 					}}
 					onScriptError={(err): void => {
-						console.log(err);
+						Alert.error('Failed to load Stripe Checkout');
 					}}
 					stripeKey="pk_test_4YSuzxPmd08oSV2s4kLi7zU2"
 				>
 					<button
-						className="pt-button pt-minimal pt-icon-checkout"
+						className="pt-button pt-icon-checkout"
 					>Subscribe</button>
 				</ReactStripeCheckout>
 			</div>
