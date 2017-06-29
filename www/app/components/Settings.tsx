@@ -29,8 +29,8 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	componentDidMount(): void {
-		SettingsActions.sync();
 		SettingsStore.addChangeListener(this.onChange);
+		SettingsActions.sync();
 	}
 
 	componentWillUnmount(): void {
