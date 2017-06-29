@@ -71,6 +71,7 @@ func userPut(c *gin.Context) {
 		return
 	}
 
+	usr.Type = data.Type
 	usr.Username = data.Username
 	usr.Roles = data.Roles
 	usr.Administrator = data.Administrator
@@ -83,6 +84,7 @@ func userPut(c *gin.Context) {
 	}
 
 	fields := set.NewSet(
+		"type",
 		"username",
 		"roles",
 		"administrator",
@@ -98,6 +100,9 @@ func userPut(c *gin.Context) {
 			return
 		}
 
+		fields.Add("password")
+	} else if usr.Type != user.Local && usr.Password != "" {
+		usr.Password = ""
 		fields.Add("password")
 	}
 
