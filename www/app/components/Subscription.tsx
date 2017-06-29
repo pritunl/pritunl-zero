@@ -21,10 +21,13 @@ const css = {
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
 	} as React.CSSProperties,
+	message: {
+		margin: '0 0 10px 0',
+	} as React.CSSProperties,
 	license: {
 		width: '100%',
 		height: '130px',
-		margin: '10px 0',
+		margin: '0 0 10px 0',
 		resize: 'none',
 		fontFamily: '"Lucida Console", Monaco, monospace',
 	} as React.CSSProperties,
@@ -50,6 +53,7 @@ export default class Subscription extends React.Component<{}, State> {
 			<div className="pt-card pt-elevation-2" style={css.card}>
 				<div
 					className="pt-callout pt-intent-success"
+					style={css.message}
 					hidden={!this.state.message}
 				>
 					{this.state.message}
