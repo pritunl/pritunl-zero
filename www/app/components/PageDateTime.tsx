@@ -2,13 +2,11 @@
 import * as React from 'react';
 import * as BlueprintDateTime from '@blueprintjs/datetime';
 
-type OnChange = (val: string) => void;
-
 interface Props {
 	hidden?: boolean;
 	label: string;
 	value: string;
-	onChange: OnChange;
+	onChange: (val: string) => void;
 }
 
 const css = {
