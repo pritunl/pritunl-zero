@@ -13,7 +13,7 @@ import ConfirmButton from './ConfirmButton';
 type Selected = {[key: string]: boolean};
 
 interface State {
-	users: UserTypes.Users;
+	users: UserTypes.UsersRo;
 	filter: UserTypes.Filter;
 	selected: Selected;
 	disabled: boolean;
@@ -74,11 +74,11 @@ export default class Users extends React.Component<{}, State> {
 		let selected = {} as Selected;
 		let curSelected = this.state.selected;
 
-		for (let user of users) {
+		this.state.users.forEach((user: UserTypes.User): void => {
 			if (curSelected[user.id]) {
 				selected[user.id] = true;
 			}
-		}
+		});
 
 		this.setState({
 			...this.state,
@@ -110,7 +110,7 @@ export default class Users extends React.Component<{}, State> {
 	render(): JSX.Element {
 		let usersDom: JSX.Element[] = [];
 
-		for (let user of this.state.users) {
+		this.state.users.forEach((user: UserTypes.UserRo): void => {
 			usersDom.push(<User
 				key={user.id}
 				user={user}
@@ -130,7 +130,7 @@ export default class Users extends React.Component<{}, State> {
 					});
 				}}
 			/>);
-		}
+		});
 
 		return <Page>
 			<PageHeader>

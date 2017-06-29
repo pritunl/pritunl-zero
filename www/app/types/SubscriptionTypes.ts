@@ -9,6 +9,8 @@ export interface Subscription {
 	quantity?: number;
 }
 
+export type SubscriptionRo = Readonly<Subscription>
+
 export interface SubscriptionDispatch {
 	type: string;
 	data?: Subscription;

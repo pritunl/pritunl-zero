@@ -13,7 +13,7 @@ import Settings from './Settings';
 document.body.className = 'root pt-dark';
 
 interface State {
-	subscription: SubscriptionTypes.Subscription;
+	subscription: SubscriptionTypes.SubscriptionRo;
 }
 
 const css = {

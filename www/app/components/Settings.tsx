@@ -24,7 +24,7 @@ export default class Settings extends React.Component<{}, State> {
 			changed: false,
 			disabled: false,
 			message: '',
-			settings: SettingsStore.settings,
+			settings: SettingsStore.settingsM,
 		};
 	}
 
@@ -41,7 +41,7 @@ export default class Settings extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			changed: false,
-			settings: SettingsStore.settings,
+			settings: SettingsStore.settingsM,
 		});
 	}
 
@@ -67,9 +67,7 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let settings = {
-			...this.state.settings,
-		} as any;
+		let settings = this.state.settings as any;
 
 		settings[name] = val;
 
@@ -82,6 +80,10 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	render(): JSX.Element {
+		if (!this.state.settings) {
+			return <div/>;
+		}
+
 		return <Page>
 			<PageHeader label="Settings"/>
 			<PageSplit>

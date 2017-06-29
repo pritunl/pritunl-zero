@@ -28,12 +28,15 @@ export interface Filter {
 
 export type Users = User[];
 
+export type UserRo = Readonly<User>
+export type UsersRo = ReadonlyArray<UserRo>
+
 export interface UserDispatch {
 	type: string;
 	data?: {
 		id?: string;
 		user?: User;
-		users?: User[];
+		users?: Users;
 		page?: number;
 		pageCount?: number;
 		filter?: Filter;

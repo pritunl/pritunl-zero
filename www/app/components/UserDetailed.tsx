@@ -41,7 +41,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 			disabled: false,
 			message: '',
 			addRole: '',
-			user: UserStore.user,
+			user: UserStore.userM,
 		};
 	}
 
@@ -58,7 +58,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 	onChange = (): void => {
 		this.setState({
 			...this.state,
-			user: UserStore.user,
+			user: UserStore.userM,
 		});
 	}
 
@@ -105,9 +105,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let user = {
-			...this.state.user,
-		} as any;
+		let user = this.state.user as any;
 
 		user[name] = val;
 

@@ -7,7 +7,7 @@ import * as UserTypes from '../types/UserTypes';
 type OnSelect = () => void;
 
 interface Props {
-	user: UserTypes.User;
+	user: UserTypes.UserRo;
 	selected: boolean;
 	onSelect: OnSelect;
 }

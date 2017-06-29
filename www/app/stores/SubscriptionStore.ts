@@ -5,13 +5,20 @@ import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
 class SubscriptionStore extends EventEmitter {
-	_subscription: SubscriptionTypes.Subscription;
+	_subscription: SubscriptionTypes.SubscriptionRo;
 	_token = Dispatcher.register((this._callback).bind(this));
 
-	get subscription(): SubscriptionTypes.Subscription {
-		return {
-			...this._subscription,
-		};
+	get subscription(): SubscriptionTypes.SubscriptionRo {
+		return this._subscription;
+	}
+
+	get subscriptionM(): SubscriptionTypes.Subscription {
+		if (this._subscription) {
+			return {
+				...this._subscription,
+			};
+		}
+		return undefined;
 	}
 
 	emitChange(): void {
@@ -26,8 +33,8 @@ class SubscriptionStore extends EventEmitter {
 		this.removeListener(GlobalTypes.CHANGE, callback);
 	}
 
-	_sync(settings: SubscriptionTypes.Subscription): void {
-		this._subscription = settings;
+	_sync(subscription: SubscriptionTypes.Subscription): void {
+		this._subscription = Object.freeze(subscription);;
 		this.emitChange();
 	}
 

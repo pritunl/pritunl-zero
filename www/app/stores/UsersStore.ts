@@ -5,15 +5,25 @@ import * as UserTypes from '../types/UserTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
 class UsersStore extends EventEmitter {
-	_users: UserTypes.Users = [];
+	_users: UserTypes.UsersRo = Object.freeze([]);
 	_page: number;
 	_pageCount: number;
 	_filter: UserTypes.Filter = null;
 	_count: number;
 	_token = Dispatcher.register((this._callback).bind(this));
 
-	get users(): UserTypes.Users {
+	get users(): UserTypes.UsersRo {
 		return this._users;
+	}
+
+	get usersM(): UserTypes.Users {
+		let users: UserTypes.Users = [];
+		this._users.forEach((user: UserTypes.UserRo): void => {
+			users.push({
+				...user,
+			});
+		});
+		return users;
 	}
 
 	get page(): number {
@@ -53,9 +63,14 @@ class UsersStore extends EventEmitter {
 		this.emitChange();
 	}
 
-	_sync(users: UserTypes.Users, count: number): void {
+	_sync(users: UserTypes.User[], count: number): void {
+		for (let i = 0; i < users.length; i++) {
+			users[i] = Object.freeze(users[i]);
+		}
+
 		this._count = count;
-		this._users = users;
+		this._users = Object.freeze(users);
+
 		this.emitChange();
 	}
 
