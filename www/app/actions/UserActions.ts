@@ -62,7 +62,7 @@ export function unload(): void {
 	});
 }
 
-function _sync(): Promise<void> {
+function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
@@ -112,7 +112,7 @@ export function traverse(page: number): Promise<void> {
 		},
 	});
 
-	return _sync();
+	return sync();
 }
 
 export function filter(filter: UserTypes.Filter): Promise<void> {
@@ -123,11 +123,7 @@ export function filter(filter: UserTypes.Filter): Promise<void> {
 		},
 	});
 
-	return _sync();
-}
-
-export function sync(): Promise<void> {
-	return _sync();
+	return sync();
 }
 
 export function commit(user: UserTypes.User): Promise<void> {
