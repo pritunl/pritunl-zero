@@ -61,6 +61,7 @@ export default class Subscription extends React.Component<{}, State> {
 				<textarea
 					className="pt-input"
 					style={css.license}
+					placeholder="License Key"
 					value={this.state.license}
 					onChange={(evt): void => {
 						this.setState({
