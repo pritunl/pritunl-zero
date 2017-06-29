@@ -10,6 +10,7 @@ import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
+import PageSelect from './PageSelect';
 import PageDateTime from './PageDateTime';
 import PageSave from './PageSave';
 import PageNew from './PageNew';
@@ -213,6 +214,18 @@ export default class UserDetailed extends React.Component<Props, State> {
 							this.set('password', val);
 						}}
 					/>
+					<PageSelect
+						label="Type"
+						value={user.type}
+						onChange={(val): void => {
+							this.set('type', val);
+						}}
+					>
+						<option value="local">Local</option>
+						<option value="google">Google</option>
+						<option value="onelogin">OneLogin</option>
+						<option value="okta">Okta</option>
+					</PageSelect>
 					<label className="pt-label">
 						Roles
 						<div>
