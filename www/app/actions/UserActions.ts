@@ -62,7 +62,7 @@ export function unload(): void {
 	});
 }
 
-function sync(): Promise<void> {
+export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
