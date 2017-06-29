@@ -204,6 +204,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						}}
 					/>
 					<PageInput
+						hidden={user.type !== 'local'}
 						label="Password"
 						type="password"
 						placeholder="Change password"
