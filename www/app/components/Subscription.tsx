@@ -40,7 +40,7 @@ export default class Subscription extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
-			message: 'test',
+			message: '',
 			license: '',
 		};
 	}
