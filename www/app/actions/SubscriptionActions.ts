@@ -43,6 +43,29 @@ export function sync(): Promise<void> {
 	});
 }
 
+export function checkout(plan: string, card: string,
+		email: string): Promise<string> {
+	return new Promise<string>((resolve, reject): void => {
+		SuperAgent
+			.post('https://app-test.pritunl.net/subscription')
+			.send({
+				plan: plan,
+				card: card,
+				email: email,
+			})
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				if (err) {
+					Alert.errorRes(res, 'Failed to checkout');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body.msg);
+			});
+	});
+}
+
 EventDispatcher.register((action: SubscriptionTypes.SubscriptionDispatch) => {
 	switch (action.type) {
 		case SubscriptionTypes.CHANGE:
