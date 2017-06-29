@@ -1,11 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import Dispatcher from '../dispatcher/Dispatcher';
-import * as Events from 'events';
+import EventEmitter from '../EventEmitter';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
-class SubscriptionStore extends Events.EventEmitter {
-	_subscription: SubscriptionTypes.Subscription = {};
+class SubscriptionStore extends EventEmitter {
+	_subscription: SubscriptionTypes.Subscription;
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get subscription(): SubscriptionTypes.Subscription {
@@ -15,7 +15,7 @@ class SubscriptionStore extends Events.EventEmitter {
 	}
 
 	emitChange(): void {
-		this.emit(GlobalTypes.CHANGE);
+		this.emitDefer(GlobalTypes.CHANGE);
 	}
 
 	addChangeListener(callback: () => void): void {

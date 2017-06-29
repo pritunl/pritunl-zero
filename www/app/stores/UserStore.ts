@@ -1,10 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import Dispatcher from '../dispatcher/Dispatcher';
-import * as Events from 'events';
+import EventEmitter from '../EventEmitter';
 import * as UserTypes from '../types/UserTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
-class UserStore extends Events.EventEmitter {
+class UserStore extends EventEmitter {
 	_user: UserTypes.User;
 	_token = Dispatcher.register((this._callback).bind(this));
 
@@ -15,7 +15,7 @@ class UserStore extends Events.EventEmitter {
 	}
 
 	emitChange(): void {
-		this.emit(GlobalTypes.CHANGE);
+		this.emitDefer(GlobalTypes.CHANGE);
 	}
 
 	addChangeListener(callback: () => void): void {

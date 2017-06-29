@@ -1,10 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import Dispatcher from '../dispatcher/Dispatcher';
-import * as Events from 'events';
+import EventEmitter from '../EventEmitter';
 import * as SettingsTypes from '../types/SettingsTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
-class SettingsStore extends Events.EventEmitter {
+class SettingsStore extends EventEmitter {
 	_settings: SettingsTypes.Settings = {
 		elastic_address: '',
 	};
@@ -17,7 +17,7 @@ class SettingsStore extends Events.EventEmitter {
 	}
 
 	emitChange(): void {
-		this.emit(GlobalTypes.CHANGE);
+		this.emitDefer(GlobalTypes.CHANGE);
 	}
 
 	addChangeListener(callback: () => void): void {

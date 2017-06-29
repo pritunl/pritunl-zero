@@ -1,19 +1,19 @@
 /// <reference path="../References.d.ts"/>
-import LoadingDispatcher from '../dispatcher/LoadingDispatcher';
-import * as Events from 'events';
+import Dispatcher from '../dispatcher/Dispatcher';
+import EventEmitter from '../EventEmitter';
 import * as LoadingTypes from '../types/LoadingTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
-class LoadingStore extends Events.EventEmitter {
+class LoadingStore extends EventEmitter {
 	_loaders: Set<string> = new Set();
-	_token = LoadingDispatcher.register((this._callback).bind(this));
+	_token = Dispatcher.register((this._callback).bind(this));
 
 	get loading(): boolean {
 		return !!this._loaders.size;
 	}
 
 	emitChange(): void {
-		this.emit(GlobalTypes.CHANGE);
+		this.emitDefer(GlobalTypes.CHANGE);
 	}
 
 	addChangeListener(callback: () => void): void {

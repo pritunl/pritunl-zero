@@ -1,5 +1,5 @@
 /// <reference path="./References.d.ts"/>
-import LoadingDispatcher from './dispatcher/LoadingDispatcher';
+import Dispatcher from './dispatcher/Dispatcher';
 import * as LoadingTypes from './types/LoadingTypes';
 import * as MiscUtils from './utils/MiscUtils';
 
@@ -11,7 +11,7 @@ export default class Loader {
 	}
 
 	loading(): Loader {
-		LoadingDispatcher.dispatch({
+		Dispatcher.dispatch({
 			type: LoadingTypes.ADD,
 			data: {
 				id: this._id,
@@ -21,7 +21,7 @@ export default class Loader {
 	}
 
 	done(): Loader {
-		LoadingDispatcher.dispatch({
+		Dispatcher.dispatch({
 			type: LoadingTypes.DONE,
 			data: {
 				id: this._id,

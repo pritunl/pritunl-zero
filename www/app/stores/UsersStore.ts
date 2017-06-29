@@ -1,10 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import Dispatcher from '../dispatcher/Dispatcher';
-import * as Events from 'events';
+import EventEmitter from '../EventEmitter';
 import * as UserTypes from '../types/UserTypes';
 import * as GlobalTypes from '../types/GlobalTypes';
 
-class UsersStore extends Events.EventEmitter {
+class UsersStore extends EventEmitter {
 	_users: UserTypes.Users = [];
 	_page: number;
 	_pageCount: number;
@@ -33,7 +33,7 @@ class UsersStore extends Events.EventEmitter {
 	}
 
 	emitChange(): void {
-		this.emit(GlobalTypes.CHANGE);
+		this.emitDefer(GlobalTypes.CHANGE);
 	}
 
 	addChangeListener(callback: () => void): void {
