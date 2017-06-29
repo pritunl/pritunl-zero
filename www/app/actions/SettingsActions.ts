@@ -9,7 +9,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
-function _sync(): Promise<void> {
+function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
@@ -41,10 +41,6 @@ function _sync(): Promise<void> {
 				resolve();
 			});
 	});
-}
-
-export function sync(): Promise<void> {
-	return _sync();
 }
 
 export function commit(
