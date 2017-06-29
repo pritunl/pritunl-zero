@@ -1,12 +1,20 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ReactRouter from 'react-router-dom';
+import * as SubscriptionTypes from '../types/SubscriptionTypes';
+import * as SubscriptionActions from '../actions/SubscriptionActions';
+import SubscriptionStore from '../stores/SubscriptionStore';
 import Loading from './Loading';
+import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
 import Settings from './Settings';
 
 document.body.className = 'root pt-dark';
+
+interface State {
+	subscription: SubscriptionTypes.Subscription;
+}
 
 const css = {
 	nav: {
@@ -23,8 +31,39 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Main extends React.Component<{}, {}> {
+export default class Main extends React.Component<{}, State> {
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			subscription: SubscriptionStore.subscription,
+		};
+	}
+
+	componentDidMount(): void {
+		SubscriptionStore.addChangeListener(this.onChange);
+		SubscriptionActions.sync();
+	}
+
+	componentWillUnmount(): void {
+		SubscriptionStore.removeChangeListener(this.onChange);
+	}
+
+	onChange = (): void => {
+		this.setState({
+			...this.state,
+			subscription: SubscriptionStore.subscription,
+		});
+	}
+
 	render(): JSX.Element {
+		if (!this.state.subscription) {
+			return <div/>;
+		}
+
+		if (!this.state.subscription.active) {
+			return <Subscription/>;
+		}
+
 		return <ReactRouter.HashRouter>
 			<div>
 				<nav className="pt-navbar layout horizontal" style={css.nav}>
