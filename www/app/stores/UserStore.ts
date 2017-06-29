@@ -9,7 +9,9 @@ class UserStore extends Events.EventEmitter {
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get user(): UserTypes.User {
-		return this._user;
+		return {
+			...this._user,
+		};
 	}
 
 	emitChange(): void {
