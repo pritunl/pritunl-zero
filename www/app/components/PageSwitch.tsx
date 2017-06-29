@@ -1,13 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-type OnToggle = () => void;
-
 interface Props {
 	hidden?: boolean;
 	label: string;
 	checked: boolean;
-	onToggle: OnToggle;
+	onToggle: () => void;
 }
 
 const css = {
