@@ -4,6 +4,7 @@ import * as React from 'react';
 type OnChange = (val: string) => void;
 
 interface Props {
+	hidden?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -23,7 +24,11 @@ const css = {
 
 export default class PageInput extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <label className="pt-label" style={css.label}>
+		return <label
+			className="pt-label"
+			style={css.label}
+			hidden={this.props.hidden}
+		>
 			{this.props.label}
 			<input
 				className="pt-input"

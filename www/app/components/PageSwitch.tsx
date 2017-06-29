@@ -4,6 +4,7 @@ import * as React from 'react';
 type OnToggle = () => void;
 
 interface Props {
+	hidden?: boolean;
 	label: string;
 	checked: boolean;
 	onToggle: OnToggle;
@@ -17,7 +18,7 @@ const css = {
 
 export default class PageSwitch extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div>
+		return <div hidden={this.props.hidden}>
 			<label className="pt-control pt-switch" style={css.label}>
 				<input
 					type="checkbox"

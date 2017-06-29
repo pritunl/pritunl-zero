@@ -5,6 +5,7 @@ import * as BlueprintDateTime from '@blueprintjs/datetime';
 type OnChange = (val: string) => void;
 
 interface Props {
+	hidden?: boolean;
 	label: string;
 	value: string;
 	onChange: OnChange;
@@ -32,7 +33,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 			dateStyle.opacity = 0.5;
 		}
 
-		return <div>
+		return <div hidden={this.props.hidden}>
 			<div style={css.group}>
 				<label className="pt-label" style={css.label}>
 					{this.props.label}
