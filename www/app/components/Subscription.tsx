@@ -2,9 +2,13 @@
 import * as React from 'react';
 import ReactStripeCheckout from 'react-stripe-checkout';
 import * as SubscriptionActions from '../actions/SubscriptionActions';
+import * as SubscriptionTypes from '../types/SubscriptionTypes';
+import SubscriptionStore from '../stores/SubscriptionStore';
 import * as Alert from '../Alert';
+import * as MiscUtils from '../utils/MiscUtils';
 
 interface State {
+	subscription: SubscriptionTypes.SubscriptionRo;
 	message: string;
 	license: string;
 }
@@ -20,6 +24,14 @@ const css = {
 		top: '50%',
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
+	} as React.CSSProperties,
+	status: {
+		width: '180px',
+		margin: '20px auto',
+		fontSize: '16px',
+	} as React.CSSProperties,
+	item: {
+		margin: '2px 0',
 	} as React.CSSProperties,
 	message: {
 		margin: '0 0 10px 0',
@@ -43,12 +55,29 @@ export default class Subscription extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
+			subscription: SubscriptionStore.subscription,
 			message: '',
 			license: '',
 		};
 	}
 
-	render(): JSX.Element {
+	componentDidMount(): void {
+		SubscriptionStore.addChangeListener(this.onChange);
+		SubscriptionActions.sync();
+	}
+
+	componentWillUnmount(): void {
+		SubscriptionStore.removeChangeListener(this.onChange);
+	}
+
+	onChange = (): void => {
+		this.setState({
+			...this.state,
+			subscription: SubscriptionStore.subscription,
+		});
+	}
+
+	activate(): JSX.Element {
 		return <div>
 			<div className="pt-card pt-elevation-2" style={css.card}>
 				<div
@@ -74,6 +103,9 @@ export default class Subscription extends React.Component<{}, State> {
 					<button
 						className="pt-button pt-icon-endorsed"
 						style={css.button}
+						onClick={(): void => {
+							SubscriptionActions.activate(this.state.license);
+						}}
 					>Activate License Key</button>
 					<ReactStripeCheckout
 						label="Pritunl Zero"
@@ -108,5 +140,52 @@ export default class Subscription extends React.Component<{}, State> {
 				</div>
 			</div>
 		</div>;
+	}
+
+	reactivate(): JSX.Element {
+		return <div>
+			<div className="pt-card pt-elevation-2" style={css.card}>
+				<div className="layout vertical" style={css.status}>
+					<div className="layout horizontal">
+						<div className="flex">Status:</div>
+						<div>
+							{MiscUtils.capitalize(this.state.subscription.status)}
+						</div>
+					</div>
+					<div className="layout horizontal" style={css.item}>
+						<div className="flex">Plan:</div>
+						<div>
+							{MiscUtils.capitalize(this.state.subscription.plan)}
+						</div>
+					</div>
+					<div className="layout horizontal" style={css.item}>
+						<div className="flex">Quantity:</div>
+						<div>
+							{this.state.subscription.quantity}
+						</div>
+					</div>
+					<div className="layout horizontal" style={css.item}>
+						<div className="flex">Amount:</div>
+						<div>
+							{MiscUtils.formatAmount(this.state.subscription.amount)}
+						</div>
+					</div>
+					<div className="layout horizontal" style={css.item}>
+						<div className="flex">Balance:</div>
+						<div>
+							{MiscUtils.formatAmount(this.state.subscription.balance)}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>;
+	}
+
+	render(): JSX.Element {
+		if (this.state.subscription.status) {
+			return this.reactivate();
+		} else {
+			return this.activate();
+		}
 	}
 }
