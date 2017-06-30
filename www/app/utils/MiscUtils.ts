@@ -10,6 +10,10 @@ export function zeroPad(num: number, width: number): string {
 	return num.toString();
 }
 
+export function capitalize(str: string): string {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function formatAmount(amount: number): string {
 	if (!amount) {
 		return '-';
