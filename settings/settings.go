@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"reflect"
 	"strconv"
@@ -191,6 +192,17 @@ func init() {
 	module.Handler = func() (err error) {
 		for name := range registry {
 			err = Update(name)
+			if err != nil {
+				return
+			}
+		}
+
+		if System.Name == "" {
+			db := database.GetDatabase()
+			defer db.Close()
+
+			System.Name = utils.RandName()
+			err = Commit(db, System, set.NewSet("name"))
 			if err != nil {
 				return
 			}
