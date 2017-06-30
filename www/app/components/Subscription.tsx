@@ -208,6 +208,12 @@ export default class Subscription extends React.Component<{}, State> {
 							{MiscUtils.capitalize(this.state.subscription.status)}
 						</div>
 					</div>
+					<div className="layout horizontal">
+						<div className="flex">Canceled:</div>
+						<div>
+							{this.state.subscription.cancel_at_period_end ? 'True' : 'False'}
+						</div>
+					</div>
 					<div className="layout horizontal" style={css.item}>
 						<div className="flex">Plan:</div>
 						<div>
