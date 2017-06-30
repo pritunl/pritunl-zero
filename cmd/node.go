@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/handlers"
+	"github.com/pritunl/pritunl-zero/settings"
 	"net/http"
 	"time"
 )
@@ -35,6 +36,7 @@ func ManagementNode() (err error) {
 	}
 
 	logrus.WithFields(logrus.Fields{
+		"name":       settings.System.Name,
 		"production": constants.Production,
 	}).Info("cmd.app: Starting management node")
 
