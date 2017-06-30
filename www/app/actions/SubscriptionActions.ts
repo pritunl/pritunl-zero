@@ -74,6 +74,8 @@ export function activate(license: string): Promise<void> {
 
 export function checkout(plan: string, card: string,
 		email: string): Promise<string> {
+	let loader = new Loader().loading();
+
 	return new Promise<string>((resolve, reject): void => {
 		SuperAgent
 			.post('https://app-test.pritunl.net/subscription')
@@ -84,6 +86,8 @@ export function checkout(plan: string, card: string,
 			})
 			.set('Accept', 'application/json')
 			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to checkout');
 					reject(err);
