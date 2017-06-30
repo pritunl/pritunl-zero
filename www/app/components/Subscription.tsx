@@ -96,7 +96,7 @@ export default class Subscription extends React.Component<{}, State> {
 						this.setState({
 							...this.state,
 							license: evt.target.value,
-						})
+						});
 					}}
 				/>
 				<div className="layout horizontal center-justified">
