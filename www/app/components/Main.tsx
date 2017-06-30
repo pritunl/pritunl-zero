@@ -84,6 +84,11 @@ export default class Main extends React.Component<{}, State> {
 								className="pt-button pt-minimal pt-icon-cog"
 							>Settings</button>
 						</ReactRouter.Link>
+						<ReactRouter.Link to="/subscription" style={css.link}>
+							<button
+								className="pt-button pt-minimal pt-icon-credit-card"
+							>Subscription</button>
+						</ReactRouter.Link>
 						<button
 							className="pt-button pt-minimal pt-icon-refresh"
 							onClick={() => {}}
@@ -117,6 +122,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>
+				)}/>
+				<ReactRouter.Route path="/subscription" render={() => (
+					<Subscription/>
 				)}/>
 			</div>
 		</ReactRouter.HashRouter>;
