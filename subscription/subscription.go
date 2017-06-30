@@ -112,7 +112,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 		return
 	}
 
-	sub.Active = false
+	sub.Active = subData.Active
 	sub.Status = subData.Status
 	sub.Plan = subData.Plan
 	sub.Quantity = subData.Quantity
