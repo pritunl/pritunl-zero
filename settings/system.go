@@ -1,5 +1,12 @@
 package settings
 
+import (
+	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/utils"
+)
+
 var System *system
 
 type system struct {
@@ -23,5 +30,23 @@ func updateSystem(data interface{}) {
 }
 
 func init() {
+	module := requires.New("settings.system")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		if System.Name == "" {
+			db := database.GetDatabase()
+			defer db.Close()
+
+			System.Name = utils.RandName()
+			err = Commit(db, System, set.NewSet("name"))
+			if err != nil {
+				return
+			}
+		}
+
+		return
+	}
+
 	register("system", newSystem, updateSystem)
 }
