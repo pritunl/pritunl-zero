@@ -39,6 +39,7 @@ func subscriptionPost(c *gin.Context) {
 
 	errData, err := subscription.Update()
 	if err != nil {
+		settings.System.License = ""
 		if errData != nil {
 			c.JSON(400, errData)
 		} else {
