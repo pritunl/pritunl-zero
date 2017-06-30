@@ -9,6 +9,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 interface State {
 	subscription: SubscriptionTypes.SubscriptionRo;
+	update: boolean;
 	message: string;
 	license: string;
 }
@@ -56,6 +57,7 @@ export default class Subscription extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			subscription: SubscriptionStore.subscription,
+			update: false,
 			message: '',
 			license: '',
 		};
@@ -75,6 +77,49 @@ export default class Subscription extends React.Component<{}, State> {
 			...this.state,
 			subscription: SubscriptionStore.subscription,
 		});
+	}
+
+	update(): JSX.Element {
+		return <div>
+			<div className="pt-card pt-elevation-2" style={css.card}>
+				<div
+					className="pt-callout pt-intent-success"
+					style={css.message}
+					hidden={!this.state.message}
+				>
+					{this.state.message}
+				</div>
+				<textarea
+					className="pt-input"
+					style={css.license}
+					placeholder="License Key"
+					value={this.state.license}
+					onChange={(evt): void => {
+						this.setState({
+							...this.state,
+							license: evt.target.value,
+						})
+					}}
+				/>
+				<div className="layout horizontal center-justified">
+					<button
+						className="pt-button pt-icon-endorsed"
+						style={css.button}
+						onClick={(): void => {
+							SubscriptionActions.activate(this.state.license).then(
+								(): void => {
+									this.setState({
+										...this.state,
+										update: false,
+										license: '',
+									});
+								}
+							);
+						}}
+					>Update License Key</button>
+				</div>
+			</div>
+		</div>;
 	}
 
 	activate(): JSX.Element {
@@ -177,12 +222,26 @@ export default class Subscription extends React.Component<{}, State> {
 						</div>
 					</div>
 				</div>
+				<div className="layout horizontal center-justified">
+					<button
+						className="pt-button pt-icon-endorsed"
+						style={css.button}
+						onClick={(): void => {
+							this.setState({
+								...this.state,
+								update: true,
+							});
+						}}
+					>Update License Key</button>
+				</div>
 			</div>
 		</div>;
 	}
 
 	render(): JSX.Element {
-		if (this.state.subscription.status) {
+		if (this.state.update) {
+			return this.update();
+		} else if (this.state.subscription.status) {
 			return this.reactivate();
 		} else {
 			return this.activate();
