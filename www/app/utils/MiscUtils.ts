@@ -10,6 +10,13 @@ export function zeroPad(num: number, width: number): string {
 	return num.toString();
 }
 
+export function formatAmount(amount: number): string {
+	if (!amount) {
+		return '-';
+	}
+	return '$' + (amount / 100).toFixed(2);
+}
+
 export function formatDate(dateStr: string): string {
 	if (!dateStr || dateStr === '0001-01-01T00:00:00Z') {
 		return '';
