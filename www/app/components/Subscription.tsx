@@ -103,6 +103,17 @@ export default class Subscription extends React.Component<{}, State> {
 				/>
 				<div className="layout horizontal center-justified">
 					<button
+						className="pt-button pt-icon-cross"
+						style={css.button}
+						onClick={(): void => {
+							this.setState({
+								...this.state,
+								update: false,
+								license: '',
+							});
+						}}
+					>Cancel</button>
+					<button
 						className="pt-button pt-icon-endorsed"
 						style={css.button}
 						onClick={(): void => {
