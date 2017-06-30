@@ -43,6 +43,35 @@ export function sync(): Promise<void> {
 	});
 }
 
+export function activate(license: string): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.post('/subscription')
+			.send({
+				license: license,
+			})
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to activate subscription');
+					reject(err);
+					return;
+				}
+
+				Dispatcher.dispatch({
+					type: SubscriptionTypes.SYNC,
+					data: res.body,
+				});
+
+				resolve();
+			});
+	});
+}
+
 export function checkout(plan: string, card: string,
 		email: string): Promise<string> {
 	return new Promise<string>((resolve, reject): void => {
