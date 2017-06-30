@@ -133,6 +133,11 @@ func init() {
 			Config.ProxyNodeId = bson.NewObjectId().String()
 		}
 
+		if Config.MongoUri == "" {
+			save = true
+			Config.MongoUri = "mongodb://localhost:27017/pritunl-zero"
+		}
+
 		if save {
 			err = Save()
 			if err != nil {
