@@ -221,15 +221,15 @@ export default class Subscription extends React.Component<{}, State> {
 						</div>
 					</div>
 					<div className="layout horizontal" style={css.item}>
-						<div className="flex">Quantity:</div>
-						<div>
-							{this.state.subscription.quantity}
-						</div>
-					</div>
-					<div className="layout horizontal" style={css.item}>
 						<div className="flex">Amount:</div>
 						<div>
 							{MiscUtils.formatAmount(this.state.subscription.amount)}
+						</div>
+					</div>
+					<div className="layout horizontal" style={css.item}>
+						<div className="flex">Quantity:</div>
+						<div>
+							{this.state.subscription.quantity}
 						</div>
 					</div>
 					<div className="layout horizontal" style={css.item}>
