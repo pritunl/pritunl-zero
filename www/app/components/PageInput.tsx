@@ -1,15 +1,13 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-type OnChange = (val: string) => void;
-
 interface Props {
 	hidden?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
 	value: string;
-	onChange: OnChange;
+	onChange: (val: string) => void;
 }
 
 const css = {
