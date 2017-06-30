@@ -15,6 +15,7 @@ import (
 
 func Commit(db *database.Database, group interface{}, fields set.Set) (
 	err error) {
+
 	coll := db.Settings()
 
 	selector := database.SelectFields(group, set.NewSet("_id"))
