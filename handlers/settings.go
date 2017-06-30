@@ -34,9 +34,13 @@ func settingsPut(c *gin.Context) {
 	}
 
 	settings.Elastic.Address = data.ElasticAddress
-	settings.Commit(db, settings.Elastic, set.NewSet(
+	err = settings.Commit(db, settings.Elastic, set.NewSet(
 		"address",
 	))
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 
 	event.PublishDispatch(db, "settings.change")
 
