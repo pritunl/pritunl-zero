@@ -7,6 +7,12 @@ export interface Subscription {
 	status?: string;
 	plan?: string;
 	quantity?: number;
+	amount?: number;
+	period_end?: Date;
+	trial_end?: Date;
+	cancel_at_period_end?: boolean;
+	balance?: number;
+	url_key?: string;
 }
 
 export type SubscriptionRo = Readonly<Subscription>
