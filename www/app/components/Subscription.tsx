@@ -253,6 +253,54 @@ export default class Subscription extends React.Component<{}, State> {
 					</div>
 				</div>
 				<div className="layout horizontal center-justified">
+					<button
+						className="pt-button pt-intent-danger pt-icon-cross"
+						style={css.button}
+						onClick={(): void => {
+							SubscriptionActions.cancel(
+								this.state.subscription.url_key,
+							).then((message: string): void => {
+								this.setState({
+									...this.state,
+									message: message,
+								});
+							});
+						}}
+					>Cancel Subscription</button>
+					<ReactStripeCheckout
+						label="Pritunl Zero"
+						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
+						allowRememberMe={false}
+						zipCode={true}
+						amount={5000}
+						name="Pritunl Zero"
+						description="Subscribe to Zero ($50/month)"
+						panelLabel="Subscribe"
+						token={(token): void => {
+							SubscriptionActions.payment(
+								this.state.subscription.url_key,
+								'zero',
+								token.id,
+								token.email,
+							).then((message: string): void => {
+								this.setState({
+									...this.state,
+									message: message,
+								});
+							});
+						}}
+						onScriptError={(err): void => {
+							Alert.error('Failed to load Stripe Checkout');
+						}}
+						stripeKey="pk_test_4YSuzxPmd08oSV2s4kLi7zU2"
+					>
+						<button
+							className="pt-button pt-intent-success pt-icon-credit-card"
+							style={css.button}
+						>Update Payment</button>
+					</ReactStripeCheckout>
+				</div>
+				<div className="layout horizontal center-justified">
 					<ConfirmButton
 						className="pt-intent-danger pt-icon-delete"
 						progressClassName="pt-intent-danger"
