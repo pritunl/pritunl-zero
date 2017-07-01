@@ -30,6 +30,12 @@ export function sync(): Promise<void> {
 				if (err) {
 					Alert.errorRes(res, 'Failed to sync subscription');
 					reject(err);
+
+					Dispatcher.dispatch({
+						type: SubscriptionTypes.SYNC,
+						data: {},
+					});
+
 					return;
 				}
 
