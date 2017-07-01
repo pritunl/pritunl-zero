@@ -28,9 +28,9 @@ const css = {
 		transform: 'translate(-50%, -50%)',
 	} as React.CSSProperties,
 	card2: {
-		padding: '10px',
+		padding: '5px',
 		minWidth: '310px',
-		maxWidth: '367px',
+		maxWidth: '380px',
 		width: 'calc(100% - 20px)',
 		margin: '0',
 		position: 'absolute',
@@ -57,7 +57,8 @@ const css = {
 		fontFamily: '"Lucida Console", Monaco, monospace',
 	} as React.CSSProperties,
 	button: {
-		marginRight: '10px',
+		width: '175px',
+		margin: '5px',
 	} as React.CSSProperties,
 	buttons: {
 		margin: '0 auto',
@@ -202,6 +203,7 @@ export default class Subscription extends React.Component<{}, State> {
 					>
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
+							style={css.button}
 						>Subscribe</button>
 					</ReactStripeCheckout>
 				</div>
@@ -262,6 +264,7 @@ export default class Subscription extends React.Component<{}, State> {
 					/>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
+						style={css.button}
 						onClick={(): void => {
 							this.setState({
 								...this.state,
