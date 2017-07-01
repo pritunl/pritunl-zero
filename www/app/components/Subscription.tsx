@@ -57,7 +57,15 @@ const css = {
 		fontFamily: '"Lucida Console", Monaco, monospace',
 	} as React.CSSProperties,
 	button: {
-		width: '175px',
+		width: '150px',
+		margin: '5px',
+	} as React.CSSProperties,
+	button2: {
+		width: '170px',
+		margin: '5px',
+	} as React.CSSProperties,
+	button3: {
+		width: '195px',
 		margin: '5px',
 	} as React.CSSProperties,
 	buttons: {
@@ -212,8 +220,18 @@ export default class Subscription extends React.Component<{}, State> {
 	}
 
 	reactivate(): JSX.Element {
+		let canceling = this.state.subscription.cancel_at_period_end ||
+				this.state.subscription.status === 'canceled';
+
 		return <div>
 			<div className="pt-card pt-elevation-2" style={css.card2}>
+				<div
+					className="pt-callout pt-intent-success"
+					style={css.message}
+					hidden={!this.state.message}
+				>
+					{this.state.message}
+				</div>
 				<div className="layout vertical" style={css.status}>
 					<div className="layout horizontal">
 						<div className="flex">Status:</div>
@@ -253,10 +271,13 @@ export default class Subscription extends React.Component<{}, State> {
 					</div>
 				</div>
 				<div className="layout horizontal center-justified">
-					<button
-						className="pt-button pt-intent-danger pt-icon-cross"
-						style={css.button}
-						onClick={(): void => {
+					<ConfirmButton
+						className="pt-intent-danger pt-icon-delete"
+						progressClassName="pt-intent-danger"
+						style={css.button2}
+						hidden={canceling}
+						label="Cancel Subscription"
+						onConfirm={(): void => {
 							SubscriptionActions.cancel(
 								this.state.subscription.url_key,
 							).then((message: string): void => {
@@ -266,16 +287,19 @@ export default class Subscription extends React.Component<{}, State> {
 								});
 							});
 						}}
-					>Cancel Subscription</button>
+					/>
 					<ReactStripeCheckout
 						label="Pritunl Zero"
 						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
 						allowRememberMe={false}
 						zipCode={true}
-						amount={5000}
+						amount={canceling ? 5000 : 0}
 						name="Pritunl Zero"
-						description="Subscribe to Zero ($50/month)"
-						panelLabel="Subscribe"
+						description={canceling ?
+							'Reactivate Subscription ($50/month)' :
+							'Update Payment Information'
+						}
+						panelLabel={canceling ? 'Reactivate' : 'Update'}
 						token={(token): void => {
 							SubscriptionActions.payment(
 								this.state.subscription.url_key,
@@ -296,30 +320,32 @@ export default class Subscription extends React.Component<{}, State> {
 					>
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
-							style={css.button}
-						>Update Payment</button>
+							style={canceling ? css.button3 : css.button2}
+						>
+							{canceling ? 'Reactivate Subscription' : 'Update Payment'}
+						</button>
 					</ReactStripeCheckout>
 				</div>
 				<div className="layout horizontal center-justified">
 					<ConfirmButton
 						className="pt-intent-danger pt-icon-delete"
 						progressClassName="pt-intent-danger"
-						style={css.button}
-						label="Remove License Key"
+						style={css.button2}
+						label="Remove License"
 						onConfirm={(): void => {
 							SubscriptionActions.activate('');
 						}}
 					/>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
-						style={css.button}
+						style={css.button2}
 						onClick={(): void => {
 							this.setState({
 								...this.state,
 								update: true,
 							});
 						}}
-					>Update License Key</button>
+					>Update License</button>
 				</div>
 			</div>
 		</div>;
