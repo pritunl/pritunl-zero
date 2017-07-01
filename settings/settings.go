@@ -201,6 +201,14 @@ func init() {
 		db := database.GetDatabase()
 		defer db.Close()
 
+		if System.DatabaseVersion == 0 {
+			System.DatabaseVersion = constants.DatabaseVersion
+			err = Commit(db, System, set.NewSet("database_version"))
+			if err != nil {
+				return
+			}
+		}
+
 		if System.DatabaseVersion > constants.DatabaseVersion {
 			err = &errortypes.DatabaseError{
 				errors.New(
