@@ -99,6 +99,58 @@ export function checkout(plan: string, card: string,
 	});
 }
 
+export function payment(key: string, plan: string, card: string,
+		email: string): Promise<string> {
+	let loader = new Loader().loading();
+
+	return new Promise<string>((resolve, reject): void => {
+		SuperAgent
+			.put('https://app-test.pritunl.net/subscription')
+			.send({
+				key: key,
+				plan: plan,
+				card: card,
+				email: email,
+			})
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to update payment');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body.msg);
+			});
+	});
+}
+
+export function cancel(key: string): Promise<string> {
+	let loader = new Loader().loading();
+
+	return new Promise<string>((resolve, reject): void => {
+		SuperAgent
+			.delete('https://app-test.pritunl.net/subscription')
+			.send({
+				key: key,
+			})
+			.set('Accept', 'application/json')
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to cancel subscription');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body.msg);
+			});
+	});
+}
+
 EventDispatcher.register((action: SubscriptionTypes.SubscriptionDispatch) => {
 	switch (action.type) {
 		case SubscriptionTypes.CHANGE:
