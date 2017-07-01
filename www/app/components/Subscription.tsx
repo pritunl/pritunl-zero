@@ -86,7 +86,6 @@ export default class Subscription extends React.Component<{}, State> {
 
 	componentDidMount(): void {
 		SubscriptionStore.addChangeListener(this.onChange);
-		SubscriptionActions.sync();
 	}
 
 	componentWillUnmount(): void {
