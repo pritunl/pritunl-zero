@@ -9,6 +9,7 @@ type OnConfirm = () => void;
 interface Props {
 	style?: React.CSSProperties;
 	className?: string;
+	hidden?: boolean;
 	progressClassName?: string;
 	label?: string;
 	disabled?: boolean;
@@ -183,6 +184,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		return <button type="button"
 			className={'pt-button ' + (this.props.className || '')}
 			style={style}
+			hidden={this.props.hidden}
 			disabled={this.props.disabled}
 			onMouseDown={Constants.mobile ? undefined : this.confirm}
 			onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
