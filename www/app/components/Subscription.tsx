@@ -30,7 +30,7 @@ const css = {
 	card2: {
 		padding: '10px',
 		minWidth: '310px',
-		maxWidth: '450px',
+		maxWidth: '367px',
 		width: 'calc(100% - 20px)',
 		margin: '0',
 		position: 'absolute',
