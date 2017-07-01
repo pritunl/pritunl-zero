@@ -27,6 +27,17 @@ const css = {
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
 	} as React.CSSProperties,
+	card2: {
+		padding: '10px',
+		minWidth: '310px',
+		maxWidth: '450px',
+		width: 'calc(100% - 20px)',
+		margin: '0',
+		position: 'absolute',
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+	} as React.CSSProperties,
 	status: {
 		width: '180px',
 		margin: '20px auto',
@@ -201,7 +212,7 @@ export default class Subscription extends React.Component<{}, State> {
 
 	reactivate(): JSX.Element {
 		return <div>
-			<div className="pt-card pt-elevation-2" style={css.card}>
+			<div className="pt-card pt-elevation-2" style={css.card2}>
 				<div className="layout vertical" style={css.status}>
 					<div className="layout horizontal">
 						<div className="flex">Status:</div>
