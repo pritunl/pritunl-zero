@@ -127,7 +127,6 @@ export default class Subscription extends React.Component<{}, State> {
 					>Cancel</button>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
-						style={css.button}
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license).then(
 								(): void => {
@@ -265,7 +264,6 @@ export default class Subscription extends React.Component<{}, State> {
 					</div>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
-						style={css.button}
 						onClick={(): void => {
 							this.setState({
 								...this.state,
