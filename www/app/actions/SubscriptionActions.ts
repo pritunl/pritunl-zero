@@ -102,10 +102,10 @@ export function checkout(plan: string, card: string,
 }
 
 export function payment(key: string, plan: string, card: string,
-		email: string): Promise<string> {
+		email: string): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<string>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.put('https://app-test.pritunl.net/subscription')
 			.send({
@@ -124,15 +124,17 @@ export function payment(key: string, plan: string, card: string,
 					return;
 				}
 
-				resolve(res.body.msg);
+				resolve();
+
+				sync();
 			});
 	});
 }
 
-export function cancel(key: string): Promise<string> {
+export function cancel(key: string): Promise<void> {
 	let loader = new Loader().loading();
 
-	return new Promise<string>((resolve, reject): void => {
+	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.delete('https://app-test.pritunl.net/subscription')
 			.send({
@@ -148,7 +150,9 @@ export function cancel(key: string): Promise<string> {
 					return;
 				}
 
-				resolve(res.body.msg);
+				resolve();
+
+				sync();
 			});
 	});
 }
