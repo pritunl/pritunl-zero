@@ -219,10 +219,11 @@ export default class Subscription extends React.Component<{}, State> {
 	}
 
 	reactivate(): JSX.Element {
-		let canceling = this.state.subscription.cancel_at_period_end ||
-				this.state.subscription.status === 'canceled';
-		let status = this.state.subscription.cancel_at_period_end ?
-			'Canceled' : this.state.subscription.status;
+		let sub = this.state.subscription;
+		let canceling = sub.cancel_at_period_end || sub.status === 'canceled';
+		let status = sub.cancel_at_period_end ? 'Canceled' : sub.status;
+		let periodEnd = MiscUtils.formatDateShort(sub.period_end);
+		let trialEnd = MiscUtils.formatDateShort(sub.trial_end);
 
 		return <div>
 			<div className="pt-card pt-elevation-2" style={css.card2}>
@@ -243,25 +244,51 @@ export default class Subscription extends React.Component<{}, State> {
 					<div className="layout horizontal" style={css.item}>
 						<div className="flex">Plan:</div>
 						<div>
-							{MiscUtils.capitalize(this.state.subscription.plan)}
+							{MiscUtils.capitalize(sub.plan)}
 						</div>
 					</div>
 					<div className="layout horizontal" style={css.item}>
 						<div className="flex">Amount:</div>
 						<div>
-							{MiscUtils.formatAmount(this.state.subscription.amount)}
+							{MiscUtils.formatAmount(sub.amount)}
 						</div>
 					</div>
 					<div className="layout horizontal" style={css.item}>
 						<div className="flex">Quantity:</div>
 						<div>
-							{this.state.subscription.quantity}
+							{sub.quantity}
 						</div>
 					</div>
-					<div className="layout horizontal" style={css.item}>
+					<div
+						className="layout horizontal"
+						style={css.item}
+						hidden={!sub.balance}
+					>
 						<div className="flex">Balance:</div>
 						<div>
-							{MiscUtils.formatAmount(this.state.subscription.balance)}
+							{MiscUtils.formatAmount(sub.balance)}
+						</div>
+					</div>
+					<div
+						className="layout horizontal"
+						style={css.item}
+						hidden={periodEnd === ''}
+					>
+						<div className="flex">
+							{canceling ? 'Ends' : 'Renew'}:
+						</div>
+						<div>
+							{periodEnd}
+						</div>
+					</div>
+					<div
+						className="layout horizontal"
+						style={css.item}
+						hidden={trialEnd === ''}
+					>
+						<div className="flex">Trial Ends:</div>
+						<div>
+							{trialEnd}
 						</div>
 					</div>
 				</div>
