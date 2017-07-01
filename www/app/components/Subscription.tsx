@@ -221,6 +221,8 @@ export default class Subscription extends React.Component<{}, State> {
 	reactivate(): JSX.Element {
 		let canceling = this.state.subscription.cancel_at_period_end ||
 				this.state.subscription.status === 'canceled';
+		let status = this.state.subscription.cancel_at_period_end ?
+			'Canceled' : this.state.subscription.status;
 
 		return <div>
 			<div className="pt-card pt-elevation-2" style={css.card2}>
@@ -235,13 +237,7 @@ export default class Subscription extends React.Component<{}, State> {
 					<div className="layout horizontal">
 						<div className="flex">Status:</div>
 						<div>
-							{MiscUtils.capitalize(this.state.subscription.status)}
-						</div>
-					</div>
-					<div className="layout horizontal">
-						<div className="flex">Canceled:</div>
-						<div>
-							{this.state.subscription.cancel_at_period_end ? 'True' : 'False'}
+							{MiscUtils.capitalize(status)}
 						</div>
 					</div>
 					<div className="layout horizontal" style={css.item}>
