@@ -95,6 +95,8 @@ export function checkout(plan: string, card: string,
 				}
 
 				resolve(res.body.msg);
+
+				sync();
 			});
 	});
 }
