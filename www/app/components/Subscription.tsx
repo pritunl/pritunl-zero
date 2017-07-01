@@ -251,17 +251,15 @@ export default class Subscription extends React.Component<{}, State> {
 					</div>
 				</div>
 				<div className="layout horizontal center-justified">
-					<div className="layout horizontal center-justified">
-						<ConfirmButton
-							className="pt-intent-danger pt-icon-delete"
-							progressClassName="pt-intent-danger"
-							style={css.button}
-							label="Remove License Key"
-							onConfirm={(): void => {
-								SubscriptionActions.activate('');
-							}}
-						/>
-					</div>
+					<ConfirmButton
+						className="pt-intent-danger pt-icon-delete"
+						progressClassName="pt-intent-danger"
+						style={css.button}
+						label="Remove License Key"
+						onConfirm={(): void => {
+							SubscriptionActions.activate('');
+						}}
+					/>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
 						onClick={(): void => {
