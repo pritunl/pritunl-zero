@@ -103,7 +103,7 @@ export default class Subscription extends React.Component<{}, State> {
 				/>
 				<div className="layout horizontal center-justified">
 					<button
-						className="pt-button pt-icon-cross"
+						className="pt-button pt-intent-danger pt-icon-cross"
 						style={css.button}
 						onClick={(): void => {
 							this.setState({
@@ -114,7 +114,7 @@ export default class Subscription extends React.Component<{}, State> {
 						}}
 					>Cancel</button>
 					<button
-						className="pt-button pt-icon-endorsed"
+						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license).then(
@@ -157,7 +157,7 @@ export default class Subscription extends React.Component<{}, State> {
 				/>
 				<div className="layout horizontal center-justified">
 					<button
-						className="pt-button pt-icon-endorsed"
+						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license);
@@ -190,7 +190,7 @@ export default class Subscription extends React.Component<{}, State> {
 						stripeKey="pk_test_4YSuzxPmd08oSV2s4kLi7zU2"
 					>
 						<button
-							className="pt-button pt-icon-credit-card"
+							className="pt-button pt-intent-success pt-icon-credit-card"
 						>Subscribe</button>
 					</ReactStripeCheckout>
 				</div>
@@ -241,7 +241,7 @@ export default class Subscription extends React.Component<{}, State> {
 				</div>
 				<div className="layout horizontal center-justified">
 					<button
-						className="pt-button pt-icon-endorsed"
+						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
 						onClick={(): void => {
 							this.setState({
