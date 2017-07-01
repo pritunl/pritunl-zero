@@ -5,7 +5,7 @@ var System *system
 type system struct {
 	Id                   string `bson:"_id"`
 	Name                 string `bson:"name"`
-	DatabaseVersion      string `bson:"database_version"`
+	DatabaseVersion      int    `bson:"database_version"`
 	License              string `bson:"license"`
 	CookieAuthKey        []byte `bson:"cookie_auth_key"`
 	CookieCryptoKey      []byte `bson:"cookie_crypto_key"`
