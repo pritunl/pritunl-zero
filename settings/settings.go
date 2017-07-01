@@ -2,6 +2,7 @@
 package settings
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -210,12 +211,22 @@ func init() {
 		}
 
 		if System.DatabaseVersion > constants.DatabaseVersion {
+			logrus.WithFields(logrus.Fields{
+				"database_version": System.DatabaseVersion,
+				"software_version": constants.DatabaseVersion,
+			}).Error("settings: Database version newer then software")
+
 			err = &errortypes.DatabaseError{
 				errors.New(
 					"settings: Database version newer then software"),
 			}
 			return
 		} else if System.DatabaseVersion != constants.DatabaseVersion {
+			logrus.WithFields(logrus.Fields{
+				"database_version":     System.DatabaseVersion,
+				"new_database_version": constants.DatabaseVersion,
+			}).Info("settings: Upgrading database version")
+
 			System.DatabaseVersion = constants.DatabaseVersion
 			err = Commit(db, System, set.NewSet("database_version"))
 			if err != nil {
