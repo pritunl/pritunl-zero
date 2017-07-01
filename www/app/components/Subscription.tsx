@@ -6,6 +6,7 @@ import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import SubscriptionStore from '../stores/SubscriptionStore';
 import * as Alert from '../Alert';
 import * as MiscUtils from '../utils/MiscUtils';
+import ConfirmButton from './ConfirmButton';
 
 interface State {
 	subscription: SubscriptionTypes.SubscriptionRo;
@@ -240,6 +241,17 @@ export default class Subscription extends React.Component<{}, State> {
 					</div>
 				</div>
 				<div className="layout horizontal center-justified">
+					<div className="layout horizontal center-justified">
+						<ConfirmButton
+							className="pt-intent-danger pt-icon-delete"
+							progressClassName="pt-intent-danger"
+							style={css.button}
+							label="Remove License Key"
+							onConfirm={(): void => {
+								SubscriptionActions.activate('');
+							}}
+						/>
+					</div>
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
