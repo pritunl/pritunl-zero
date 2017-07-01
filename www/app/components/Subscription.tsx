@@ -280,12 +280,7 @@ export default class Subscription extends React.Component<{}, State> {
 						onConfirm={(): void => {
 							SubscriptionActions.cancel(
 								this.state.subscription.url_key,
-							).then((message: string): void => {
-								this.setState({
-									...this.state,
-									message: message,
-								});
-							});
+							);
 						}}
 					/>
 					<ReactStripeCheckout
@@ -306,12 +301,7 @@ export default class Subscription extends React.Component<{}, State> {
 								'zero',
 								token.id,
 								token.email,
-							).then((message: string): void => {
-								this.setState({
-									...this.state,
-									message: message,
-								});
-							});
+							);
 						}}
 						onScriptError={(err): void => {
 							Alert.error('Failed to load Stripe Checkout');
