@@ -147,7 +147,7 @@ export default class Subscription extends React.Component<{}, State> {
 								}
 							);
 						}}
-					>Update License Key</button>
+					>Update License</button>
 				</div>
 			</div>
 		</div>;
@@ -182,7 +182,7 @@ export default class Subscription extends React.Component<{}, State> {
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license);
 						}}
-					>Activate License Key</button>
+					>Activate License</button>
 					<ReactStripeCheckout
 						label="Pritunl Zero"
 						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
