@@ -4,6 +4,7 @@ package settings
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -197,10 +198,24 @@ func init() {
 			}
 		}
 
-		if System.Name == "" {
-			db := database.GetDatabase()
-			defer db.Close()
+		db := database.GetDatabase()
+		defer db.Close()
 
+		if System.DatabaseVersion > constants.DatabaseVersion {
+			err = &errortypes.DatabaseError{
+				errors.New(
+					"settings: Database version newer then software"),
+			}
+			return
+		} else if System.DatabaseVersion != constants.DatabaseVersion {
+			System.DatabaseVersion = constants.DatabaseVersion
+			err = Commit(db, System, set.NewSet("database_version"))
+			if err != nil {
+				return
+			}
+		}
+
+		if System.Name == "" {
 			System.Name = utils.RandName()
 			err = Commit(db, System, set.NewSet("name"))
 			if err != nil {
