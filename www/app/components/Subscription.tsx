@@ -311,7 +311,7 @@ export default class Subscription extends React.Component<{}, State> {
 						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
 						allowRememberMe={false}
 						zipCode={true}
-						amount={canceling ? 5000 : 0}
+						amount={canceling && sub.status !== 'active' ? 5000 : 0}
 						name="Pritunl Zero"
 						description={canceling ?
 							'Reactivate Subscription ($50/month)' :
