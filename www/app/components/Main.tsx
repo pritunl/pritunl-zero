@@ -84,9 +84,15 @@ export default class Main extends React.Component<{}, State> {
 								className="pt-button pt-minimal pt-icon-cog"
 							>Settings</button>
 						</ReactRouter.Link>
-						<ReactRouter.Link to="/subscription" style={css.link}>
+						<ReactRouter.Link
+							to="/subscription"
+							style={css.link}
+						>
 							<button
 								className="pt-button pt-minimal pt-icon-credit-card"
+								onClick={(): void => {
+									SubscriptionActions.sync(true);
+								}}
 							>Subscription</button>
 						</ReactRouter.Link>
 						<button
