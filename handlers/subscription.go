@@ -15,6 +15,10 @@ type subscriptionPostData struct {
 }
 
 func subscriptionGet(c *gin.Context) {
+	c.JSON(200, subscription.Subscription)
+}
+
+func subscriptionUpdateGet(c *gin.Context) {
 	errData, err := subscription.Update()
 	if err != nil {
 		if errData != nil {

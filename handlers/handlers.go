@@ -119,6 +119,7 @@ func Register(engine *gin.Engine) {
 	activeAuthGroup.PUT("/settings", settingsPut)
 
 	activeAuthGroup.GET("/subscription", subscriptionGet)
+	activeAuthGroup.GET("/subscription/update", subscriptionUpdateGet)
 	activeAuthGroup.POST("/subscription", subscriptionPost)
 
 	activeAuthGroup.GET("/user", usersGet)
