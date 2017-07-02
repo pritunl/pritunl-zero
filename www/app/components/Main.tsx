@@ -41,7 +41,7 @@ export default class Main extends React.Component<{}, State> {
 
 	componentDidMount(): void {
 		SubscriptionStore.addChangeListener(this.onChange);
-		SubscriptionActions.sync();
+		SubscriptionActions.sync(false);
 	}
 
 	componentWillUnmount(): void {

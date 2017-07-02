@@ -166,7 +166,7 @@ export function cancel(key: string): Promise<void> {
 EventDispatcher.register((action: SubscriptionTypes.SubscriptionDispatch) => {
 	switch (action.type) {
 		case SubscriptionTypes.CHANGE:
-			sync();
+			sync(false);
 			break;
 	}
 });
