@@ -9,7 +9,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
-export function sync(): Promise<void> {
+export function sync(update: boolean): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
@@ -17,7 +17,7 @@ export function sync(): Promise<void> {
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.get('/subscription')
+			.get('/subscription' + (update ? '/update' : ''))
 			.set('Accept', 'application/json')
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
@@ -102,7 +102,7 @@ export function checkout(plan: string, card: string,
 
 				resolve(res.body.msg);
 
-				sync();
+				sync(true);
 			});
 	});
 }
@@ -132,7 +132,7 @@ export function payment(key: string, plan: string, card: string,
 
 				resolve();
 
-				sync();
+				sync(true);
 			});
 	});
 }
@@ -158,7 +158,7 @@ export function cancel(key: string): Promise<void> {
 
 				resolve();
 
-				sync();
+				sync(true);
 			});
 	});
 }
