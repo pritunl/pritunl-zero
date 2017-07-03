@@ -57,8 +57,6 @@ cp login.html dist/login.html
 
 Languages & Frameworks -> TypeScript: `Use TypeScript Service`
 
-Languages & Frameworks -> TypeScript: `Uncheck Track changes`
-
-Languages & Frameworks -> TypeScript: `Use tsconfig.json`
+Languages & Frameworks -> TypeScript: `Uncheck Enable TypeScript Compiler`
 
 Usage Scope: `!file:*.js`
