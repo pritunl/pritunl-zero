@@ -8,8 +8,8 @@ export interface Subscription {
 	plan?: string;
 	quantity?: number;
 	amount?: number;
-	period_end?: Date;
-	trial_end?: Date;
+	period_end?: string;
+	trial_end?: string;
 	cancel_at_period_end?: boolean;
 	balance?: number;
 	url_key?: string;
