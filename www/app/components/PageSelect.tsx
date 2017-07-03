@@ -21,7 +21,7 @@ export default class PageSelect extends React.Component<Props, {}> {
 				{this.props.label}
 				<div className="pt-select">
 					<select
-						value={this.props.value}
+						value={this.props.value || ''}
 						onChange={(evt): void => {
 							this.props.onChange(evt.target.value);
 						}}
