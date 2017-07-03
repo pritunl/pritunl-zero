@@ -4,8 +4,6 @@ import * as Blueprint from '@blueprintjs/core';
 import * as Constants from '../Constants';
 import * as MiscUtils from '../utils/MiscUtils';
 
-type OnConfirm = () => void;
-
 interface Props {
 	style?: React.CSSProperties;
 	className?: string;
@@ -13,7 +11,7 @@ interface Props {
 	progressClassName?: string;
 	label?: string;
 	disabled?: boolean;
-	onConfirm?: OnConfirm;
+	onConfirm?: () => void;
 }
 
 interface State {
