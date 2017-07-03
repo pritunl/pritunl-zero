@@ -45,9 +45,9 @@ export default class PageDateTime extends React.Component<Props, {}> {
 						datePickerProps={{
 							showActionsBar: true,
 						}}
-						onChange={(date: Date): void => {
-							if (date) {
-								this.props.onChange(date.toJSON());
+						onChange={(newDate: Date): void => {
+							if (newDate) {
+								this.props.onChange(newDate.toJSON());
 							} else {
 								this.props.onChange(null);
 							}
