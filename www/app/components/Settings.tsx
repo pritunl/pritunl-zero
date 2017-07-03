@@ -8,14 +8,28 @@ import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
 import PageSplit from './PageSplit';
 import PageInput from './PageInput';
+import PageSelectButton from './PageSelectButton';
 import PageSave from './PageSave';
+import SettingsProvider from './SettingsProvider';
 
 interface State {
 	changed: boolean;
 	disabled: boolean;
 	message: string;
+	provider: string;
 	settings: SettingsTypes.Settings;
 }
+
+const css = {
+	providers: {
+		paddingBottom: '6px',
+		marginBottom: '5px',
+		borderBottomStyle: 'solid',
+	} as React.CSSProperties,
+	providersLabel: {
+		margin: 0,
+	} as React.CSSProperties,
+};
 
 export default class Settings extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
@@ -24,6 +38,7 @@ export default class Settings extends React.Component<{}, State> {
 			changed: false,
 			disabled: false,
 			message: '',
+			provider: '',
 			settings: SettingsStore.settingsM,
 		};
 	}
@@ -80,14 +95,58 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	render(): JSX.Element {
-		if (!this.state.settings) {
+		let settings = this.state.settings;
+
+		if (!settings) {
 			return <div/>;
+		}
+
+		let providers: JSX.Element[] = [];
+		for (let i = 0; i < settings.auth_providers.length; i++) {
+			providers.push(<SettingsProvider
+				key={i}
+				provider={settings.auth_providers[i]}
+				onChange={(state): void => {
+					settings.auth_providers[i] = state;
+					this.set('auth_providers', settings.auth_providers);
+				}}
+			/>);
 		}
 
 		return <Page>
 			<PageHeader label="Settings"/>
 			<PageSplit>
 				<PagePanel>
+					<div className="pt-border" style={css.providers}>
+						<h5 style={css.providersLabel}>Authentication Providers</h5>
+					</div>
+					{providers}
+					<PageSelectButton
+						label="Add Provider"
+						value={this.state.provider}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								provider: val,
+							});
+						}}
+						onSubmit={(): void => {
+							let authProviders: SettingsTypes.Providers = [
+								...settings.auth_providers,
+								{
+									type: this.state.provider,
+									label: '',
+									default_roles: [],
+								},
+							];
+							this.set('auth_providers', authProviders);
+						}}
+					>
+						<option value="google">Google</option>
+						<option value="onelogin">OneLogin</option>
+						<option value="okta">Okta</option>
+					</PageSelectButton>
 				</PagePanel>
 				<PagePanel>
 					<PageInput
