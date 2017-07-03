@@ -8,10 +8,6 @@ import * as Alert from '../Alert';
 import * as MiscUtils from '../utils/MiscUtils';
 import ConfirmButton from './ConfirmButton';
 
-interface Props {
-	refresh?: boolean;
-}
-
 interface State {
 	subscription: SubscriptionTypes.SubscriptionRo;
 	update: boolean;
@@ -77,7 +73,7 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Subscription extends React.Component<Props, State> {
+export default class Subscription extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
@@ -90,7 +86,7 @@ export default class Subscription extends React.Component<Props, State> {
 
 	componentDidMount(): void {
 		SubscriptionStore.addChangeListener(this.onChange);
-		if (this.props.refresh) {
+		if (!this.state.subscription.active) {
 			SubscriptionActions.sync(true);
 		}
 	}
