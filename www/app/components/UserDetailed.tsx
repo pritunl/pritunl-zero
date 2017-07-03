@@ -284,7 +284,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						changed: false,
 						message: 'Your changes have been discarded',
 						addRole: '',
-						user: UserStore.user,
+						user: UserStore.userM,
 					});
 				}}
 				onSave={this.onSave}
