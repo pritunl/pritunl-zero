@@ -145,15 +145,25 @@ export default class Subscription extends React.Component<{}, State> {
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
 							SubscriptionActions.activate(this.state.license).then(
 								(): void => {
 									this.setState({
 										...this.state,
+										disabled: false,
 										update: false,
 										license: '',
 									});
 								}
-							);
+							).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});
 						}}
 					>Update License</button>
 				</div>
@@ -190,7 +200,23 @@ export default class Subscription extends React.Component<{}, State> {
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
-							SubscriptionActions.activate(this.state.license);
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
+							SubscriptionActions.activate(this.state.license).then(
+								(): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}
+							).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});
 						}}
 					>Activate License</button>
 					<ReactStripeCheckout
@@ -203,6 +229,10 @@ export default class Subscription extends React.Component<{}, State> {
 						description="Subscribe to Zero ($50/month)"
 						panelLabel="Subscribe"
 						token={(token): void => {
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
 							SubscriptionActions.checkout(
 								'zero',
 								token.id,
@@ -210,7 +240,13 @@ export default class Subscription extends React.Component<{}, State> {
 							).then((message: string): void => {
 								this.setState({
 									...this.state,
+									disabled: false,
 									message: message,
+								});
+							}).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
 								});
 							});
 						}}
@@ -313,9 +349,24 @@ export default class Subscription extends React.Component<{}, State> {
 						hidden={canceling}
 						label="Cancel Subscription"
 						onConfirm={(): void => {
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
 							SubscriptionActions.cancel(
 								this.state.subscription.url_key,
-							);
+							).then((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}
+							).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});
 						}}
 					/>
 					<ReactStripeCheckout
@@ -331,12 +382,28 @@ export default class Subscription extends React.Component<{}, State> {
 						}
 						panelLabel={canceling ? 'Reactivate' : 'Update'}
 						token={(token): void => {
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
 							SubscriptionActions.payment(
 								this.state.subscription.url_key,
 								'zero',
 								token.id,
 								token.email,
-							);
+							).then(
+								(): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}
+							).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});;
 						}}
 						onScriptError={(err): void => {
 							Alert.error('Failed to load Stripe Checkout');
@@ -360,7 +427,23 @@ export default class Subscription extends React.Component<{}, State> {
 						disabled={this.state.disabled}
 						label="Remove License"
 						onConfirm={(): void => {
-							SubscriptionActions.activate('');
+							this.setState({
+								...this.state,
+								disabled: true,
+							});
+							SubscriptionActions.activate('').then(
+								(): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}
+							).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});;
 						}}
 					/>
 					<button
