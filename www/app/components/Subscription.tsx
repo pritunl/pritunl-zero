@@ -149,16 +149,16 @@ export default class Subscription extends React.Component<{}, State> {
 								...this.state,
 								disabled: true,
 							});
-							SubscriptionActions.activate(this.state.license).then(
-								(): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-										update: false,
-										license: '',
-									});
-								}
-							).catch((): void => {
+							SubscriptionActions.activate(
+								this.state.license,
+							).then((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+									update: false,
+									license: '',
+								});
+							}).catch((): void => {
 								this.setState({
 									...this.state,
 									disabled: false,
@@ -204,14 +204,14 @@ export default class Subscription extends React.Component<{}, State> {
 								...this.state,
 								disabled: true,
 							});
-							SubscriptionActions.activate(this.state.license).then(
-								(): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}
-							).catch((): void => {
+							SubscriptionActions.activate(
+								this.state.license,
+							).then((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							}).catch((): void => {
 								this.setState({
 									...this.state,
 									disabled: false,
@@ -360,8 +360,7 @@ export default class Subscription extends React.Component<{}, State> {
 										...this.state,
 										disabled: false,
 									});
-								}
-							).catch((): void => {
+							}).catch((): void => {
 								this.setState({
 									...this.state,
 									disabled: false,
@@ -391,14 +390,12 @@ export default class Subscription extends React.Component<{}, State> {
 								'zero',
 								token.id,
 								token.email,
-							).then(
-								(): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}
-							).catch((): void => {
+							).then((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							}).catch((): void => {
 								this.setState({
 									...this.state,
 									disabled: false,
@@ -431,14 +428,12 @@ export default class Subscription extends React.Component<{}, State> {
 								...this.state,
 								disabled: true,
 							});
-							SubscriptionActions.activate('').then(
-								(): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}
-							).catch((): void => {
+							SubscriptionActions.activate('').then((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							}).catch((): void => {
 								this.setState({
 									...this.state,
 									disabled: false,
