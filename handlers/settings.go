@@ -9,11 +9,13 @@ import (
 )
 
 type settingsData struct {
-	ElasticAddress string `json:"elastic_address"`
+	AuthProviders  []string `json:"auth_providers"`
+	ElasticAddress string   `json:"elastic_address"`
 }
 
 func getSettingsData() *settingsData {
 	return &settingsData{
+		AuthProviders:  []string{},
 		ElasticAddress: settings.Elastic.Address,
 	}
 }
