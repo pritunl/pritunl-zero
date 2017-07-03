@@ -130,7 +130,7 @@ export default class Main extends React.Component<{}, State> {
 					<Settings/>
 				)}/>
 				<ReactRouter.Route path="/subscription" render={() => (
-					<Subscription/>
+					<Subscription refresh={true}/>
 				)}/>
 			</div>
 		</ReactRouter.HashRouter>;
