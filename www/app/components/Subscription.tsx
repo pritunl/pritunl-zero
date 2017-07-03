@@ -13,6 +13,7 @@ interface State {
 	update: boolean;
 	message: string;
 	license: string;
+	disabled: boolean;
 }
 
 const css = {
@@ -81,6 +82,7 @@ export default class Subscription extends React.Component<{}, State> {
 			update: false,
 			message: '',
 			license: '',
+			disabled: false,
 		};
 	}
 
@@ -128,6 +130,7 @@ export default class Subscription extends React.Component<{}, State> {
 					<button
 						className="pt-button pt-intent-danger pt-icon-cross"
 						style={css.button}
+						disabled={this.state.disabled}
 						onClick={(): void => {
 							this.setState({
 								...this.state,
@@ -139,6 +142,7 @@ export default class Subscription extends React.Component<{}, State> {
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
+						disabled={this.state.disabled}
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license).then(
 								(): void => {
@@ -182,6 +186,7 @@ export default class Subscription extends React.Component<{}, State> {
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button}
+						disabled={this.state.disabled}
 						onClick={(): void => {
 							SubscriptionActions.activate(this.state.license);
 						}}
@@ -215,6 +220,7 @@ export default class Subscription extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
 							style={css.button}
+							disabled={this.state.disabled}
 						>Subscribe</button>
 					</ReactStripeCheckout>
 				</div>
@@ -301,6 +307,7 @@ export default class Subscription extends React.Component<{}, State> {
 						className="pt-intent-danger pt-icon-delete"
 						progressClassName="pt-intent-danger"
 						style={css.button2}
+						disabled={this.state.disabled}
 						hidden={canceling}
 						label="Cancel Subscription"
 						onConfirm={(): void => {
@@ -337,6 +344,7 @@ export default class Subscription extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
 							style={canceling ? css.button3 : css.button2}
+							disabled={this.state.disabled}
 						>
 							{canceling ? 'Reactivate Subscription' : 'Update Payment'}
 						</button>
@@ -347,6 +355,7 @@ export default class Subscription extends React.Component<{}, State> {
 						className="pt-intent-danger pt-icon-delete"
 						progressClassName="pt-intent-danger"
 						style={css.button2}
+						disabled={this.state.disabled}
 						label="Remove License"
 						onConfirm={(): void => {
 							SubscriptionActions.activate('');
@@ -355,6 +364,7 @@ export default class Subscription extends React.Component<{}, State> {
 					<button
 						className="pt-button pt-intent-primary pt-icon-endorsed"
 						style={css.button2}
+						disabled={this.state.disabled}
 						onClick={(): void => {
 							this.setState({
 								...this.state,
