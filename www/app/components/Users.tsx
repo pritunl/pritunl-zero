@@ -10,7 +10,9 @@ import Page from './Page';
 import PageHeader from './PageHeader';
 import ConfirmButton from './ConfirmButton';
 
-type Selected = {[key: string]: boolean};
+interface Selected {
+	[key: string]: boolean;
+}
 
 interface State {
 	users: UserTypes.UsersRo;
