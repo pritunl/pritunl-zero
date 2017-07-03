@@ -88,6 +88,8 @@ export default class Settings extends React.Component<{}, State> {
 			<PageHeader label="Settings"/>
 			<PageSplit>
 				<PagePanel>
+				</PagePanel>
+				<PagePanel>
 					<PageInput
 						label="Elasticsearch Address"
 						type="text"
@@ -97,8 +99,6 @@ export default class Settings extends React.Component<{}, State> {
 							this.set('elastic_address', val);
 						}}
 					/>
-				</PagePanel>
-				<PagePanel>
 				</PagePanel>
 			</PageSplit>
 			<PageSave
