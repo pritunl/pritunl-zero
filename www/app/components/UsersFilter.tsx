@@ -12,9 +12,6 @@ interface Props {
 	onFilter: OnFilter;
 }
 
-interface State {
-}
-
 const css = {
 	filters: {
 		margin: "-15px 0 5px 0",
@@ -32,7 +29,7 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class UsersFilter extends React.Component<Props, State> {
+export default class UsersFilter extends React.Component<Props, {}> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
