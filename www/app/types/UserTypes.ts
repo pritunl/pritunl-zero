@@ -28,8 +28,8 @@ export interface Filter {
 
 export type Users = User[];
 
-export type UserRo = Readonly<User>
-export type UsersRo = ReadonlyArray<UserRo>
+export type UserRo = Readonly<User>;
+export type UsersRo = ReadonlyArray<UserRo>;
 
 export interface UserDispatch {
 	type: string;

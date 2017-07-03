@@ -51,10 +51,10 @@ export default class Loading extends React.Component<Props, State> {
 					size = '50px';
 			}
 
-			let style = {
+			let style: React.CSSProperties = {
 				width: size,
 				height: size,
-			} as React.CSSProperties;
+			};
 
 			spinner = <div style={style}/>;
 		} else {

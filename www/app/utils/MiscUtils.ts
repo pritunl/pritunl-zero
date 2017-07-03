@@ -169,5 +169,5 @@ export function formatDateShort(dateStr: string): string {
 		str += ' ' + date.getFullYear();
 	}
 
-	return str
+	return str;
 }

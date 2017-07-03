@@ -106,7 +106,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let user = this.state.user as any;
+		let user: any = this.state.user;
 
 		user[name] = val;
 
@@ -187,7 +187,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 							this.onRemoveRole(role);
 						}}
 					/>
-				</div>
+				</div>,
 			);
 		}
 

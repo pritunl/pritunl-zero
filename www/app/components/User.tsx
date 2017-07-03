@@ -66,7 +66,7 @@ export default class User extends React.Component<Props, {}> {
 					key={role}
 				>
 					{role}
-				</div>
+				</div>,
 			);
 		}
 

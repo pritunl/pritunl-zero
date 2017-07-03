@@ -15,7 +15,7 @@ export interface Subscription {
 	url_key?: string;
 }
 
-export type SubscriptionRo = Readonly<Subscription>
+export type SubscriptionRo = Readonly<Subscription>;
 
 export interface SubscriptionDispatch {
 	type: string;

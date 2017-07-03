@@ -12,9 +12,9 @@ interface Props {
 
 export default class SwitchNull extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		let style = {
+		let style: React.CSSProperties = {
 			...this.props.style,
-		} as React.CSSProperties;
+		};
 
 		if (this.props.checked === null || this.props.checked === undefined) {
 			style.opacity = 0.5;

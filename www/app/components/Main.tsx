@@ -108,11 +108,13 @@ export default class Main extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-minimal pt-icon-moon"
 							onClick={(): void => {
+								let className = 'root';
+
 								if (document.body.className.indexOf('pt-dark') === -1) {
-									document.body.className = 'root pt-dark';
-								} else {
-									document.body.className = 'root';
+									className += ' pt-dark';
 								}
+
+								document.body.className = className;
 							}}
 						/>
 					</div>
@@ -124,7 +126,7 @@ export default class Main extends React.Component<{}, State> {
 					<UserDetailed/>
 				)}/>
 				<ReactRouter.Route path="/user/:userId" render={(props) => (
-					<UserDetailed userId={props.match.params['userId']}/>
+					<UserDetailed userId={props.match.params.userId}/>
 				)}/>
 				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>

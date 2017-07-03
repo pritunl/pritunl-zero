@@ -71,7 +71,7 @@ export default class Users extends React.Component<{}, State> {
 
 	onChange = (): void => {
 		let users = UsersStore.users;
-		let selected = {} as Selected;
+		let selected: Selected = {};
 		let curSelected = this.state.selected;
 
 		this.state.users.forEach((user: UserTypes.User): void => {

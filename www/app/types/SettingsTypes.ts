@@ -6,7 +6,7 @@ export interface Settings {
 	elastic_address: string;
 }
 
-export type SettingsRo = Readonly<Settings>
+export type SettingsRo = Readonly<Settings>;
 
 export interface SettingsDispatch {
 	type: string;

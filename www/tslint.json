@@ -9,7 +9,8 @@
     "interface-name": false,
     "ordered-imports": false,
     "align": false,
-    "member-access": [],
+    "member-access": false,
+    "no-object-literal-type-assertion": false,
     "indent": [true, "tabs"],
     "quotemark": [true, "single", "jsx-double", "avoid-escape"],
     "variable-name": [

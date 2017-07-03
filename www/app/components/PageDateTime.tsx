@@ -20,7 +20,7 @@ const css = {
 
 export default class PageDateTime extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		let dateStyle = {} as React.CSSProperties;
+		let dateStyle: React.CSSProperties = {};
 
 		let date = new Date(this.props.value);
 		if (!this.props.value || this.props.value === '0001-01-01T00:00:00Z') {

@@ -13,18 +13,18 @@ interface Props {
 
 const css = {
 	filters: {
-		margin: "-15px 0 5px 0",
+		margin: '-15px 0 5px 0',
 	} as React.CSSProperties,
 	username: {
-		width: "200px",
-		margin: "5px 5px 5px 5px",
+		width: '200px',
+		margin: '5px 5px 5px 5px',
 	} as React.CSSProperties,
 	role: {
-		width: "150px",
-		margin: "5px 5px 5px 5px",
+		width: '150px',
+		margin: '5px 5px 5px 5px',
 	} as React.CSSProperties,
 	check: {
-		margin: "12px 5px 8px 5px",
+		margin: '12px 5px 8px 5px',
 	} as React.CSSProperties,
 };
 
@@ -112,7 +112,7 @@ export default class UsersFilter extends React.Component<Props, {}> {
 					} else if (filter.disabled === true) {
 						filter.disabled = false;
 					} else {
-						delete filter.disabled
+						delete filter.disabled;
 					}
 
 					this.props.onFilter(filter);

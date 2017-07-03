@@ -13,7 +13,7 @@ import PageSave from './PageSave';
 interface State {
 	changed: boolean;
 	disabled: boolean;
-	message: string,
+	message: string;
 	settings: SettingsTypes.Settings;
 }
 
@@ -56,7 +56,7 @@ export default class Settings extends React.Component<{}, State> {
 				message: 'Your changes have been saved',
 				changed: false,
 				disabled: false,
-			})
+			});
 		}).catch((): void => {
 			this.setState({
 				...this.state,
@@ -67,7 +67,7 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let settings = this.state.settings as any;
+		let settings: any = this.state.settings;
 
 		settings[name] = val;
 

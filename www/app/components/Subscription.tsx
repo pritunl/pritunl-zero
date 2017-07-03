@@ -124,7 +124,7 @@ export default class Subscription extends React.Component<{}, State> {
 						this.setState({
 							...this.state,
 							license: evt.target.value,
-						})
+						});
 					}}
 				/>
 				<div className="layout horizontal center-justified">
@@ -400,7 +400,7 @@ export default class Subscription extends React.Component<{}, State> {
 									...this.state,
 									disabled: false,
 								});
-							});;
+							});
 						}}
 						onScriptError={(err): void => {
 							Alert.error('Failed to load Stripe Checkout');

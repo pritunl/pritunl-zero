@@ -12,12 +12,12 @@ let syncId: string;
 
 export function load(userId: string): Promise<void> {
 	if (!userId) {
-		let user = {
+		let user: UserTypes.User = {
 			id: null,
 			type: 'local',
 			roles: [],
 			permissions: [],
-		} as UserTypes.User;
+		};
 
 		Dispatcher.dispatch({
 			type: UserTypes.LOAD,

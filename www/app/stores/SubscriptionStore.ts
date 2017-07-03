@@ -34,7 +34,7 @@ class SubscriptionStore extends EventEmitter {
 	}
 
 	_sync(subscription: SubscriptionTypes.Subscription): void {
-		this._subscription = Object.freeze(subscription);;
+		this._subscription = Object.freeze(subscription);
 		this.emitChange();
 	}
 
