@@ -438,7 +438,7 @@ export default class Subscription extends React.Component<{}, State> {
 									...this.state,
 									disabled: false,
 								});
-							});;
+							});
 						}}
 					/>
 					<button
