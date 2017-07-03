@@ -110,7 +110,7 @@ export default class Settings extends React.Component<{}, State> {
 						...this.state,
 						changed: false,
 						message: 'Your changes have been discarded',
-						settings: SettingsStore.settings,
+						settings: SettingsStore.settingsM,
 					});
 				}}
 				onSave={this.onSave}
