@@ -117,6 +117,7 @@ export default class Subscription extends React.Component<{}, State> {
 				<textarea
 					className="pt-input"
 					style={css.license}
+					disabled={this.state.disabled}
 					placeholder="New License Key"
 					value={this.state.license}
 					onChange={(evt): void => {
@@ -173,6 +174,7 @@ export default class Subscription extends React.Component<{}, State> {
 				<textarea
 					className="pt-input"
 					style={css.license}
+					disabled={this.state.disabled}
 					placeholder="License Key"
 					value={this.state.license}
 					onChange={(evt): void => {
