@@ -9,6 +9,7 @@ import PagePanel from './PagePanel';
 import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
+import PageSwitch from './PageSwitch';
 import PageSelect from './PageSelect';
 import PageSave from './PageSave';
 
@@ -168,6 +169,15 @@ export default class SettingsProvider extends React.Component<Props, State> {
 						...this.state,
 						addRole: '',
 					});
+				}}
+			/>
+			<PageSwitch
+				label="Create user on authentication"
+				checked={provider.auto_create}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.auto_create = !state.auto_create;
+					this.props.onChange(state);
 				}}
 			/>
 			{options}

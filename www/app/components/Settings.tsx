@@ -150,6 +150,7 @@ export default class Settings extends React.Component<{}, State> {
 									type: this.state.provider,
 									label: '',
 									default_roles: [],
+									auto_create: true,
 								},
 							];
 							this.set('auth_providers', authProviders);
