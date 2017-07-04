@@ -6,6 +6,7 @@ export interface Provider {
 	type: string;
 	label: string;
 	default_roles: string[];
+	auto_create: boolean;
 }
 
 export interface GoogleProvider extends Provider {
