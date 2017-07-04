@@ -9,13 +9,13 @@ import (
 )
 
 type settingsData struct {
-	AuthProviders  []string `json:"auth_providers"`
-	ElasticAddress string   `json:"elastic_address"`
+	AuthProviders  []*settings.Provider `json:"auth_providers"`
+	ElasticAddress string               `json:"elastic_address"`
 }
 
 func getSettingsData() *settingsData {
 	return &settingsData{
-		AuthProviders:  []string{},
+		AuthProviders:  settings.Auth.Providers,
 		ElasticAddress: settings.Elastic.Address,
 	}
 }
@@ -38,6 +38,15 @@ func settingsPut(c *gin.Context) {
 	settings.Elastic.Address = data.ElasticAddress
 	err = settings.Commit(db, settings.Elastic, set.NewSet(
 		"address",
+	))
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	settings.Auth.Providers = data.AuthProviders
+	err = settings.Commit(db, settings.Auth, set.NewSet(
+		"providers",
 	))
 	if err != nil {
 		c.AbortWithError(500, err)
