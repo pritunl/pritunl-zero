@@ -13,7 +13,7 @@ interface Props {
 const css = {
 	label: {
 		width: '100%',
-		maxWidth: '310px',
+		maxWidth: '280px',
 	} as React.CSSProperties,
 	input: {
 		width: '100%',

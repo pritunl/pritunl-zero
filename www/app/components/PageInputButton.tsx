@@ -17,7 +17,7 @@ const css = {
 	group: {
 		marginBottom: '15px',
 		width: '100%',
-		maxWidth: '310px',
+		maxWidth: '280px',
 	} as React.CSSProperties,
 	input: {
 		width: '100%',
