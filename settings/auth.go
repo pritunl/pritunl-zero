@@ -6,7 +6,8 @@ type Provider struct {
 	Type         string   `bson:"type" json:"type"`
 	Label        string   `bson:"label" json:"label"`
 	DefaultRoles []string `bson:"default_roles" json:"default_roles"`
-	Domain       string   `bson:"domain" json:"domain"`
+	AutoCreate   bool     `bson:"auto_create" json:"auto_create"`
+	Domain       string   `bson:"domain" json:"domain"` // google
 }
 
 type auth struct {
