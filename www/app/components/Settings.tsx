@@ -38,7 +38,7 @@ export default class Settings extends React.Component<{}, State> {
 			changed: false,
 			disabled: false,
 			message: '',
-			provider: '',
+			provider: 'google',
 			settings: SettingsStore.settingsM,
 		};
 	}
