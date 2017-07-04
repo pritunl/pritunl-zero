@@ -22,6 +22,9 @@ interface State {
 }
 
 const css = {
+	card: {
+		marginBottom: '5px',
+	} as React.CSSProperties,
 	role: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
@@ -110,7 +113,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			);
 		}
 
-		return <div className="pt-card">
+		return <div className="pt-card" style={css.card}>
 			<h6>{label}</h6>
 			<PageInput
 				label="Label"
