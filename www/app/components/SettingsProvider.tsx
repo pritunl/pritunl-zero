@@ -15,6 +15,7 @@ import PageSave from './PageSave';
 interface Props {
 	provider: SettingsTypes.ProviderAny;
 	onChange: (state: SettingsTypes.ProviderAny) => void;
+	onRemove: () => void;
 }
 
 interface State {
@@ -169,6 +170,12 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				}}
 			/>
 			{options}
+			<button
+				className="pt-button pt-intent-danger"
+				onClick={(): void => {
+					this.props.onRemove();
+				}}
+			>Remove</button>
 		</div>;
 	}
 }
