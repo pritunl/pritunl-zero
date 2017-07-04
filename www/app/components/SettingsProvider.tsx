@@ -8,6 +8,7 @@ import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
 import PageSplit from './PageSplit';
 import PageInput from './PageInput';
+import PageInputButton from './PageInputButton';
 import PageSelect from './PageSelect';
 import PageSave from './PageSave';
 
@@ -17,12 +18,22 @@ interface Props {
 }
 
 interface State {
+	addRole: string;
 }
+
+const css = {
+	role: {
+		margin: '9px 5px 0 5px',
+		height: '20px',
+	} as React.CSSProperties,
+};
 
 export default class SettingsProvider extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
-		this.state = {};
+		this.state = {
+			addRole: '',
+		};
 	}
 
 	clone(): SettingsTypes.ProviderAny {
@@ -67,6 +78,38 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				break;
 		}
 
+		let roles: JSX.Element[] = [];
+		for (let role of provider.default_roles) {
+			roles.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.role}
+					key={role}
+				>
+					{role}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							let roles = [
+								...this.props.provider.default_roles,
+							];
+
+							let i = roles.indexOf(role);
+							if (i === -1) {
+								return;
+							}
+
+							roles.splice(i, 1);
+
+							let state = this.clone();
+							state.default_roles = roles;
+							this.props.onChange(state);
+						}}
+					/>
+				</div>,
+			);
+		}
+
 		return <div className="pt-card">
 			<h6>{label}</h6>
 			<PageInput
@@ -78,6 +121,48 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					let state = this.clone();
 					state.label = val;
 					this.props.onChange(state);
+				}}
+			/>
+			<label className="pt-label">
+				Roles
+				<div>
+					{roles}
+				</div>
+			</label>
+			<PageInputButton
+				label="Add"
+				type="text"
+				placeholder="Add default role"
+				value={this.state.addRole}
+				onChange={(val: string): void => {
+					this.setState({
+						...this.state,
+						addRole: val,
+					});
+				}}
+				onSubmit={(): void => {
+					let roles = [
+						...this.props.provider.default_roles,
+					];
+
+					if (!this.state.addRole) {
+						return;
+					}
+
+					if (roles.indexOf(this.state.addRole) === -1) {
+						roles.push(this.state.addRole);
+					}
+
+					roles.sort();
+
+					let state = this.clone();
+					state.default_roles = roles;
+					this.props.onChange(state);
+
+					this.setState({
+						...this.state,
+						addRole: '',
+					});
 				}}
 			/>
 			{options}
