@@ -5,6 +5,7 @@ type OnChange = (val: string) => void;
 type OnSubmit = () => void;
 
 interface Props {
+	buttonClass?: string;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -29,6 +30,11 @@ const css = {
 
 export default class PageInputButton extends React.Component<Props, {}> {
 	render(): JSX.Element {
+		let buttonClass = 'pt-button';
+		if (this.props.buttonClass) {
+			buttonClass += ' ' + this.props.buttonClass;
+		}
+
 		return <div
 			className="pt-control-group"
 			style={css.group}
@@ -54,7 +60,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 			</div>
 			<div>
 				<button
-					className="pt-button"
+					className={buttonClass}
 					onClick={this.props.onSubmit}
 				>{this.props.label}</button>
 			</div>
