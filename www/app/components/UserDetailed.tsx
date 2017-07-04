@@ -106,7 +106,9 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let user: any = this.state.user;
+		let user: any = {
+			...this.state.user,
+		};
 
 		user[name] = val;
 
@@ -119,7 +121,9 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	onAddRole = (): void => {
-		let roles = this.state.user.roles.slice(0);
+		let roles = [
+			...this.state.user.roles,
+		];
 
 		if (!this.state.addRole) {
 			return;
@@ -144,7 +148,9 @@ export default class UserDetailed extends React.Component<Props, State> {
 	}
 
 	onRemoveRole = (role: string): void => {
-		let roles = this.state.user.roles.slice(0);
+		let roles = [
+			...this.state.user.roles,
+		];
 
 		let i = roles.indexOf(role);
 		if (i === -1) {

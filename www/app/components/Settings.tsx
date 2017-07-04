@@ -82,7 +82,9 @@ export default class Settings extends React.Component<{}, State> {
 	}
 
 	set = (name: string, val: any): void => {
-		let settings: any = this.state.settings;
+		let settings: any = {
+			...this.state.settings,
+		};
 
 		settings[name] = val;
 
