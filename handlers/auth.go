@@ -48,6 +48,14 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
+	if usr.Administrator != "super" {
+		c.JSON(401, &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		})
+		return
+	}
+
 	cook := cookie.New(c)
 
 	_, err = cook.NewSession(db, usr.Id, true)
