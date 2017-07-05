@@ -51,9 +51,30 @@ func sessionHand(required bool) gin.HandlerFunc {
 			}
 		}
 
-		if required && sess == nil {
-			c.AbortWithStatus(401)
-			return
+		if required {
+			if sess == nil {
+				c.AbortWithStatus(401)
+				return
+			}
+
+			usr, err := sess.GetUser(db)
+			if err != nil {
+				c.AbortWithError(500, err)
+				return
+			}
+
+			if usr.Administrator != "super" {
+				sess = nil
+
+				err = cook.Remove(db)
+				if err != nil {
+					c.AbortWithError(500, err)
+					return
+				}
+
+				c.AbortWithStatus(401)
+				return
+			}
 		}
 
 		c.Set("session", sess)
