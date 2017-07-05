@@ -51,7 +51,13 @@ func Remove(db *database.Database, id string) (err error) {
 	err = coll.RemoveId(id)
 	if err != nil {
 		err = database.ParseError(err)
-		return
+
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
 	}
 
 	return
