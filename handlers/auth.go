@@ -6,8 +6,37 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"gopkg.in/mgo.v2/bson"
 )
+
+type authStateData struct {
+	Providers []*authStateProviderData `json:"providers"`
+}
+
+type authStateProviderData struct {
+	Id    bson.ObjectId `json:"id"`
+	Type  string        `json:"type"`
+	Label string        `json:"label"`
+}
+
+func authStateGet(c *gin.Context) {
+	data := &authStateData{
+		Providers: []*authStateProviderData{},
+	}
+
+	for _, provider := range settings.Auth.Providers {
+		providerData := &authStateProviderData{
+			Id:    provider.Id,
+			Type:  provider.Type,
+			Label: provider.Label,
+		}
+		data.Providers = append(data.Providers, providerData)
+	}
+
+	c.JSON(200, data)
+}
 
 type authData struct {
 	Username string `json:"username"`
