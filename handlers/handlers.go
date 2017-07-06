@@ -137,6 +137,7 @@ func Register(engine *gin.Engine) {
 
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
+	dbGroup.GET("/auth/request", authRequestGet)
 	activeAuthGroup.GET("/logout", logoutGet)
 
 	activeAuthGroup.GET("/event", eventGet)

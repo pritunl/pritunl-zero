@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -107,4 +109,36 @@ func logoutGet(c *gin.Context) {
 	}
 
 	c.Redirect(302, "/login")
+}
+
+func authRequestGet(c *gin.Context) {
+	providerId := bson.ObjectIdHex(c.Query("id"))
+
+	var provider *settings.Provider
+	for _, prvidr := range settings.Auth.Providers {
+		if prvidr.Id == providerId {
+			provider = prvidr
+			break
+		}
+	}
+
+	if provider == nil {
+		c.AbortWithStatus(404)
+		return
+	}
+
+	loc := location.Get(c).String()
+
+	switch provider.Type {
+	case auth.Google:
+		redirect, err := auth.GoogleRequest(loc, provider)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		c.Redirect(302, redirect)
+		return
+	}
+
+	c.AbortWithStatus(404)
 }
