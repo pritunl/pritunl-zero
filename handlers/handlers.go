@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/cookie"
@@ -116,6 +117,9 @@ func recoveryHand(c *gin.Context) {
 func Register(engine *gin.Engine) {
 	engine.Use(limiterHand)
 	engine.Use(recoveryHand)
+	engine.Use(location.New(location.Config{
+		Scheme: "https",
+	}))
 
 	dbGroup := engine.Group("")
 	dbGroup.Use(databaseHand)
