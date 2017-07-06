@@ -10,3 +10,7 @@ var (
 		Timeout: 20 * time.Second,
 	}
 )
+
+type authData struct {
+	Url string `json:"url"`
+}
