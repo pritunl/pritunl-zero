@@ -84,7 +84,6 @@
       var authButtons = document.getElementById('auth-buttons');
       var authLocal = document.getElementById('auth-local');
       var alertElm = document.getElementById('alert');
-      var loginFormElm = document.getElementById('login-form');
       var usernameElm = document.getElementById('username');
       var passwordElm = document.getElementById('password');
       var submitElm = document.getElementById('submit');
@@ -121,7 +120,7 @@
         }
       };
 
-      loginFormElm.onsubmit = function(evt) {
+      document.getElementById('login-form').onsubmit = function(evt) {
         evt.preventDefault();
         submitElm.disabled = true;
         var username = usernameElm.value;
