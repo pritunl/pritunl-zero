@@ -49,10 +49,23 @@
       #alert.flash {
         background-color: rgba(255, 255, 255, 0.50);
       }
+
+      .auth-button {
+        width: 100%;
+        padding: 15px 10px;
+      }
+
+      #auth-local {
+        display: none;
+      }
     </style>
   </head>
   <body class="pt-dark pt-focus-disabled">
-    <div class="pt-card pt-elevation-2">
+    <div id="auth-buttons" class="pt-card pt-elevation-2">
+      <button id="auth-local-btn"
+        class="pt-button auth-button">Username/Password</button>
+    </div>
+    <div id="auth-local" class="pt-card pt-elevation-2">
       <div id="alert" class="pt-callout"></div>
       <form id="login-form">
         <label class="pt-label">
@@ -68,6 +81,8 @@
       </form>
     </div>
     <script type="text/javascript">
+      var authButtons = document.getElementById('auth-buttons');
+      var authLocal = document.getElementById('auth-local');
       var alertElm = document.getElementById('alert');
       var loginFormElm = document.getElementById('login-form');
       var usernameElm = document.getElementById('username');
@@ -142,6 +157,11 @@
         }));
 
         return false;
+      };
+
+      document.getElementById('auth-local-btn').onclick = function() {
+        authButtons.style.display = 'none';
+        authLocal.style.display = 'block';
       };
     </script>
   </body>
