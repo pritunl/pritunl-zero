@@ -17,6 +17,7 @@ type Provider struct {
 
 type auth struct {
 	Id        string      `bson:"_id"`
+	Server    string      `bson:"server" default:"https://auth-test.pritunl.net"`
 	Providers []*Provider `bson:"providers"`
 }
 
