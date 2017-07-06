@@ -66,8 +66,6 @@
   </head>
   <body class="pt-dark pt-focus-disabled">
     <div id="auth-buttons" class="pt-card pt-elevation-2">
-      <button id="auth-local-btn"
-        class="pt-button auth-button">Username/Password</button>
     </div>
     <div id="auth-local" class="pt-card pt-elevation-2">
       <div id="alert" class="pt-callout"></div>
@@ -86,12 +84,76 @@
       <button class="pt-button auth-cancel">Cancel</button>
     </div>
     <script type="text/javascript">
+      var state;
       var authButtons = document.getElementById('auth-buttons');
       var authLocal = document.getElementById('auth-local');
       var alertElm = document.getElementById('alert');
       var usernameElm = document.getElementById('username');
       var passwordElm = document.getElementById('password');
       var submitElm = document.getElementById('submit');
+
+      var loadState = function () {
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              state = JSON.parse(xmlhttp.responseText);
+
+              var buttons = '';
+              buttons += '<button id="auth-local-btn" ' +
+                'class="pt-button auth-button">Username/Password</button>';
+
+              var provider;
+              for (var i = 0; i < state.providers.length; i++) {
+                provider = state.providers[i];
+
+                buttons += '<button id="' + provider.id + '" ' +
+                  'class="pt-button auth-button auth-' + provider.type + '"' +
+                  '>' + provider.label + '</button>';
+              }
+
+              authButtons.innerHTML = buttons;
+
+              bindState();
+            } else {
+              var errorMsg;
+
+              try {
+                errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+              } catch(error) {
+                errorMsg = 'Server error occurred';
+              }
+
+              setAlert(errorMsg, 'danger');
+            }
+          }
+        };
+
+        xmlhttp.open('GET', '/auth/state', true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send();
+
+        return false;
+      };
+
+      var bindState = function() {
+        document.getElementById('auth-local-btn').onclick = function() {
+          authButtons.style.display = 'none';
+          authLocal.style.display = 'block';
+        };
+
+        var provider;
+        for (var i = 0; i < state.providers.length; i++) {
+          provider = state.providers[i];
+
+          document.getElementById(provider.id).onclick = function() {
+            console.log(provider.type);
+          };
+        }
+      };
+
+      loadState();
 
       var flashAlert = function() {
         var alertClass = alertElm.className;
@@ -171,11 +233,6 @@
           authButtons.style.display = 'block';
         };
       }
-
-      document.getElementById('auth-local-btn').onclick = function() {
-        authButtons.style.display = 'none';
-        authLocal.style.display = 'block';
-      };
     </script>
   </body>
 </html>
