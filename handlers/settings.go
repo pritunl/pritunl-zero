@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/settings"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type settingsData struct {
@@ -42,6 +43,12 @@ func settingsPut(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
+	}
+
+	for _, provider := range data.AuthProviders {
+		if provider.Id == "" {
+			provider.Id = bson.NewObjectId()
+		}
 	}
 
 	settings.Auth.Providers = data.AuthProviders
