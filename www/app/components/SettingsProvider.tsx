@@ -129,7 +129,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				}}
 			/>
 			<label className="pt-label">
-				Roles
+				Default Roles
 				<div>
 					{roles}
 				</div>
