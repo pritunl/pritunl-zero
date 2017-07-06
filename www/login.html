@@ -35,8 +35,9 @@
         transform: translateY(-50%);
       }
 
-      .pt-card input {
+      .pt-card .pt-button {
         width: 100%;
+        margin-bottom: 7px;
       }
 
       #alert {
@@ -78,6 +79,7 @@
             type="password" placeholder="Password"/>
         </label>
         <input id="submit" class="pt-button" type="submit" value="Login">
+        <button class="pt-button auth-cancel">Cancel</button>
       </form>
     </div>
     <script type="text/javascript">
@@ -157,6 +159,14 @@
 
         return false;
       };
+
+      var authCancels = document.getElementsByClassName('auth-cancel');
+      for (var i = 0; i < authCancels.length; i++) {
+        authCancels[i].onclick = function() {
+          authLocal.style.display = 'none';
+          authButtons.style.display = 'block';
+        };
+      }
 
       document.getElementById('auth-local-btn').onclick = function() {
         authButtons.style.display = 'none';
