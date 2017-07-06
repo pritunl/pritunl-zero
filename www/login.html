@@ -149,7 +149,7 @@
           provider = state.providers[i];
 
           document.getElementById(provider.id).onclick = function() {
-            console.log(provider.type);
+            window.location = '/auth/request?id=' + provider.id;
           };
         }
       };
