@@ -182,6 +182,8 @@ func Update(name string) (err error) {
 		return
 	}
 
+	setDefaults(data)
+
 	group.Update(data)
 
 	return
