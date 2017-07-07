@@ -10,6 +10,15 @@ interface State {
 	pageCount: number;
 }
 
+const css = {
+	button: {
+		margin: '0 5px 0 0',
+	} as React.CSSProperties,
+	buttonLast: {
+		margin: '0 0 0 0',
+	} as React.CSSProperties,
+};
+
 export default class Users extends React.Component<{}, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -39,6 +48,7 @@ export default class Users extends React.Component<{}, State> {
 		return <div className="layout horizontal">
 			<button
 				className="pt-button"
+				style={css.button}
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(0);
@@ -49,6 +59,7 @@ export default class Users extends React.Component<{}, State> {
 
 			<button
 				className="pt-button"
+				style={css.buttonLast}
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(this.state.pageCount);
