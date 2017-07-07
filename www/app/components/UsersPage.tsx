@@ -1,9 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
-import User from './User';
 
 interface State {
 	page: number;
