@@ -96,7 +96,8 @@ export default class Users extends React.Component<{}, State> {
 				} : css.buttonLast}
 				type="button"
 				onClick={(): void => {
-					UserActions.traverse(this.state.pageCount);
+					UserActions.traverse(
+						Math.ceil(this.state.count / this.state.pageCount));
 				}}
 			>
 				Last
