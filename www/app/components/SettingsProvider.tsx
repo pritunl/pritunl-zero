@@ -95,19 +95,19 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					<button
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
-							let roles = [
+							let rls = [
 								...this.props.provider.default_roles,
 							];
 
-							let i = roles.indexOf(role);
+							let i = rls.indexOf(role);
 							if (i === -1) {
 								return;
 							}
 
-							roles.splice(i, 1);
+							rls.splice(i, 1);
 
 							let state = this.clone();
-							state.default_roles = roles;
+							state.default_roles = rls;
 							this.props.onChange(state);
 						}}
 					/>
@@ -147,7 +147,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					});
 				}}
 				onSubmit={(): void => {
-					let roles = [
+					let rls = [
 						...this.props.provider.default_roles,
 					];
 
@@ -155,14 +155,14 @@ export default class SettingsProvider extends React.Component<Props, State> {
 						return;
 					}
 
-					if (roles.indexOf(this.state.addRole) === -1) {
-						roles.push(this.state.addRole);
+					if (rls.indexOf(this.state.addRole) === -1) {
+						rls.push(this.state.addRole);
 					}
 
-					roles.sort();
+					rls.sort();
 
 					let state = this.clone();
-					state.default_roles = roles;
+					state.default_roles = rls;
 					this.props.onChange(state);
 
 					this.setState({
