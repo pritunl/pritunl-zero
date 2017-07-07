@@ -96,10 +96,6 @@ export default class Main extends React.Component<{}, State> {
 							>Subscription</button>
 						</ReactRouter.Link>
 						<button
-							className="pt-button pt-minimal pt-icon-refresh"
-							onClick={() => {}}
-						>Refresh</button>
-						<button
 							className="pt-button pt-minimal pt-icon-log-out"
 							onClick={() => {
 								window.location.href = '/logout';
