@@ -109,18 +109,18 @@ export default class Settings extends React.Component<{}, State> {
 				key={i}
 				provider={settings.auth_providers[i]}
 				onChange={(state): void => {
-					let providers = [
+					let prvdrs = [
 						...this.state.settings.auth_providers,
 					];
-					providers[i] = state;
-					this.set('auth_providers', providers);
+					prvdrs[i] = state;
+					this.set('auth_providers', prvdrs);
 				}}
 				onRemove={(): void => {
-					let providers = [
+					let prvdrs = [
 						...this.state.settings.auth_providers,
 					];
-					providers.splice(i, 1);
-					this.set('auth_providers', providers);
+					prvdrs.splice(i, 1);
+					this.set('auth_providers', prvdrs);
 				}}
 			/>);
 		}
