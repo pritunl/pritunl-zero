@@ -35,7 +35,7 @@ class UsersStore extends EventEmitter {
 	}
 
 	get pages(): number {
-		return Math.ceil(this.page / this.pageCount);
+		return Math.ceil(this.count / this.pageCount);
 	}
 
 	get filter(): UserTypes.Filter {
