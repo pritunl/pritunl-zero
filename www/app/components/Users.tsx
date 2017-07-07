@@ -8,6 +8,7 @@ import User from './User';
 import UsersFilter from './UsersFilter';
 import Page from './Page';
 import PageHeader from './PageHeader';
+import UsersPage from './UsersPage';
 import ConfirmButton from './ConfirmButton';
 
 interface Selected {
@@ -181,6 +182,7 @@ export default class Users extends React.Component<{}, State> {
 			<div style={css.users}>
 				{usersDom}
 			</div>
+			<UsersPage/>
 		</Page>;
 	}
 }
