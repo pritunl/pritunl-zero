@@ -1,17 +1,9 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as SettingsTypes from '../types/SettingsTypes';
-import SettingsStore from '../stores/SettingsStore';
-import * as SettingsActions from '../actions/SettingsActions';
-import Page from './Page';
-import PageHeader from './PageHeader';
-import PagePanel from './PagePanel';
-import PageSplit from './PageSplit';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
-import PageSelect from './PageSelect';
-import PageSave from './PageSave';
 
 interface Props {
 	provider: SettingsTypes.ProviderAny;
