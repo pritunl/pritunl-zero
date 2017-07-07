@@ -74,6 +74,7 @@ class UsersStore extends EventEmitter {
 
 		this._count = count;
 		this._users = Object.freeze(users);
+		this._page = Math.min(this.pages, this.page);
 
 		this.emitChange();
 	}
