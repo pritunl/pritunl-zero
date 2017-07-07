@@ -16,6 +16,12 @@ const css = {
 	buttonLast: {
 		margin: '0 0 0 0',
 	} as React.CSSProperties,
+	link: {
+		margin: '5px 5px 0 0',
+	} as React.CSSProperties,
+	current: {
+		opacity: 0.5,
+	} as React.CSSProperties,
 };
 
 export default class Users extends React.Component<{}, State> {
@@ -46,10 +52,34 @@ export default class Users extends React.Component<{}, State> {
 	}
 
 	render(): JSX.Element {
-		return <div className="layout horizontal">
+		let links: JSX.Element[] = [];
+		let page = this.state.page;
+		let pages = Math.ceil(this.state.count / this.state.pageCount);
+		let start = Math.max(1, page - 7);
+		let end = Math.min(pages - 1, start + 15);
+
+		for (let i = start; i < end; i++) {
+			links.push(<a
+				key={i}
+				style={page === i ? {
+					...css.link,
+					...css.current,
+				} : css.link}
+				onClick={(): void => {
+					UserActions.traverse(i);
+				}}
+			>
+				{i + 1}
+			</a>);
+		}
+
+		return <div className="layout horizontal center-justified">
 			<button
 				className="pt-button"
-				style={css.button}
+				style={page === 0 ? {
+					...css.button,
+					...css.current,
+				} : css.button}
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(0);
@@ -57,10 +87,13 @@ export default class Users extends React.Component<{}, State> {
 			>
 				First
 			</button>
-
+			{links}
 			<button
 				className="pt-button"
-				style={css.buttonLast}
+				style={page === pages ? {
+					...css.buttonLast,
+					...css.current,
+				} : css.buttonLast}
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(this.state.pageCount);
