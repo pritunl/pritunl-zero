@@ -6,6 +6,7 @@ import * as UserActions from '../actions/UserActions';
 interface State {
 	page: number;
 	pageCount: number;
+	count: number;
 }
 
 const css = {
@@ -23,6 +24,7 @@ export default class Users extends React.Component<{}, State> {
 		this.state = {
 			page: UsersStore.page,
 			pageCount: UsersStore.pageCount,
+			count: UsersStore.count,
 		};
 	}
 
@@ -39,6 +41,7 @@ export default class Users extends React.Component<{}, State> {
 			...this.state,
 			page: UsersStore.page,
 			pageCount: UsersStore.pageCount,
+			count: UsersStore.count,
 		});
 	}
 
