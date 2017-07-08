@@ -153,7 +153,18 @@ func addIndexes() (err error) {
 	db := GetDatabase()
 	defer db.Close()
 
-	coll := db.Events()
+	coll := db.Users()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"username"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
+	coll = db.Events()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"channel"},
 		Background: true,
