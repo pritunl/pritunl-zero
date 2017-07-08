@@ -49,6 +49,7 @@ export default class Users extends React.Component<{}, State> {
 			...this.state,
 			page: UsersStore.page,
 			pageCount: UsersStore.pageCount,
+			pages: UsersStore.pages,
 			count: UsersStore.count,
 		});
 	}
