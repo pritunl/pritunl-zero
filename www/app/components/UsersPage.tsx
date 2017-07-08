@@ -55,9 +55,14 @@ export default class Users extends React.Component<{}, State> {
 	}
 
 	render(): JSX.Element {
-		let links: JSX.Element[] = [];
 		let page = this.state.page;
 		let pages = this.state.pages;
+
+		if (pages <= 1) {
+			return <div/>
+		}
+
+		let links: JSX.Element[] = [];
 		let start = Math.max(1, page - 7);
 		let end = Math.min(pages - 1, start + 15);
 
