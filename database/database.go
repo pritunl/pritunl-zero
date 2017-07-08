@@ -46,6 +46,11 @@ func (d *Database) Sessions() (coll *Collection) {
 	return
 }
 
+func (d *Database) Tokens() (coll *Collection) {
+	coll = d.getCollection("tokens")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
