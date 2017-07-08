@@ -6,6 +6,7 @@ import * as UserActions from '../actions/UserActions';
 interface State {
 	page: number;
 	pageCount: number;
+	pages: number;
 	count: number;
 }
 
@@ -30,6 +31,7 @@ export default class Users extends React.Component<{}, State> {
 		this.state = {
 			page: UsersStore.page,
 			pageCount: UsersStore.pageCount,
+			pages: UsersStore.pages,
 			count: UsersStore.count,
 		};
 	}
@@ -54,7 +56,7 @@ export default class Users extends React.Component<{}, State> {
 	render(): JSX.Element {
 		let links: JSX.Element[] = [];
 		let page = this.state.page;
-		let pages = Math.ceil(this.state.count / this.state.pageCount);
+		let pages = this.state.pages;
 		let start = Math.max(1, page - 7);
 		let end = Math.min(pages - 1, start + 15);
 
@@ -96,8 +98,7 @@ export default class Users extends React.Component<{}, State> {
 				} : css.buttonLast}
 				type="button"
 				onClick={(): void => {
-					UserActions.traverse(
-						Math.ceil(this.state.count / this.state.pageCount));
+					UserActions.traverse(this.state.pages);
 				}}
 			>
 				Last
