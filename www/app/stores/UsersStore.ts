@@ -59,7 +59,7 @@ class UsersStore extends EventEmitter {
 	}
 
 	_traverse(page: number): void {
-		this._page = page;
+		this._page = Math.min(this.pages, page);
 	}
 
 	_filterCallback(filter: UserTypes.Filter): void {
