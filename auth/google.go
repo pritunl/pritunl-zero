@@ -87,6 +87,7 @@ func GoogleRequest(db *database.Database, location string,
 		Type:      Google,
 		Secret:    secret,
 		Timestamp: time.Now(),
+		Provider:  provider.Id,
 	}
 
 	err = coll.Insert(tokn)

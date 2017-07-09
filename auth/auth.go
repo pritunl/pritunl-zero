@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
 )
@@ -17,10 +18,11 @@ type authData struct {
 }
 
 type Token struct {
-	Id        string    `bson:"_id"`
-	Type      string    `bson:"type"`
-	Secret    string    `bson:"secret"`
-	Timestamp time.Time `bson:"timestamp"`
+	Id        string        `bson:"_id"`
+	Type      string        `bson:"type"`
+	Secret    string        `bson:"secret"`
+	Timestamp time.Time     `bson:"timestamp"`
+	Provider  bson.ObjectId `bson:"provider"`
 }
 
 func (t *Token) Remove(db *database.Database) (err error) {
