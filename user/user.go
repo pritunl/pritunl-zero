@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"gopkg.in/mgo.v2"
 )
 
 type User struct {
@@ -106,6 +107,28 @@ func (u *User) Insert(db *database.Database) (err error) {
 	}
 
 	err = coll.Insert(u)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (u *User) Upsert(db *database.Database) (err error) {
+	coll := db.Users()
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$setOnInsert": u,
+		},
+		Upsert: true,
+		ReturnNew: true,
+	}
+
+	coll.Find(&bson.M{
+		"type":     u.Type,
+		"username": u.Username,
+	}).Apply(change, u)
 	if err != nil {
 		return
 	}
