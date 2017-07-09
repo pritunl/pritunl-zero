@@ -180,9 +180,45 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
+	provider := settings.Auth.GetProvider(tokn.Provider)
+	if provider == nil {
+		c.AbortWithStatus(404)
+		return
+	}
+
 	err = tokn.Remove(db)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
+
+	usr := &user.User{
+		Type:     provider.Type,
+		Username: params.Get("username"),
+		Roles:    provider.DefaultRoles,
+	}
+
+	err = usr.Upsert(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if usr.Administrator != "super" {
+		c.JSON(401, &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		})
+		return
+	}
+
+	cook := cookie.New(c)
+
+	_, err = cook.NewSession(db, usr.Id, true)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.Redirect(302, "/")
 }
