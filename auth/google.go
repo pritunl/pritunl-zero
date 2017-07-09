@@ -4,18 +4,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
+	"time"
 )
 
 const (
 	Google = "google"
 )
 
-func GoogleRequest(location string, provider *settings.Provider) (
-	redirect string, err error) {
+func GoogleRequest(db *database.Database, location string,
+	provider *settings.Provider) (redirect string, err error) {
+
+	coll := db.Tokens()
 
 	state, err := utils.RandStr(64)
 	if err != nil {
@@ -75,6 +79,19 @@ func GoogleRequest(location string, provider *settings.Provider) (
 				err, "auth: Failed to parse auth response",
 			),
 		}
+		return
+	}
+
+	tokn := &Token{
+		Id:        state,
+		Type:      Google,
+		Secret:    secret,
+		Timestamp: time.Now(),
+	}
+
+	err = coll.Insert(tokn)
+	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
