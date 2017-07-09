@@ -21,6 +21,16 @@ type auth struct {
 	Providers []*Provider `bson:"providers"`
 }
 
+func (a *auth) GetProvider(id bson.ObjectId) *Provider {
+	for _, provider := range a.Providers {
+		if provider.Id == id {
+			return provider
+		}
+	}
+
+	return nil
+}
+
 func newAuth() interface{} {
 	return &auth{
 		Id: "auth",
