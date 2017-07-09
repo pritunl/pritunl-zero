@@ -108,10 +108,12 @@ func logoutGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	sess := c.MustGet("session").(*session.Session)
 
-	err := sess.Remove(db)
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
+	if sess != nil {
+		err := sess.Remove(db)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 	}
 
 	c.Redirect(302, "/login")
