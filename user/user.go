@@ -96,7 +96,6 @@ func (u *User) CommitFields(db *database.Database, fields set.Set) (
 }
 
 func (u *User) Insert(db *database.Database) (err error) {
-
 	coll := db.Users()
 
 	if u.Id != "" {
