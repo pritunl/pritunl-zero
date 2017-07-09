@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/pritunl/pritunl-zero/database"
 	"net/http"
 	"time"
 )
@@ -20,4 +21,16 @@ type Token struct {
 	Type      string    `bson:"type"`
 	Secret    string    `bson:"secret"`
 	Timestamp time.Time `bson:"timestamp"`
+}
+
+func (t *Token) Remove(db *database.Database) (err error) {
+	coll := db.Tokens()
+
+	err = coll.RemoveId(t.Id)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
 }
