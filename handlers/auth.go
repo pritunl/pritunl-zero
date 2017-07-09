@@ -112,6 +112,8 @@ func logoutGet(c *gin.Context) {
 }
 
 func authRequestGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
 	providerId := bson.ObjectIdHex(c.Query("id"))
 
 	var provider *settings.Provider
@@ -131,7 +133,7 @@ func authRequestGet(c *gin.Context) {
 
 	switch provider.Type {
 	case auth.Google:
-		redirect, err := auth.GoogleRequest(loc, provider)
+		redirect, err := auth.GoogleRequest(db, loc, provider)
 		if err != nil {
 			c.AbortWithError(500, err)
 			return
