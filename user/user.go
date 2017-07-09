@@ -95,8 +95,7 @@ func (u *User) CommitFields(db *database.Database, fields set.Set) (
 	return
 }
 
-func (u *User) Insert(db *database.Database) (
-	err error) {
+func (u *User) Insert(db *database.Database) (err error) {
 
 	coll := db.Users()
 
