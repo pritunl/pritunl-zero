@@ -1,6 +1,10 @@
 package handlers
 
 import (
+	"crypto/hmac"
+	"crypto/sha512"
+	"crypto/subtle"
+	"encoding/base64"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/auth"
@@ -11,6 +15,8 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"net/url"
+	"strings"
 )
 
 type authStateData struct {
@@ -143,4 +149,40 @@ func authRequestGet(c *gin.Context) {
 	}
 
 	c.AbortWithStatus(404)
+}
+
+func authCallbackGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
+
+	params, err := url.ParseQuery(query)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	state := params.Get("state")
+	sig := c.Query("sig")
+
+	tokn, err := auth.Get(db, state)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	hashFunc := hmac.New(sha512.New, []byte(tokn.Secret))
+	hashFunc.Write([]byte(query))
+	rawSignature := hashFunc.Sum(nil)
+	testSig := base64.URLEncoding.EncodeToString(rawSignature)
+
+	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	err = tokn.Remove(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 }
