@@ -70,6 +70,8 @@ func (u *User) Validate(db *database.Database) (
 		}
 	}
 
+	u.Format()
+
 	return
 }
 
