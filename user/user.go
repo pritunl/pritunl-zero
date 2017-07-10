@@ -128,7 +128,7 @@ func (u *User) Upsert(db *database.Database) (err error) {
 		Update: &bson.M{
 			"$setOnInsert": u,
 		},
-		Upsert: true,
+		Upsert:    true,
 		ReturnNew: true,
 	}
 
