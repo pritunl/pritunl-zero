@@ -12,7 +12,10 @@ type Provider struct {
 	Label        string        `bson:"label" json:"label"`
 	DefaultRoles []string      `bson:"default_roles" json:"default_roles"`
 	AutoCreate   bool          `bson:"auto_create" json:"auto_create"`
-	Domain       string        `bson:"domain" json:"domain"` // google
+	Domain       string        `bson:"domain" json:"domain"`         // google
+	IssuerUrl    string        `bson:"issuer_url" json:"issuer_url"` // saml
+	SamlUrl      string        `bson:"saml_url" json:"saml_url"`     // saml
+	SamlCert     string        `bson:"saml_cert" json:"saml_cert"`   // saml
 }
 
 type auth struct {
