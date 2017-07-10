@@ -8,9 +8,10 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"sort"
+	"time"
 )
 
 type User struct {
@@ -70,6 +71,10 @@ func (u *User) Validate(db *database.Database) (
 	}
 
 	return
+}
+
+func (u *User) Format() {
+	sort.Strings(u.Roles)
 }
 
 func (u *User) Commit(db *database.Database) (err error) {
