@@ -149,6 +149,14 @@ func authRequestGet(c *gin.Context) {
 		}
 		c.Redirect(302, redirect)
 		return
+	case auth.OneLogin:
+		body, err := auth.SamlRequest(db, loc, provider)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		c.Data(200, "text/html;charset=utf-8", body)
+		return
 	}
 
 	c.AbortWithStatus(404)
