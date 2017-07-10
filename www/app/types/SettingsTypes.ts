@@ -13,7 +13,13 @@ export interface GoogleProvider extends Provider {
 	domain?: string;
 }
 
-export type ProviderAny = Provider & GoogleProvider;
+export interface SamlProvider extends Provider {
+	issuer_url?: string;
+	saml_url?: string;
+	saml_cert?: string;
+}
+
+export type ProviderAny = Provider & GoogleProvider & SamlProvider;
 export type Providers = ProviderAny[];
 
 export interface Settings {
