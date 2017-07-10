@@ -194,10 +194,19 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
+	roles := []string{}
+	roles = append(roles, provider.DefaultRoles...)
+
+	for _, role := range strings.Split(params.Get("roles"), ",") {
+		if role != "" {
+			roles = append(roles, role)
+		}
+	}
+
 	usr := &user.User{
 		Type:     provider.Type,
 		Username: params.Get("username"),
-		Roles:    provider.DefaultRoles,
+		Roles:    roles,
 	}
 
 	err = usr.Upsert(db)
