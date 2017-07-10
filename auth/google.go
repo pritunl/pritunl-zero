@@ -55,6 +55,8 @@ func GoogleRequest(db *database.Database, location string,
 		return
 	}
 
+	req.Header.Set("Content-Type", "application/json")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		err = errortypes.RequestError{
