@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as SettingsTypes from '../types/SettingsTypes';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
+import PageTextArea from './PageTextArea';
 import PageSwitch from './PageSwitch';
 
 interface Props {
@@ -51,6 +52,47 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				onChange={(val: string): void => {
 					let state = this.clone();
 					state.domain = val;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
+	onelogin(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Issuer URL"
+				type="text"
+				placeholder="OneLogin issuer URL"
+				value={provider.issuer_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.issuer_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="SAML 2.0 Endpoint (HTTP)"
+				type="text"
+				placeholder="OneLogin SAML endpoint"
+				value={provider.saml_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageTextArea
+				label="X.509 Certificate"
+				type="text"
+				placeholder="OneLogin X.509 certificate"
+				rows={6}
+				value={provider.saml_cert}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_cert = val;
 					this.props.onChange(state);
 				}}
 			/>
