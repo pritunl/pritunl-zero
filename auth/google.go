@@ -19,6 +19,13 @@ const (
 func GoogleRequest(db *database.Database, location string,
 	provider *settings.Provider) (redirect string, err error) {
 
+	if provider.Type != Google {
+		err = &errortypes.ParseError{
+			errors.New("auth: Invalid provider type"),
+		}
+		return
+	}
+
 	coll := db.Tokens()
 
 	state, err := utils.RandStr(64)
