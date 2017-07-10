@@ -179,7 +179,10 @@ func authCallbackGet(c *gin.Context) {
 	testSig := base64.URLEncoding.EncodeToString(rawSignature)
 
 	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
-		c.AbortWithStatus(401)
+		c.JSON(401, &errortypes.ErrorData{
+			Error:   "authentication_error",
+			Message: "Authentication error occurred",
+		})
 		return
 	}
 
