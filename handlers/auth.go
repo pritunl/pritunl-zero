@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base64"
+	"github.com/Sirupsen/logrus"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/auth"
@@ -207,6 +208,20 @@ func authCallbackGet(c *gin.Context) {
 		Type:     provider.Type,
 		Username: params.Get("username"),
 		Roles:    roles,
+	}
+
+	errData, err := usr.Validate(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		logrus.WithFields(logrus.Fields{
+			"error":     errData.Error,
+			"error_msg": errData.Message,
+		}).Error("handlers: Single sign on user validate failed")
+		return
 	}
 
 	err = usr.Upsert(db)
