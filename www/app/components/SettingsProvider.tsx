@@ -111,6 +111,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				break;
 			case 'onelogin':
 				label = 'OneLogin';
+				options = this.onelogin();
 				break;
 			case 'okta':
 				label = 'Okta';
