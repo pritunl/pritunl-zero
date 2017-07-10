@@ -207,30 +207,49 @@ func authCallbackGet(c *gin.Context) {
 		}
 	}
 
-	usr := &user.User{
-		Type:     provider.Type,
-		Username: params.Get("username"),
-		Roles:    roles,
-	}
+	username := params.Get("username")
 
-	errData, err := usr.Validate(db)
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
+	var usr *user.User
+	if provider.AutoCreate {
+		usr = &user.User{
+			Type:     provider.Type,
+			Username: username,
+			Roles:    roles,
+		}
 
-	if errData != nil {
-		logrus.WithFields(logrus.Fields{
-			"error":     errData.Error,
-			"error_msg": errData.Message,
-		}).Error("handlers: Single sign on user validate failed")
-		return
-	}
+		errData, err := usr.Validate(db)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 
-	err = usr.Upsert(db)
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
+		if errData != nil {
+			logrus.WithFields(logrus.Fields{
+				"error":     errData.Error,
+				"error_msg": errData.Message,
+			}).Error("handlers: Single sign on user validate failed")
+			return
+		}
+
+		err = usr.Upsert(db)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+	} else {
+		usr, err = user.GetUsername(db, provider.Type, username)
+		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				c.JSON(401, &errortypes.ErrorData{
+					Error:   "unauthorized",
+					Message: "Not authorized",
+				})
+			default:
+				c.AbortWithError(500, err)
+			}
+			return
+		}
 	}
 
 	if usr.Administrator != "super" {
