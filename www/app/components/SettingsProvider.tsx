@@ -104,17 +104,6 @@ export default class SettingsProvider extends React.Component<Props, State> {
 
 		return <div>
 			<PageInput
-				label="Identity Provider Issuer"
-				type="text"
-				placeholder="Okta issuer URL"
-				value={provider.issuer_url}
-				onChange={(val: string): void => {
-					let state = this.clone();
-					state.issuer_url = val;
-					this.props.onChange(state);
-				}}
-			/>
-			<PageInput
 				label="Identity Provider Single Sign-On URL"
 				type="text"
 				placeholder="Okta single sign-on URL"
@@ -122,6 +111,17 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				onChange={(val: string): void => {
 					let state = this.clone();
 					state.saml_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Identity Provider Issuer"
+				type="text"
+				placeholder="Okta issuer URL"
+				value={provider.issuer_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.issuer_url = val;
 					this.props.onChange(state);
 				}}
 			/>
