@@ -62,9 +62,14 @@ export default class Users extends React.Component<{}, State> {
 			return <div/>
 		}
 
+		let offset = 1;
+		if (pages < 5) {
+			offset = 0;
+		}
+
 		let links: JSX.Element[] = [];
-		let start = Math.max(1, page - 7);
-		let end = Math.min(pages - 1, start + 15);
+		let start = Math.max(offset, page - 7);
+		let end = Math.min(pages - offset, start + 15);
 
 		for (let i = start; i < end; i++) {
 			links.push(<a
@@ -84,6 +89,7 @@ export default class Users extends React.Component<{}, State> {
 		return <div className="layout horizontal center-justified">
 			<button
 				className="pt-button"
+				hidden={!offset}
 				style={page === 0 ? {
 					...css.button,
 					...css.current,
@@ -98,6 +104,7 @@ export default class Users extends React.Component<{}, State> {
 			{links}
 			<button
 				className="pt-button"
+				hidden={!offset}
 				style={page === pages ? {
 					...css.buttonLast,
 					...css.current,
