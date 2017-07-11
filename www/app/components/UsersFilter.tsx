@@ -4,11 +4,9 @@ import * as UserTypes from '../types/UserTypes';
 import SearchInput from './SearchInput';
 import SwitchNull from './SwitchNull';
 
-type OnFilter = (filter: UserTypes.Filter) => void;
-
 interface Props {
 	filter: UserTypes.Filter;
-	onFilter: OnFilter;
+	onFilter: (filter: UserTypes.Filter) => void;
 }
 
 const css = {
