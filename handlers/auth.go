@@ -260,7 +260,7 @@ func authCallbackGet(c *gin.Context) {
 		}
 	}
 
-	if usr.Administrator != "super" {
+	if usr.Disabled || usr.Administrator != "super" {
 		c.JSON(401, &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
