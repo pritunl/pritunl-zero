@@ -76,6 +76,32 @@ export default class UsersFilter extends React.Component<Props, {}> {
 					this.props.onFilter(filter);
 				}}
 			/>
+			<div className="pt-select">
+				<select
+					value={this.props.filter.type || 'any'}
+					onChange={(evt): void => {
+						let filter = {
+							...this.props.filter,
+						};
+
+						let val = evt.target.value;
+
+						if (val === 'any') {
+							delete filter.type;
+						} else {
+							filter.type = val;
+						}
+
+						this.props.onFilter(filter);
+					}}
+				>
+					<option value="any">Any</option>
+					<option value="local">Local</option>
+					<option value="google">Google</option>
+					<option value="onelogin">OneLogin</option>
+					<option value="okta">Okta</option>
+				</select>
+			</div>
 			<SwitchNull
 				style={css.check}
 				label="Administrator"
