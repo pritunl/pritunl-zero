@@ -139,7 +139,7 @@ func userPost(c *gin.Context) {
 	}
 
 	usr := &user.User{
-		Type:          user.Local,
+		Type:          data.Type,
 		Username:      data.Username,
 		Roles:         data.Roles,
 		Administrator: data.Administrator,
