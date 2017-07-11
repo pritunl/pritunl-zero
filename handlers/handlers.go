@@ -64,7 +64,7 @@ func sessionHand(required bool) gin.HandlerFunc {
 				return
 			}
 
-			if usr.Administrator != "super" {
+			if usr.Disabled || usr.Administrator != "super" {
 				sess = nil
 
 				err = cook.Remove(db)
