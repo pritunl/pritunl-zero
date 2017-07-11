@@ -15,12 +15,13 @@ import (
 
 const (
 	OneLogin = "onelogin"
+	Okta     = "okta"
 )
 
 func SamlRequest(db *database.Database, location string,
 	provider *settings.Provider) (body []byte, err error) {
 
-	if provider.Type != OneLogin {
+	if provider.Type != OneLogin && provider.Type != Okta {
 		err = &errortypes.ParseError{
 			errors.New("auth: Invalid provider type"),
 		}
