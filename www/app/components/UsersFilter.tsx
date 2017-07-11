@@ -15,11 +15,11 @@ const css = {
 	} as React.CSSProperties,
 	username: {
 		width: '200px',
-		margin: '5px 5px 5px 5px',
+		margin: '5px',
 	} as React.CSSProperties,
 	role: {
 		width: '150px',
-		margin: '5px 5px 5px 5px',
+		margin: '5px',
 	} as React.CSSProperties,
 	type: {
 		margin: '5px',
