@@ -99,6 +99,47 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		</div>;
 	}
 
+	okta(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Identity Provider Issuer"
+				type="text"
+				placeholder="Okta issuer URL"
+				value={provider.issuer_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.issuer_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Identity Provider Single Sign-On URL"
+				type="text"
+				placeholder="Okta single sign-on URL"
+				value={provider.saml_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageTextArea
+				label="X.509 Certificate"
+				type="text"
+				placeholder="Okta X.509 certificate"
+				rows={6}
+				value={provider.saml_cert}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_cert = val;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	render(): JSX.Element {
 		let provider = this.props.provider;
 		let label = '';
@@ -115,6 +156,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				break;
 			case 'okta':
 				label = 'Okta';
+				options = this.okta();
 				break;
 		}
 
