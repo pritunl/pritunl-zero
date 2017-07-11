@@ -149,7 +149,7 @@ func authRequestGet(c *gin.Context) {
 		}
 		c.Redirect(302, redirect)
 		return
-	case auth.OneLogin:
+	case auth.OneLogin, auth.Okta:
 		body, err := auth.SamlRequest(db, loc, provider)
 		if err != nil {
 			c.AbortWithError(500, err)
