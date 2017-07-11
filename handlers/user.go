@@ -205,6 +205,11 @@ func usersGet(c *gin.Context) {
 		query["roles"] = role
 	}
 
+	typ := strings.TrimSpace(c.Query("type"))
+	if typ != "" {
+		query["type"] = typ
+	}
+
 	administrator := c.Query("administrator")
 	switch administrator {
 	case "true":
