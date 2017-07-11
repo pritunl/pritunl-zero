@@ -21,6 +21,9 @@ const css = {
 		width: '150px',
 		margin: '5px 5px 5px 5px',
 	} as React.CSSProperties,
+	type: {
+		margin: '5px',
+	} as React.CSSProperties,
 	check: {
 		margin: '12px 5px 8px 5px',
 	} as React.CSSProperties,
@@ -76,7 +79,7 @@ export default class UsersFilter extends React.Component<Props, {}> {
 					this.props.onFilter(filter);
 				}}
 			/>
-			<div className="pt-select">
+			<div className="pt-select" style={css.type}>
 				<select
 					value={this.props.filter.type || 'any'}
 					onChange={(evt): void => {
