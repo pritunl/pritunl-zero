@@ -19,6 +19,7 @@ const css = {
 	textarea: {
 		width: '100%',
 		resize: 'none',
+		fontSize: '12px',
 		fontFamily: '"Lucida Console", Monaco, monospace',
 	} as React.CSSProperties,
 };
