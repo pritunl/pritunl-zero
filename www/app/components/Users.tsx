@@ -221,7 +221,13 @@ export default class Users extends React.Component<{}, State> {
 			<div style={css.users}>
 				{usersDom}
 			</div>
-			<UsersPage/>
+			<UsersPage
+				onPage={(): void => {
+					this.setState({
+						lastSelected: null,
+					});
+				}}
+			/>
 		</Page>;
 	}
 }
