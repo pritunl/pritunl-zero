@@ -19,6 +19,7 @@ interface State {
 	users: UserTypes.UsersRo;
 	filter: UserTypes.Filter;
 	selected: Selected;
+	lastSelected: string;
 	disabled: boolean;
 }
 
@@ -50,6 +51,7 @@ export default class Users extends React.Component<{}, State> {
 			users: UsersStore.users,
 			filter: UsersStore.filter,
 			selected: {},
+			lastSelected: null,
 			disabled: false,
 		};
 	}
@@ -118,8 +120,42 @@ export default class Users extends React.Component<{}, State> {
 				key={user.id}
 				user={user}
 				selected={!!this.state.selected[user.id]}
-				onSelect={(): void => {
+				onSelect={(shift: boolean): void => {
 					let selected = this.state.selected;
+
+					if (shift) {
+						let users = this.state.users;
+						let start: number;
+						let end: number;
+
+						for (let i = 0; i < users.length; i++) {
+							let usr = users[i];
+
+							if (usr.id === user.id) {
+								start = i;
+							} else if (usr.id === this.state.lastSelected) {
+								end = i;
+							}
+						}
+
+						if (start !== undefined && end !== undefined) {
+							if (start > end) {
+								end = [start, start = end][0];
+							}
+
+							for (let i = start; i <= end; i++) {
+								selected[users[i].id] = true;
+							}
+
+							this.setState({
+								...this.state,
+								lastSelected: user.id,
+								selected: selected,
+							});
+
+							return
+						}
+					}
 
 					if (selected[user.id]) {
 						delete selected[user.id];
@@ -129,6 +165,7 @@ export default class Users extends React.Component<{}, State> {
 
 					this.setState({
 						...this.state,
+						lastSelected: user.id,
 						selected: selected,
 					});
 				}}
