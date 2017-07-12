@@ -7,7 +7,7 @@ import * as UserTypes from '../types/UserTypes';
 interface Props {
 	user: UserTypes.UserRo;
 	selected: boolean;
-	onSelect: () => void;
+	onSelect: (shift: boolean) => void;
 }
 
 const css = {
@@ -85,7 +85,9 @@ export default class User extends React.Component<Props, {}> {
 						<input
 							type="checkbox"
 							checked={this.props.selected}
-							onChange={this.props.onSelect}
+							onClick={(evt): void => {
+								this.props.onSelect(evt.shiftKey);
+							}}
 						/>
 						<span className="pt-control-indicator"/>
 					</label>
