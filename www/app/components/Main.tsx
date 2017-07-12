@@ -83,6 +83,13 @@ export default class Main extends React.Component<{}, State> {
 							Users
 						</ReactRouter.Link>
 						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-cloud"
+							style={css.link}
+							to="/services"
+						>
+							Services
+						</ReactRouter.Link>
+						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-cog"
 							style={css.link}
 							to="/settings"
