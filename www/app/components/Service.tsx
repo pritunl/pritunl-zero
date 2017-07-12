@@ -63,7 +63,15 @@ export default class Service extends React.Component<Props, State> {
 			className="pt-card"
 			style={css.card}
 		>
-			{service.id}
+			<PageInput
+				label="Name"
+				type="text"
+				placeholder="Enter name"
+				value={service.name}
+				onChange={(val): void => {
+					this.set('name', val);
+				}}
+			/>
 		</div>;
 	}
 }
