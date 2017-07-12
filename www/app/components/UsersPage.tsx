@@ -3,6 +3,10 @@ import * as React from 'react';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
 
+interface Props {
+	onPage: () => void;
+}
+
 interface State {
 	page: number;
 	pageCount: number;
@@ -25,7 +29,7 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Users extends React.Component<{}, State> {
+export default class Users extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
@@ -80,6 +84,7 @@ export default class Users extends React.Component<{}, State> {
 				} : css.link}
 				onClick={(): void => {
 					UserActions.traverse(i);
+					this.props.onPage();
 				}}
 			>
 				{i + 1}
@@ -97,6 +102,7 @@ export default class Users extends React.Component<{}, State> {
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(0);
+					this.props.onPage();
 				}}
 			>
 				First
@@ -112,6 +118,7 @@ export default class Users extends React.Component<{}, State> {
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(this.state.pages);
+					this.props.onPage();
 				}}
 			>
 				Last
