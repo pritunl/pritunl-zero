@@ -146,12 +146,14 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				</div>
 				<div className="pt-dialog-footer">
 					<div className="pt-dialog-footer-actions">
-						<button type="button"
+						<button
 							className="pt-button"
+							type="button"
 							onClick={this.closeDialog}
 						>Cancel</button>
-						<button type="button"
+						<button
 							className="pt-button pt-intent-primary"
+							type="button"
 							onClick={this.closeDialogConfirm}
 						>Ok</button>
 					</div>
@@ -179,9 +181,10 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		let style = this.props.style || {};
 		style.position = 'relative';
 
-		return <button type="button"
+		return <button
 			className={'pt-button ' + (this.props.className || '')}
 			style={style}
+			type="button"
 			hidden={this.props.hidden}
 			disabled={this.props.disabled}
 			onMouseDown={Constants.mobile ? undefined : this.confirm}
