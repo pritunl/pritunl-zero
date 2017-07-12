@@ -155,7 +155,7 @@ export default class Users extends React.Component<{}, State> {
 								selected: selected,
 							});
 
-							return
+							return;
 						}
 					}
 

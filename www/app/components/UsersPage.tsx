@@ -63,7 +63,7 @@ export default class Users extends React.Component<Props, State> {
 		let pages = this.state.pages;
 
 		if (pages <= 1) {
-			return <div/>
+			return <div/>;
 		}
 
 		let offset = 1;
