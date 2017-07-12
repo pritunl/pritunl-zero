@@ -74,15 +74,19 @@ export default class Main extends React.Component<{}, State> {
 						<Loading size="small"/>
 					</div>
 					<div className="pt-navbar-group pt-align-right">
-						<ReactRouter.Link to="/users" style={css.link}>
-							<button
-								className="pt-button pt-minimal pt-icon-people"
-							>Users</button>
+						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-people"
+							style={css.link}
+							to="/users"
+						>
+							Users
 						</ReactRouter.Link>
-						<ReactRouter.Link to="/settings" style={css.link}>
-							<button
-								className="pt-button pt-minimal pt-icon-cog"
-							>Settings</button>
+						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-cog"
+							style={css.link}
+							to="/settings"
+						>
+							Settings
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							to="/subscription"
