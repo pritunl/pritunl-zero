@@ -121,7 +121,9 @@ export default class Users extends React.Component<{}, State> {
 				user={user}
 				selected={!!this.state.selected[user.id]}
 				onSelect={(shift: boolean): void => {
-					let selected = this.state.selected;
+					let selected = {
+						...this.state.selected,
+					};
 
 					if (shift) {
 						let users = this.state.users;
