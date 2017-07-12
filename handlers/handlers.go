@@ -143,6 +143,8 @@ func Register(engine *gin.Engine) {
 
 	activeAuthGroup.GET("/event", eventGet)
 
+	activeAuthGroup.GET("/service", servicesGet)
+
 	activeAuthGroup.GET("/settings", settingsGet)
 	activeAuthGroup.PUT("/settings", settingsPut)
 
