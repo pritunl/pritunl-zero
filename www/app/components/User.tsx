@@ -4,12 +4,10 @@ import * as ReactRouter from 'react-router-dom';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as UserTypes from '../types/UserTypes';
 
-type OnSelect = () => void;
-
 interface Props {
 	user: UserTypes.UserRo;
 	selected: boolean;
-	onSelect: OnSelect;
+	onSelect: () => void;
 }
 
 const css = {
