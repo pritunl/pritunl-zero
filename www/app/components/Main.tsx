@@ -8,6 +8,7 @@ import Loading from './Loading';
 import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
+import Services from './Services';
 import Settings from './Settings';
 
 document.body.className = 'root pt-dark';
@@ -127,6 +128,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/user/:userId" render={(props) => (
 					<UserDetailed userId={props.match.params.userId}/>
+				)}/>
+				<ReactRouter.Route path="/services" render={() => (
+					<Services/>
 				)}/>
 				<ReactRouter.Route path="/settings" render={() => (
 					<Settings/>
