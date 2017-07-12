@@ -25,6 +25,9 @@ const css = {
 	buttonFirst: {
 		margin: '10px 0 0 0',
 	} as React.CSSProperties,
+	noServices: {
+		height: 'auto',
+	} as React.CSSProperties,
 };
 
 export default class Services extends React.Component<{}, State> {
@@ -84,6 +87,7 @@ export default class Services extends React.Component<{}, State> {
 			</div>
 			<div
 				className="pt-non-ideal-state"
+				style={css.noServices}
 				hidden={!!servicesDom.length}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
