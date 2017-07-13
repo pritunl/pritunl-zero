@@ -134,6 +134,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let confirmElem: JSX.Element;
 
+		let style = this.props.style || {};
+		style.position = 'relative';
+
 		if (Constants.mobile) {
 			confirmElem = <Blueprint.Dialog
 				title="Confirm"
@@ -161,9 +164,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			</Blueprint.Dialog>;
 		} else {
 			if (this.state.confirming) {
-				let style = {
+				let confirmStyle = {
 					width: this.state.confirm * 10 + '%',
-					backgroundColor: this.props.style.color,
+					backgroundColor: style.color,
 					borderRadius: 0,
 					left: 0,
 				};
@@ -173,7 +176,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 						this.props.progressClassName || '')}
 					style={css.actionProgress}
 				>
-					<div className="pt-progress-meter" style={style}/>
+					<div className="pt-progress-meter" style={confirmStyle}/>
 				</div>;
 			}
 		}
