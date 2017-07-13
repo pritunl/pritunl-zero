@@ -91,7 +91,7 @@ export default class Services extends React.Component<{}, State> {
 				hidden={!!servicesDom.length}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-folder-open"/>
+					<span className="pt-icon pt-icon-cloud"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">No services</h4>
 				<div className="pt-non-ideal-state-description">
