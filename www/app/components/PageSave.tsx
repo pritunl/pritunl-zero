@@ -5,6 +5,7 @@ interface Props {
 	message: string;
 	changed: boolean;
 	disabled: boolean;
+	hidden?: boolean;
 	onCancel: () => void;
 	onSave: () => void;
 }
@@ -26,7 +27,11 @@ const css = {
 
 export default class PageSave extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div className="layout horizontal" style={css.box}>
+		return <div
+			className="layout horizontal"
+			style={css.box}
+			hidden={this.props.hidden}
+		>
 			<div className="flex"/>
 			<div className="layout horizontal">
 				<span style={css.message} hidden={!this.props.message}>
