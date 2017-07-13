@@ -58,6 +58,14 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+.pt-button.pt-button-empty[class*="pt-icon-"] {
+  padding: 0;
+}
+
+.pt-button.pt-button-empty[class*="pt-icon-"]::before {
+  margin-right: 0;
+}
+
 /*******************************
           Flex Layout
 *******************************/
