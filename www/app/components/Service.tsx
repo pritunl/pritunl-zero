@@ -75,6 +75,16 @@ export default class Service extends React.Component<Props, State> {
 				changed: false,
 				disabled: false,
 			});
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						changed: false,
+						service: null,
+					});
+				}
+			}, 3000);
 		}).catch((): void => {
 			this.setState({
 				...this.state,
