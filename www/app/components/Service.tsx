@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
 import PageInput from './PageInput';
+import PageSave from './PageSave';
 
 interface Props {
 	service: ServiceTypes.ServiceRo;
@@ -9,6 +10,7 @@ interface Props {
 
 interface State {
 	changed: boolean;
+	message: string;
 	service: ServiceTypes.Service;
 }
 
@@ -24,6 +26,7 @@ export default class Service extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			changed: false,
+			message: '',
 			service: null,
 		};
 	}
@@ -65,6 +68,21 @@ export default class Service extends React.Component<Props, State> {
 				value={service.name}
 				onChange={(val): void => {
 					this.set('name', val);
+				}}
+			/>
+			<PageSave
+				hidden={!this.state.changed}
+				message={this.state.message}
+				changed={this.state.changed}
+				disabled={false}
+				onCancel={(): void => {
+					this.setState({
+						...this.state,
+						changed: false,
+						service: null,
+					});
+				}}
+				onSave={(): void => {
 				}}
 			/>
 		</div>;
