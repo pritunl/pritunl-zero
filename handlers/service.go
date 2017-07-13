@@ -40,7 +40,7 @@ func servicePost(c *gin.Context) {
 
 	event.PublishDispatch(db, "service.change")
 
-	c.JSON(200, nil)
+	c.JSON(200, srvce)
 }
 
 func servicesGet(c *gin.Context) {
