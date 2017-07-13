@@ -27,7 +27,7 @@ func servicePost(c *gin.Context) {
 	srvce := &service.Service{}
 
 	if data.Name == "" {
-		srvce.Name = utils.RandName()
+		srvce.Name = "New Service"
 	} else {
 		srvce.Name = data.Name
 	}
