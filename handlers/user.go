@@ -267,5 +267,5 @@ func usersDelete(c *gin.Context) {
 
 	event.PublishDispatch(db, "user.change")
 
-	c.Status(200)
+	c.JSON(200, nil)
 }
