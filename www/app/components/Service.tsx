@@ -51,13 +51,8 @@ export default class Service extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
-		let service: ServiceTypes.Service;
-
-		if (this.state.changed) {
-			service = this.state.service;
-		} else {
-			service = this.props.service;
-		}
+		let service: ServiceTypes.Service = this.state.changed ?
+			this.state.service : this.props.service;
 
 		return <div
 			className="pt-card"
