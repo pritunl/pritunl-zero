@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -16,6 +17,19 @@ func (s *Service) Commit(db *database.Database) (err error) {
 	coll := db.Services()
 
 	err = coll.Commit(s.Id, s)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) CommitFields(db *database.Database, fields set.Set) (
+	err error) {
+
+	coll := db.Services()
+
+	err = coll.CommitFields(s.Id, s, fields)
 	if err != nil {
 		return
 	}
