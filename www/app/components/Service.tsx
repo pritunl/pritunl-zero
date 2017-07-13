@@ -4,6 +4,7 @@ import * as ServiceTypes from '../types/ServiceTypes';
 import * as ServiceActions from '../actions/ServiceActions';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
+import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	service: ServiceTypes.ServiceRo;
@@ -18,8 +19,14 @@ interface State {
 
 const css = {
 	card: {
+		position: 'relative',
 		padding: '10px',
 		marginBottom: '5px',
+	} as React.CSSProperties,
+	remove: {
+		position: 'absolute',
+		top: '5px',
+		right: '5px',
 	} as React.CSSProperties,
 };
 
@@ -85,6 +92,14 @@ export default class Service extends React.Component<Props, State> {
 			className="pt-card"
 			style={css.card}
 		>
+			<div style={css.remove}>
+				<ConfirmButton
+					className="pt-minimal pt-intent-danger pt-icon-cross"
+					progressClassName="pt-intent-danger"
+					disabled={this.state.disabled}
+					onConfirm={this.onDelete}
+				/>
+			</div>
 			<PageInput
 				label="Name"
 				type="text"
