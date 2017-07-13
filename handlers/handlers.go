@@ -144,6 +144,7 @@ func Register(engine *gin.Engine) {
 	activeAuthGroup.GET("/event", eventGet)
 
 	activeAuthGroup.GET("/service", servicesGet)
+	activeAuthGroup.PUT("/service/:service_id", servicePut)
 	activeAuthGroup.POST("/service", servicePost)
 	activeAuthGroup.DELETE("/service/:service_id", serviceDelete)
 

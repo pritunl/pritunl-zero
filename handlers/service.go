@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
@@ -12,6 +13,45 @@ import (
 type serviceData struct {
 	Id   bson.ObjectId `json:"id"`
 	Name string        `json:"name"`
+}
+
+func servicePut(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	data := &serviceData{}
+
+	serviceId, ok := utils.ParseObjectId(c.Param("service_id"))
+	if !ok {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	srvce, err := service.Get(db, serviceId)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	srvce.Name = data.Name
+
+	fields := set.NewSet(
+		"name",
+	)
+
+	err = srvce.CommitFields(db, fields)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "service.change")
+
+	c.JSON(200, srvce)
 }
 
 func servicePost(c *gin.Context) {
