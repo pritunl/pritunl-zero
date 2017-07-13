@@ -202,7 +202,7 @@ func init() {
 		}
 
 		if count == 0 {
-			logrus.Info("setup: Creating default super user")
+			logrus.Info("user: Creating default super user")
 
 			usr := User{
 				Type:          Local,
