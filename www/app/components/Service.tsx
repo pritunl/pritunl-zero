@@ -95,7 +95,7 @@ export default class Service extends React.Component<Props, State> {
 				}}
 			/>
 			<PageSave
-				hidden={!this.state.changed}
+				hidden={!this.state.service}
 				message={this.state.message}
 				changed={this.state.changed}
 				disabled={false}
