@@ -181,11 +181,13 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			}
 		}
 
-		let style = this.props.style || {};
-		style.position = 'relative';
+		let className = this.props.className || '';
+		if (!this.props.label) {
+			className += ' pt-button-empty';
+		}
 
 		return <button
-			className={'pt-button ' + (this.props.className || '')}
+			className={'pt-button ' + className}
 			style={style}
 			type="button"
 			hidden={this.props.hidden}
