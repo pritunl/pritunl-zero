@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -36,6 +37,8 @@ func servicePost(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
+
+	event.PublishDispatch(db, "service.change")
 
 	c.JSON(200, nil)
 }
