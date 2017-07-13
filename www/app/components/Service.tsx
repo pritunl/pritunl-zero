@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as ServiceActions from '../actions/ServiceActions';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 interface State {
+	disabled: boolean;
 	changed: boolean;
 	message: string;
 	service: ServiceTypes.Service;
@@ -25,6 +27,7 @@ export default class Service extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
+			disabled: false,
 			changed: false,
 			message: '',
 			service: null,
@@ -50,6 +53,27 @@ export default class Service extends React.Component<Props, State> {
 			...this.state,
 			changed: true,
 			service: service,
+		});
+	}
+
+	onSave = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+		ServiceActions.commit(this.state.service).then((): void => {
+			this.setState({
+				...this.state,
+				message: 'Your changes have been saved',
+				changed: false,
+				disabled: false,
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
 		});
 	}
 
@@ -82,8 +106,7 @@ export default class Service extends React.Component<Props, State> {
 						service: null,
 					});
 				}}
-				onSave={(): void => {
-				}}
+				onSave={this.onSave}
 			/>
 		</div>;
 	}
