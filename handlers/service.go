@@ -43,6 +43,26 @@ func servicePost(c *gin.Context) {
 	c.JSON(200, srvce)
 }
 
+func serviceDelete(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	serviceId, ok := utils.ParseObjectId(c.Param("service_id"))
+	if !ok {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	err := service.Remove(db, serviceId)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "service.change")
+
+	c.JSON(200, nil)
+}
+
 func servicesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
