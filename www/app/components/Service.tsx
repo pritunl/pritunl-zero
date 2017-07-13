@@ -84,6 +84,24 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
+	onDelete = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+		ServiceActions.remove(this.props.service.id).then((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		});
+	}
+
 	render(): JSX.Element {
 		let service: ServiceTypes.Service = this.state.changed ?
 			this.state.service : this.props.service;
