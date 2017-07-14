@@ -5,6 +5,7 @@ import * as ServiceActions from '../actions/ServiceActions';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
+import PageInputButton from './PageInputButton';
 
 interface Props {
 	service: ServiceTypes.ServiceRo;
@@ -14,6 +15,7 @@ interface State {
 	disabled: boolean;
 	changed: boolean;
 	message: string;
+	addRole: string;
 	service: ServiceTypes.Service;
 }
 
@@ -28,6 +30,10 @@ const css = {
 		top: '5px',
 		right: '5px',
 	} as React.CSSProperties,
+	role: {
+		margin: '9px 5px 0 5px',
+		height: '20px',
+	} as React.CSSProperties,
 };
 
 export default class Service extends React.Component<Props, State> {
@@ -37,6 +43,7 @@ export default class Service extends React.Component<Props, State> {
 			disabled: false,
 			changed: false,
 			message: '',
+			addRole: '',
 			service: null,
 		};
 	}
@@ -113,9 +120,85 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
+	onAddRole = (): void => {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let roles = [
+			...service.roles,
+		];
+
+		if (!this.state.addRole) {
+			return;
+		}
+
+		if (roles.indexOf(this.state.addRole) === -1) {
+			roles.push(this.state.addRole);
+		}
+
+		roles.sort();
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addRole: '',
+			service: {
+				...service,
+				roles: roles,
+			},
+		});
+	}
+
+	onRemoveRole = (role: string): void => {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let roles = [
+			...service.roles,
+		];
+
+		let i = roles.indexOf(role);
+		if (i === -1) {
+			return;
+		}
+
+		roles.splice(i, 1);
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addRole: '',
+			service: {
+				...service,
+				roles: roles,
+			},
+		});
+	}
+
 	render(): JSX.Element {
 		let service: ServiceTypes.Service = this.state.service ||
 			this.props.service;
+
+		let roles: JSX.Element[] = [];
+		for (let role of service.roles) {
+			roles.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.role}
+					key={role}
+				>
+					{role}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveRole(role);
+						}}
+					/>
+				</div>,
+			);
+		}
 
 		return <div
 			className="pt-card"
@@ -137,6 +220,26 @@ export default class Service extends React.Component<Props, State> {
 				onChange={(val): void => {
 					this.set('name', val);
 				}}
+			/>
+			<label className="pt-label">
+				Roles
+				<div>
+					{roles}
+				</div>
+			</label>
+			<PageInputButton
+				buttonClass="pt-intent-success"
+				label="Add"
+				type="text"
+				placeholder="Add role"
+				value={this.state.addRole}
+				onChange={(val): void => {
+					this.setState({
+						...this.state,
+						addRole: val,
+					});
+				}}
+				onSubmit={this.onAddRole}
 			/>
 			<PageSave
 				hidden={!this.state.service}
