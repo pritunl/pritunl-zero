@@ -2,10 +2,17 @@
 export const SYNC = 'service.sync';
 export const CHANGE = 'service.change';
 
+export interface Server {
+	protocol?: string;
+	server?: string;
+	port?: number;
+}
+
 export interface Service {
 	id: string;
 	name?: string;
 	roles?: string[];
+	servers?: Server[];
 }
 
 export type Services = Service[];
