@@ -11,7 +11,7 @@ interface Props {
 const css = {
 	group: {
 		width: '100%',
-		maxWidth: '320px',
+		maxWidth: '310px',
 		marginTop: '5px',
 	} as React.CSSProperties,
 	protocol: {
