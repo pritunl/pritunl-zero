@@ -25,6 +25,32 @@ type Service struct {
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	for _, server := range s.Servers {
+		if server.Protocol != "http" && server.Protocol != "https" {
+			errData = &errortypes.ErrorData{
+				Error:   "service_protocol_invalid",
+				Message: "Invalid service server protocol",
+			}
+			return
+		}
+
+		if server.Hostname == "" {
+			errData = &errortypes.ErrorData{
+				Error:   "service_hostname_invalid",
+				Message: "Invalid service server hostname",
+			}
+			return
+		}
+
+		if server.Port == 0 {
+			errData = &errortypes.ErrorData{
+				Error:   "service_port_invalid",
+				Message: "Invalid service server port",
+			}
+			return
+		}
+	}
+
 	s.Format()
 
 	return
