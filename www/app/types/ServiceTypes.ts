@@ -4,7 +4,7 @@ export const CHANGE = 'service.change';
 
 export interface Server {
 	protocol?: string;
-	server?: string;
+	hostname?: string;
 	port?: number;
 }
 
