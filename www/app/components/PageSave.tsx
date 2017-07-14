@@ -2,10 +2,12 @@
 import * as React from 'react';
 
 interface Props {
+	style?: React.CSSProperties;
 	message: string;
 	changed: boolean;
 	disabled: boolean;
 	hidden?: boolean;
+	light?: boolean;
 	onCancel: () => void;
 	onSave: () => void;
 }
@@ -27,9 +29,18 @@ const css = {
 
 export default class PageSave extends React.Component<Props, {}> {
 	render(): JSX.Element {
+		let style: React.CSSProperties = this.props.light ? {} : css.box;
+
+		if (this.props.style) {
+			style = {
+				...style,
+				...this.props.style,
+			};
+		}
+
 		return <div
 			className="layout horizontal"
-			style={css.box}
+			style={style}
 			hidden={this.props.hidden}
 		>
 			<div className="flex"/>
