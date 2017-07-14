@@ -239,7 +239,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success"
+						buttonClass="pt-intent-success pt-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
