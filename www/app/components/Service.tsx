@@ -34,6 +34,10 @@ const css = {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
+	group: {
+		flex: 1,
+		minWidth: '250px',
+	} as React.CSSProperties,
 };
 
 export default class Service extends React.Component<Props, State> {
@@ -204,43 +208,49 @@ export default class Service extends React.Component<Props, State> {
 			className="pt-card"
 			style={css.card}
 		>
-			<div style={css.remove}>
-				<ConfirmButton
-					className="pt-minimal pt-intent-danger pt-icon-cross"
-					progressClassName="pt-intent-danger"
-					disabled={this.state.disabled}
-					onConfirm={this.onDelete}
-				/>
-			</div>
-			<PageInput
-				label="Name"
-				type="text"
-				placeholder="Enter name"
-				value={service.name}
-				onChange={(val): void => {
-					this.set('name', val);
-				}}
-			/>
-			<label className="pt-label">
-				Roles
-				<div>
-					{roles}
+			<div className="layout horizontal wrap">
+				<div style={css.group}>
+					<div style={css.remove}>
+						<ConfirmButton
+							className="pt-minimal pt-intent-danger pt-icon-cross"
+							progressClassName="pt-intent-danger"
+							disabled={this.state.disabled}
+							onConfirm={this.onDelete}
+						/>
+					</div>
+					<PageInput
+						label="Name"
+						type="text"
+						placeholder="Enter name"
+						value={service.name}
+						onChange={(val): void => {
+							this.set('name', val);
+						}}
+					/>
 				</div>
-			</label>
-			<PageInputButton
-				buttonClass="pt-intent-success"
-				label="Add"
-				type="text"
-				placeholder="Add role"
-				value={this.state.addRole}
-				onChange={(val): void => {
-					this.setState({
-						...this.state,
-						addRole: val,
-					});
-				}}
-				onSubmit={this.onAddRole}
-			/>
+				<div style={css.group}>
+					<label className="pt-label">
+						Roles
+						<div>
+							{roles}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success"
+						label="Add"
+						type="text"
+						placeholder="Add role"
+						value={this.state.addRole}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addRole: val,
+							});
+						}}
+						onSubmit={this.onAddRole}
+					/>
+				</div>
+			</div>
 			<PageSave
 				hidden={!this.state.service}
 				message={this.state.message}
