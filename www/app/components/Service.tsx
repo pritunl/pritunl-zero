@@ -22,7 +22,7 @@ interface State {
 const css = {
 	card: {
 		position: 'relative',
-		padding: '10px',
+		padding: '10px 10px 0 10px',
 		marginBottom: '5px',
 	} as React.CSSProperties,
 	remove: {
