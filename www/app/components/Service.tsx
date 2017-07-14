@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as ServiceActions from '../actions/ServiceActions';
+import ServiceServer from './ServiceServer';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
@@ -184,6 +185,69 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
+	onAddServer = (): void => {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let servers = [
+			...service.servers,
+		];
+
+		servers.push({});
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				servers: servers,
+			},
+		});
+	}
+
+	onChangeServer(i: number, state: ServiceTypes.Server): void {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let servers = [
+			...service.servers,
+		];
+
+		servers[i] = state;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				servers: servers,
+			},
+		});
+	}
+
+	onRemoveServer(i: number): void {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let servers = [
+			...service.servers,
+		];
+
+		servers.splice(i, 1);
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				servers: servers,
+			},
+		});
+	}
+
 	render(): JSX.Element {
 		let service: ServiceTypes.Service = this.state.service ||
 			this.props.service;
@@ -204,6 +268,25 @@ export default class Service extends React.Component<Props, State> {
 						}}
 					/>
 				</div>,
+			);
+		}
+
+		let servers: JSX.Element[] = [];
+		for (let i = 0; i < service.servers.length; i++) {
+			let index = i;
+			let server = service.servers[i];
+
+			servers.push(
+				<ServiceServer
+					key={index}
+					server={server}
+					onChange={(state: ServiceTypes.Server): void => {
+						this.onChangeServer(index, state);
+					}}
+					onRemove={(): void => {
+						this.onRemoveServer(index);
+					}}
+				/>
 			);
 		}
 
@@ -252,6 +335,14 @@ export default class Service extends React.Component<Props, State> {
 					/>
 				</div>
 				<div style={css.group}>
+					{servers}
+					<button
+						className="pt-button pt-intent-success pt-icon-add"
+						type="button"
+						onClick={this.onAddServer}
+					>
+						Add Server
+					</button>
 				</div>
 			</div>
 			<PageSave
