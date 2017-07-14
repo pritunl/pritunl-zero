@@ -9,10 +9,17 @@ import (
 	"sort"
 )
 
+type Server struct {
+	Protocol string `bson:"protocol" json:"protocol"`
+	Hostname string `bson:"hostname" json:"hostname"`
+	Port     int    `bson:"port" json:"port"`
+}
+
 type Service struct {
-	Id    bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name  string        `bson:"name" json:"name"`
-	Roles []string      `bson:"roles" json:"roles"`
+	Id      bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name    string        `bson:"name" json:"name"`
+	Roles   []string      `bson:"roles" json:"roles"`
+	Servers []*Server     `bson:"servers" json:"servers"`
 }
 
 func (s *Service) Validate(db *database.Database) (
