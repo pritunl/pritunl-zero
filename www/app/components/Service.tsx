@@ -80,6 +80,7 @@ export default class Service extends React.Component<Props, State> {
 				if (!this.state.changed) {
 					this.setState({
 						...this.state,
+						message: '',
 						changed: false,
 						service: null,
 					});
