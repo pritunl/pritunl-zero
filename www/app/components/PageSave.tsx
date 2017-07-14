@@ -29,7 +29,7 @@ const css = {
 
 export default class PageSave extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		let style: React.CSSProperties = this.props.light ? {} : css.box;
+		let style: React.CSSProperties = this.props.light ? null : css.box;
 
 		if (this.props.style) {
 			style = {
