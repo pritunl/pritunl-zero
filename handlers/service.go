@@ -46,6 +46,7 @@ func servicePut(c *gin.Context) {
 	fields := set.NewSet(
 		"name",
 		"roles",
+		"servers",
 	)
 
 	errData, err := srvce.Validate(db)
