@@ -11,8 +11,9 @@ import (
 )
 
 type serviceData struct {
-	Id   bson.ObjectId `json:"id"`
-	Name string        `json:"name"`
+	Id    bson.ObjectId `json:"id"`
+	Name  string        `json:"name"`
+	Roles []string      `json:"roles"`
 }
 
 func servicePut(c *gin.Context) {
@@ -38,10 +39,23 @@ func servicePut(c *gin.Context) {
 	}
 
 	srvce.Name = data.Name
+	srvce.Roles = data.Roles
 
 	fields := set.NewSet(
 		"name",
+		"roles",
 	)
+
+	errData, err := srvce.Validate(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
 
 	err = srvce.CommitFields(db, fields)
 	if err != nil {
@@ -71,6 +85,8 @@ func servicePost(c *gin.Context) {
 	} else {
 		srvce.Name = data.Name
 	}
+
+	srvce.Roles = data.Roles
 
 	err = srvce.Insert(db)
 	if err != nil {
