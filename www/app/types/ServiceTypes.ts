@@ -5,6 +5,7 @@ export const CHANGE = 'service.change';
 export interface Service {
 	id: string;
 	name?: string;
+	roles?: string[];
 }
 
 export type Services = Service[];
