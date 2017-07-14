@@ -9,9 +9,6 @@ interface Props {
 }
 
 const css = {
-	card: {
-		marginBottom: '5px',
-	} as React.CSSProperties,
 	group: {
 		width: '100%',
 		maxWidth: '320px',
