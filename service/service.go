@@ -9,8 +9,9 @@ import (
 )
 
 type Service struct {
-	Id   bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name string        `bson:"name" json:"name"`
+	Id    bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name  string        `bson:"name" json:"name"`
+	Roles []string      `bson:"roles" json:"roles"`
 }
 
 func (s *Service) Commit(db *database.Database) (err error) {
