@@ -292,7 +292,7 @@ export default class Service extends React.Component<Props, State> {
 					onRemove={(): void => {
 						this.onRemoveServer(index);
 					}}
-				/>
+				/>,
 			);
 		}
 
