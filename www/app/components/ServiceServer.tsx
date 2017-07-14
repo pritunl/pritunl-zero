@@ -12,6 +12,7 @@ const css = {
 	group: {
 		width: '100%',
 		maxWidth: '320px',
+		marginTop: '5px',
 	} as React.CSSProperties,
 	protocol: {
 		flex: '0 1 auto',
