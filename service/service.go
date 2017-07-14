@@ -6,12 +6,25 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"gopkg.in/mgo.v2/bson"
+	"sort"
 )
 
 type Service struct {
 	Id    bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Name  string        `bson:"name" json:"name"`
 	Roles []string      `bson:"roles" json:"roles"`
+}
+
+func (s *Service) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	s.Format()
+
+	return
+}
+
+func (s *Service) Format() {
+	sort.Strings(s.Roles)
 }
 
 func (s *Service) Commit(db *database.Database) (err error) {
