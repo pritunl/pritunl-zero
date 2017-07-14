@@ -323,6 +323,20 @@ export default class Service extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<label style={css.serversLabel}>
+						Servers
+					</label>
+					{servers}
+					<button
+						className="pt-button pt-intent-success pt-icon-add"
+						style={css.serverAdd}
+						type="button"
+						onClick={this.onAddServer}
+					>
+						Add Server
+					</button>
+				</div>
+				<div style={css.group}>
 					<label className="pt-label">
 						Roles
 						<div>
@@ -343,20 +357,6 @@ export default class Service extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
-				</div>
-				<div style={css.group}>
-					<label style={css.serversLabel}>
-						Servers
-					</label>
-					{servers}
-					<button
-						className="pt-button pt-intent-success pt-icon-add"
-						style={css.serverAdd}
-						type="button"
-						onClick={this.onAddServer}
-					>
-						Add Server
-					</button>
 				</div>
 			</div>
 			<PageSave
