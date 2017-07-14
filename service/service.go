@@ -25,6 +25,14 @@ type Service struct {
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	if s.Roles == nil {
+		s.Roles = []string{}
+	}
+
+	if s.Servers == nil {
+		s.Servers = []*Server{}
+	}
+
 	for _, server := range s.Servers {
 		if server.Protocol != "http" && server.Protocol != "https" {
 			errData = &errortypes.ErrorData{
