@@ -35,6 +35,12 @@ const css = {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
+	serversLabel: {
+		display: 'block',
+	} as React.CSSProperties,
+	serverAdd: {
+		margin: '8px 0 15px 0',
+	} as React.CSSProperties,
 	group: {
 		flex: 1,
 		minWidth: '250px',
@@ -335,9 +341,13 @@ export default class Service extends React.Component<Props, State> {
 					/>
 				</div>
 				<div style={css.group}>
+					<label style={css.serversLabel}>
+						Servers
+					</label>
 					{servers}
 					<button
 						className="pt-button pt-intent-success pt-icon-add"
+						style={css.serverAdd}
 						type="button"
 						onClick={this.onAddServer}
 					>
