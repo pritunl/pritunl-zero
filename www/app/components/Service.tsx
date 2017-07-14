@@ -38,6 +38,9 @@ const css = {
 		flex: 1,
 		minWidth: '250px',
 	} as React.CSSProperties,
+	save: {
+		paddingBottom: '10px',
+	} as React.CSSProperties,
 };
 
 export default class Service extends React.Component<Props, State> {
@@ -252,10 +255,12 @@ export default class Service extends React.Component<Props, State> {
 				</div>
 			</div>
 			<PageSave
+				style={css.save}
 				hidden={!this.state.service}
 				message={this.state.message}
 				changed={this.state.changed}
 				disabled={false}
+				light={true}
 				onCancel={(): void => {
 					this.setState({
 						...this.state,
