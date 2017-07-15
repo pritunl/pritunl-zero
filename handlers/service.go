@@ -13,6 +13,7 @@ import (
 type serviceData struct {
 	Id      bson.ObjectId     `json:"id"`
 	Name    string            `json:"name"`
+	Domains []string          `json:"domains"`
 	Roles   []string          `json:"roles"`
 	Servers []*service.Server `json:"servers"`
 }
@@ -40,11 +41,13 @@ func servicePut(c *gin.Context) {
 	}
 
 	srvce.Name = data.Name
+	srvce.Domains = data.Domains
 	srvce.Roles = data.Roles
 	srvce.Servers = data.Servers
 
 	fields := set.NewSet(
 		"name",
+		"domains",
 		"roles",
 		"servers",
 	)
@@ -90,6 +93,7 @@ func servicePost(c *gin.Context) {
 	}
 
 	srvce.Roles = data.Roles
+	srvce.Domains = data.Domains
 	srvce.Servers = data.Servers
 
 	err = srvce.Insert(db)
