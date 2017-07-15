@@ -342,7 +342,7 @@ export default class Subscription extends React.Component<{}, State> {
 				</div>
 				<div className="layout horizontal center-justified">
 					<ConfirmButton
-						className="pt-intent-danger pt-icon-delete"
+						className="pt-intent-danger pt-icon-disable"
 						progressClassName="pt-intent-danger"
 						style={css.button2}
 						disabled={this.state.disabled}
