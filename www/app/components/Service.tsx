@@ -310,6 +310,7 @@ export default class Service extends React.Component<Props, State> {
 						<ConfirmButton
 							className="pt-minimal pt-intent-danger pt-icon-cross"
 							progressClassName="pt-intent-danger"
+							confirmMsg="Confirm service remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
