@@ -62,7 +62,7 @@ const css = {
 		margin: '5px',
 	} as React.CSSProperties,
 	button2: {
-		width: '170px',
+		width: '160px',
 		margin: '5px',
 	} as React.CSSProperties,
 	button3: {
@@ -347,7 +347,7 @@ export default class Subscription extends React.Component<{}, State> {
 						style={css.button2}
 						disabled={this.state.disabled}
 						hidden={canceling}
-						label="Cancel Subscription"
+						label="End Subscription"
 						onConfirm={(): void => {
 							this.setState({
 								...this.state,
