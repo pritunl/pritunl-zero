@@ -36,10 +36,10 @@ const css = {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
-	serversLabel: {
+	itemsLabel: {
 		display: 'block',
 	} as React.CSSProperties,
-	serverAdd: {
+	itemsAdd: {
 		margin: '8px 0 15px 0',
 	} as React.CSSProperties,
 	group: {
@@ -403,25 +403,25 @@ export default class Service extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<label style={css.serversLabel}>
+					<label style={css.itemsLabel}>
 						Domains
 					</label>
 					{domains}
 					<button
 						className="pt-button pt-intent-success pt-icon-add"
-						style={css.serverAdd}
+						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddDomain}
 					>
 						Add Domain
 					</button>
-					<label style={css.serversLabel}>
+					<label style={css.itemsLabel}>
 						Servers
 					</label>
 					{servers}
 					<button
 						className="pt-button pt-intent-success pt-icon-add"
-						style={css.serverAdd}
+						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddServer}
 					>
