@@ -10,6 +10,7 @@ interface Props {
 	hidden?: boolean;
 	progressClassName?: string;
 	label?: string;
+	confirmMsg?: string;
 	disabled?: boolean;
 	onConfirm?: () => void;
 }
@@ -138,6 +139,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		style.position = 'relative';
 
 		if (Constants.mobile) {
+			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
+				'Confirm ' + (this.props.label || '');
+
 			confirmElem = <Blueprint.Dialog
 				title="Confirm"
 				style={css.dialog}
@@ -145,7 +149,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				onClose={this.closeDialog}
 			>
 				<div className="pt-dialog-body">
-					Confirm {this.props.label}
+					{confirmMsg}
 				</div>
 				<div className="pt-dialog-footer">
 					<div className="pt-dialog-footer-actions">
