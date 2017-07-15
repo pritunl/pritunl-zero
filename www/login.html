@@ -143,14 +143,11 @@
           authLocal.style.display = 'block';
         };
 
-        var provider;
-        for (var i = 0; i < state.providers.length; i++) {
-          provider = state.providers[i];
-
+        state.providers.forEach(function(provider) {
           document.getElementById(provider.id).onclick = function() {
             window.location = '/auth/request?id=' + provider.id;
           };
-        }
+        });
       };
 
       loadState();
