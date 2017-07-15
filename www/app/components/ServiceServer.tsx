@@ -26,6 +26,7 @@ const css = {
 	port: {
 		flex: '0 1 auto',
 		width: '52px',
+		borderRadius: '0 3px 3px 0',
 	} as React.CSSProperties,
 };
 
