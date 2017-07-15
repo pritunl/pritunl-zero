@@ -43,7 +43,7 @@ export default class ServiceServer extends React.Component<Props, {}> {
 		return <div className="pt-control-group" style={css.group}>
 			<div className="pt-select" style={css.protocol}>
 				<select
-					value={server.protocol || 'https'}
+					value={server.protocol}
 					onChange={(evt): void => {
 						let service = this.clone();
 						service.protocol = evt.target.value;
@@ -77,7 +77,7 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				autoCapitalize="off"
 				spellCheck={false}
 				placeholder="Port"
-				value={server.port || 443}
+				value={server.port}
 				onChange={(evt): void => {
 					let service = this.clone();
 					service.port = parseInt(evt.target.value, 10);
