@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as ServiceActions from '../actions/ServiceActions';
+import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
@@ -258,9 +259,89 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
+	onAddDomain = (): void => {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let domains = [
+			...service.domains,
+			'',
+		];
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				domains: domains,
+			},
+		});
+	}
+
+	onChangeDomain(i: number, state: string): void {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let domains = [
+			...service.domains,
+		];
+
+		domains[i] = state;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				domains: domains,
+			},
+		});
+	}
+
+	onRemoveDomain(i: number): void {
+		let service: ServiceTypes.Service = this.state.service ||
+			this.props.service;
+
+		let domains = [
+			...service.domains,
+		];
+
+		domains.splice(i, 1);
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: {
+				...service,
+				domains: domains,
+			},
+		});
+	}
+
 	render(): JSX.Element {
 		let service: ServiceTypes.Service = this.state.service ||
 			this.props.service;
+
+		let domains: JSX.Element[] = [];
+		for (let i = 0; i < service.domains.length; i++) {
+			let index = i;
+
+			domains.push(
+				<ServiceDomain
+					key={index}
+					domain={service.domains[index]}
+					onChange={(state: string): void => {
+						this.onChangeDomain(index, state);
+					}}
+					onRemove={(): void => {
+						this.onRemoveDomain(index);
+					}}
+				/>,
+			);
+		}
 
 		let roles: JSX.Element[] = [];
 		for (let role of service.roles) {
@@ -324,6 +405,18 @@ export default class Service extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<label style={css.serversLabel}>
+						Domains
+					</label>
+					{domains}
+					<button
+						className="pt-button pt-intent-success pt-icon-add"
+						style={css.serverAdd}
+						type="button"
+						onClick={this.onAddDomain}
+					>
+						Add Domain
+					</button>
 					<label style={css.serversLabel}>
 						Servers
 					</label>
