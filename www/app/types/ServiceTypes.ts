@@ -11,6 +11,7 @@ export interface Server {
 export interface Service {
 	id: string;
 	name?: string;
+	domains?: string[];
 	roles?: string[];
 	servers?: Server[];
 }
