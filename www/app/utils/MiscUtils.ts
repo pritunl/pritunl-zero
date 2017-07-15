@@ -57,7 +57,7 @@ export function formatDate(dateStr: string): string {
 			day = 'Thu';
 			break;
 		case 5:
-			day = 'Fre';
+			day = 'Fri';
 			break;
 		case 6:
 			day = 'Sat';
