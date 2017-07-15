@@ -364,12 +364,11 @@ export default class Service extends React.Component<Props, State> {
 		let servers: JSX.Element[] = [];
 		for (let i = 0; i < service.servers.length; i++) {
 			let index = i;
-			let server = service.servers[i];
 
 			servers.push(
 				<ServiceServer
 					key={index}
-					server={server}
+					server={service.servers[index]}
 					onChange={(state: ServiceTypes.Server): void => {
 						this.onChangeServer(index, state);
 					}}
