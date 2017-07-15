@@ -198,13 +198,12 @@ export default class Service extends React.Component<Props, State> {
 
 		let servers = [
 			...service.servers,
+			{
+				protocol: 'https',
+				hostname: '',
+				port: 443,
+			},
 		];
-
-		servers.push({
-			protocol: 'https',
-			hostname: '',
-			port: 443,
-		});
 
 		this.setState({
 			...this.state,
