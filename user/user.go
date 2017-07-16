@@ -132,7 +132,7 @@ func (u *User) Upsert(db *database.Database) (err error) {
 		ReturnNew: true,
 	}
 
-	coll.Find(&bson.M{
+	_, err = coll.Find(&bson.M{
 		"type":     u.Type,
 		"username": u.Username,
 	}).Apply(change, u)
