@@ -143,6 +143,10 @@ func Register(engine *gin.Engine) {
 
 	activeAuthGroup.GET("/event", eventGet)
 
+	activeAuthGroup.GET("/node", nodesGet)
+	activeAuthGroup.PUT("/node/:node_id", nodePut)
+	activeAuthGroup.DELETE("/node/:node_id", nodeDelete)
+
 	activeAuthGroup.GET("/service", servicesGet)
 	activeAuthGroup.PUT("/service/:service_id", servicePut)
 	activeAuthGroup.POST("/service", servicePost)
