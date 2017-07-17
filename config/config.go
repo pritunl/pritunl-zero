@@ -15,11 +15,11 @@ import (
 var Config = &ConfigData{}
 
 type ConfigData struct {
-	path        string `json:"-"`
-	loaded      bool   `json:"-"`
-	MongoUri    string `json:"mongo_uri"`
-	NodeId      string `json:"node_id"`
-	ProxyNodeId string `json:"proxy_node_id"`
+	path             string `json:"-"`
+	loaded           bool   `json:"-"`
+	MongoUri         string `json:"mongo_uri"`
+	ManagementNodeId string `json:"management_node_id"`
+	ProxyNodeId      string `json:"proxy_node_id"`
 }
 
 func (c *ConfigData) Save() (err error) {
@@ -123,9 +123,9 @@ func init() {
 
 		save := false
 
-		if Config.NodeId == "" {
+		if Config.ManagementNodeId == "" {
 			save = true
-			Config.NodeId = bson.NewObjectId().String()
+			Config.ManagementNodeId = bson.NewObjectId().String()
 		}
 
 		if Config.ProxyNodeId == "" {
