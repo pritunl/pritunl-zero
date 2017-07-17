@@ -61,7 +61,7 @@ func (n *Node) update(db *database.Database) (err error) {
 				"load15":    n.Load15,
 			},
 		},
-		Upsert:    true,
+		Upsert:    false,
 		ReturnNew: true,
 	}
 
