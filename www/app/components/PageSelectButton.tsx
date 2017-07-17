@@ -1,15 +1,12 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-type OnChange = (val: string) => void;
-type OnSubmit = () => void;
-
 interface Props {
 	label: string;
 	value: string;
 	buttonClass?: string;
-	onChange: OnChange;
-	onSubmit: OnSubmit;
+	onChange: (val: string) => void;
+	onSubmit: () => void;
 }
 
 const css = {
