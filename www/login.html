@@ -194,6 +194,8 @@
 
         xmlhttp.onreadystatechange = function() {
           if (xmlhttp.readyState === 4) {
+            submitElm.disabled = false;
+
             if (xmlhttp.status === 200) {
               window.location = '/';
             } else if (xmlhttp.status === 202) {
@@ -208,7 +210,6 @@
               }
 
               setAlert(errorMsg, 'danger');
-              submitElm.disabled = false;
             }
           }
         };
