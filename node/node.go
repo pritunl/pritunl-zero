@@ -4,6 +4,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -124,15 +125,31 @@ func (n *Node) Init() (err error) {
 
 	coll := db.Nodes()
 
-	err = coll.FindOneId(n.Id, n)
-	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			err = nil
-		default:
-			return
-		}
+	if n.Name == "" {
+		n.Name = utils.RandName()
 	}
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$set": &bson.M{
+				"_id":       n.Id,
+				"type":      n.Type,
+				"name":      n.Name,
+				"timestamp": time.Now(),
+			},
+		},
+		Upsert:    true,
+		ReturnNew: true,
+	}
+
+	_, err = coll.Find(&bson.M{
+		"_id": n.Id,
+	}).Apply(change, n)
+	if err != nil {
+		return
+	}
+
+	event.PublishDispatch(db, "node.change")
 
 	Self = n
 
