@@ -96,6 +96,18 @@ func (n *Node) Init() (err error) {
 	db := database.GetDatabase()
 	defer db.Close()
 
+	coll := db.Nodes()
+
+	err = coll.FindOneId(n.Id, n)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
+	}
+
 	Self = n
 
 	go n.keepalive()
