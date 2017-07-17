@@ -100,7 +100,7 @@ export default class User extends React.Component<Props, {}> {
 				{user.type}
 			</div>
 			<div className="layout horizontal" style={css.lastActivity}>
-				{MiscUtils.formatDate(user.last_active) || 'Inactive'}
+				{MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'}
 			</div>
 			<div className="flex" style={css.roles}>
 				<span
