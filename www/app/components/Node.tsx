@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as NodeActions from '../actions/NodeActions';
 import PageInput from './PageInput';
+import PageProgress from './PageProgress';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 
@@ -160,6 +161,30 @@ export default class Node extends React.Component<Props, State> {
 					/>
 				</div>
 				<div style={css.group}>
+					<PageProgress
+						bars={[
+							{
+								className: 'pt-no-stripes pt-intent-primary',
+								label: 'Memory',
+								value: node.memory,
+							},
+							{
+								className: 'pt-no-stripes pt-intent-success',
+								label: 'Load1',
+								value: node.load1,
+							},
+							{
+								className: 'pt-no-stripes pt-intent-warning',
+								label: 'Load5',
+								value: node.load5,
+							},
+							{
+								className: 'pt-no-stripes pt-intent-danger',
+								label: 'Load15',
+								value: node.load15,
+							},
+						]}
+					/>
 				</div>
 			</div>
 			<PageSave
