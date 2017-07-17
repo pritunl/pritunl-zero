@@ -4,10 +4,13 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/handlers"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
 )
@@ -26,6 +29,12 @@ func ManagementNode() (err error) {
 	}
 
 	handlers.Register(router)
+
+	nde := node.Node{
+		Id:   bson.ObjectIdHex(config.Config.ManagementNodeId),
+		Type: node.Management,
+	}
+	nde.Init()
 
 	server := &http.Server{
 		Addr:           "0.0.0.0:8443",
