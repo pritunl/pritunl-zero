@@ -146,7 +146,7 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 									} else if (pathname === '/user') {
-										//UserActions.load();
+										// UserActions.load();
 									} else if (pathname === '/nodes') {
 										NodeActions.sync().then((): void => {
 											this.setState({
