@@ -174,6 +174,11 @@ export default class Users extends React.Component<{}, State> {
 			/>);
 		});
 
+		let filterClass = 'pt-button pt-intent-primary pt-icon-filter ';
+		if (this.state.filter) {
+			filterClass += 'pt-active';
+		}
+
 		return <Page>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
@@ -181,7 +186,7 @@ export default class Users extends React.Component<{}, State> {
 					<div className="flex"/>
 					<div>
 						<button
-							className="pt-button pt-intent-primary pt-icon-filter"
+							className={filterClass}
 							style={css.buttonFirst}
 							type="button"
 							onClick={(): void => {
