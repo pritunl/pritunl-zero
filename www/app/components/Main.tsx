@@ -20,6 +20,7 @@ document.body.className = 'root pt-dark';
 
 interface State {
 	subscription: SubscriptionTypes.SubscriptionRo;
+	disabled: boolean;
 }
 
 const css = {
@@ -42,6 +43,7 @@ export default class Main extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			subscription: SubscriptionStore.subscription,
+			disabled: false,
 		};
 	}
 
@@ -122,21 +124,77 @@ export default class Main extends React.Component<{}, State> {
 						<ReactRouter.Route render={(props) => (
 							<button
 								className="pt-button pt-minimal pt-icon-refresh"
+								disabled={this.state.disabled}
 								onClick={() => {
 									let pathname = props.location.pathname;
 
+									this.setState({
+										...this.state,
+										disabled: true,
+									});
+
 									if (pathname === '/users') {
-										UserActions.sync();
+										UserActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/user') {
 										//UserActions.load();
 									} else if (pathname === '/nodes') {
-										NodeActions.sync();
+										NodeActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/services') {
-										ServiceActions.sync();
+										ServiceActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/settings') {
-										SettingsActions.sync();
+										SettingsActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/subscription') {
-										SubscriptionActions.sync(true);
+										SubscriptionActions.sync(true).then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									}
 								}}
 							>Refresh</button>
