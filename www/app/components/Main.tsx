@@ -219,7 +219,9 @@ export default class Main extends React.Component<{}, State> {
 						/>
 					</div>
 				</nav>
-				<ReactRouter.Redirect from="/" to="/users"/>
+				<ReactRouter.Route path="/" exact={true} render={() => (
+					<Users/>
+				)}/>
 				<ReactRouter.Route path="/users" render={() => (
 					<Users/>
 				)}/>
