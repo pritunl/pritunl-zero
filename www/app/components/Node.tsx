@@ -164,22 +164,22 @@ export default class Node extends React.Component<Props, State> {
 					<PageProgress
 						bars={[
 							{
-								className: 'pt-no-stripes pt-intent-primary',
+								progressClass: 'pt-no-stripes pt-intent-primary',
 								label: 'Memory',
 								value: node.memory,
 							},
 							{
-								className: 'pt-no-stripes pt-intent-success',
+								progressClass: 'pt-no-stripes pt-intent-success',
 								label: 'Load1',
 								value: node.load1,
 							},
 							{
-								className: 'pt-no-stripes pt-intent-warning',
+								progressClass: 'pt-no-stripes pt-intent-warning',
 								label: 'Load5',
 								value: node.load5,
 							},
 							{
-								className: 'pt-no-stripes pt-intent-danger',
+								progressClass: 'pt-no-stripes pt-intent-danger',
 								label: 'Load15',
 								value: node.load15,
 							},
