@@ -8,6 +8,7 @@ import Loading from './Loading';
 import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
+import Nodes from './Nodes';
 import Services from './Services';
 import Settings from './Settings';
 
@@ -90,6 +91,13 @@ export default class Main extends React.Component<{}, State> {
 							Services
 						</ReactRouter.Link>
 						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-satellite"
+							style={css.link}
+							to="/nodes"
+						>
+							Nodes
+						</ReactRouter.Link>
+						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-cog"
 							style={css.link}
 							to="/settings"
@@ -135,6 +143,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/user/:userId" render={(props) => (
 					<UserDetailed userId={props.match.params.userId}/>
+				)}/>
+				<ReactRouter.Route path="/nodes" render={() => (
+					<Nodes/>
 				)}/>
 				<ReactRouter.Route path="/services" render={() => (
 					<Services/>
