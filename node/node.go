@@ -4,6 +4,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -20,11 +21,36 @@ type Node struct {
 	Load15    float64   `bson:"load15" json:"load15"`
 }
 
+func (n *Node) update(db *database.Database) (err error) {
+	coll := db.Nodes()
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$set": &bson.M{
+				"timestamp": n.Timestamp,
+				"memory":    n.Memory,
+				"load1":     n.Load1,
+				"load5":     n.Load5,
+				"load15":    n.Load15,
+			},
+		},
+		Upsert:    true,
+		ReturnNew: true,
+	}
+
+	_, err = coll.Find(&bson.M{
+		"_id": n.Id,
+	}).Apply(change, n)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *Node) keepalive() {
 	db := database.GetDatabase()
 	defer db.Close()
-
-	coll := db.Nodes()
 
 	for {
 		n.Timestamp = time.Now()
@@ -55,9 +81,12 @@ func (n *Node) keepalive() {
 			n.Load15 = load.Load15
 		}
 
-		coll.Upsert(&bson.M{
-			"_id": n.Id,
-		}, n)
+		err = n.update(db)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("node: Failed to update node")
+		}
 
 		time.Sleep(1 * time.Second)
 	}
