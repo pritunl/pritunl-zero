@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 interface Bar {
-	className?: string;
+	progressClass?: string;
 	label: string;
 	value: number;
 }
@@ -34,7 +34,7 @@ export default class PageProgress extends React.Component<Props, {}> {
 			bars.push(
 				<div key={bar.label} style={css.bar}>
 					{bar.label}
-					<div className={'pt-progress-bar ' + (bar.className || '')}>
+					<div className={'pt-progress-bar ' + (bar.progressClass || '')}>
 						<div className="pt-progress-meter" style={style}/>
 					</div>
 				</div>,
