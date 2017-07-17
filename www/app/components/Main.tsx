@@ -2,7 +2,6 @@
 import * as React from 'react';
 import * as ReactRouter from 'react-router-dom';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
-import * as SubscriptionActions from '../actions/SubscriptionActions';
 import SubscriptionStore from '../stores/SubscriptionStore';
 import Loading from './Loading';
 import Subscription from './Subscription';
@@ -11,6 +10,11 @@ import UserDetailed from './UserDetailed';
 import Nodes from './Nodes';
 import Services from './Services';
 import Settings from './Settings';
+import * as UserActions from '../actions/UserActions';
+import * as NodeActions from '../actions/NodeActions';
+import * as ServiceActions from '../actions/ServiceActions';
+import * as SettingsActions from '../actions/SettingsActions';
+import * as SubscriptionActions from '../actions/SubscriptionActions';
 
 document.body.className = 'root pt-dark';
 
@@ -115,6 +119,28 @@ export default class Main extends React.Component<{}, State> {
 								}}
 							>Subscription</button>
 						</ReactRouter.Link>
+						<ReactRouter.Route render={(props) => (
+							<button
+								className="pt-button pt-minimal pt-icon-refresh"
+								onClick={() => {
+									let pathname = props.location.pathname;
+
+									if (pathname === '/users') {
+										UserActions.sync();
+									} else if (pathname === '/user') {
+										//UserActions.load();
+									} else if (pathname === '/nodes') {
+										NodeActions.sync();
+									} else if (pathname === '/services') {
+										ServiceActions.sync();
+									} else if (pathname === '/settings') {
+										SettingsActions.sync();
+									} else if (pathname === '/subscription') {
+										SubscriptionActions.sync(true);
+									}
+								}}
+							>Refresh</button>
+						)}/>
 						<button
 							className="pt-button pt-minimal pt-icon-log-out"
 							onClick={() => {
