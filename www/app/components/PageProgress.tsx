@@ -17,8 +17,8 @@ const css = {
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
-	progress: {
-		width: '100%',
+	bar: {
+		marginBottom: '5px',
 	} as React.CSSProperties,
 };
 
@@ -32,7 +32,7 @@ export default class PageProgress extends React.Component<Props, {}> {
 			};
 
 			bars.push(
-				<div key={bar.label}>
+				<div key={bar.label} style={css.bar}>
 					{bar.label}
 					<div className={'pt-progress-bar ' + (bar.className || '')}>
 						<div className="pt-progress-meter" style={style}/>
