@@ -125,12 +125,12 @@ func init() {
 
 		if Config.ManagementNodeId == "" {
 			save = true
-			Config.ManagementNodeId = bson.NewObjectId().String()
+			Config.ManagementNodeId = bson.NewObjectId().Hex()
 		}
 
 		if Config.ProxyNodeId == "" {
 			save = true
-			Config.ProxyNodeId = bson.NewObjectId().String()
+			Config.ProxyNodeId = bson.NewObjectId().Hex()
 		}
 
 		if Config.MongoUri == "" {
