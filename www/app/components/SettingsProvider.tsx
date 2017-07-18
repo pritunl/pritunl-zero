@@ -5,6 +5,7 @@ import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageTextArea from './PageTextArea';
 import PageSwitch from './PageSwitch';
+import PageInfo from './PageInfo';
 
 interface Props {
 	provider: SettingsTypes.ProviderAny;
@@ -194,6 +195,14 @@ export default class SettingsProvider extends React.Component<Props, State> {
 
 		return <div className="pt-card" style={css.card}>
 			<h6>{label}</h6>
+			<PageInfo
+				fields={[
+					{
+						label: 'ID',
+						value: provider.id || 'None',
+					},
+				]}
+			/>
 			<PageInput
 				label="Label"
 				type="text"
