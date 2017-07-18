@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as NodeActions from '../actions/NodeActions';
 import PageInput from './PageInput';
-import PageProgress from './PageProgress';
+import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 
@@ -161,7 +161,7 @@ export default class Node extends React.Component<Props, State> {
 					/>
 				</div>
 				<div style={css.group}>
-					<PageProgress
+					<PageInfo
 						bars={[
 							{
 								progressClass: 'pt-no-stripes pt-intent-primary',
