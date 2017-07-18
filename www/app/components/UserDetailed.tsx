@@ -2,11 +2,13 @@
 import * as React from 'react';
 import * as UserActions from '../actions/UserActions';
 import * as UserTypes from '../types/UserTypes';
+import * as MiscUtils from '../utils/MiscUtils';
 import UserStore from '../stores/UserStore';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
 import PageSplit from './PageSplit';
+import PageInfo from './PageInfo';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
@@ -272,6 +274,14 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 				</PagePanel>
 				<PagePanel>
+					<PageInfo
+						fields={[
+							{
+								label: 'Last Active',
+								value: MiscUtils.formatDate(user.last_active) || 'Inactive',
+							},
+						]}
+					/>
 					<PageDateTime
 						label="Active Until"
 						value={user.active_until}
