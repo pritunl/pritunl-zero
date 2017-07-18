@@ -188,6 +188,10 @@
         evt.preventDefault();
 
         submitElm.disabled = true;
+        for (var i = 0; i < authCancels.length; i++) {
+          authCancels[i].disabled = true;
+        }
+
         var username = usernameElm.value;
         var password = passwordElm.value;
         var xmlhttp = new XMLHttpRequest();
@@ -195,6 +199,9 @@
         xmlhttp.onreadystatechange = function() {
           if (xmlhttp.readyState === 4) {
             submitElm.disabled = false;
+            for (var i = 0; i < authCancels.length; i++) {
+              authCancels[i].disabled = false;
+            }
 
             if (xmlhttp.status === 200) {
               setAlert();
