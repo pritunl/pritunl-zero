@@ -3,6 +3,7 @@ export const SYNC = 'settings.sync';
 export const CHANGE = 'settings.change';
 
 export interface Provider {
+	id: string;
 	type: string;
 	label: string;
 	default_roles: string[];
