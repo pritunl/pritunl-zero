@@ -162,6 +162,12 @@ export default class Node extends React.Component<Props, State> {
 				</div>
 				<div style={css.group}>
 					<PageInfo
+						fields={[
+							{
+								label: 'Node Type',
+								value: node.type,
+							},
+						]}
 						bars={[
 							{
 								progressClass: 'pt-no-stripes pt-intent-primary',
