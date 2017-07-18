@@ -18,6 +18,8 @@ type Node struct {
 	Name      string        `bson:"name" json:"name"`
 	Type      string        `bson:"type" json:"type"`
 	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Port      int           `bson:"port" json:"port"`
+	Protocol  string        `bson:"protocol" json:"protocol"`
 	Memory    float64       `bson:"memory" json:"memory"`
 	Load1     float64       `bson:"load1" json:"load1"`
 	Load5     float64       `bson:"load5" json:"load5"`
