@@ -164,6 +164,10 @@ export default class Node extends React.Component<Props, State> {
 					<PageInfo
 						fields={[
 							{
+								label: 'ID',
+								value: node.id || 'None',
+							},
+							{
 								label: 'Type',
 								value: node.type,
 							},
