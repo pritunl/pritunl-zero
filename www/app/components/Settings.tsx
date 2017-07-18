@@ -147,6 +147,7 @@ export default class Settings extends React.Component<{}, State> {
 							let authProviders: SettingsTypes.Providers = [
 								...settings.auth_providers,
 								{
+									id: null,
 									type: this.state.provider,
 									label: '',
 									default_roles: [],
