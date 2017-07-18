@@ -4,6 +4,7 @@ export const CHANGE = 'node.change';
 
 export interface Node {
 	id: string;
+	type?: string;
 	name?: string;
 	memory?: number;
 	load1?: number;
