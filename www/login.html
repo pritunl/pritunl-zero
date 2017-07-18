@@ -197,8 +197,10 @@
             submitElm.disabled = false;
 
             if (xmlhttp.status === 200) {
+              setAlert();
               window.location = '/';
             } else if (xmlhttp.status === 202) {
+              setAlert();
               window.location = JSON.parse(xmlhttp.response)['redirect'];
             } else {
               var errorMsg;
