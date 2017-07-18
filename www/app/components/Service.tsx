@@ -6,6 +6,7 @@ import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
+import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import PageInputButton from './PageInputButton';
 
@@ -429,6 +430,14 @@ export default class Service extends React.Component<Props, State> {
 					</button>
 				</div>
 				<div style={css.group}>
+					<PageInfo
+						fields={[
+							{
+								label: 'ID',
+								value: service.id || 'None',
+							},
+						]}
+					/>
 					<label className="pt-label">
 						Roles
 						<div>
