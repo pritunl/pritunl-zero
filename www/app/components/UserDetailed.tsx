@@ -277,6 +277,10 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageInfo
 						fields={[
 							{
+								label: 'ID',
+								value: user.id || 'None',
+							},
+							{
 								label: 'Last Active',
 								value: MiscUtils.formatDate(user.last_active) || 'Inactive',
 							},
