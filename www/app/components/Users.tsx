@@ -30,6 +30,10 @@ const css = {
 		display: 'table',
 		borderSpacing: '0 5px',
 	} as React.CSSProperties,
+	usersBox: {
+		width: '100%',
+		overflowY: 'auto',
+	} as React.CSSProperties,
 	header: {
 		marginTop: '-19px',
 	} as React.CSSProperties,
@@ -223,8 +227,10 @@ export default class Users extends React.Component<{}, State> {
 					UserActions.filter(filter);
 				}}
 			/>
-			<div style={css.users}>
-				{usersDom}
+			<div style={css.usersBox}>
+				<div style={css.users}>
+					{usersDom}
+				</div>
 			</div>
 			<UsersPage
 				onPage={(): void => {
