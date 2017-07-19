@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as NodeActions from '../actions/NodeActions';
 import PageInput from './PageInput';
+import PageSelect from './PageSelect';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
@@ -159,6 +160,17 @@ export default class Node extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<PageSelect
+						label="Type"
+						value={node.type}
+						onChange={(val): void => {
+							this.set('type', val);
+						}}
+					>
+						<option value="management">Management</option>
+						<option value="proxy">Proxy</option>
+						<option value="management_proxy">Management + Proxy</option>
+					</PageSelect>
 				</div>
 				<div style={css.group}>
 					<PageInfo
