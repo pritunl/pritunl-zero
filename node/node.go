@@ -129,7 +129,12 @@ func (n *Node) Init() (err error) {
 
 	err = coll.FindOneId(n.Id, n)
 	if err != nil {
-		return
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
 	}
 
 	if n.Name == "" {
