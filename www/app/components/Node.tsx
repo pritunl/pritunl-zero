@@ -181,10 +181,6 @@ export default class Node extends React.Component<Props, State> {
 								value: node.id || 'None',
 							},
 							{
-								label: 'Type',
-								value: node.type,
-							},
-							{
 								label: 'Timestamp',
 								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
