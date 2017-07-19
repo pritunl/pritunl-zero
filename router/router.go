@@ -24,7 +24,7 @@ type Router struct {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
-	if r.typ == node.Management {
+	if r.typ == node.Management || r.typ == node.ManagementProxy {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	}
@@ -48,7 +48,7 @@ func (r *Router) Run() (err error) {
 		r.protocol = "https"
 	}
 
-	if r.typ == node.Management {
+	if r.typ == node.Management || r.typ == node.ManagementProxy {
 		r.mRouter = gin.New()
 
 		if !constants.Production {
