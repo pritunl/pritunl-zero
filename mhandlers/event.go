@@ -1,4 +1,4 @@
-package handlers
+package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,6 @@ var (
 		ReadBufferSize:   1024,
 		WriteBufferSize:  1024,
 		CheckOrigin: func(r *http.Request) bool {
-			// TODO Check r.Header.Get("Origin")
 			return true
 		},
 	}

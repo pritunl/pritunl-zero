@@ -1,4 +1,4 @@
-package handlers
+package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"

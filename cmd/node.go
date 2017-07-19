@@ -7,7 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/handlers"
+	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
@@ -28,7 +28,7 @@ func ManagementNode() (err error) {
 		router.Use(gin.Logger())
 	}
 
-	handlers.Register(router)
+	mhandlers.Register(router)
 
 	nde := node.Node{
 		Id:   bson.ObjectIdHex(config.Config.ManagementNodeId),

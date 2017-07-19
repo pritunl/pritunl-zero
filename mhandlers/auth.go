@@ -1,4 +1,4 @@
-package handlers
+package mhandlers
 
 import (
 	"crypto/hmac"

@@ -1,4 +1,4 @@
-package handlers
+package mhandlers
 
 import (
 	"github.com/dropbox/godropbox/container/set"
