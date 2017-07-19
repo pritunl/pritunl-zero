@@ -9,7 +9,6 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
@@ -45,9 +44,9 @@ func Node() (err error) {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"name":       settings.System.Name,
+		"type":       nde.Type,
 		"production": constants.Production,
-	}).Info("cmd.app: Starting node")
+	}).Info("cmd.node: Starting node")
 
 	err = server.ListenAndServe()
 	if err != nil {
