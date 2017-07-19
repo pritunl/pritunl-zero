@@ -48,6 +48,13 @@ const css = {
 	save: {
 		paddingBottom: '10px',
 	} as React.CSSProperties,
+	label: {
+		width: '100%',
+		maxWidth: '280px',
+	} as React.CSSProperties,
+	input: {
+		width: '100%',
+	} as React.CSSProperties,
 };
 
 export default class Node extends React.Component<Props, State> {
@@ -172,6 +179,33 @@ export default class Node extends React.Component<Props, State> {
 						<option value="proxy">Proxy</option>
 						<option value="management_proxy">Management + Proxy</option>
 					</PageSelect>
+					<label className="pt-label" style={css.label}>
+						Protocol and Port
+						<div className="pt-control-group" style={css.input}>
+							<div className="pt-select">
+								<select
+									value={node.protocol || 'https'}
+									onChange={(evt): void => {
+										this.set('protocol', evt.target.value);
+									}}
+								>
+									<option value="http">HTTP</option>
+									<option value="https">HTTPS</option>
+								</select>
+							</div>
+							<input
+								className="pt-input"
+								type="text"
+								autoCapitalize="off"
+								spellCheck={false}
+								placeholder="Port"
+								value={node.port || 443}
+								onChange={(evt): void => {
+									this.set('port', parseInt(evt.target.value, 10));
+								}}
+							/>
+						</div>
+					</label>
 				</div>
 				<div style={css.group}>
 					<PageInfo
