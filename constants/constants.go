@@ -9,6 +9,7 @@ const (
 	DatabaseVersion        = 1
 	ConfPath               = "/etc/pritunl_zero.json"
 	LogPath                = "/var/log/pritunl_zero.log"
+	TempPath               = "/tmp/pritunl_zero"
 	Production             = false
 	BuildTest              = false
 	StaticRoot             = "www/dist"
