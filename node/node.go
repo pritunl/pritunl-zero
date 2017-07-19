@@ -127,27 +127,29 @@ func (n *Node) Init() (err error) {
 
 	coll := db.Nodes()
 
+	err = coll.FindOneId(n.Id, n)
+	if err != nil {
+		return
+	}
+
 	if n.Name == "" {
 		n.Name = utils.RandName()
 	}
 
-	change := mgo.Change{
-		Update: &bson.M{
-			"$set": &bson.M{
-				"_id":       n.Id,
-				"type":      n.Type,
-				"name":      n.Name,
-				"timestamp": time.Now(),
-			},
-		},
-		Upsert:    true,
-		ReturnNew: true,
+	if n.Type == "" {
+		n.Type = Management
 	}
 
-	_, err = coll.Find(&bson.M{
-		"_id": n.Id,
-	}).Apply(change, n)
+	_, err = coll.UpsertId(n.Id, &bson.M{
+		"$set": &bson.M{
+			"_id":       n.Id,
+			"name":      n.Name,
+			"type":      n.Type,
+			"timestamp": time.Now(),
+		},
+	})
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
