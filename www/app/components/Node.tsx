@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as NodeActions from '../actions/NodeActions';
+import * as MiscUtils from '../utils/MiscUtils';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
 import PageInfo from './PageInfo';
@@ -182,6 +183,10 @@ export default class Node extends React.Component<Props, State> {
 							{
 								label: 'Type',
 								value: node.type,
+							},
+							{
+								label: 'Timestamp',
+								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
 						]}
 						bars={[
