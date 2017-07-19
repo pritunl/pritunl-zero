@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,8 @@ import (
 type Router struct {
 	Node     *node.Node
 	typ      string
+	port     int
+	protocol string
 	mRouter  *gin.Engine
 	pRouters map[string]*gin.Engine
 }
@@ -31,6 +34,16 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 func (r *Router) Run() (err error) {
 	r.typ = r.Node.Type
 
+	r.port = r.Node.Port
+	if r.port == 0 {
+		r.port = 443
+	}
+
+	r.protocol = r.Node.Protocol
+	if r.protocol == "" {
+		r.protocol = "https"
+	}
+
 	if r.typ == node.Management {
 		r.mRouter = gin.New()
 
@@ -42,7 +55,7 @@ func (r *Router) Run() (err error) {
 	}
 
 	server := &http.Server{
-		Addr:           "0.0.0.0:8443",
+		Addr:           fmt.Sprintf("0.0.0.0:%d", r.port),
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -54,12 +67,14 @@ func (r *Router) Run() (err error) {
 		"production": constants.Production,
 	}).Info("node: Starting node")
 
-	err = server.ListenAndServe()
-	if err != nil {
-		err = &errortypes.UnknownError{
-			errors.Wrap(err, "node: Server listen failed"),
+	if r.protocol == "http" {
+		err = server.ListenAndServe()
+		if err != nil {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "node: Server listen failed"),
+			}
+			return
 		}
-		return
 	}
 
 	return
