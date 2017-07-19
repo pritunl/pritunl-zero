@@ -52,8 +52,14 @@ const css = {
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
-	input: {
+	inputGroup: {
 		width: '100%',
+	} as React.CSSProperties,
+	protocol: {
+		flex: '0 1 auto',
+	} as React.CSSProperties,
+	port: {
+		flex: '1',
 	} as React.CSSProperties,
 };
 
@@ -181,8 +187,8 @@ export default class Node extends React.Component<Props, State> {
 					</PageSelect>
 					<label className="pt-label" style={css.label}>
 						Protocol and Port
-						<div className="pt-control-group" style={css.input}>
-							<div className="pt-select">
+						<div className="pt-control-group" style={css.inputGroup}>
+							<div className="pt-select" style={css.protocol}>
 								<select
 									value={node.protocol || 'https'}
 									onChange={(evt): void => {
@@ -195,6 +201,7 @@ export default class Node extends React.Component<Props, State> {
 							</div>
 							<input
 								className="pt-input"
+								style={css.port}
 								type="text"
 								autoCapitalize="off"
 								spellCheck={false}
