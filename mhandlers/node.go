@@ -11,9 +11,11 @@ import (
 )
 
 type nodeData struct {
-	Id   bson.ObjectId `json:"id"`
-	Name string        `json:"name"`
-	Type string        `json:"type"`
+	Id       bson.ObjectId `json:"id"`
+	Name     string        `json:"name"`
+	Type     string        `json:"type"`
+	Port     int           `json:"port"`
+	Protocol string        `json:"protocol"`
 }
 
 func nodePut(c *gin.Context) {
@@ -40,10 +42,14 @@ func nodePut(c *gin.Context) {
 
 	nde.Name = data.Name
 	nde.Type = data.Type
+	nde.Port = data.Port
+	nde.Protocol = data.Protocol
 
 	fields := set.NewSet(
 		"name",
 		"type",
+		"port",
+		"protocol",
 	)
 
 	err = nde.CommitFields(db, fields)
