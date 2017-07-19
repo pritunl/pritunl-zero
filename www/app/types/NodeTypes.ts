@@ -6,6 +6,7 @@ export interface Node {
 	id: string;
 	type?: string;
 	name?: string;
+	timestamp?: string;
 	memory?: number;
 	load1?: number;
 	load5?: number;
