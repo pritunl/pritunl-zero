@@ -32,15 +32,12 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "node":
-		switch flag.Arg(1) {
-		case "management":
-			Init()
-			err := cmd.ManagementNode()
-			if err != nil {
-				panic(err)
-			}
-			return
+		Init()
+		err := cmd.Node()
+		if err != nil {
+			panic(err)
 		}
+		return
 	case "version":
 		fmt.Printf("pritunl-zero v%s\n", constants.Version)
 		return

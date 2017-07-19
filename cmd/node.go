@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func ManagementNode() (err error) {
+func Node() (err error) {
 	if constants.Production {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -47,7 +47,7 @@ func ManagementNode() (err error) {
 	logrus.WithFields(logrus.Fields{
 		"name":       settings.System.Name,
 		"production": constants.Production,
-	}).Info("cmd.app: Starting management node")
+	}).Info("cmd.app: Starting node")
 
 	err = server.ListenAndServe()
 	if err != nil {
