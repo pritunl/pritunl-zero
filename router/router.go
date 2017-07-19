@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"net/http"
+	"path/filepath"
 	"time"
 )
 
@@ -32,6 +33,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 }
 
 func (r *Router) Run() (err error) {
+	certPath := filepath.Join(constants.TempPath, "server.crt")
+	keyPath := filepath.Join(constants.TempPath, "server.key")
+
 	r.typ = r.Node.Type
 
 	r.port = r.Node.Port
@@ -69,6 +73,19 @@ func (r *Router) Run() (err error) {
 
 	if r.protocol == "http" {
 		err = server.ListenAndServe()
+		if err != nil {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "node: Server listen failed"),
+			}
+			return
+		}
+	} else {
+		err = generateCert(certPath, keyPath)
+		if err != nil {
+			return
+		}
+
+		err = server.ListenAndServeTLS(certPath, keyPath)
 		if err != nil {
 			err = &errortypes.UnknownError{
 				errors.Wrap(err, "node: Server listen failed"),
