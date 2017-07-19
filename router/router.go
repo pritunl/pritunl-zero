@@ -32,6 +32,30 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 	http.Error(w, "Not found", 404)
 }
 
+func (r *Router) startRedirect() {
+	server := http.Server{
+		Addr:         "0.0.0.0:80",
+		ReadTimeout:  1 * time.Minute,
+		WriteTimeout: 1 * time.Minute,
+		Handler: http.HandlerFunc(func(
+			w http.ResponseWriter, req *http.Request) {
+
+			req.URL.Host = req.Host
+			req.URL.Scheme = "https"
+
+			http.Redirect(w, req, req.URL.String(),
+				http.StatusMovedPermanently)
+		}),
+	}
+
+	err := server.ListenAndServe()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("router: Redirect server error")
+	}
+}
+
 func (r *Router) Run() (err error) {
 	certPath := filepath.Join(constants.TempPath, "server.crt")
 	keyPath := filepath.Join(constants.TempPath, "server.key")
@@ -70,6 +94,8 @@ func (r *Router) Run() (err error) {
 		"type":       r.typ,
 		"production": constants.Production,
 	}).Info("node: Starting node")
+
+	go r.startRedirect()
 
 	if r.protocol == "http" {
 		err = server.ListenAndServe()
