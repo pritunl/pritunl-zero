@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -239,6 +241,19 @@ func (r *Router) Restart() {
 			r.webServer.Close()
 		}
 	}()
+
+	event.WebSocketsLock.Lock()
+	for socketInf := range event.WebSockets.Iter() {
+		func() {
+			defer func() {
+				recover()
+			}()
+			socket := socketInf.(*event.WebSocket)
+			socket.Close()
+		}()
+	}
+	event.WebSockets = set.NewSet()
+	event.WebSocketsLock.Unlock()
 
 	r.redirectServer = nil
 	r.webServer = nil
