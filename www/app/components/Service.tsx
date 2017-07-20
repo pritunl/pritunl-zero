@@ -136,7 +136,7 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
-	onAddRole(): void {
+	onAddRole = (): void => {
 		let service: ServiceTypes.Service = this.state.service ||
 			this.props.service;
 
