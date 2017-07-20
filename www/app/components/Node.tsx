@@ -297,6 +297,16 @@ export default class Node extends React.Component<Props, State> {
 						<option value="proxy">Proxy</option>
 						<option value="management_proxy">Management + Proxy</option>
 					</PageSelect>
+					<PageInput
+						hidden={node.type != 'management_proxy'}
+						label="Management Domain"
+						type="text"
+						placeholder="Enter management domain"
+						value={node.management_domain}
+						onChange={(val): void => {
+							this.set('management_domain', val);
+						}}
+					/>
 					<label className="pt-label" style={css.label}>
 						Protocol and Port
 						<div className="pt-control-group" style={css.inputGroup}>
