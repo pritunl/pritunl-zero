@@ -16,16 +16,20 @@ import (
 )
 
 type Router struct {
-	Node     *node.Node
-	typ      string
-	port     int
-	protocol string
-	mRouter  *gin.Engine
-	pRouters map[string]*gin.Engine
+	Node             *node.Node
+	typ              string
+	port             int
+	protocol         string
+	managementDomain string
+	mRouter          *gin.Engine
+	pRouters         map[string]*gin.Engine
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
-	if r.typ == node.Management || r.typ == node.ManagementProxy {
+	if r.typ == node.Management {
+		r.mRouter.ServeHTTP(w, re)
+		return
+	} else if r.typ == node.ManagementProxy && re.Host == r.managementDomain {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	}
@@ -62,6 +66,7 @@ func (r *Router) Run() (err error) {
 	keyPath := filepath.Join(constants.TempPath, "server.key")
 
 	r.typ = r.Node.Type
+	r.managementDomain = r.Node.ManagementDomain
 
 	r.port = r.Node.Port
 	if r.port == 0 {
