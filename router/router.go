@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -106,9 +107,23 @@ func (r *Router) Run() (err error) {
 			return
 		}
 	} else {
-		err = generateCert(certPath, keyPath)
-		if err != nil {
+		certExists, e := utils.Exists(certPath)
+		if e != nil {
+			err = e
 			return
+		}
+
+		keyExists, e := utils.Exists(keyPath)
+		if e != nil {
+			err = e
+			return
+		}
+
+		if !certExists || !keyExists {
+			err = generateCert(certPath, keyPath)
+			if err != nil {
+				return
+			}
 		}
 
 		err = server.ListenAndServeTLS(certPath, keyPath)
