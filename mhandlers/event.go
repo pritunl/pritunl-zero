@@ -1,10 +1,10 @@
 package mhandlers
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/event"
-	"net/http"
 	"time"
 )
 
@@ -14,23 +14,29 @@ const (
 	pingWait     = 40 * time.Second
 )
 
-var (
-	upgrader = websocket.Upgrader{
-		HandshakeTimeout: 30 * time.Second,
-		ReadBufferSize:   1024,
-		WriteBufferSize:  1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
-)
-
 func eventGet(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	socket := &event.WebSocket{}
+
+	defer func() {
+		socket.Close()
+		event.WebSocketsLock.Lock()
+		event.WebSockets.Remove(socket)
+		event.WebSocketsLock.Unlock()
+	}()
+
+	event.WebSocketsLock.Lock()
+	event.WebSockets.Add(socket)
+	event.WebSocketsLock.Unlock()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	socket.Cancel = cancel
+
+	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
+	socket.Conn = conn
 
 	conn.SetReadDeadline(time.Now().Add(pingWait))
 	conn.SetPongHandler(func(x string) (err error) {
@@ -43,15 +49,11 @@ func eventGet(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
+	socket.Listener = lst
 
 	ticker := time.NewTicker(pingInterval)
+	socket.Ticker = ticker
 	sub := lst.Listen()
-
-	defer func() {
-		ticker.Stop()
-		lst.Close()
-		conn.Close()
-	}()
 
 	go func() {
 		for {
@@ -64,6 +66,8 @@ func eventGet(c *gin.Context) {
 
 	for {
 		select {
+		case <-ctx.Done():
+			return
 		case msg, ok := <-sub:
 			if !ok {
 				conn.WriteControl(websocket.CloseMessage, []byte{},
