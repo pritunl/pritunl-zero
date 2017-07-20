@@ -234,10 +234,14 @@ export default class Node extends React.Component<Props, State> {
 			this.props.node;
 
 		let services: JSX.Element[] = [];
-		for (let service of this.props.services) {
-			services.push(
-				<option key={service.id} value={service.id}>{service.name}</option>
-			);
+		if (this.props.services.length) {
+			for (let service of this.props.services) {
+				services.push(
+					<option key={service.id} value={service.id}>{service.name}</option>
+				);
+			}
+		} else {
+			services.push(<option key="null" value="">None</option>);
 		}
 
 		return <div
@@ -306,6 +310,7 @@ export default class Node extends React.Component<Props, State> {
 					<PageSelectButton
 						label="Add Service"
 						value={this.state.addService}
+						disabled={!this.props.services.length}
 						buttonClass="pt-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
