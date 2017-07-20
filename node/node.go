@@ -52,6 +52,10 @@ func (n *Node) Validate(db *database.Database) (
 		return
 	}
 
+	if n.Type != ManagementProxy {
+		n.ManagementDomain = ""
+	}
+
 	n.Format()
 
 	return
