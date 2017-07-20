@@ -228,14 +228,38 @@ export default class Node extends React.Component<Props, State> {
 			this.props.node;
 
 		let services: JSX.Element[] = [];
+		for (let serviceId of node.services) {
+			let service = ServicesStore.service(serviceId);
+			if (!service) {
+				continue;
+			}
+
+			services.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.role}
+					key={service.id}
+				>
+					{service.name}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveService(service.id);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let servicesSelect: JSX.Element[] = [];
 		if (this.props.services.length) {
 			for (let service of this.props.services) {
-				services.push(
+				servicesSelect.push(
 					<option key={service.id} value={service.id}>{service.name}</option>
 				);
 			}
 		} else {
-			services.push(<option key="null" value="">None</option>);
+			servicesSelect.push(<option key="null" value="">None</option>);
 		}
 
 		return <div
@@ -301,6 +325,12 @@ export default class Node extends React.Component<Props, State> {
 							/>
 						</div>
 					</label>
+					<label className="pt-label" style={css.label}>
+						Services
+						<div>
+							{services}
+						</div>
+					</label>
 					<PageSelectButton
 						label="Add Service"
 						value={this.state.addService}
@@ -314,7 +344,7 @@ export default class Node extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddService}
 					>
-						{services}
+						{servicesSelect}
 					</PageSelectButton>
 				</div>
 				<div style={css.group}>
