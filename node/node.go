@@ -15,17 +15,18 @@ import (
 var Self *Node
 
 type Node struct {
-	Id        bson.ObjectId   `bson:"_id" json:"id"`
-	Name      string          `bson:"name" json:"name"`
-	Type      string          `bson:"type" json:"type"`
-	Timestamp time.Time       `bson:"timestamp" json:"timestamp"`
-	Port      int             `bson:"port" json:"port"`
-	Protocol  string          `bson:"protocol" json:"protocol"`
-	Memory    float64         `bson:"memory" json:"memory"`
-	Load1     float64         `bson:"load1" json:"load1"`
-	Load5     float64         `bson:"load5" json:"load5"`
-	Load15    float64         `bson:"load15" json:"load15"`
-	Services  []bson.ObjectId `bson:"services" json:"services"`
+	Id               bson.ObjectId   `bson:"_id" json:"id"`
+	Name             string          `bson:"name" json:"name"`
+	Type             string          `bson:"type" json:"type"`
+	Timestamp        time.Time       `bson:"timestamp" json:"timestamp"`
+	Port             int             `bson:"port" json:"port"`
+	Protocol         string          `bson:"protocol" json:"protocol"`
+	ManagementDomain string          `bson:"management_domain" json:"management_domain"`
+	Memory           float64         `bson:"memory" json:"memory"`
+	Load1            float64         `bson:"load1" json:"load1"`
+	Load5            float64         `bson:"load5" json:"load5"`
+	Load15           float64         `bson:"load15" json:"load15"`
+	Services         []bson.ObjectId `bson:"services" json:"services"`
 }
 
 func (n *Node) Validate(db *database.Database) (
