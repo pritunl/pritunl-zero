@@ -1,16 +1,20 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
+import * as ServiceTypes from '../types/ServiceTypes';
 import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
+import ServicesStore from '../stores/ServicesStore';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
+import PageSelectButton from './PageSelectButton';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	node: NodeTypes.NodeRo;
+	services: ServiceTypes.ServicesRo;
 }
 
 interface State {
@@ -18,6 +22,7 @@ interface State {
 	changed: boolean;
 	message: string;
 	node: NodeTypes.Node;
+	addService: string;
 }
 
 const css = {
@@ -71,6 +76,7 @@ export default class Node extends React.Component<Props, State> {
 			changed: false,
 			message: '',
 			node: null,
+			addService: null,
 		};
 	}
 
@@ -146,9 +152,93 @@ export default class Node extends React.Component<Props, State> {
 		});
 	}
 
+	onAddService = (): void => {
+		let node: NodeTypes.Node;
+
+		if (!this.state.addService && !this.props.services.length) {
+			return
+		}
+
+		let serviceId = this.state.addService || this.props.services[0].id;
+
+		console.log('***************************************************');
+		console.log(serviceId);
+		console.log('***************************************************');
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let services = [
+			...node.services,
+		];
+
+		if (services.indexOf(serviceId) === -1) {
+			services.push(serviceId);
+		}
+
+		services.sort();
+
+		node.services = services;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			addService: null,
+			node: node,
+		});
+	}
+
+	onRemoveService = (service: string): void => {
+		let node: NodeTypes.Node;
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let services = [
+			...node.services,
+		];
+
+		let i = services.indexOf(service);
+		if (i === -1) {
+			return;
+		}
+
+		services.splice(i, 1);
+
+		node.services = services;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			addService: null,
+			node: node,
+		});
+	}
+
 	render(): JSX.Element {
 		let node: NodeTypes.Node = this.state.node ||
 			this.props.node;
+
+		let services: JSX.Element[] = [];
+		for (let service of this.props.services) {
+			services.push(
+				<option key={service.id} value={service.id}>{service.name}</option>
+			);
+		}
 
 		return <div
 			className="pt-card"
@@ -213,6 +303,20 @@ export default class Node extends React.Component<Props, State> {
 							/>
 						</div>
 					</label>
+					<PageSelectButton
+						label="Add Service"
+						value={this.state.addService}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								serviceId: val,
+							});
+						}}
+						onSubmit={this.onAddService}
+					>
+						{services}
+					</PageSelectButton>
 				</div>
 				<div style={css.group}>
 					<PageInfo
