@@ -249,9 +249,6 @@ func (r *Router) Restart() {
 	event.WebSocketsLock.Lock()
 	for socketInf := range event.WebSockets.Iter() {
 		func() {
-			defer func() {
-				recover()
-			}()
 			socket := socketInf.(*event.WebSocket)
 			socket.Close()
 		}()
