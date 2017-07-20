@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
@@ -115,6 +116,11 @@ func init() {
 	module := requires.New("config")
 
 	module.Handler = func() (err error) {
+		err = utils.ExistsMkdir(constants.TempPath, 0700)
+		if err != nil {
+			return
+		}
+
 		err = Load()
 		if err != nil {
 			return
