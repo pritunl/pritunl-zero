@@ -4,6 +4,7 @@ import * as React from 'react';
 interface Props {
 	label: string;
 	value: string;
+	disabled?: boolean;
 	buttonClass?: string;
 	onChange: (val: string) => void;
 	onSubmit: () => void;
@@ -25,6 +26,7 @@ export default class PageSelectButton extends React.Component<Props, {}> {
 		return <div className="pt-control-group" style={css.group}>
 			<div className="pt-select">
 				<select
+					disabled={this.props.disabled}
 					value={this.props.value || ''}
 					onChange={(evt): void => {
 						this.props.onChange(evt.target.value);
@@ -35,6 +37,7 @@ export default class PageSelectButton extends React.Component<Props, {}> {
 			</div>
 			<button
 				className={buttonClass}
+				disabled={this.props.disabled}
 				onClick={this.props.onSubmit}
 			>{this.props.label}</button>
 		</div>;
