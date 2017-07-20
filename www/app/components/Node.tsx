@@ -186,7 +186,6 @@ export default class Node extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			changed: true,
-			addService: null,
 			node: node,
 		});
 	}
@@ -220,7 +219,6 @@ export default class Node extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			changed: true,
-			addService: null,
 			node: node,
 		});
 	}
