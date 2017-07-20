@@ -156,7 +156,7 @@ export default class Node extends React.Component<Props, State> {
 		let node: NodeTypes.Node;
 
 		if (!this.state.addService && !this.props.services.length) {
-			return
+			return;
 		}
 
 		let serviceId = this.state.addService || this.props.services[0].id;
@@ -255,7 +255,7 @@ export default class Node extends React.Component<Props, State> {
 		if (this.props.services.length) {
 			for (let service of this.props.services) {
 				servicesSelect.push(
-					<option key={service.id} value={service.id}>{service.name}</option>
+					<option key={service.id} value={service.id}>{service.name}</option>,
 				);
 			}
 		} else {
