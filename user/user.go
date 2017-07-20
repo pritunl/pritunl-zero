@@ -30,6 +30,14 @@ type User struct {
 func (u *User) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	if u.Roles == nil {
+		u.Roles = []string{}
+	}
+
+	if u.Permissions == nil {
+		u.Permissions = []string{}
+	}
+
 	if !types.Contains(u.Type) {
 		errData = &errortypes.ErrorData{
 			Error:   "user_type_invalid",
