@@ -4,6 +4,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
@@ -25,6 +26,38 @@ type Node struct {
 	Load5     float64         `bson:"load5" json:"load5"`
 	Load15    float64         `bson:"load15" json:"load15"`
 	Services  []bson.ObjectId `bson:"services" json:"services"`
+}
+
+func (n *Node) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if n.Services == nil {
+		n.Services = []bson.ObjectId{}
+	}
+
+	if n.Protocol != "http" && n.Protocol != "https" {
+		errData = &errortypes.ErrorData{
+			Error:   "node_protocol_invalid",
+			Message: "Invalid node server protocol",
+		}
+		return
+	}
+
+	if n.Port < 1 || n.Port > 65535 {
+		errData = &errortypes.ErrorData{
+			Error:   "node_port_invalid",
+			Message: "Invalid node server port",
+		}
+		return
+	}
+
+	n.Format()
+
+	return
+}
+
+func (n *Node) Format() {
+	utils.SortObjectIds(n.Services)
 }
 
 func (n *Node) Commit(db *database.Database) (err error) {
