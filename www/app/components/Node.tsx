@@ -298,7 +298,7 @@ export default class Node extends React.Component<Props, State> {
 						<option value="management_proxy">Management + Proxy</option>
 					</PageSelect>
 					<PageInput
-						hidden={node.type != 'management_proxy'}
+						hidden={node.type !== 'management_proxy'}
 						label="Management Domain"
 						type="text"
 						placeholder="Enter management domain"
