@@ -21,6 +21,10 @@
   cursor: default !important;
 }
 
+.pt-select select:disabled, .pt-select select.pt-disabled {
+  cursor: default !important;
+}
+
 .pt-text-intent-primary {
   color: #106ba3;
 }
