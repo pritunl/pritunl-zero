@@ -1,14 +1,18 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
+import * as ServiceTypes from '../types/ServiceTypes';
 import NodesStore from '../stores/NodesStore';
+import ServicesStore from '../stores/ServicesStore';
 import * as NodeActions from '../actions/NodeActions';
+import * as ServiceActions from '../actions/ServiceActions';
 import Node from './Node';
 import Page from './Page';
 import PageHeader from './PageHeader';
 
 interface State {
 	nodes: NodeTypes.NodesRo;
+	services: ServiceTypes.ServicesRo;
 	disabled: boolean;
 }
 
@@ -26,23 +30,28 @@ export default class Nodes extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			nodes: NodesStore.nodes,
+			services: ServicesStore.services,
 			disabled: false,
 		};
 	}
 
 	componentDidMount(): void {
 		NodesStore.addChangeListener(this.onChange);
+		ServicesStore.addChangeListener(this.onChange);
 		NodeActions.sync();
+		ServiceActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		NodesStore.removeChangeListener(this.onChange);
+		ServicesStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
 		this.setState({
 			...this.state,
 			nodes: NodesStore.nodes,
+			services: ServicesStore.services,
 		});
 	}
 
@@ -53,6 +62,7 @@ export default class Nodes extends React.Component<{}, State> {
 			nodesDom.push(<Node
 				key={node.id}
 				node={node}
+				services={this.state.services}
 			/>);
 		});
 
