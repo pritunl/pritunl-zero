@@ -56,6 +56,9 @@ func eventGet(c *gin.Context) {
 	sub := lst.Listen()
 
 	go func() {
+		defer func() {
+			recover()
+		}()
 		for {
 			if _, _, err := conn.NextReader(); err != nil {
 				conn.Close()
