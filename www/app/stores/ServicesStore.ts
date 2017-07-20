@@ -6,6 +6,7 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class ServicesStore extends EventEmitter {
 	_services: ServiceTypes.ServicesRo = Object.freeze([]);
+	_map: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get services(): ServiceTypes.ServicesRo {
@@ -22,6 +23,14 @@ class ServicesStore extends EventEmitter {
 		return services;
 	}
 
+	service(id: string): ServiceTypes.ServiceRo {
+		let i = this._map[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._services[i];
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -35,8 +44,10 @@ class ServicesStore extends EventEmitter {
 	}
 
 	_sync(services: ServiceTypes.Service[]): void {
+		this._map = {};
 		for (let i = 0; i < services.length; i++) {
 			services[i] = Object.freeze(services[i]);
+			this._map[services[i].id] = i;
 		}
 
 		this._services = Object.freeze(services);
