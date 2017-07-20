@@ -13,6 +13,7 @@ export interface Node {
 	load1?: number;
 	load5?: number;
 	load15?: number;
+	services?: string[];
 }
 
 export type Nodes = Node[];
