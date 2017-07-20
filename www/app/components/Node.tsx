@@ -161,10 +161,6 @@ export default class Node extends React.Component<Props, State> {
 
 		let serviceId = this.state.addService || this.props.services[0].id;
 
-		console.log('***************************************************');
-		console.log(serviceId);
-		console.log('***************************************************');
-
 		if (this.state.changed) {
 			node = {
 				...this.state.node,
@@ -315,7 +311,7 @@ export default class Node extends React.Component<Props, State> {
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
-								serviceId: val,
+								addService: val,
 							});
 						}}
 						onSubmit={this.onAddService}
