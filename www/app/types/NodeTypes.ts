@@ -9,6 +9,7 @@ export interface Node {
 	port?: number;
 	protocol?: string;
 	timestamp?: string;
+	management_domain?: string;
 	memory?: number;
 	load1?: number;
 	load5?: number;
