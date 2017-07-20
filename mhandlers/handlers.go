@@ -114,11 +114,11 @@ func recoveryHand(c *gin.Context) {
 	c.Next()
 }
 
-func Register(engine *gin.Engine) {
+func Register(protocol string, engine *gin.Engine) {
 	engine.Use(limiterHand)
 	engine.Use(recoveryHand)
 	engine.Use(location.New(location.Config{
-		Scheme: "https",
+		Scheme: protocol,
 	}))
 
 	dbGroup := engine.Group("")

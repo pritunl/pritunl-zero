@@ -79,7 +79,7 @@ func (r *Router) Run() (err error) {
 			r.mRouter.Use(gin.Logger())
 		}
 
-		mhandlers.Register(r.mRouter)
+		mhandlers.Register(r.protocol, r.mRouter)
 	}
 
 	server := &http.Server{
