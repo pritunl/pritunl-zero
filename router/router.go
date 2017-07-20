@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
@@ -11,7 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
-	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,10 @@ type Router struct {
 	managementDomain string
 	mRouter          *gin.Engine
 	pRouters         map[string]*gin.Engine
+	waiter           sync.WaitGroup
+	lock             sync.Mutex
+	redirectServer   *http.Server
+	webServer        *http.Server
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
@@ -37,8 +42,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 	http.Error(w, "Not found", 404)
 }
 
-func (r *Router) startRedirect() {
-	server := http.Server{
+func (r *Router) initRedirect() (err error) {
+	r.redirectServer = &http.Server{
 		Addr:         "0.0.0.0:80",
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
@@ -53,18 +58,28 @@ func (r *Router) startRedirect() {
 		}),
 	}
 
-	err := server.ListenAndServe()
+	return
+}
+
+func (r *Router) startRedirect() {
+	defer r.waiter.Done()
+
+	err := r.redirectServer.ListenAndServe()
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("router: Redirect server error")
+		if err == http.ErrServerClosed {
+			err = nil
+		} else {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "node: Server listen failed"),
+			}
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("router: Redirect server error")
+		}
 	}
 }
 
-func (r *Router) Run() (err error) {
-	certPath := filepath.Join(constants.TempPath, "server.crt")
-	keyPath := filepath.Join(constants.TempPath, "server.key")
-
+func (r *Router) initWeb() (err error) {
 	r.typ = r.Node.Type
 	r.managementDomain = r.Node.ManagementDomain
 
@@ -88,7 +103,7 @@ func (r *Router) Run() (err error) {
 		mhandlers.Register(r.protocol, r.mRouter)
 	}
 
-	server := &http.Server{
+	r.webServer = &http.Server{
 		Addr:           fmt.Sprintf("0.0.0.0:%d", r.port),
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
@@ -101,43 +116,157 @@ func (r *Router) Run() (err error) {
 		"production": constants.Production,
 	}).Info("node: Starting node")
 
-	go r.startRedirect()
-
-	if r.protocol == "http" {
-		err = server.ListenAndServe()
-		if err != nil {
-			err = &errortypes.UnknownError{
-				errors.Wrap(err, "node: Server listen failed"),
-			}
-			return
-		}
-	} else {
-		certExists, e := utils.Exists(certPath)
+	if r.protocol != "http" {
+		certExists, e := utils.Exists(constants.CertPath)
 		if e != nil {
 			err = e
 			return
 		}
 
-		keyExists, e := utils.Exists(keyPath)
+		keyExists, e := utils.Exists(constants.KeyPath)
 		if e != nil {
 			err = e
 			return
 		}
 
 		if !certExists || !keyExists {
-			err = generateCert(certPath, keyPath)
+			err = generateCert(constants.CertPath, constants.KeyPath)
 			if err != nil {
 				return
 			}
 		}
+	}
 
-		err = server.ListenAndServeTLS(certPath, keyPath)
+	return
+}
+
+func (r *Router) startWeb() {
+	defer r.waiter.Done()
+
+	if r.protocol == "http" {
+		err := r.webServer.ListenAndServe()
 		if err != nil {
-			err = &errortypes.UnknownError{
-				errors.Wrap(err, "node: Server listen failed"),
+			if err == http.ErrServerClosed {
+				err = nil
+			} else {
+				err = &errortypes.UnknownError{
+					errors.Wrap(err, "node: Server listen failed"),
+				}
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Web server error")
 			}
-			return
 		}
+	} else {
+		err := r.webServer.ListenAndServeTLS(
+			constants.CertPath, constants.KeyPath)
+		if err != nil {
+			if err == http.ErrServerClosed {
+				err = nil
+			} else {
+				err = &errortypes.UnknownError{
+					errors.Wrap(err, "node: Server listen failed"),
+				}
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Web server error")
+			}
+		}
+	}
+
+	return
+}
+
+func (r *Router) initServers() (err error) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	err = r.initRedirect()
+	if err != nil {
+		return
+	}
+
+	err = r.initWeb()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *Router) startServers() {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	if r.redirectServer == nil || r.webServer == nil {
+		return
+	}
+
+	r.waiter.Add(2)
+	go r.startRedirect()
+	go r.startWeb()
+
+	time.Sleep(250 * time.Millisecond)
+
+	return
+}
+
+func (r *Router) Restart() {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		1*time.Second,
+	)
+	defer cancel()
+
+	if r.redirectServer != nil {
+		r.redirectServer.Shutdown(ctx)
+	}
+	if r.webServer != nil {
+		r.webServer.Shutdown(ctx)
+	}
+
+	func() {
+		defer func() {
+			recover()
+		}()
+		if r.redirectServer != nil {
+			r.redirectServer.Close()
+		}
+		if r.webServer != nil {
+			r.webServer.Close()
+		}
+	}()
+
+	r.redirectServer = nil
+	r.webServer = nil
+
+	time.Sleep(250 * time.Millisecond)
+}
+
+func (r *Router) Run() (err error) {
+	go func() {
+		for {
+			time.Sleep(10 * time.Second)
+			r.Restart()
+		}
+	}()
+
+	for {
+		err = r.initServers()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("router: Failed to init web servers")
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		r.waiter = sync.WaitGroup{}
+		r.startServers()
+		r.waiter.Wait()
 	}
 
 	return
