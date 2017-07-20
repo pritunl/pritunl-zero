@@ -246,15 +246,7 @@ func (r *Router) Restart() {
 		}
 	}()
 
-	event.WebSocketsLock.Lock()
-	for socketInf := range event.WebSockets.Iter() {
-		func() {
-			socket := socketInf.(*event.WebSocket)
-			socket.Close()
-		}()
-	}
-	event.WebSockets = set.NewSet()
-	event.WebSocketsLock.Unlock()
+	event.WebSocketsStop()
 
 	r.redirectServer = nil
 	r.webServer = nil

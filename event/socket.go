@@ -55,3 +55,15 @@ func (w *WebSocket) Close() {
 		w.Conn.Close()
 	}()
 }
+
+func WebSocketsStop() {
+	WebSocketsLock.Lock()
+	for socketInf := range WebSockets.Iter() {
+		func() {
+			socket := socketInf.(*WebSocket)
+			socket.Close()
+		}()
+	}
+	WebSockets = set.NewSet()
+	WebSocketsLock.Unlock()
+}
