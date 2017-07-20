@@ -19,6 +19,33 @@ func Get(db *database.Database, serviceId bson.ObjectId) (
 	return
 }
 
+func GetMulti(db *database.Database, serviceIds []bson.ObjectId) (
+	services []*Service, err error) {
+
+	coll := db.Services()
+	services = []*Service{}
+
+	cursor := coll.Find(bson.M{
+		"_id": &bson.M{
+			"$in": serviceIds,
+		},
+	}).Iter()
+
+	srvce := &Service{}
+	for cursor.Next(srvce) {
+		services = append(services, srvce)
+		srvce = &Service{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (services []*Service, err error) {
 
 	coll := db.Services()
