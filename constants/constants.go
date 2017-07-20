@@ -1,6 +1,7 @@
 package constants
 
 import (
+	"path/filepath"
 	"time"
 )
 
@@ -22,4 +23,6 @@ const (
 
 var (
 	Interrupt = false
+	CertPath  = filepath.Join(TempPath, "server.crt")
+	KeyPath   = filepath.Join(TempPath, "server.key")
 )
