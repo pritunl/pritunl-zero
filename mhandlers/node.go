@@ -52,6 +52,17 @@ func nodePut(c *gin.Context) {
 		"protocol",
 	)
 
+	errData, err := nde.Validate(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
 	err = nde.CommitFields(db, fields)
 	if err != nil {
 		c.AbortWithError(500, err)
