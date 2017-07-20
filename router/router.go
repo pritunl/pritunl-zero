@@ -217,17 +217,21 @@ func (r *Router) Restart() {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	ctx, cancel := context.WithTimeout(
-		context.Background(),
-		1*time.Second,
-	)
-	defer cancel()
-
 	if r.redirectServer != nil {
-		r.redirectServer.Shutdown(ctx)
+		redirectCtx, redirectCancel := context.WithTimeout(
+			context.Background(),
+			1*time.Second,
+		)
+		defer redirectCancel()
+		r.redirectServer.Shutdown(redirectCtx)
 	}
 	if r.webServer != nil {
-		r.webServer.Shutdown(ctx)
+		webCtx, webCancel := context.WithTimeout(
+			context.Background(),
+			1*time.Second,
+		)
+		defer webCancel()
+		r.webServer.Shutdown(webCtx)
 	}
 
 	func() {
