@@ -44,6 +44,9 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 	}
 	iter := coll.Find(query).Sort("$natural").Tail(10 * time.Second)
 	defer func() {
+		defer func() {
+			recover()
+		}()
 		iter.Close()
 	}()
 
@@ -57,7 +60,15 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 				continue
 			}
 
+			if !l.state {
+				return
+			}
+
 			l.stream <- msg
+		}
+
+		if !l.state {
+			return
 		}
 
 		if iter.Err() != nil {
@@ -67,10 +78,11 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 
 			time.Sleep(constants.RetryDelay)
 		} else if iter.Timeout() {
-			if !l.state {
-				return
-			}
 			continue
+		}
+
+		if !l.state {
+			return
 		}
 
 		query := &bson.M{
