@@ -65,6 +65,12 @@ func (r *Router) initRedirect() (err error) {
 func (r *Router) startRedirect() {
 	defer r.waiter.Done()
 
+	logrus.WithFields(logrus.Fields{
+		"production": constants.Production,
+		"protocol":   "http",
+		"port":       80,
+	}).Info("node: Starting redirect server")
+
 	err := r.redirectServer.ListenAndServe()
 	if err != nil {
 		if err == http.ErrServerClosed {
@@ -112,11 +118,6 @@ func (r *Router) initWeb() (err error) {
 		MaxHeaderBytes: 4096,
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"type":       r.typ,
-		"production": constants.Production,
-	}).Info("node: Starting node")
-
 	if r.protocol != "http" {
 		certExists, e := utils.Exists(constants.CertPath)
 		if e != nil {
@@ -143,6 +144,12 @@ func (r *Router) initWeb() (err error) {
 
 func (r *Router) startWeb() {
 	defer r.waiter.Done()
+
+	logrus.WithFields(logrus.Fields{
+		"production": constants.Production,
+		"protocol":   r.protocol,
+		"port":       r.port,
+	}).Info("node: Starting web server")
 
 	if r.protocol == "http" {
 		err := r.webServer.ListenAndServe()
