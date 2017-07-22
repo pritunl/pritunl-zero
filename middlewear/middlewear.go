@@ -164,7 +164,7 @@ func Recovery(c *gin.Context) {
 			logrus.WithFields(logrus.Fields{
 				"client": utils.GetRemoteAddr(c),
 				"error":  errors.New(fmt.Sprintf("%s", r)),
-			}).Error("handlers: Handler panic")
+			}).Error("middlewear: Handler panic")
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 		}
 	}()
