@@ -56,6 +56,11 @@ func (d *Database) Tokens() (coll *Collection) {
 	return
 }
 
+func (d *Database) CsrfTokens() (coll *Collection) {
+	coll = d.getCollection("csrf_tokens")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
