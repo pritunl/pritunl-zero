@@ -3,6 +3,7 @@ import * as SuperAgent from 'superagent';
 import Dispatcher from '../dispatcher/Dispatcher';
 import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
+import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as SettingsTypes from '../types/SettingsTypes';
 import * as MiscUtils from '../utils/MiscUtils';
@@ -19,6 +20,7 @@ export function sync(): Promise<void> {
 		SuperAgent
 			.get('/settings')
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -52,6 +54,7 @@ export function commit(
 			.put('/settings')
 			.send(settings)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 

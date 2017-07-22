@@ -3,6 +3,7 @@ import * as SuperAgent from 'superagent';
 import Dispatcher from '../dispatcher/Dispatcher';
 import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
+import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import * as MiscUtils from '../utils/MiscUtils';
@@ -19,6 +20,7 @@ export function sync(update: boolean): Promise<void> {
 		SuperAgent
 			.get('/subscription' + (update ? '/update' : ''))
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -59,6 +61,7 @@ export function activate(license: string): Promise<void> {
 				license: license,
 			})
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -91,6 +94,7 @@ export function checkout(plan: string, card: string,
 				email: email,
 			})
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -121,6 +125,7 @@ export function payment(key: string, plan: string, card: string,
 				email: email,
 			})
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -147,6 +152,7 @@ export function cancel(key: string): Promise<void> {
 				key: key,
 			})
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 

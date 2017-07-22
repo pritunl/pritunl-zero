@@ -3,6 +3,7 @@ import * as SuperAgent from 'superagent';
 import Dispatcher from '../dispatcher/Dispatcher';
 import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
+import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
@@ -35,6 +36,7 @@ export function load(userId: string): Promise<void> {
 		SuperAgent
 			.get('/user/' + userId)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -77,6 +79,7 @@ export function sync(): Promise<void> {
 				page_count: UsersStore.pageCount,
 			})
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -134,6 +137,7 @@ export function commit(user: UserTypes.User): Promise<void> {
 			.put('/user/' + user.id)
 			.send(user)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -156,6 +160,7 @@ export function create(user: UserTypes.User): Promise<void> {
 			.post('/user')
 			.send(user)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -178,6 +183,7 @@ export function remove(userIds: string[]): Promise<void> {
 			.delete('/user')
 			.send(userIds)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 

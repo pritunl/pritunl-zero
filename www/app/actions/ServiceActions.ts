@@ -3,6 +3,7 @@ import * as SuperAgent from 'superagent';
 import Dispatcher from '../dispatcher/Dispatcher';
 import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
+import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as MiscUtils from '../utils/MiscUtils';
@@ -19,6 +20,7 @@ export function sync(): Promise<void> {
 		SuperAgent
 			.get('/service')
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -53,6 +55,7 @@ export function commit(service: ServiceTypes.Service): Promise<void> {
 			.put('/service/' + service.id)
 			.send(service)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -75,6 +78,7 @@ export function create(service: ServiceTypes.Service): Promise<void> {
 			.post('/service')
 			.send(service)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -96,6 +100,7 @@ export function remove(serviceId: string): Promise<void> {
 		SuperAgent
 			.delete('/service/' + serviceId)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 

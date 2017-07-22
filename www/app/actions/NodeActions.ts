@@ -3,6 +3,7 @@ import * as SuperAgent from 'superagent';
 import Dispatcher from '../dispatcher/Dispatcher';
 import EventDispatcher from '../dispatcher/EventDispatcher';
 import * as Alert from '../Alert';
+import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as NodeTypes from '../types/NodeTypes';
 import * as MiscUtils from '../utils/MiscUtils';
@@ -19,6 +20,7 @@ export function sync(): Promise<void> {
 		SuperAgent
 			.get('/node')
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -53,6 +55,7 @@ export function commit(node: NodeTypes.Node): Promise<void> {
 			.put('/node/' + node.id)
 			.send(node)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -75,6 +78,7 @@ export function create(node: NodeTypes.Node): Promise<void> {
 			.post('/node')
 			.send(node)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -96,6 +100,7 @@ export function remove(nodeId: string): Promise<void> {
 		SuperAgent
 			.delete('/node/' + nodeId)
 			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
