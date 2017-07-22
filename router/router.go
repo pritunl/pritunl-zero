@@ -38,6 +38,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 	} else if r.typ == node.ManagementProxy && re.Host == r.managementDomain {
 		r.mRouter.ServeHTTP(w, re)
 		return
+	} else {
+		srvc := node.Self.ServiceDomains[re.Host]
+		if srvc != nil {
+			http.Error(w, "Test", 400)
+			return
+		}
 	}
 
 	http.Error(w, "Not found", 404)
