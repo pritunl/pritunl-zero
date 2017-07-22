@@ -38,7 +38,7 @@ func sessionHand(c *gin.Context) {
 
 	var sess *session.Session
 
-	cook, err := cookie.Get(c)
+	cook, err := cookie.Get(c.Writer, c.Request)
 	if err == nil {
 		sess, err = cook.GetSession(db)
 		switch err.(type) {

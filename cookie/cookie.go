@@ -3,7 +3,6 @@ package cookie
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/pritunl/pritunl-zero/database"
@@ -12,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 )
 
 var (
@@ -22,7 +22,8 @@ var (
 type Cookie struct {
 	Id    bson.ObjectId
 	store *sessions.Session
-	con   *gin.Context
+	w     http.ResponseWriter
+	r     *http.Request
 }
 
 func (c *Cookie) Get(key string) string {
@@ -127,7 +128,7 @@ func (c *Cookie) Remove(db *database.Database) (err error) {
 }
 
 func (c *Cookie) Save() (err error) {
-	err = c.store.Save(c.con.Request, c.con.Writer)
+	err = c.store.Save(c.r, c.w)
 	return
 }
 

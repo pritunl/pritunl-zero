@@ -2,13 +2,13 @@ package cookie
 
 import (
 	"github.com/dropbox/godropbox/errors"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/securecookie"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"net/http"
 )
 
-func Get(c *gin.Context) (cook *Cookie, err error) {
-	store, err := Store.New(c.Request, "pritunl-zero-console")
+func Get(w http.ResponseWriter, r *http.Request) (cook *Cookie, err error) {
+	store, err := Store.New(r, "pritunl-zero-console")
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err.(securecookie.MultiError)[0],
@@ -19,25 +19,29 @@ func Get(c *gin.Context) (cook *Cookie, err error) {
 
 	cook = &Cookie{
 		store: store,
-		con:   c,
+		w:     w,
+		r:     r,
 	}
 
 	return
 }
 
-func New(c *gin.Context) (cook *Cookie) {
+func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 	store, _ := Store.New(c.Request, "pritunl-zero-console")
 
 	cook = &Cookie{
 		store: store,
-		con:   c,
+		w:     w,
+		r:     r,
 	}
 
 	return
 }
 
-func GetProxy(c *gin.Context) (cook *Cookie, err error) {
-	store, err := ProxyStore.New(c.Request, "pritunl-zero")
+func GetProxy(w http.ResponseWriter, r *http.Request) (
+	cook *Cookie, err error) {
+
+	store, err := ProxyStore.New(r, "pritunl-zero")
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err.(securecookie.MultiError)[0],
@@ -48,18 +52,20 @@ func GetProxy(c *gin.Context) (cook *Cookie, err error) {
 
 	cook = &Cookie{
 		store: store,
-		con:   c,
+		w:     w,
+		r:     r,
 	}
 
 	return
 }
 
-func NewProxy(c *gin.Context) (cook *Cookie) {
-	store, _ := ProxyStore.New(c.Request, "pritunl-zero")
+func NewProxy(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
+	store, _ := ProxyStore.New(r, "pritunl-zero")
 
 	cook = &Cookie{
 		store: store,
-		con:   c,
+		w:     w,
+		r:     r,
 	}
 
 	return
