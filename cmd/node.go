@@ -17,9 +17,7 @@ func Node() (err error) {
 		return
 	}
 
-	routr := &router.Router{
-		Node: nde,
-	}
+	routr := &router.Router{}
 	err = routr.Run()
 	if err != nil {
 		return

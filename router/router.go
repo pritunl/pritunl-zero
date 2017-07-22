@@ -18,7 +18,6 @@ import (
 )
 
 type Router struct {
-	Node             *node.Node
 	typ              string
 	port             int
 	protocol         string
@@ -93,15 +92,15 @@ func (r *Router) startRedirect() {
 }
 
 func (r *Router) initWeb() (err error) {
-	r.typ = r.Node.Type
-	r.managementDomain = r.Node.ManagementDomain
+	r.typ = node.Self.Type
+	r.managementDomain = node.Self.ManagementDomain
 
-	r.port = r.Node.Port
+	r.port = node.Self.Port
 	if r.port == 0 {
 		r.port = 443
 	}
 
-	r.protocol = r.Node.Protocol
+	r.protocol = node.Self.Protocol
 	if r.protocol == "" {
 		r.protocol = "https"
 	}
