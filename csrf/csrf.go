@@ -45,7 +45,7 @@ func ValidateToken(db *database.Database, sessionId, token string) (
 
 	doc := &CsrfToken{}
 
-	err = coll.FindOneId(sessionId, doc)
+	err = coll.FindOneId(token, doc)
 	if err != nil {
 		return
 	}
