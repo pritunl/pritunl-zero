@@ -159,6 +159,8 @@ func Register(protocol string, engine *gin.Engine) {
 
 	engine.GET("/check", checkGet)
 
+	authGroup.GET("/csrf", csrfGet)
+
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
 	dbGroup.GET("/auth/request", authRequestGet)
