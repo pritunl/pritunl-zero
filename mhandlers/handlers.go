@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/cookie"
+	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/session"
@@ -32,7 +33,7 @@ func databaseHand(c *gin.Context) {
 	db.Close()
 }
 
-func sessionHand(required bool) gin.HandlerFunc {
+func sessionHand(required, csrfRequired bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db := c.MustGet("db").(*database.Database)
 
@@ -73,6 +74,26 @@ func sessionHand(required bool) gin.HandlerFunc {
 					return
 				}
 
+				c.AbortWithStatus(401)
+				return
+			}
+		}
+
+		if csrfRequired {
+			if sess == nil {
+				c.AbortWithStatus(401)
+				return
+			}
+
+			token := c.Request.Header.Get("Csrf-Token")
+
+			valid, err := csrf.ValidateToken(db, sess.Id, token)
+			if err != nil {
+				c.AbortWithError(500, err)
+				return
+			}
+
+			if !valid {
 				c.AbortWithStatus(401)
 				return
 			}
@@ -125,13 +146,16 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.Use(databaseHand)
 
 	sessGroup := dbGroup.Group("")
-	sessGroup.Use(sessionHand(false))
+	sessGroup.Use(sessionHand(false, false))
 
 	authGroup := dbGroup.Group("")
-	authGroup.Use(sessionHand(true))
+	authGroup.Use(sessionHand(true, false))
 
-	activeAuthGroup := authGroup.Group("")
-	activeAuthGroup.Use(activeHand)
+	csrfGroup := dbGroup.Group("")
+	csrfGroup.Use(sessionHand(true, true))
+
+	activeCsrfGroup := csrfGroup.Group("")
+	activeCsrfGroup.Use(activeHand)
 
 	engine.GET("/check", checkGet)
 
@@ -141,29 +165,29 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
-	activeAuthGroup.GET("/event", eventGet)
+	activeCsrfGroup.GET("/event", eventGet)
 
-	activeAuthGroup.GET("/node", nodesGet)
-	activeAuthGroup.PUT("/node/:node_id", nodePut)
-	activeAuthGroup.DELETE("/node/:node_id", nodeDelete)
+	activeCsrfGroup.GET("/node", nodesGet)
+	activeCsrfGroup.PUT("/node/:node_id", nodePut)
+	activeCsrfGroup.DELETE("/node/:node_id", nodeDelete)
 
-	activeAuthGroup.GET("/service", servicesGet)
-	activeAuthGroup.PUT("/service/:service_id", servicePut)
-	activeAuthGroup.POST("/service", servicePost)
-	activeAuthGroup.DELETE("/service/:service_id", serviceDelete)
+	activeCsrfGroup.GET("/service", servicesGet)
+	activeCsrfGroup.PUT("/service/:service_id", servicePut)
+	activeCsrfGroup.POST("/service", servicePost)
+	activeCsrfGroup.DELETE("/service/:service_id", serviceDelete)
 
-	activeAuthGroup.GET("/settings", settingsGet)
-	activeAuthGroup.PUT("/settings", settingsPut)
+	activeCsrfGroup.GET("/settings", settingsGet)
+	activeCsrfGroup.PUT("/settings", settingsPut)
 
-	activeAuthGroup.GET("/subscription", subscriptionGet)
-	activeAuthGroup.GET("/subscription/update", subscriptionUpdateGet)
-	activeAuthGroup.POST("/subscription", subscriptionPost)
+	activeCsrfGroup.GET("/subscription", subscriptionGet)
+	activeCsrfGroup.GET("/subscription/update", subscriptionUpdateGet)
+	activeCsrfGroup.POST("/subscription", subscriptionPost)
 
-	activeAuthGroup.GET("/user", usersGet)
-	activeAuthGroup.GET("/user/:user_id", userGet)
-	activeAuthGroup.PUT("/user/:user_id", userPut)
-	activeAuthGroup.POST("/user", userPost)
-	activeAuthGroup.DELETE("/user", usersDelete)
+	activeCsrfGroup.GET("/user", usersGet)
+	activeCsrfGroup.GET("/user/:user_id", userGet)
+	activeCsrfGroup.PUT("/user/:user_id", userPut)
+	activeCsrfGroup.POST("/user", userPost)
+	activeCsrfGroup.DELETE("/user", usersDelete)
 
 	if constants.Production {
 		stre, err := static.NewStore(constants.StaticRoot)
