@@ -197,6 +197,19 @@ func addIndexes() (err error) {
 		}
 	}
 
+	coll = db.CsrfTokens()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:         []string{"timestamp"},
+		ExpireAfter: 168 * time.Hour,
+		Background:  true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+		return
+	}
+
 	coll = db.Events()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"channel"},
