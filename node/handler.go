@@ -12,21 +12,6 @@ import (
 	"time"
 )
 
-var (
-	Transport http.RoundTripper = &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
-)
-
 type Handler struct {
 	Node     *Node
 	Services map[string]*service.Service
@@ -56,6 +41,19 @@ func (h *Handler) loadServices(db *database.Database) (err error) {
 func (h *Handler) initProxy(srvc *service.Service, server *service.Server) (
 	proxy *httputil.ReverseProxy) {
 
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+
 	proxy = &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			req.Header.Set("X-Forwarded-For",
@@ -67,7 +65,7 @@ func (h *Handler) initProxy(srvc *service.Service, server *service.Server) (
 			req.URL.Host = fmt.Sprintf(
 				"%s:%d", server.Hostname, server.Port)
 		},
-		Transport: Transport,
+		Transport: transport,
 	}
 
 	return
