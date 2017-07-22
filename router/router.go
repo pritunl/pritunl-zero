@@ -39,8 +39,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	} else {
-		srvc := node.Self.DomainServices[re.Host]
-		proxies, ok := node.Self.DomainProxies[re.Host]
+		srvc := node.Self.Handler.Services[re.Host]
+		proxies, ok := node.Self.Handler.Proxies[re.Host]
 		n := len(proxies)
 
 		if srvc != nil && ok && n != 0 {
