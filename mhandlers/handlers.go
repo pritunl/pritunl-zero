@@ -33,73 +33,79 @@ func databaseHand(c *gin.Context) {
 	db.Close()
 }
 
-func sessionHand(required, csrfRequired bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		db := c.MustGet("db").(*database.Database)
+func sessionHand(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
 
-		var sess *session.Session
+	var sess *session.Session
 
-		cook, err := cookie.Get(c)
-		if err == nil {
-			sess, err = cook.GetSession(db)
-			switch err.(type) {
-			case nil:
-			case *errortypes.NotFoundError:
-				sess = nil
-				err = nil
-			default:
-				c.AbortWithError(500, err)
-				return
-			}
+	cook, err := cookie.Get(c)
+	if err == nil {
+		sess, err = cook.GetSession(db)
+		switch err.(type) {
+		case nil:
+		case *errortypes.NotFoundError:
+			sess = nil
+			err = nil
+		default:
+			c.AbortWithError(500, err)
+			return
+		}
+	}
+
+	c.Set("session", sess)
+	c.Set("cookie", cook)
+}
+
+func authHand(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	sess := c.MustGet("session").(*session.Session)
+	cook := c.MustGet("cookie").(*cookie.Cookie)
+
+	if sess == nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	usr, err := sess.GetUser(db)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	if usr.Disabled || usr.Administrator != "super" {
+		sess = nil
+
+		err = cook.Remove(db)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
 		}
 
-		if required {
-			if sess == nil {
-				c.AbortWithStatus(401)
-				return
-			}
+		c.AbortWithStatus(401)
+		return
+	}
+}
 
-			usr, err := sess.GetUser(db)
-			if err != nil {
-				c.AbortWithError(500, err)
-				return
-			}
+func csrfHand(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	sess := c.MustGet("session").(*session.Session)
 
-			if usr.Disabled || usr.Administrator != "super" {
-				sess = nil
+	if sess == nil {
+		c.AbortWithStatus(401)
+		return
+	}
 
-				err = cook.Remove(db)
-				if err != nil {
-					c.AbortWithError(500, err)
-					return
-				}
+	token := c.Request.Header.Get("Csrf-Token")
 
-				c.AbortWithStatus(401)
-				return
-			}
-		}
+	valid, err := csrf.ValidateToken(db, sess.Id, token)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 
-		if csrfRequired {
-			if sess == nil {
-				c.AbortWithStatus(401)
-				return
-			}
-
-			token := c.Request.Header.Get("Csrf-Token")
-
-			valid, err := csrf.ValidateToken(db, sess.Id, token)
-			if err != nil {
-				c.AbortWithError(500, err)
-				return
-			}
-
-			if !valid {
-				c.AbortWithStatus(401)
-				return
-			}
-		}
-
-		c.Set("session", sess)
+	if !valid {
+		c.AbortWithStatus(401)
+		return
 	}
 }
 
@@ -146,13 +152,13 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.Use(databaseHand)
 
 	sessGroup := dbGroup.Group("")
-	sessGroup.Use(sessionHand(false, false))
+	sessGroup.Use(sessionHand)
 
-	authGroup := dbGroup.Group("")
-	authGroup.Use(sessionHand(true, false))
+	authGroup := sessGroup.Group("")
+	authGroup.Use(authHand)
 
-	csrfGroup := dbGroup.Group("")
-	csrfGroup.Use(sessionHand(true, true))
+	csrfGroup := authGroup.Group("")
+	csrfGroup.Use(csrfHand)
 
 	activeCsrfGroup := csrfGroup.Group("")
 	activeCsrfGroup.Use(activeHand)
