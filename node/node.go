@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/database"
@@ -10,25 +11,30 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
+	"net/http/httputil"
+	"strconv"
+	"strings"
 	"time"
 )
 
 var Self *Node
 
 type Node struct {
-	Id               bson.ObjectId               `bson:"_id" json:"id"`
-	Name             string                      `bson:"name" json:"name"`
-	Type             string                      `bson:"type" json:"type"`
-	Timestamp        time.Time                   `bson:"timestamp" json:"timestamp"`
-	Port             int                         `bson:"port" json:"port"`
-	Protocol         string                      `bson:"protocol" json:"protocol"`
-	ManagementDomain string                      `bson:"management_domain" json:"management_domain"`
-	Memory           float64                     `bson:"memory" json:"memory"`
-	Load1            float64                     `bson:"load1" json:"load1"`
-	Load5            float64                     `bson:"load5" json:"load5"`
-	Load15           float64                     `bson:"load15" json:"load15"`
-	Services         []bson.ObjectId             `bson:"services" json:"services"`
-	ServiceDomains   map[string]*service.Service `bson:"-" json:"-"`
+	Id               bson.ObjectId                       `bson:"_id" json:"id"`
+	Name             string                              `bson:"name" json:"name"`
+	Type             string                              `bson:"type" json:"type"`
+	Timestamp        time.Time                           `bson:"timestamp" json:"timestamp"`
+	Port             int                                 `bson:"port" json:"port"`
+	Protocol         string                              `bson:"protocol" json:"protocol"`
+	ManagementDomain string                              `bson:"management_domain" json:"management_domain"`
+	Memory           float64                             `bson:"memory" json:"memory"`
+	Load1            float64                             `bson:"load1" json:"load1"`
+	Load5            float64                             `bson:"load5" json:"load5"`
+	Load15           float64                             `bson:"load15" json:"load15"`
+	Services         []bson.ObjectId                     `bson:"services" json:"services"`
+	ServiceDomains   map[string]*service.Service         `bson:"-" json:"-"`
+	Proxies          map[string][]*httputil.ReverseProxy `bson:"-" json:"-"`
 }
 
 func (n *Node) loadServiceDomains(db *database.Database) (err error) {
@@ -47,6 +53,52 @@ func (n *Node) loadServiceDomains(db *database.Database) (err error) {
 	}
 
 	n.ServiceDomains = serviceDomains
+
+	return
+}
+
+func (n *Node) initProxy(srvc *service.Service, server *service.Server) (
+	proxy *httputil.ReverseProxy) {
+
+	proxy = &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			req.Header.Set("X-Forwarded-For",
+				strings.Split(req.RemoteAddr, ":")[0])
+			req.Header.Set("X-Forwarded-Proto", n.Protocol)
+			req.Header.Set("X-Forwarded-Port", strconv.Itoa(n.Port))
+
+			req.URL.Scheme = server.Protocol
+			req.URL.Host = fmt.Sprintf(
+				"%s:%d", server.Hostname, server.Port)
+		},
+	}
+
+	return
+}
+
+func (n *Node) initProxies() {
+	proxies := map[string][]*httputil.ReverseProxy{}
+
+	for domain, srvc := range n.ServiceDomains {
+		domainProxies := []*httputil.ReverseProxy{}
+		for _, server := range srvc.Servers {
+			domainProxies = append(domainProxies, n.initProxy(srvc, server))
+		}
+		proxies[domain] = domainProxies
+	}
+
+	n.Proxies = proxies
+
+	return
+}
+
+func (n *Node) Load(db *database.Database) (err error) {
+	err = n.loadServiceDomains(db)
+	if err != nil {
+		return
+	}
+
+	n.initProxies()
 
 	return
 }
@@ -178,7 +230,7 @@ func (n *Node) keepalive() {
 			}).Error("node: Failed to update node")
 		}
 
-		err = n.loadServiceDomains(db)
+		err = n.Load(db)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"error": err,
@@ -228,7 +280,7 @@ func (n *Node) Init() (err error) {
 		return
 	}
 
-	err = n.loadServiceDomains(db)
+	err = n.Load(db)
 	if err != nil {
 		return
 	}
