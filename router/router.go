@@ -12,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
+	"math/rand"
 	"net/http"
 	"sync"
 	"time"
@@ -38,11 +39,15 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	} else {
-		srvc := node.Self.ServiceDomains[re.Host]
-		if srvc != nil {
-			http.Error(w, "Test", 400)
-			return
+		srvc := node.Self.DomainServices[re.Host]
+		proxies := node.Self.DomainProxies[re.Host]
+		n := len(proxies)
+
+		if srvc != nil && proxies != nil && n != 0 {
+			proxies[rand.Intn(n)].ServeHTTP(w, re)
 		}
+
+		return
 	}
 
 	http.Error(w, "Not found", 404)
