@@ -27,7 +27,7 @@ func Get(w http.ResponseWriter, r *http.Request) (cook *Cookie, err error) {
 }
 
 func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
-	store, _ := Store.New(c.Request, "pritunl-zero-console")
+	store, _ := Store.New(r, "pritunl-zero-console")
 
 	cook = &Cookie{
 		store: store,
