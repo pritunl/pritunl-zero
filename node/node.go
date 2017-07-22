@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -15,18 +16,39 @@ import (
 var Self *Node
 
 type Node struct {
-	Id               bson.ObjectId   `bson:"_id" json:"id"`
-	Name             string          `bson:"name" json:"name"`
-	Type             string          `bson:"type" json:"type"`
-	Timestamp        time.Time       `bson:"timestamp" json:"timestamp"`
-	Port             int             `bson:"port" json:"port"`
-	Protocol         string          `bson:"protocol" json:"protocol"`
-	ManagementDomain string          `bson:"management_domain" json:"management_domain"`
-	Memory           float64         `bson:"memory" json:"memory"`
-	Load1            float64         `bson:"load1" json:"load1"`
-	Load5            float64         `bson:"load5" json:"load5"`
-	Load15           float64         `bson:"load15" json:"load15"`
-	Services         []bson.ObjectId `bson:"services" json:"services"`
+	Id               bson.ObjectId               `bson:"_id" json:"id"`
+	Name             string                      `bson:"name" json:"name"`
+	Type             string                      `bson:"type" json:"type"`
+	Timestamp        time.Time                   `bson:"timestamp" json:"timestamp"`
+	Port             int                         `bson:"port" json:"port"`
+	Protocol         string                      `bson:"protocol" json:"protocol"`
+	ManagementDomain string                      `bson:"management_domain" json:"management_domain"`
+	Memory           float64                     `bson:"memory" json:"memory"`
+	Load1            float64                     `bson:"load1" json:"load1"`
+	Load5            float64                     `bson:"load5" json:"load5"`
+	Load15           float64                     `bson:"load15" json:"load15"`
+	Services         []bson.ObjectId             `bson:"services" json:"services"`
+	ServiceDomains   map[string]*service.Service `bson:"-" json:"-"`
+}
+
+func (n *Node) loadServiceDomains(db *database.Database) (err error) {
+	serviceDomains := map[string]*service.Service{}
+
+	services, err := service.GetMulti(db, n.Services)
+	if err != nil {
+		n.ServiceDomains = serviceDomains
+		return
+	}
+
+	for _, srvc := range services {
+		for _, domain := range srvc.Domains {
+			serviceDomains[domain] = srvc
+		}
+	}
+
+	n.ServiceDomains = serviceDomains
+
+	return
 }
 
 func (n *Node) Validate(db *database.Database) (
