@@ -267,13 +267,6 @@ func (r *Router) Restart() {
 }
 
 func (r *Router) Run() (err error) {
-	go func() {
-		for {
-			time.Sleep(10 * time.Second)
-			r.Restart()
-		}
-	}()
-
 	for {
 		err = r.initServers()
 		if err != nil {
