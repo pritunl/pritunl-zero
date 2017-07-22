@@ -110,12 +110,27 @@ func (n *Node) update(db *database.Database) (err error) {
 		ReturnNew: true,
 	}
 
+	nde := &Node{}
+
 	_, err = coll.Find(&bson.M{
 		"_id": n.Id,
-	}).Apply(change, n)
+	}).Apply(change, nde)
 	if err != nil {
 		return
 	}
+
+	n.Id = nde.Id
+	n.Name = nde.Name
+	n.Type = nde.Type
+	n.Timestamp = nde.Timestamp
+	n.Port = nde.Port
+	n.Protocol = nde.Protocol
+	n.ManagementDomain = nde.ManagementDomain
+	n.Memory = nde.Memory
+	n.Load1 = nde.Load1
+	n.Load5 = nde.Load5
+	n.Load15 = nde.Load15
+	n.Services = nde.Services
 
 	return
 }
