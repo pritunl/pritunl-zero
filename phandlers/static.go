@@ -6,14 +6,8 @@ import (
 	"strings"
 )
 
-func staticPath(c *gin.Context, pth string) {
-	pth = constants.StaticRoot + pth
-
-	file, ok := store.Files[pth]
-	if !ok {
-		c.AbortWithStatus(404)
-		return
-	}
+func staticIndexGet(c *gin.Context) {
+	file := index
 
 	if constants.StaticCache {
 		c.Writer.Header().Add("Cache-Control", "public, max-age=86400")
@@ -31,8 +25,4 @@ func staticPath(c *gin.Context, pth string) {
 	} else {
 		c.Data(200, file.Type, file.Data)
 	}
-}
-
-func staticIndexGet(c *gin.Context) {
-	staticPath(c, "/login.html")
 }

@@ -6,10 +6,11 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/static"
+	"path/filepath"
 )
 
 var (
-	store *static.Store
+	index *static.File
 )
 
 func Register(protocol string, engine *gin.Engine) {
@@ -34,11 +35,18 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
-	stre, err := static.NewStore(constants.StaticRoot)
+	root := ""
+	if constants.Production {
+		root = constants.StaticRoot
+	} else {
+		root = constants.StaticTestingRoot
+	}
+
+	indx, err := static.NewFile(filepath.Join(root, "login.html"))
 	if err != nil {
 		panic(err)
 	}
-	store = stre
+	index = indx
 
 	sessGroup.GET("/", staticIndexGet)
 }
