@@ -4,11 +4,14 @@ import * as ReactDOM from 'react-dom';
 import * as Blueprint from '@blueprintjs/core';
 import Main from './components/Main';
 import * as Event from './Event';
+import * as Csrf from './Csrf';
 
-Blueprint.FocusStyleManager.onlyShowFocusOnTabs();
-Event.init();
+Csrf.load().then((): void => {
+	Blueprint.FocusStyleManager.onlyShowFocusOnTabs();
+	Event.init();
 
-ReactDOM.render(
-	<div><Main/></div>,
-	document.getElementById('app')
-);
+	ReactDOM.render(
+		<div><Main/></div>,
+		document.getElementById('app')
+	);
+});
