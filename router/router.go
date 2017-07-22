@@ -40,10 +40,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		return
 	} else {
 		srvc := node.Self.DomainServices[re.Host]
-		proxies := node.Self.DomainProxies[re.Host]
+		proxies, ok := node.Self.DomainProxies[re.Host]
 		n := len(proxies)
 
-		if srvc != nil && proxies != nil && n != 0 {
+		if srvc != nil && ok && n != 0 {
 			proxies[rand.Intn(n)].ServeHTTP(w, re)
 		}
 
