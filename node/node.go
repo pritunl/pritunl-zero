@@ -178,11 +178,20 @@ func (n *Node) keepalive() {
 			}).Error("node: Failed to update node")
 		}
 
+		err = n.loadServiceDomains(db)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("node: Failed to load service domains")
+		}
+
 		time.Sleep(1 * time.Second)
 	}
 }
 
 func (n *Node) Init() (err error) {
+	_ = service.Server{}
+
 	db := database.GetDatabase()
 	defer db.Close()
 
@@ -216,6 +225,11 @@ func (n *Node) Init() (err error) {
 	})
 	if err != nil {
 		err = database.ParseError(err)
+		return
+	}
+
+	err = n.loadServiceDomains(db)
+	if err != nil {
 		return
 	}
 
