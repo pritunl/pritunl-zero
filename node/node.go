@@ -33,16 +33,16 @@ type Node struct {
 	Load5            float64                             `bson:"load5" json:"load5"`
 	Load15           float64                             `bson:"load15" json:"load15"`
 	Services         []bson.ObjectId                     `bson:"services" json:"services"`
-	ServiceDomains   map[string]*service.Service         `bson:"-" json:"-"`
-	Proxies          map[string][]*httputil.ReverseProxy `bson:"-" json:"-"`
+	DomainServices   map[string]*service.Service         `bson:"-" json:"-"`
+	DomainProxies    map[string][]*httputil.ReverseProxy `bson:"-" json:"-"`
 }
 
-func (n *Node) loadServiceDomains(db *database.Database) (err error) {
+func (n *Node) loadDomainServices(db *database.Database) (err error) {
 	serviceDomains := map[string]*service.Service{}
 
 	services, err := service.GetMulti(db, n.Services)
 	if err != nil {
-		n.ServiceDomains = serviceDomains
+		n.DomainServices = serviceDomains
 		return
 	}
 
@@ -52,7 +52,7 @@ func (n *Node) loadServiceDomains(db *database.Database) (err error) {
 		}
 	}
 
-	n.ServiceDomains = serviceDomains
+	n.DomainServices = serviceDomains
 
 	return
 }
@@ -79,7 +79,7 @@ func (n *Node) initProxy(srvc *service.Service, server *service.Server) (
 func (n *Node) initProxies() {
 	proxies := map[string][]*httputil.ReverseProxy{}
 
-	for domain, srvc := range n.ServiceDomains {
+	for domain, srvc := range n.DomainServices {
 		domainProxies := []*httputil.ReverseProxy{}
 		for _, server := range srvc.Servers {
 			domainProxies = append(domainProxies, n.initProxy(srvc, server))
@@ -87,13 +87,13 @@ func (n *Node) initProxies() {
 		proxies[domain] = domainProxies
 	}
 
-	n.Proxies = proxies
+	n.DomainProxies = proxies
 
 	return
 }
 
 func (n *Node) Load(db *database.Database) (err error) {
-	err = n.loadServiceDomains(db)
+	err = n.loadDomainServices(db)
 	if err != nil {
 		return
 	}
