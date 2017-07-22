@@ -11,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
@@ -18,7 +19,21 @@ import (
 	"time"
 )
 
-var Self *Node
+var (
+	Self      *Node
+	Transport http.RoundTripper = &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+)
 
 type Node struct {
 	Id               bson.ObjectId                       `bson:"_id" json:"id"`
@@ -71,6 +86,7 @@ func (n *Node) initProxy(srvc *service.Service, server *service.Server) (
 			req.URL.Host = fmt.Sprintf(
 				"%s:%d", server.Hostname, server.Port)
 		},
+		Transport: Transport,
 	}
 
 	return
