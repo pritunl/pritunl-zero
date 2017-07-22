@@ -45,9 +45,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 
 		if srvc != nil && ok && n != 0 {
 			proxies[rand.Intn(n)].ServeHTTP(w, re)
+			return
 		}
-
-		return
 	}
 
 	http.Error(w, "Not found", 404)
