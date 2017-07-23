@@ -1,22 +1,12 @@
 package mhandlers
 
 import (
-	"crypto/hmac"
-	"crypto/sha512"
-	"crypto/subtle"
-	"encoding/base64"
-	"github.com/Sirupsen/logrus"
-	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/session"
-	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/user"
-	"gopkg.in/mgo.v2/bson"
-	"net/url"
 	"strings"
 )
 
@@ -86,143 +76,23 @@ func logoutGet(c *gin.Context) {
 }
 
 func authRequestGet(c *gin.Context) {
-	db := c.MustGet("db").(*database.Database)
-
-	providerId := bson.ObjectIdHex(c.Query("id"))
-
-	var provider *settings.Provider
-	for _, prvidr := range settings.Auth.Providers {
-		if prvidr.Id == providerId {
-			provider = prvidr
-			break
-		}
-	}
-
-	if provider == nil {
-		c.AbortWithStatus(404)
-		return
-	}
-
-	loc := location.Get(c).String()
-
-	switch provider.Type {
-	case auth.Google:
-		redirect, err := auth.GoogleRequest(db, loc, provider)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-		c.Redirect(302, redirect)
-		return
-	case auth.OneLogin, auth.Okta:
-		body, err := auth.SamlRequest(db, loc, provider)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-		c.Data(200, "text/html;charset=utf-8", body)
-		return
-	}
-
-	c.AbortWithStatus(404)
+	auth.Request(c)
 }
 
 func authCallbackGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
 
-	params, err := url.ParseQuery(query)
+	usr, errData, err := auth.Local(db, sig, query)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 
-	state := params.Get("state")
-	sig := c.Query("sig")
-
-	tokn, err := auth.Get(db, state)
-	if err != nil {
-		c.AbortWithError(500, err)
+	if errData != nil {
+		c.JSON(401, errData)
 		return
-	}
-
-	hashFunc := hmac.New(sha512.New, []byte(tokn.Secret))
-	hashFunc.Write([]byte(query))
-	rawSignature := hashFunc.Sum(nil)
-	testSig := base64.URLEncoding.EncodeToString(rawSignature)
-
-	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
-		c.JSON(401, &errortypes.ErrorData{
-			Error:   "authentication_error",
-			Message: "Authentication error occurred",
-		})
-		return
-	}
-
-	provider := settings.Auth.GetProvider(tokn.Provider)
-	if provider == nil {
-		c.AbortWithStatus(404)
-		return
-	}
-
-	err = tokn.Remove(db)
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-
-	roles := []string{}
-	roles = append(roles, provider.DefaultRoles...)
-
-	for _, role := range strings.Split(params.Get("roles"), ",") {
-		if role != "" {
-			roles = append(roles, role)
-		}
-	}
-
-	username := params.Get("username")
-
-	var usr *user.User
-	if provider.AutoCreate {
-		usr = &user.User{
-			Type:     provider.Type,
-			Username: username,
-			Roles:    roles,
-		}
-
-		errData, err := usr.Validate(db)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-
-		if errData != nil {
-			logrus.WithFields(logrus.Fields{
-				"error":     errData.Error,
-				"error_msg": errData.Message,
-			}).Error("handlers: Single sign on user validate failed")
-			return
-		}
-
-		err = usr.Upsert(db)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-	} else {
-		usr, err = user.GetUsername(db, provider.Type, username)
-		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				c.JSON(401, &errortypes.ErrorData{
-					Error:   "unauthorized",
-					Message: "Not authorized",
-				})
-			default:
-				c.AbortWithError(500, err)
-			}
-			return
-		}
 	}
 
 	if usr.Disabled || usr.Administrator != "super" {
