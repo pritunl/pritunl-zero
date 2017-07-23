@@ -5,10 +5,10 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -34,24 +34,10 @@ func Service(c *gin.Context) {
 func Session(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	var sess *session.Session
-
-	cook, err := cookie.Get(c.Writer, c.Request)
-	if err == nil {
-		sess, err = cook.GetSession(db)
-		switch err.(type) {
-		case nil:
-			break
-		case *errortypes.NotFoundError:
-			sess = nil
-			err = nil
-			break
-		default:
-			c.AbortWithError(500, err)
-			return
-		}
-	} else {
-		err = nil
+	cook, sess, err := auth.CookieSession(db, c.Writer, c.Request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
 	}
 
 	c.Set("session", sess)
@@ -61,24 +47,10 @@ func Session(c *gin.Context) {
 func SessionProxy(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	var sess *session.Session
-
-	cook, err := cookie.GetProxy(c.Writer, c.Request)
-	if err == nil {
-		sess, err = cook.GetSession(db)
-		switch err.(type) {
-		case nil:
-			break
-		case *errortypes.NotFoundError:
-			sess = nil
-			err = nil
-			break
-		default:
-			c.AbortWithError(500, err)
-			return
-		}
-	} else {
-		err = nil
+	cook, sess, err := auth.CookieSessionProxy(db, c.Writer, c.Request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
 	}
 
 	c.Set("session", sess)

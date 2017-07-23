@@ -6,15 +6,14 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/constants"
-	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/phandlers"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"math/rand"
 	"net/http"
@@ -44,24 +43,10 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
 		db := database.GetDatabase()
 		defer db.Close()
 
-		var sess *session.Session
-
-		cook, err := cookie.GetProxy(w, re)
-		if err == nil {
-			sess, err = cook.GetSession(db)
-			switch err.(type) {
-			case nil:
-				break
-			case *errortypes.NotFoundError:
-				sess = nil
-				err = nil
-				break
-			default:
-				http.Error(w, "Server error", 500)
-				return
-			}
-		} else {
-			err = nil
+		cook, sess, err := auth.CookieSessionProxy(db, w, re)
+		if err != nil {
+			http.Error(w, "Server error", 500)
+			return
 		}
 
 		if sess == nil {
