@@ -27,7 +27,7 @@ func Database(c *gin.Context) {
 }
 
 func Service(c *gin.Context) {
-	srvc := node.Self.Handler.Services[c.Request.Host]
+	srvc := node.Self.Handler.Hosts[c.Request.Host].Service
 	c.Set("service", srvc)
 }
 

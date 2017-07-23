@@ -13,7 +13,7 @@ import (
 type serviceData struct {
 	Id      bson.ObjectId     `json:"id"`
 	Name    string            `json:"name"`
-	Domains []string          `json:"domains"`
+	Domains []*service.Domain `json:"domains"`
 	Roles   []string          `json:"roles"`
 	Servers []*service.Server `json:"servers"`
 }
