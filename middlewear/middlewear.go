@@ -35,13 +35,17 @@ func Session(c *gin.Context) {
 		sess, err = cook.GetSession(db)
 		switch err.(type) {
 		case nil:
+			break
 		case *errortypes.NotFoundError:
 			sess = nil
 			err = nil
+			break
 		default:
 			c.AbortWithError(500, err)
 			return
 		}
+	} else {
+		err = nil
 	}
 
 	c.Set("session", sess)
@@ -58,13 +62,17 @@ func SessionProxy(c *gin.Context) {
 		sess, err = cook.GetSession(db)
 		switch err.(type) {
 		case nil:
+			break
 		case *errortypes.NotFoundError:
 			sess = nil
 			err = nil
+			break
 		default:
 			c.AbortWithError(500, err)
 			return
 		}
+	} else {
+		err = nil
 	}
 
 	c.Set("session", sess)
