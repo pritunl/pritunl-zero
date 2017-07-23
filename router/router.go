@@ -66,7 +66,13 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
 			return
 		}
 
-		if len(usr.Roles) == 0 {
+		errData, err := auth.Validate(db, usr, srvc)
+		if err != nil {
+			http.Error(w, "Server error", 500)
+			return
+		}
+
+		if errData != nil {
 			err = cook.Remove(db)
 			if err != nil {
 				http.Error(w, "Server error", 500)
