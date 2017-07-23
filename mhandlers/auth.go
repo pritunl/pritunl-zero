@@ -84,7 +84,7 @@ func authCallbackGet(c *gin.Context) {
 	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
 
-	usr, errData, err := auth.Local(db, sig, query)
+	usr, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
