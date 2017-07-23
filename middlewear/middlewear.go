@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
@@ -23,6 +24,11 @@ func Database(c *gin.Context) {
 	c.Set("db", db)
 	c.Next()
 	db.Close()
+}
+
+func Service(c *gin.Context) {
+	srvc := node.Self.Handler.Services[c.Request.Host]
+	c.Set("service", srvc)
 }
 
 func Session(c *gin.Context) {
