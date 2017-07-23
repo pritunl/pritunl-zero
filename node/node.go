@@ -1,6 +1,7 @@
 package node
 
 import (
+	"container/list"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/database"
@@ -10,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 	"time"
 )
 
@@ -25,12 +27,22 @@ type Node struct {
 	Port             int             `bson:"port" json:"port"`
 	Protocol         string          `bson:"protocol" json:"protocol"`
 	ManagementDomain string          `bson:"management_domain" json:"management_domain"`
+	RequestsMin      int64           `bson:"requests_min" json:"requests_min"`
 	Memory           float64         `bson:"memory" json:"memory"`
 	Load1            float64         `bson:"load1" json:"load1"`
 	Load5            float64         `bson:"load5" json:"load5"`
 	Load15           float64         `bson:"load15" json:"load15"`
 	Services         []bson.ObjectId `bson:"services" json:"services"`
 	Handler          *Handler        `bson:"-" json:"-"`
+	reqLock          sync.Mutex      `bson:"-" json:"-"`
+	reqCount         *list.List      `bson:"-" json:"-"`
+}
+
+func (n *Node) AddRequest() {
+	n.reqLock.Lock()
+	back := n.reqCount.Back()
+	back.Value = back.Value.(int) + 1
+	n.reqLock.Unlock()
 }
 
 func (n *Node) Validate(db *database.Database) (
@@ -99,11 +111,12 @@ func (n *Node) update(db *database.Database) (err error) {
 	change := mgo.Change{
 		Update: &bson.M{
 			"$set": &bson.M{
-				"timestamp": n.Timestamp,
-				"memory":    n.Memory,
-				"load1":     n.Load1,
-				"load5":     n.Load5,
-				"load15":    n.Load15,
+				"timestamp":    n.Timestamp,
+				"requests_min": n.RequestsMin,
+				"memory":       n.Memory,
+				"load1":        n.Load1,
+				"load5":        n.Load5,
+				"load15":       n.Load15,
 			},
 		},
 		Upsert:    false,
@@ -186,6 +199,34 @@ func (n *Node) keepalive() {
 	}
 }
 
+func (n *Node) reqInit() {
+	n.reqLock.Lock()
+	n.reqCount = list.New()
+	for i := 0; i < 60; i++ {
+		n.reqCount.PushBack(0)
+	}
+	n.reqLock.Unlock()
+}
+
+func (n *Node) reqSync() {
+	for {
+		time.Sleep(1 * time.Second)
+
+		n.reqLock.Lock()
+
+		var count int64
+		for elm := n.reqCount.Front(); elm != nil; elm = elm.Next() {
+			count += int64(elm.Value.(int))
+		}
+		n.RequestsMin = count
+
+		n.reqCount.Remove(n.reqCount.Front())
+		n.reqCount.PushBack(0)
+
+		n.reqLock.Unlock()
+	}
+}
+
 func (n *Node) Init() (err error) {
 	_ = service.Server{}
 
@@ -225,6 +266,8 @@ func (n *Node) Init() (err error) {
 		return
 	}
 
+	n.reqInit()
+
 	n.Handler = &Handler{
 		Node: n,
 	}
@@ -239,6 +282,7 @@ func (n *Node) Init() (err error) {
 	Self = n
 
 	go n.keepalive()
+	go n.reqSync()
 
 	return
 }
