@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
@@ -204,6 +205,32 @@ func Callback(db *database.Database, sig, query string) (
 			}
 			return
 		}
+	}
+
+	return
+}
+
+func ValidateAdmin(usr *user.User) (errData *errortypes.ErrorData, err error) {
+	if usr.Disabled || usr.Administrator != "super" {
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
+
+	return
+}
+
+func Validate(usr *user.User, srvc *service.Service) (
+	errData *errortypes.ErrorData, err error) {
+
+	if usr.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
 	}
 
 	return
