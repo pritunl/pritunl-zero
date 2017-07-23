@@ -29,9 +29,6 @@ func Register(protocol string, engine *gin.Engine) {
 	sessGroup := dbGroup.Group("")
 	sessGroup.Use(middlewear.SessionProxy)
 
-	authGroup := sessGroup.Group("")
-	authGroup.Use(middlewear.AuthProxy)
-
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
 	dbGroup.GET("/auth/request", authRequestGet)
