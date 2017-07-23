@@ -7,10 +7,14 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/cookie"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/phandlers"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"math/rand"
 	"net/http"
@@ -24,11 +28,75 @@ type Router struct {
 	protocol         string
 	managementDomain string
 	mRouter          *gin.Engine
-	pRouters         map[string]*gin.Engine
+	pRouter          *gin.Engine
 	waiter           sync.WaitGroup
 	lock             sync.Mutex
 	redirectServer   *http.Server
 	webServer        *http.Server
+}
+
+func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
+	srvc := node.Self.Handler.Services[re.Host]
+	proxies, ok := node.Self.Handler.Proxies[re.Host]
+	n := len(proxies)
+
+	if srvc != nil && ok && n != 0 {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		var sess *session.Session
+
+		cook, err := cookie.GetProxy(w, re)
+		if err == nil {
+			sess, err = cook.GetSession(db)
+			switch err.(type) {
+			case nil:
+				break
+			case *errortypes.NotFoundError:
+				sess = nil
+				err = nil
+				break
+			default:
+				http.Error(w, "Server error", 500)
+				return
+			}
+		} else {
+			err = nil
+		}
+
+		if sess == nil {
+			err = cook.Remove(db)
+			if err != nil {
+				http.Error(w, "Server error", 500)
+				return
+			}
+
+			r.pRouter.ServeHTTP(w, re)
+			return
+		}
+
+		usr, err := sess.GetUser(db)
+		if err != nil {
+			http.Error(w, "Server error", 500)
+			return
+		}
+
+		if len(usr.Roles) == 0 {
+			err = cook.Remove(db)
+			if err != nil {
+				http.Error(w, "Server error", 500)
+				return
+			}
+
+			r.pRouter.ServeHTTP(w, re)
+			return
+		}
+
+		proxies[rand.Intn(n)].ServeHTTP(w, re)
+		return
+	}
+
+	http.Error(w, "Not found", 404)
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
@@ -39,14 +107,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	} else {
-		srvc := node.Self.Handler.Services[re.Host]
-		proxies, ok := node.Self.Handler.Proxies[re.Host]
-		n := len(proxies)
-
-		if srvc != nil && ok && n != 0 {
-			proxies[rand.Intn(n)].ServeHTTP(w, re)
-			return
-		}
+		r.proxy(w, re)
+		return
 	}
 
 	http.Error(w, "Not found", 404)
@@ -117,6 +179,16 @@ func (r *Router) initWeb() (err error) {
 		}
 
 		mhandlers.Register(r.protocol, r.mRouter)
+	}
+
+	if r.typ == node.Proxy || r.typ == node.ManagementProxy {
+		r.pRouter = gin.New()
+
+		if !constants.Production {
+			r.pRouter.Use(gin.Logger())
+		}
+
+		phandlers.Register(r.protocol, r.pRouter)
 	}
 
 	r.webServer = &http.Server{
