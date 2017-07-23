@@ -40,7 +40,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	errData, err = auth.ValidateAdmin(usr)
+	errData, err = auth.ValidateAdmin(db, usr)
 	if err != nil {
 		return
 	}
@@ -96,7 +96,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	errData, err = auth.ValidateAdmin(usr)
+	errData, err = auth.ValidateAdmin(db, usr)
 	if err != nil {
 		return
 	}

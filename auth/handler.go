@@ -210,7 +210,9 @@ func Callback(db *database.Database, sig, query string) (
 	return
 }
 
-func ValidateAdmin(usr *user.User) (errData *errortypes.ErrorData, err error) {
+func ValidateAdmin(db *database.Database, usr *user.User) (
+	errData *errortypes.ErrorData, err error) {
+
 	if usr.Disabled || usr.Administrator != "super" {
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
@@ -219,10 +221,15 @@ func ValidateAdmin(usr *user.User) (errData *errortypes.ErrorData, err error) {
 		return
 	}
 
+	err = usr.SetActive(db)
+	if err != nil {
+		return
+	}
+
 	return
 }
 
-func Validate(usr *user.User, srvc *service.Service) (
+func Validate(db *database.Database, usr *user.User, srvc *service.Service) (
 	errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
@@ -230,6 +237,11 @@ func Validate(usr *user.User, srvc *service.Service) (
 			Error:   "unauthorized",
 			Message: "Not authorized",
 		}
+		return
+	}
+
+	err = usr.SetActive(db)
+	if err != nil {
 		return
 	}
 
