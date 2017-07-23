@@ -5,7 +5,6 @@ import (
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/session"
 	"strings"
 )
@@ -41,11 +40,13 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	if usr.Administrator != "super" {
-		c.JSON(401, &errortypes.ErrorData{
-			Error:   "unauthorized",
-			Message: "Not authorized",
-		})
+	errData, err = auth.ValidateAdmin(usr)
+	if err != nil {
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
 		return
 	}
 
@@ -95,11 +96,13 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	if usr.Disabled || usr.Administrator != "super" {
-		c.JSON(401, &errortypes.ErrorData{
-			Error:   "unauthorized",
-			Message: "Not authorized",
-		})
+	errData, err = auth.ValidateAdmin(usr)
+	if err != nil {
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
 		return
 	}
 
