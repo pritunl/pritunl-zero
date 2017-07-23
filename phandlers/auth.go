@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"strings"
 )
@@ -21,6 +22,7 @@ type authData struct {
 
 func authSessionPost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	srvc := c.MustGet("service").(*service.Service)
 	data := &authData{}
 
 	err := c.Bind(data)
@@ -32,6 +34,16 @@ func authSessionPost(c *gin.Context) {
 	usr, errData, err := auth.Local(db, data.Username, data.Password)
 	if err != nil {
 		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	errData, err = auth.Validate(usr, srvc)
+	if err != nil {
 		return
 	}
 
@@ -72,12 +84,23 @@ func authRequestGet(c *gin.Context) {
 
 func authCallbackGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	srvc := c.MustGet("service").(*service.Service)
 	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
 
 	usr, errData, err := auth.Local(db, sig, query)
 	if err != nil {
 		c.AbortWithError(500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	errData, err = auth.Validate(usr, srvc)
+	if err != nil {
 		return
 	}
 
