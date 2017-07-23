@@ -21,6 +21,7 @@ func Register(protocol string, engine *gin.Engine) {
 	engine.Use(location.New(location.Config{
 		Scheme: protocol,
 	}))
+	engine.Use(middlewear.Service)
 
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)
