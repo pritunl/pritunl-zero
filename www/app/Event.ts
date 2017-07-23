@@ -1,5 +1,6 @@
 /// <reference path="./References.d.ts"/>
 import EventDispatcher from './dispatcher/EventDispatcher';
+import * as Csrf from './Csrf';
 
 let connected = false;
 
@@ -13,7 +14,7 @@ function connect(): void {
 		url += 'ws';
 	}
 
-	url += '://' + location.host + '/event';
+	url += '://' + location.host + '/event?csrf_token=' + Csrf.token;
 
 	let socket = new WebSocket(url);
 
