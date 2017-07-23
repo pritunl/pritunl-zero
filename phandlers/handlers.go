@@ -14,6 +14,8 @@ var (
 )
 
 func Register(protocol string, engine *gin.Engine) {
+	engine.NoRoute(redirect)
+
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Recovery)
 	engine.Use(location.New(location.Config{
