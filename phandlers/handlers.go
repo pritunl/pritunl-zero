@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
+	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
 	"path/filepath"
 )
@@ -35,18 +36,26 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
-	root := ""
-	if constants.Production {
-		root = constants.StaticRoot
-	} else {
-		root = constants.StaticTestingRoot
-	}
-
-	indx, err := static.NewFile(filepath.Join(root, "login.html"))
-	if err != nil {
-		panic(err)
-	}
-	index = indx
-
 	sessGroup.GET("/", staticIndexGet)
+}
+
+func init() {
+	module := requires.New("phandlers")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		root := ""
+		if constants.Production {
+			root = constants.StaticRoot
+		} else {
+			root = constants.StaticTestingRoot
+		}
+
+		index, err = static.NewFile(filepath.Join(root, "login.html"))
+		if err != nil {
+			return
+		}
+
+		return
+	}
 }

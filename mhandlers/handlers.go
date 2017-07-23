@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
+	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
 	"net/http"
 )
@@ -71,12 +72,6 @@ func Register(protocol string, engine *gin.Engine) {
 	activeCsrfGroup.DELETE("/user", usersDelete)
 
 	if constants.Production {
-		stre, err := static.NewStore(constants.StaticRoot)
-		if err != nil {
-			panic(err)
-		}
-		store = stre
-
 		sessGroup.GET("/", staticIndexGet)
 		engine.GET("/login", staticLoginGet)
 		authGroup.GET("/static/*path", staticGet)
@@ -93,5 +88,21 @@ func Register(protocol string, engine *gin.Engine) {
 		engine.GET("/styles/*path", staticTestingGet)
 		engine.GET("/node_modules/*path", staticTestingGet)
 		engine.GET("/jspm_packages/*path", staticTestingGet)
+	}
+}
+
+func init() {
+	module := requires.New("mhandlers")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		if constants.Production {
+			store, err = static.NewStore(constants.StaticRoot)
+			if err != nil {
+				return
+			}
+		}
+
+		return
 	}
 }
