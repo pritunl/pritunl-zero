@@ -35,11 +35,11 @@ type Router struct {
 }
 
 func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
-	srvc := node.Self.Handler.Services[re.Host]
+	host := node.Self.Handler.Hosts[re.Host]
 	proxies, ok := node.Self.Handler.Proxies[re.Host]
 	n := len(proxies)
 
-	if srvc != nil && ok && n != 0 {
+	if host != nil && ok && n != 0 {
 		db := database.GetDatabase()
 		defer db.Close()
 
@@ -66,7 +66,7 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
 			return
 		}
 
-		errData, err := auth.Validate(db, usr, srvc)
+		errData, err := auth.Validate(db, usr, host.Service)
 		if err != nil {
 			http.Error(w, "Server error", 500)
 			return

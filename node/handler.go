@@ -12,33 +12,43 @@ import (
 	"time"
 )
 
+type Host struct {
+	Service *service.Service
+	Domain  *service.Domain
+}
+
 type Handler struct {
-	Node     *Node
-	Services map[string]*service.Service
-	Proxies  map[string][]*httputil.ReverseProxy
+	Node    *Node
+	Hosts   map[string]*Host
+	Proxies map[string][]*httputil.ReverseProxy
 }
 
 func (h *Handler) loadServices(db *database.Database) (err error) {
-	serviceDomains := map[string]*service.Service{}
+	hosts := map[string]*Host{}
 
 	services, err := service.GetMulti(db, h.Node.Services)
 	if err != nil {
-		h.Services = serviceDomains
+		h.Hosts = hosts
 		return
 	}
 
 	for _, srvc := range services {
 		for _, domain := range srvc.Domains {
-			serviceDomains[domain] = srvc
+			srvcDomain := &Host{
+				Service: srvc,
+				Domain:  domain,
+			}
+
+			hosts[domain.Domain] = srvcDomain
 		}
 	}
 
-	h.Services = serviceDomains
+	h.Hosts = hosts
 
 	return
 }
 
-func (h *Handler) initProxy(srvc *service.Service, server *service.Server) (
+func (h *Handler) initProxy(host *Host, server *service.Server) (
 	proxy *httputil.ReverseProxy) {
 
 	transport := &http.Transport{
@@ -74,10 +84,13 @@ func (h *Handler) initProxy(srvc *service.Service, server *service.Server) (
 func (h *Handler) initProxies() {
 	proxies := map[string][]*httputil.ReverseProxy{}
 
-	for domain, srvc := range h.Services {
+	for domain, host := range h.Hosts {
 		domainProxies := []*httputil.ReverseProxy{}
-		for _, server := range srvc.Servers {
-			domainProxies = append(domainProxies, h.initProxy(srvc, server))
+		for _, server := range host.Service.Servers {
+			domainProxies = append(
+				domainProxies,
+				h.initProxy(host, server),
+			)
 		}
 		proxies[domain] = domainProxies
 	}
