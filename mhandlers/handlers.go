@@ -46,7 +46,7 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
-	authGroup.GET("/event", eventGet)
+	csrfGroup.GET("/event", eventGet)
 
 	activeCsrfGroup.GET("/node", nodesGet)
 	activeCsrfGroup.PUT("/node/:node_id", nodePut)
