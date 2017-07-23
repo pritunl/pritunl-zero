@@ -20,30 +20,8 @@ import (
 	"strings"
 )
 
-type authStateData struct {
-	Providers []*authStateProviderData `json:"providers"`
-}
-
-type authStateProviderData struct {
-	Id    bson.ObjectId `json:"id"`
-	Type  string        `json:"type"`
-	Label string        `json:"label"`
-}
-
 func authStateGet(c *gin.Context) {
-	data := &authStateData{
-		Providers: []*authStateProviderData{},
-	}
-
-	for _, provider := range settings.Auth.Providers {
-		providerData := &authStateProviderData{
-			Id:    provider.Id,
-			Type:  provider.Type,
-			Label: provider.Label,
-		}
-		data.Providers = append(data.Providers, providerData)
-	}
-
+	data := auth.GetState()
 	c.JSON(200, data)
 }
 
@@ -62,27 +40,14 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	usr, err := user.GetUsername(db, user.Local, data.Username)
+	usr, errData, err := auth.Local(db, data.Username, data.Password)
 	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			c.JSON(401, &errortypes.ErrorData{
-				Error:   "auth_invalid",
-				Message: "Authencation credentials are invalid",
-			})
-			break
-		default:
-			c.AbortWithError(500, err)
-		}
+		c.AbortWithError(500, err)
 		return
 	}
 
-	valid := usr.CheckPassword(data.Password)
-	if !valid {
-		c.JSON(401, &errortypes.ErrorData{
-			Error:   "auth_invalid",
-			Message: "Authencation credentials are invalid",
-		})
+	if errData != nil {
+		c.JSON(401, errData)
 		return
 	}
 
