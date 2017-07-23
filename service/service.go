@@ -9,6 +9,11 @@ import (
 	"sort"
 )
 
+type Domain struct {
+	Domain string `bson:"domain" json:"domain"`
+	Host   string `bson:"host" json:"host"`
+}
+
 type Server struct {
 	Protocol string `bson:"protocol" json:"protocol"`
 	Hostname string `bson:"hostname" json:"hostname"`
@@ -18,7 +23,7 @@ type Server struct {
 type Service struct {
 	Id      bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Name    string        `bson:"name" json:"name"`
-	Domains []string      `bson:"domains" json:"domains"`
+	Domains []*Domain     `bson:"domains" json:"domains"`
 	Roles   []string      `bson:"roles" json:"roles"`
 	Servers []*Server     `bson:"servers" json:"servers"`
 }
@@ -27,7 +32,7 @@ func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if s.Domains == nil {
-		s.Domains = []string{}
+		s.Domains = []*Domain{}
 	}
 
 	if s.Roles == nil {
