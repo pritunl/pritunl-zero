@@ -112,7 +112,12 @@ func CsrfToken(c *gin.Context) {
 		return
 	}
 
-	token := c.Request.Header.Get("Csrf-Token")
+	token := ""
+	if c.Request.Header.Get("Upgrade") == "websocket" {
+		token = c.Query("csrf_token")
+	} else {
+		token = c.Request.Header.Get("Csrf-Token")
+	}
 
 	valid, err := csrf.ValidateToken(db, sess.Id, token)
 	if err != nil {
