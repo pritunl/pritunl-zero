@@ -1,7 +1,9 @@
 package router
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
@@ -15,13 +17,16 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/phandlers"
 	"github.com/pritunl/pritunl-zero/utils"
+	"io"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 )
 
 type Router struct {
+	nodeHash         []byte
 	typ              string
 	port             int
 	protocol         string
@@ -34,16 +39,16 @@ type Router struct {
 	webServer        *http.Server
 }
 
-func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
-	host := node.Self.Handler.Hosts[re.Host]
-	proxies, ok := node.Self.Handler.Proxies[re.Host]
+func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
+	host := node.Self.Handler.Hosts[hst]
+	proxies, ok := node.Self.Handler.Proxies[hst]
 	n := len(proxies)
 
 	if host != nil && ok && n != 0 {
 		db := database.GetDatabase()
 		defer db.Close()
 
-		cook, sess, err := auth.CookieSessionProxy(db, w, re)
+		cook, sess, err := auth.CookieSessionProxy(db, host.Service, w, re)
 		if err != nil {
 			http.Error(w, "Server error", 500)
 			return
@@ -91,14 +96,15 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request) {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
+	hst := utils.StripPort(re.Host)
 	if r.typ == node.Management {
 		r.mRouter.ServeHTTP(w, re)
 		return
-	} else if r.typ == node.ManagementProxy && re.Host == r.managementDomain {
+	} else if r.typ == node.ManagementProxy && hst == r.managementDomain {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	} else {
-		r.proxy(w, re)
+		r.proxy(w, re, hst)
 		return
 	}
 
@@ -332,7 +338,34 @@ func (r *Router) Restart() {
 	time.Sleep(250 * time.Millisecond)
 }
 
+func (r *Router) hashNode() []byte {
+	hash := md5.New()
+	io.WriteString(hash, node.Self.Type)
+	io.WriteString(hash, node.Self.ManagementDomain)
+	io.WriteString(hash, strconv.Itoa(node.Self.Port))
+	io.WriteString(hash, node.Self.Protocol)
+	return hash.Sum(nil)
+}
+
+func (r *Router) watchNode() {
+	for {
+		time.Sleep(1 * time.Second)
+
+		hash := r.hashNode()
+		if bytes.Compare(r.nodeHash, hash) != 0 {
+			r.nodeHash = hash
+			r.Restart()
+			time.Sleep(2 * time.Second)
+		}
+	}
+
+	return
+}
+
 func (r *Router) Run() (err error) {
+	r.nodeHash = r.hashNode()
+	go r.watchNode()
+
 	for {
 		err = r.initServers()
 		if err != nil {
