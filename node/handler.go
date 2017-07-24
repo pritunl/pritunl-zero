@@ -71,6 +71,10 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 			req.Header.Set("X-Forwarded-Proto", h.Node.Protocol)
 			req.Header.Set("X-Forwarded-Port", strconv.Itoa(h.Node.Port))
 
+			if host.Domain.Host != "" {
+				req.Host = host.Domain.Host
+			}
+
 			req.URL.Scheme = server.Protocol
 			req.URL.Host = fmt.Sprintf(
 				"%s:%d", server.Hostname, server.Port)
