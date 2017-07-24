@@ -111,7 +111,13 @@ func CsrfToken(c *gin.Context) {
 
 	valid, err := csrf.ValidateToken(db, sess.Id, token)
 	if err != nil {
-		c.AbortWithError(500, err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			c.AbortWithStatus(401)
+			break
+		default:
+			c.AbortWithError(500, err)
+		}
 		return
 	}
 
