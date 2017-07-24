@@ -337,13 +337,18 @@ export default class Node extends React.Component<Props, State> {
 							/>
 						</div>
 					</label>
-					<label className="pt-label" style={css.label}>
+					<label
+						className="pt-label"
+						style={css.label}
+						hidden={node.type.indexOf('proxy') === -1}
+					>
 						Services
 						<div>
 							{services}
 						</div>
 					</label>
 					<PageSelectButton
+						hidden={node.type.indexOf('proxy') === -1}
 						label="Add Service"
 						value={this.state.addService}
 						disabled={!this.props.services.length}
