@@ -368,6 +368,10 @@ export default class Node extends React.Component<Props, State> {
 								label: 'Timestamp',
 								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
+							{
+								label: 'Requests',
+								value: node.requests_min + '/min',
+							},
 						]}
 						bars={[
 							{
