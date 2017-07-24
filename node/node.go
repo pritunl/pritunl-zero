@@ -85,6 +85,16 @@ func (n *Node) Format() {
 	utils.SortObjectIds(n.Services)
 }
 
+func (n *Node) SetActive() {
+	if time.Since(n.Timestamp) > 30*time.Second {
+		n.RequestsMin = 0
+		n.Memory = 0
+		n.Load1 = 0
+		n.Load5 = 0
+		n.Load15 = 0
+	}
+}
+
 func (n *Node) Commit(db *database.Database) (err error) {
 	coll := db.Nodes()
 

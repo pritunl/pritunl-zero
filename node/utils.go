@@ -28,6 +28,7 @@ func GetAll(db *database.Database) (nodes []*Node, err error) {
 
 	nde := &Node{}
 	for cursor.Next(nde) {
+		nde.SetActive()
 		nodes = append(nodes, nde)
 		nde = &Node{}
 	}
