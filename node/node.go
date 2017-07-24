@@ -72,6 +72,10 @@ func (n *Node) Validate(db *database.Database) (
 		n.ManagementDomain = ""
 	}
 
+	if n.Type != Proxy && n.Type != ManagementProxy {
+		n.Services = []bson.ObjectId{}
+	}
+
 	n.Format()
 
 	return
