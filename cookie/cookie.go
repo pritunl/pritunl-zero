@@ -84,10 +84,7 @@ func (c *Cookie) NewSession(db *database.Database, id bson.ObjectId,
 		maxAge = 15778500
 	}
 
-	c.store.Options = &sessions.Options{
-		Path:   "/",
-		MaxAge: maxAge,
-	}
+	c.store.Options.MaxAge = maxAge
 
 	err = c.Save()
 	if err != nil {
