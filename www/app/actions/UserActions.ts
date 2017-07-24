@@ -6,6 +6,7 @@ import * as Alert from '../Alert';
 import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as UserTypes from '../types/UserTypes';
+import UserStore from '../stores/UserStore';
 import UsersStore from '../stores/UsersStore';
 import * as MiscUtils from '../utils/MiscUtils';
 
@@ -56,6 +57,10 @@ export function load(userId: string): Promise<void> {
 				resolve();
 			});
 	});
+}
+
+export function reload(): Promise<void> {
+	return load(UserStore.user ? UserStore.user.id : null);
 }
 
 export function unload(): void {
