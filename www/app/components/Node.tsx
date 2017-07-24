@@ -226,6 +226,8 @@ export default class Node extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let node: NodeTypes.Node = this.state.node ||
 			this.props.node;
+		let active = node.requests_min !== 0 || node.memory !== 0 ||
+				node.load1 !== 0 || node.load5 !== 0 || node.load15 !== 0;
 
 		let services: JSX.Element[] = [];
 		for (let serviceId of node.services) {
@@ -273,7 +275,7 @@ export default class Node extends React.Component<Props, State> {
 							className="pt-minimal pt-intent-danger pt-icon-cross"
 							progressClassName="pt-intent-danger"
 							confirmMsg="Confirm node remove"
-							disabled={this.state.disabled}
+							disabled={active || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
 					</div>
