@@ -46,8 +46,9 @@ func Session(c *gin.Context) {
 
 func SessionProxy(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	srvc := c.MustGet("service").(*service.Service)
 
-	cook, sess, err := auth.CookieSessionProxy(db, c.Writer, c.Request)
+	cook, sess, err := auth.CookieSessionProxy(db, srvc, c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -83,22 +84,6 @@ func Auth(c *gin.Context) {
 		}
 
 		c.AbortWithStatus(401)
-		return
-	}
-}
-
-func AuthProxy(c *gin.Context) {
-	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
-
-	if sess == nil {
-		c.AbortWithStatus(401)
-		return
-	}
-
-	_, err := sess.GetUser(db)
-	if err != nil {
-		c.AbortWithError(500, err)
 		return
 	}
 }
