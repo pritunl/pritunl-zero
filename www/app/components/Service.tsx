@@ -5,6 +5,7 @@ import * as ServiceActions from '../actions/ServiceActions';
 import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
 import PageInput from './PageInput';
+import PageSwitch from './PageSwitch';
 import PageSave from './PageSave';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
@@ -279,7 +280,7 @@ export default class Service extends React.Component<Props, State> {
 		});
 	}
 
-	onChangeDomain(i: number, state: string): void {
+	onChangeDomain(i: number, state: ServiceTypes.Domain): void {
 		let service: ServiceTypes.Service = this.state.service ||
 			this.props.service;
 
@@ -437,6 +438,13 @@ export default class Service extends React.Component<Props, State> {
 								value: service.id || 'None',
 							},
 						]}
+					/>
+					<PageSwitch
+						label="Share Session with Subdomains"
+						checked={service.share_session}
+						onToggle={(): void => {
+							this.set('share_session', !service.share_session);
+						}}
 					/>
 					<label className="pt-label">
 						Roles
