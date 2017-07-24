@@ -27,12 +27,12 @@ type Node struct {
 	Port             int             `bson:"port" json:"port"`
 	Protocol         string          `bson:"protocol" json:"protocol"`
 	ManagementDomain string          `bson:"management_domain" json:"management_domain"`
+	Services         []bson.ObjectId `bson:"services" json:"services"`
 	RequestsMin      int64           `bson:"requests_min" json:"requests_min"`
 	Memory           float64         `bson:"memory" json:"memory"`
 	Load1            float64         `bson:"load1" json:"load1"`
 	Load5            float64         `bson:"load5" json:"load5"`
 	Load15           float64         `bson:"load15" json:"load15"`
-	Services         []bson.ObjectId `bson:"services" json:"services"`
 	Handler          *Handler        `bson:"-" json:"-"`
 	reqLock          sync.Mutex      `bson:"-" json:"-"`
 	reqCount         *list.List      `bson:"-" json:"-"`
@@ -135,14 +135,9 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Id = nde.Id
 	n.Name = nde.Name
 	n.Type = nde.Type
-	n.Timestamp = nde.Timestamp
 	n.Port = nde.Port
 	n.Protocol = nde.Protocol
 	n.ManagementDomain = nde.ManagementDomain
-	n.Memory = nde.Memory
-	n.Load1 = nde.Load1
-	n.Load5 = nde.Load5
-	n.Load15 = nde.Load15
 	n.Services = nde.Services
 
 	return
@@ -253,12 +248,27 @@ func (n *Node) Init() (err error) {
 		n.Type = Management
 	}
 
+	if n.Protocol == "" {
+		n.Protocol = "https"
+	}
+
+	if n.Port == 0 {
+		n.Port = 443
+	}
+
+	if n.Services == nil {
+		n.Services = []bson.ObjectId{}
+	}
+
 	_, err = coll.UpsertId(n.Id, &bson.M{
 		"$set": &bson.M{
 			"_id":       n.Id,
 			"name":      n.Name,
 			"type":      n.Type,
 			"timestamp": time.Now(),
+			"protocol":  n.Protocol,
+			"port":      n.Port,
+			"services":  n.Services,
 		},
 	})
 	if err != nil {
