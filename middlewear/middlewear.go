@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
@@ -17,6 +18,10 @@ import (
 
 func Limiter(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 1000000)
+}
+
+func Counter(c *gin.Context) {
+	node.Self.AddRequest()
 }
 
 func Database(c *gin.Context) {
