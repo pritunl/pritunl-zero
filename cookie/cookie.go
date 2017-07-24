@@ -15,8 +15,7 @@ import (
 )
 
 var (
-	Store      *sessions.CookieStore
-	ProxyStore *sessions.CookieStore
+	Store *sessions.CookieStore
 )
 
 type Cookie struct {
@@ -172,8 +171,7 @@ func init() {
 
 		Store = sessions.NewCookieStore(
 			cookieAuthKey, cookieCryptoKey)
-		ProxyStore = sessions.NewCookieStore(
-			proxyCookieAuthKey, proxyCookieCryptoKey)
+		Store.Options.Secure = true
 
 		return
 	}
