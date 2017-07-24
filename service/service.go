@@ -21,11 +21,12 @@ type Server struct {
 }
 
 type Service struct {
-	Id      bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name    string        `bson:"name" json:"name"`
-	Domains []*Domain     `bson:"domains" json:"domains"`
-	Roles   []string      `bson:"roles" json:"roles"`
-	Servers []*Server     `bson:"servers" json:"servers"`
+	Id           bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name         string        `bson:"name" json:"name"`
+	ShareSession bool          `bson:"share_session" json:"share_session"`
+	Domains      []*Domain     `bson:"domains" json:"domains"`
+	Roles        []string      `bson:"roles" json:"roles"`
+	Servers      []*Server     `bson:"servers" json:"servers"`
 }
 
 func (s *Service) Validate(db *database.Database) (
