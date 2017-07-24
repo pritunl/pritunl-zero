@@ -145,9 +145,19 @@ export default class Main extends React.Component<{}, State> {
 												disabled: false,
 											});
 										});
-									} else if (pathname === '/user') {
-										// UserActions.load();
-									} else if (pathname === '/nodes') {
+									} else if (pathname.startsWith('/user/')) {
+										UserActions.reload().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+									}else if (pathname === '/nodes') {
 										NodeActions.sync().then((): void => {
 											this.setState({
 												...this.state,
@@ -194,6 +204,11 @@ export default class Main extends React.Component<{}, State> {
 												...this.state,
 												disabled: false,
 											});
+										});
+									} else {
+										this.setState({
+											...this.state,
+											disabled: false,
 										});
 									}
 								}}
