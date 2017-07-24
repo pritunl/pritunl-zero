@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 interface Props {
+	hidden?: boolean;
 	label: string;
 	value: string;
 	disabled?: boolean;
@@ -23,7 +24,11 @@ export default class PageSelectButton extends React.Component<Props, {}> {
 			buttonClass += ' ' + this.props.buttonClass;
 		}
 
-		return <div className="pt-control-group" style={css.group}>
+		return <div
+			className="pt-control-group"
+			style={css.group}
+			hidden={this.props.hidden}
+		>
 			<div className="pt-select">
 				<select
 					disabled={this.props.disabled}
