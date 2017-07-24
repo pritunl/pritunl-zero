@@ -97,7 +97,7 @@ export default class Main extends React.Component<{}, State> {
 							Services
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-satellite"
+							className="pt-button pt-minimal pt-icon-layers"
 							style={css.link}
 							to="/nodes"
 						>
