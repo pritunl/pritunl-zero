@@ -3,8 +3,14 @@ package cookie
 import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func Get(w http.ResponseWriter, r *http.Request) (cook *Cookie, err error) {
@@ -38,10 +44,36 @@ func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 	return
 }
 
-func GetProxy(w http.ResponseWriter, r *http.Request) (
+func newProxyStore(srvc *service.Service,
+	r *http.Request) *sessions.CookieStore {
+
+	cookieStore := sessions.NewCookieStore(
+		settings.System.ProxyCookieAuthKey,
+		settings.System.ProxyCookieCryptoKey,
+	)
+	cookieStore.Options.Secure = true
+
+	if srvc.ShareSession {
+		host := utils.StripPort(r.Host)
+		if strings.Count(host, ".") >= 2 {
+			i := strings.LastIndex(host, ".")
+			tld := host[i+1:]
+			if _, err := strconv.Atoi(tld); err != nil {
+				host = "." + strings.SplitN(host, ".", 2)[1]
+				cookieStore.Options.Domain = host
+			}
+		}
+	}
+
+	return cookieStore
+}
+
+func GetProxy(srvc *service.Service, w http.ResponseWriter, r *http.Request) (
 	cook *Cookie, err error) {
 
-	store, err := ProxyStore.New(r, "pritunl-zero")
+	cookStore := newProxyStore(srvc, r)
+
+	store, err := cookStore.New(r, "pritunl-zero")
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err.(securecookie.MultiError)[0],
@@ -59,8 +91,12 @@ func GetProxy(w http.ResponseWriter, r *http.Request) (
 	return
 }
 
-func NewProxy(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
-	store, _ := ProxyStore.New(r, "pritunl-zero")
+func NewProxy(srvc *service.Service, w http.ResponseWriter, r *http.Request) (
+	cook *Cookie) {
+
+	cookStore := newProxyStore(srvc, r)
+
+	store, _ := cookStore.New(r, "pritunl-zero")
 
 	cook = &Cookie{
 		store: store,

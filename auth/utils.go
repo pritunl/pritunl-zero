@@ -4,6 +4,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"net/http"
 )
@@ -43,11 +44,11 @@ func CookieSession(db *database.Database,
 	return
 }
 
-func CookieSessionProxy(db *database.Database,
+func CookieSessionProxy(db *database.Database, srvc *service.Service,
 	w http.ResponseWriter, r *http.Request) (
 	cook *cookie.Cookie, sess *session.Session, err error) {
 
-	cook, err = cookie.GetProxy(w, r)
+	cook, err = cookie.GetProxy(srvc, w, r)
 	if err != nil {
 		return
 	}
