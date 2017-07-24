@@ -1,9 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as ServiceTypes from '../types/ServiceTypes';
 
 interface Props {
-	domain: string;
-	onChange: (state: string) => void;
+	domain: ServiceTypes.Domain;
+	onChange: (state: ServiceTypes.Domain) => void;
 	onRemove: () => void;
 }
 
@@ -23,7 +24,15 @@ const css = {
 };
 
 export default class ServiceDomain extends React.Component<Props, {}> {
+	clone(): ServiceTypes.Domain {
+		return {
+			...this.props.domain,
+		};
+	}
+
 	render(): JSX.Element {
+		let domain = this.props.domain;
+
 		return <div className="pt-control-group" style={css.group}>
 			<div style={css.domainBox}>
 				<input
@@ -33,9 +42,27 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 					autoCapitalize="off"
 					spellCheck={false}
 					placeholder="Domain"
-					value={this.props.domain || ''}
+					value={domain.domain || ''}
 					onChange={(evt): void => {
-						this.props.onChange(evt.target.value);
+						let domain = this.clone();
+						domain.domain = evt.target.value;
+						this.props.onChange(domain);
+					}}
+				/>
+			</div>
+			<div style={css.domainBox}>
+				<input
+					className="pt-input"
+					style={css.domain}
+					type="text"
+					autoCapitalize="off"
+					spellCheck={false}
+					placeholder="Host"
+					value={domain.host || ''}
+					onChange={(evt): void => {
+						let domain = this.clone();
+						domain.host = evt.target.value;
+						this.props.onChange(domain);
 					}}
 				/>
 			</div>
