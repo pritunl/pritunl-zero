@@ -52,7 +52,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	cook := cookie.NewProxy(c.Writer, c.Request)
+	cook := cookie.NewProxy(srvc, c.Writer, c.Request)
 
 	_, err = cook.NewSession(db, usr.Id, true)
 	if err != nil {
