@@ -193,8 +193,8 @@ func ContainsDir(pth string) (hasDir bool, err error) {
 	return
 }
 
-func Create(path string) (file *os.File, err error) {
-	file, err = os.Create(path)
+func Create(path string, perm os.FileMode) (file *os.File, err error) {
+	file, err = os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, perm)
 	if err != nil {
 		err = &errortypes.WriteError{
 			errors.Wrapf(err, "utils: Failed to create '%s'", path),
@@ -205,8 +205,8 @@ func Create(path string) (file *os.File, err error) {
 	return
 }
 
-func CreateWrite(path string, data string) (err error) {
-	file, err := Create(path)
+func CreateWrite(path string, data string, perm os.FileMode) (err error) {
+	file, err := Create(path, perm)
 	if err != nil {
 		return
 	}
