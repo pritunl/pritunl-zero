@@ -13,6 +13,7 @@ import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as NodeActions from '../actions/NodeActions';
+import * as CertificateActions from '../actions/CertificateActions';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as SettingsActions from '../actions/SettingsActions';
 import * as SubscriptionActions from '../actions/SubscriptionActions';
@@ -165,8 +166,20 @@ export default class Main extends React.Component<{}, State> {
 												disabled: false,
 											});
 										});
-									}else if (pathname === '/nodes') {
+									} else if (pathname === '/nodes') {
 										NodeActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+									} else if (pathname === '/certificates') {
+										CertificateActions.sync().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
