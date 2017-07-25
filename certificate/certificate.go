@@ -14,7 +14,6 @@ type Certificate struct {
 	Type        string        `bson:"type" json:"type"`
 	Key         string        `bson:"key" json:"key"`
 	Certificate string        `bson:"certificate" json:"certificate"`
-	AcmeNode    bson.ObjectId `bson:"acme_node" json:"acme_node"`
 	AcmeAccount string        `bson:"acme_account" json:"acme_account"`
 	AcmeDomains []string      `bson:"acme_domains" json:"acme_domains"`
 }
@@ -23,8 +22,8 @@ func (c *Certificate) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if c.Type != LetsEncrypt {
-		c.AcmeDomains = []string{}
 		c.AcmeAccount = ""
+		c.AcmeDomains = []string{}
 	}
 
 	if c.AcmeDomains == nil {
