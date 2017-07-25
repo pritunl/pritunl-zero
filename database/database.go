@@ -76,6 +76,11 @@ func (d *Database) Nodes() (coll *Collection) {
 	return
 }
 
+func (d *Database) Certificates() (coll *Collection) {
+	coll = d.getCollection("certificates")
+	return
+}
+
 func Connect() (err error) {
 	mgoUrl, err := url.Parse(config.Config.MongoUri)
 	if err != nil {
