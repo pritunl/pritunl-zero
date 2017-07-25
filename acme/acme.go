@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/ericchiang/letsencrypt"
@@ -17,7 +18,14 @@ import (
 	"time"
 )
 
-func Get(db *database.Database, cert *certificate.Certificate) (err error) {
+func Generate(db *database.Database, cert *certificate.Certificate) (
+	err error) {
+
+	logrus.WithFields(logrus.Fields{
+		"certificate": cert.Name,
+		"domains":     cert.AcmeDomains,
+	}).Info("router: Generating acme certificate")
+
 	if cert.AcmeDomains == nil || len(cert.AcmeDomains) == 0 {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "acme: No acme domains"),
@@ -188,7 +196,8 @@ func Get(db *database.Database, cert *certificate.Certificate) (err error) {
 
 	cert.Key = string(pem.EncodeToMemory(certKeyBlock))
 	cert.Certificate = certPem
-	err = cert.CommitFields(db, set.NewSet("key", "certificate"))
+	cert.AcmeHash = cert.Hash()
+	err = cert.CommitFields(db, set.NewSet("key", "certificate", "acme_hash"))
 	if err != nil {
 		return
 	}
@@ -196,6 +205,17 @@ func Get(db *database.Database, cert *certificate.Certificate) (err error) {
 	err = cert.Write()
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+func Update(db *database.Database, cert *certificate.Certificate) (err error) {
+	if cert.AcmeHash != cert.Hash() {
+		err = Generate(db, cert)
+		if err != nil {
+			return
+		}
 	}
 
 	return
