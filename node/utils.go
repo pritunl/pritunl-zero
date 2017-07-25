@@ -45,12 +45,17 @@ func GetAll(db *database.Database) (nodes []*Node, err error) {
 func Remove(db *database.Database, nodeId bson.ObjectId) (err error) {
 	coll := db.Nodes()
 
-	_, err = coll.RemoveAll(&bson.M{
+	err = coll.Remove(&bson.M{
 		"_id": nodeId,
 	})
 	if err != nil {
 		err = database.ParseError(err)
-		return
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
 	}
 
 	return
