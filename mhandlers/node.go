@@ -100,6 +100,24 @@ func nodeDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func nodeGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
+	if !ok {
+		c.AbortWithStatus(400)
+		return
+	}
+
+	nde, err := node.Get(db, nodeId)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.JSON(200, nde)
+}
+
 func nodesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 

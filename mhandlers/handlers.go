@@ -51,6 +51,7 @@ func Register(protocol string, engine *gin.Engine) {
 	activeCsrfGroup.GET("/event", eventGet)
 
 	activeCsrfGroup.GET("/node", nodesGet)
+	activeCsrfGroup.GET("/node/:node_id", nodeGet)
 	activeCsrfGroup.PUT("/node/:node_id", nodePut)
 	activeCsrfGroup.DELETE("/node/:node_id", nodeDelete)
 
