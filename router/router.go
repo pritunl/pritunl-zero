@@ -8,6 +8,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
@@ -21,6 +22,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -118,6 +120,20 @@ func (r *Router) initRedirect() (err error) {
 		WriteTimeout: 1 * time.Minute,
 		Handler: http.HandlerFunc(func(
 			w http.ResponseWriter, req *http.Request) {
+
+			if strings.HasPrefix(req.URL.Path, acme.AcmePath) {
+				token := acme.ParsePath(req.URL.Path)
+				if token != "" {
+					chal, err := acme.GetChallenge(token)
+					if err == nil {
+						logrus.WithFields(logrus.Fields{
+							"token": token,
+						}).Info("router: Acme challenge requested")
+						io.WriteString(w, chal.Resource)
+						return
+					}
+				}
+			}
 
 			req.URL.Host = req.Host
 			req.URL.Scheme = "https"
