@@ -44,6 +44,12 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
+	activeCsrfGroup.GET("/certificate", certificatesGet)
+	activeCsrfGroup.GET("/certificate/:cert_id", certificateGet)
+	activeCsrfGroup.PUT("/certificate/:cert_id", certificatePut)
+	activeCsrfGroup.POST("/certificate", certificatePost)
+	activeCsrfGroup.DELETE("/certificate/:cert_id", certificateDelete)
+
 	engine.GET("/check", checkGet)
 
 	authGroup.GET("/csrf", csrfGet)
