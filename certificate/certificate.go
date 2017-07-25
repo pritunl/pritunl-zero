@@ -1,6 +1,8 @@
 package certificate
 
 import (
+	"crypto/md5"
+	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -8,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
+	"io"
 )
 
 type Certificate struct {
@@ -16,6 +19,7 @@ type Certificate struct {
 	Type        string        `bson:"type" json:"type"`
 	Key         string        `bson:"key" json:"key"`
 	Certificate string        `bson:"certificate" json:"certificate"`
+	AcmeHash    string        `bson:"acme_hash" json:"acme_hash"`
 	AcmeAccount string        `bson:"acme_account" json:"acme_account"`
 	AcmeDomains []string      `bson:"acme_domains" json:"acme_domains"`
 }
@@ -75,6 +79,20 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 	}
 
 	return
+}
+
+func (c *Certificate) Hash() string {
+	hash := md5.New()
+	io.WriteString(hash, c.Type)
+	io.WriteString(hash, c.Key)
+	io.WriteString(hash, c.Certificate)
+	io.WriteString(hash, c.AcmeAccount)
+	if c.AcmeDomains != nil {
+		for _, domain := range c.AcmeDomains {
+			io.WriteString(hash, domain)
+		}
+	}
+	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
 func (c *Certificate) Write() (err error) {
