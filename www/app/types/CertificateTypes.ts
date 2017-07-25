@@ -8,8 +8,8 @@ export interface Certificate {
 	type?: string;
 	key?: string;
 	certificate?: string;
-	acme_domains?: string[];
 	acme_account?: string;
+	acme_domains?: string[];
 }
 
 export type Certificates = Certificate[];
