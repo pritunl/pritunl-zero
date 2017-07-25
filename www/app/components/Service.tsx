@@ -266,7 +266,7 @@ export default class Service extends React.Component<Props, State> {
 
 		let domains = [
 			...service.domains,
-			'',
+			{},
 		];
 
 		this.setState({
