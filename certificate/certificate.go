@@ -3,8 +3,10 @@ package certificate
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -68,6 +70,20 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 	}
 
 	err = coll.Insert(c)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *Certificate) Write() (err error) {
+	err = utils.CreateWrite(constants.KeyPath, c.Key, 0600)
+	if err != nil {
+		return
+	}
+
+	err = utils.CreateWrite(constants.CertPath, c.Certificate, 0666)
 	if err != nil {
 		return
 	}
