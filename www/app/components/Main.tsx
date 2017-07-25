@@ -8,6 +8,7 @@ import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
 import Nodes from './Nodes';
+import Certificates from './Certificates';
 import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
@@ -102,6 +103,13 @@ export default class Main extends React.Component<{}, State> {
 							to="/nodes"
 						>
 							Nodes
+						</ReactRouter.Link>
+						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-endorsed"
+							style={css.link}
+							to="/certificates"
+						>
+							Certificates
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-cog"
@@ -248,6 +256,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/nodes" render={() => (
 					<Nodes/>
+				)}/>
+				<ReactRouter.Route path="/certificates" render={() => (
+					<Certificates/>
 				)}/>
 				<ReactRouter.Route path="/services" render={() => (
 					<Services/>
