@@ -81,6 +81,11 @@ func (d *Database) Certificates() (coll *Collection) {
 	return
 }
 
+func (d *Database) AcmeChallenges() (coll *Collection) {
+	coll = d.getCollection("acme_challenges")
+	return
+}
+
 func Connect() (err error) {
 	mgoUrl, err := url.Parse(config.Config.MongoUri)
 	if err != nil {
