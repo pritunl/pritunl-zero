@@ -143,29 +143,46 @@ export default class Certificate extends React.Component<Props, State> {
 	}
 
 	onAddDomain = (): void => {
-		let cert: CertificateTypes.Certificate = this.state.certificate ||
-			this.props.certificate;
+		let cert: CertificateTypes.Certificate;
+
+		if (this.state.changed) {
+			cert = {
+				...this.state.certificate,
+			};
+		} else {
+			cert = {
+				...this.props.certificate,
+			};
+		}
 
 		let acmeDomains = [
 			...cert.acme_domains,
 			'',
 		];
 
+		cert.acme_domains = acmeDomains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
 			addDomain: '',
-			certificate: {
-				...cert,
-				acme_domains: acmeDomains,
-			},
+			certificate: cert,
 		});
 	}
 
 	onChangeDomain(i: number, state: string): void {
-		let cert: CertificateTypes.Certificate = this.state.certificate ||
-			this.props.certificate;
+		let cert: CertificateTypes.Certificate;
+
+		if (this.state.changed) {
+			cert = {
+				...this.state.certificate,
+			};
+		} else {
+			cert = {
+				...this.props.certificate,
+			};
+		}
 
 		let acmeDomains = [
 			...cert.acme_domains,
@@ -173,20 +190,28 @@ export default class Certificate extends React.Component<Props, State> {
 
 		acmeDomains[i] = state;
 
+		cert.acme_domains = acmeDomains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			certificate: {
-				...cert,
-				acme_domains: acmeDomains,
-			},
+			certificate: cert,
 		});
 	}
 
 	onRemoveDomain(i: number): void {
-		let cert: CertificateTypes.Certificate = this.state.certificate ||
-			this.props.certificate;
+		let cert: CertificateTypes.Certificate;
+
+		if (this.state.changed) {
+			cert = {
+				...this.state.certificate,
+			};
+		} else {
+			cert = {
+				...this.props.certificate,
+			};
+		}
 
 		let acmeDomains = [
 			...cert.acme_domains,
@@ -194,15 +219,14 @@ export default class Certificate extends React.Component<Props, State> {
 
 		acmeDomains.splice(i, 1);
 
+		cert.acme_domains = acmeDomains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
 			addDomain: '',
-			certificate: {
-				...cert,
-				acme_domains: acmeDomains,
-			},
+			certificate: cert,
 		});
 	}
 
