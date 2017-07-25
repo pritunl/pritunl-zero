@@ -14,7 +14,7 @@ type Certificate struct {
 	Type        string        `bson:"type" json:"type"`
 	Key         string        `bson:"key" json:"key"`
 	Certificate string        `bson:"certificate" json:"certificate"`
-	AcmeHost    bson.ObjectId `bson:"acme_host" json:"acme_host"`
+	AcmeNode    bson.ObjectId `bson:"acme_node" json:"acme_node"`
 	AcmeAccount string        `bson:"acme_account" json:"acme_account"`
 	AcmeDomains []string      `bson:"acme_domains" json:"acme_domains"`
 }
