@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as CertificateTypes from '../types/CertificateTypes';
 import CertificatesStore from '../stores/CertificatesStore';
 import * as CertificateActions from '../actions/CertificateActions';
-import * as ServiceActions from '../actions/ServiceActions';
 import Certificate from './Certificate';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -40,7 +39,6 @@ export default class Certificates extends React.Component<{}, State> {
 	componentDidMount(): void {
 		CertificatesStore.addChangeListener(this.onChange);
 		CertificateActions.sync();
-		ServiceActions.sync();
 	}
 
 	componentWillUnmount(): void {
