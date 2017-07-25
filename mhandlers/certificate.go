@@ -3,6 +3,7 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
@@ -44,19 +45,22 @@ func certificatePut(c *gin.Context) {
 
 	cert.Name = data.Name
 	cert.Type = data.Type
-	cert.Key = data.Key
-	cert.Certificate = data.Certificate
 	cert.AcmeAccount = data.AcmeAccount
 	cert.AcmeDomains = data.AcmeDomains
 
 	fields := set.NewSet(
 		"name",
 		"type",
-		"key",
-		"certificate",
 		"acme_account",
 		"acme_domains",
 	)
+
+	if cert.Type != certificate.LetsEncrypt {
+		cert.Key = data.Key
+		fields.Add("key")
+		cert.Certificate = data.Certificate
+		fields.Add("certificate")
+	}
 
 	errData, err := cert.Validate(db)
 	if err != nil {
@@ -73,6 +77,14 @@ func certificatePut(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
+	}
+
+	if cert.Type == certificate.LetsEncrypt {
+		err = acme.Update(db, cert)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 	}
 
 	event.PublishDispatch(db, "certificate.change")
@@ -93,10 +105,13 @@ func certificatePost(c *gin.Context) {
 	cert := &certificate.Certificate{
 		Name:        data.Name,
 		Type:        data.Type,
-		Key:         data.Key,
-		Certificate: data.Certificate,
 		AcmeAccount: data.AcmeAccount,
 		AcmeDomains: data.AcmeDomains,
+	}
+
+	if cert.Type != certificate.LetsEncrypt {
+		cert.Key = data.Key
+		cert.Certificate = data.Certificate
 	}
 
 	errData, err := cert.Validate(db)
@@ -114,6 +129,14 @@ func certificatePost(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
+	}
+
+	if cert.Type == certificate.LetsEncrypt {
+		err = acme.Update(db, cert)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 	}
 
 	event.PublishDispatch(db, "certificate.change")
