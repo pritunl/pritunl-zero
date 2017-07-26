@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as CertificateTypes from '../types/CertificateTypes';
 import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
 import ServicesStore from '../stores/ServicesStore';
@@ -15,6 +16,7 @@ import ConfirmButton from './ConfirmButton';
 interface Props {
 	node: NodeTypes.NodeRo;
 	services: ServiceTypes.ServicesRo;
+	certificates: CertificateTypes.CertificatesRo;
 }
 
 interface State {
@@ -36,7 +38,7 @@ const css = {
 		top: '5px',
 		right: '5px',
 	} as React.CSSProperties,
-	role: {
+	item: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
@@ -239,7 +241,7 @@ export default class Node extends React.Component<Props, State> {
 			services.push(
 				<div
 					className="pt-tag pt-tag-removable pt-intent-primary"
-					style={css.role}
+					style={css.item}
 					key={service.id}
 				>
 					{service.name}
@@ -262,6 +264,19 @@ export default class Node extends React.Component<Props, State> {
 			}
 		} else {
 			servicesSelect.push(<option key="null" value="">None</option>);
+		}
+
+		let certificates: JSX.Element[] = [
+			<option key="null" value="">Self Signed</option>,
+		];
+		if (this.props.certificates.length) {
+			for (let certificate of this.props.certificates) {
+				certificates.push(
+					<option key={certificate.id} value={certificate.id}>
+						{certificate.name}
+					</option>,
+				);
+			}
 		}
 
 		return <div
@@ -403,6 +418,15 @@ export default class Node extends React.Component<Props, State> {
 							},
 						]}
 					/>
+					<PageSelect
+						label="Certificate"
+						value={node.certificate}
+						onChange={(val): void => {
+							this.set('certificate', val);
+						}}
+					>
+						{certificates}
+					</PageSelect>
 				</div>
 			</div>
 			<PageSave
