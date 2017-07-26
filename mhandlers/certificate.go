@@ -53,6 +53,7 @@ func certificatePut(c *gin.Context) {
 		"type",
 		"acme_account",
 		"acme_domains",
+		"info",
 	)
 
 	if cert.Type != certificate.LetsEncrypt {
