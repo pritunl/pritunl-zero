@@ -30,7 +30,7 @@ func (c *ConfigData) Save() (err error) {
 		return
 	}
 
-	data, err := json.Marshal(c)
+	data, err := json.MarshalIndent(c, "", "\t")
 	if err != nil {
 		err = &errortypes.WriteError{
 			errors.Wrap(err, "config: File marshal error"),
