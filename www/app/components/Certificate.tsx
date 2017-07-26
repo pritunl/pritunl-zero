@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as CertificateTypes from '../types/CertificateTypes';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as MiscUtils from '../utils/MiscUtils';
 import CertificateDomain from './CertificateDomain';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
@@ -235,6 +236,8 @@ export default class Certificate extends React.Component<Props, State> {
 		let cert: CertificateTypes.Certificate = this.state.certificate ||
 			this.props.certificate;
 
+		let info: CertificateTypes.Info = this.props.certificate.info || {};
+
 		let domains: JSX.Element[] = [];
 		for (let i = 0; i < cert.acme_domains.length; i++) {
 			let index = i;
@@ -324,6 +327,26 @@ export default class Certificate extends React.Component<Props, State> {
 							{
 								label: 'ID',
 								value: cert.id || 'None',
+							},
+							{
+								label: 'Signature Algorithm',
+								value: info.signature_alg || 'Unknown',
+							},
+							{
+								label: 'Public Key Algorithm',
+								value: info.public_key_alg || 'Unknown',
+							},
+							{
+								label: 'Issued On',
+								value: MiscUtils.formatDate(info.issued_on) || 'Unknown',
+							},
+							{
+								label: 'Expires On',
+								value: MiscUtils.formatDate(info.expires_on) || 'Unknown',
+							},
+							{
+								label: 'DNS Names',
+								value: info.dns_names || 'Unknown',
 							},
 						]}
 					/>
