@@ -10,6 +10,7 @@ export interface Node {
 	protocol?: string;
 	timestamp?: string;
 	management_domain?: string;
+	certificate?: string;
 	requests_min?: number;
 	memory?: number;
 	load1?: number;
