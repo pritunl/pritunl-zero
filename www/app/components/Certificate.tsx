@@ -344,7 +344,7 @@ export default class Certificate extends React.Component<Props, State> {
 				hidden={!this.state.certificate}
 				message={this.state.message}
 				changed={this.state.changed}
-				disabled={false}
+				disabled={this.state.disabled}
 				light={true}
 				onCancel={(): void => {
 					this.setState({

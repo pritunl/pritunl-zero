@@ -410,7 +410,7 @@ export default class Node extends React.Component<Props, State> {
 				hidden={!this.state.node}
 				message={this.state.message}
 				changed={this.state.changed}
-				disabled={false}
+				disabled={this.state.disabled}
 				light={true}
 				onCancel={(): void => {
 					this.setState({

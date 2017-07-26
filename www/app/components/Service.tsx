@@ -473,7 +473,7 @@ export default class Service extends React.Component<Props, State> {
 				hidden={!this.state.service}
 				message={this.state.message}
 				changed={this.state.changed}
-				disabled={false}
+				disabled={this.state.disabled}
 				light={true}
 				onCancel={(): void => {
 					this.setState({
