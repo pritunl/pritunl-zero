@@ -54,6 +54,14 @@ func (c *Certificate) Validate(db *database.Database) (
 		c.AcmeDomains = []string{}
 	}
 
+	if c.Type == LetsEncrypt && len(c.AcmeDomains) == 0 {
+		errData = &errortypes.ErrorData{
+			Error:   "missing_acme_domains",
+			Message: "Lets Encrypt domains required",
+		}
+		return
+	}
+
 	err = c.UpdateInfo()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
