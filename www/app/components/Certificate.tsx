@@ -6,6 +6,7 @@ import CertificateDomain from './CertificateDomain';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
 import PageInfo from './PageInfo';
+import PageTextArea from './PageTextArea';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 
@@ -276,16 +277,28 @@ export default class Certificate extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<PageSelect
-						label="Type"
-						value={cert.type}
-						onChange={(val): void => {
-							this.set('type', val);
+					<PageTextArea
+						disabled={cert.type !== 'text'}
+						label="Private Key"
+						type="text"
+						placeholder="Private key"
+						rows={6}
+						value={cert.key}
+						onChange={(val: string): void => {
+							this.set('key', val);
 						}}
-					>
-						<option value="text">Text</option>
-						<option value="lets_encrypt">LetsEncrypt</option>
-					</PageSelect>
+					/>
+					<PageTextArea
+						disabled={cert.type !== 'text'}
+						label="Certificate Chain"
+						type="text"
+						placeholder="Certificate chain"
+						rows={6}
+						value={cert.certificate}
+						onChange={(val: string): void => {
+							this.set('certificate', val);
+						}}
+					/>
 					<label
 						style={css.itemsLabel}
 						hidden={cert.type !== 'lets_encrypt'}
@@ -314,6 +327,16 @@ export default class Certificate extends React.Component<Props, State> {
 							},
 						]}
 					/>
+					<PageSelect
+						label="Type"
+						value={cert.type}
+						onChange={(val): void => {
+							this.set('type', val);
+						}}
+					>
+						<option value="text">Text</option>
+						<option value="lets_encrypt">LetsEncrypt</option>
+					</PageSelect>
 				</div>
 			</div>
 			<PageSave
