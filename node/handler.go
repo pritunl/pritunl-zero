@@ -1,9 +1,11 @@
 package node
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/settings"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -51,17 +53,31 @@ func (h *Handler) loadServices(db *database.Database) (err error) {
 func (h *Handler) initProxy(host *Host, server *service.Server) (
 	proxy *httputil.ReverseProxy) {
 
+	dialTimeout := time.Duration(
+		settings.Router.DialTimeout) * time.Second
+	dialKeepAlive := time.Duration(
+		settings.Router.DialKeepAlive) * time.Second
+	maxIdleConns := settings.Router.MaxIdleConns
+	maxIdleConnsPerHost := settings.Router.MaxIdleConnsPerHost
+	idleConnTimeout := time.Duration(
+		settings.Router.IdleConnTimeout) * time.Second
+	handshakeTimeout := time.Duration(
+		settings.Router.HandshakeTimeout) * time.Second
+	continueTimeout := time.Duration(
+		settings.Router.ContinueTimeout) * time.Second
+
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
+			Timeout:   dialTimeout,
+			KeepAlive: dialKeepAlive,
 			DualStack: true,
 		}).DialContext,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
+		MaxIdleConns:          maxIdleConns,
+		MaxIdleConnsPerHost:   maxIdleConnsPerHost,
+		IdleConnTimeout:       idleConnTimeout,
+		TLSHandshakeTimeout:   handshakeTimeout,
+		ExpectContinueTimeout: continueTimeout,
 	}
 
 	proxy = &httputil.ReverseProxy{
