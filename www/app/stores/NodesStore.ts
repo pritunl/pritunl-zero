@@ -6,6 +6,7 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class NodesStore extends EventEmitter {
 	_nodes: NodeTypes.NodesRo = Object.freeze([]);
+	_map: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get nodes(): NodeTypes.NodesRo {
@@ -22,6 +23,14 @@ class NodesStore extends EventEmitter {
 		return nodes;
 	}
 
+	node(id: string): NodeTypes.NodeRo {
+		let i = this._map[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._nodes[i];
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -35,8 +44,10 @@ class NodesStore extends EventEmitter {
 	}
 
 	_sync(nodes: NodeTypes.Node[]): void {
+		this._map = {};
 		for (let i = 0; i < nodes.length; i++) {
 			nodes[i] = Object.freeze(nodes[i]);
+			this._map[nodes[i].id] = i;
 		}
 
 		this._nodes = Object.freeze(nodes);
