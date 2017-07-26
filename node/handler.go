@@ -66,6 +66,13 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 	continueTimeout := time.Duration(
 		settings.Router.ContinueTimeout) * time.Second
 
+	var tlsConfig *tls.Config
+	if settings.Router.SkipVerify {
+		tlsConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
+	}
+
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
@@ -78,6 +85,7 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 		IdleConnTimeout:       idleConnTimeout,
 		TLSHandshakeTimeout:   handshakeTimeout,
 		ExpectContinueTimeout: continueTimeout,
+		TLSClientConfig:       tlsConfig,
 	}
 
 	proxy = &httputil.ReverseProxy{
