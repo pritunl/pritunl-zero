@@ -86,6 +86,12 @@ func certificatePut(c *gin.Context) {
 			c.AbortWithError(500, err)
 			return
 		}
+
+		err = acme.Renew(db, cert)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 	}
 
 	event.PublishDispatch(db, "certificate.change")
@@ -134,6 +140,12 @@ func certificatePost(c *gin.Context) {
 
 	if cert.Type == certificate.LetsEncrypt {
 		err = acme.Update(db, cert)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		err = acme.Renew(db, cert)
 		if err != nil {
 			c.AbortWithError(500, err)
 			return
