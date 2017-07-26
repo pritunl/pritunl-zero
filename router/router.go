@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/auth"
+	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -32,6 +33,7 @@ type Router struct {
 	typ              string
 	port             int
 	protocol         string
+	certificate      *certificate.Certificate
 	managementDomain string
 	mRouter          *gin.Engine
 	pRouter          *gin.Engine
@@ -173,6 +175,7 @@ func (r *Router) startRedirect() {
 func (r *Router) initWeb() (err error) {
 	r.typ = node.Self.Type
 	r.managementDomain = node.Self.ManagementDomain
+	r.certificate = node.Self.CertificateObj
 
 	r.port = node.Self.Port
 	if r.port == 0 {
@@ -213,19 +216,12 @@ func (r *Router) initWeb() (err error) {
 	}
 
 	if r.protocol != "http" {
-		certExists, e := utils.Exists(constants.CertPath)
-		if e != nil {
-			err = e
-			return
-		}
-
-		keyExists, e := utils.Exists(constants.KeyPath)
-		if e != nil {
-			err = e
-			return
-		}
-
-		if !certExists || !keyExists {
+		if r.certificate != nil {
+			err = r.certificate.Write()
+			if err != nil {
+				return
+			}
+		} else {
 			err = generateCert(constants.CertPath, constants.KeyPath)
 			if err != nil {
 				return
@@ -360,6 +356,12 @@ func (r *Router) hashNode() []byte {
 	io.WriteString(hash, node.Self.ManagementDomain)
 	io.WriteString(hash, strconv.Itoa(node.Self.Port))
 	io.WriteString(hash, node.Self.Protocol)
+
+	cert := node.Self.CertificateObj
+	if cert != nil {
+		io.WriteString(hash, cert.Hash())
+	}
+
 	return hash.Sum(nil)
 }
 
