@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ReactRouter from 'react-router-dom';
+import * as Theme from '../Theme';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import SubscriptionStore from '../stores/SubscriptionStore';
 import Loading from './Loading';
@@ -17,8 +18,6 @@ import * as CertificateActions from '../actions/CertificateActions';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as SettingsActions from '../actions/SettingsActions';
 import * as SubscriptionActions from '../actions/SubscriptionActions';
-
-document.body.className = 'root pt-dark';
 
 interface State {
 	subscription: SubscriptionTypes.SubscriptionRo;
@@ -244,13 +243,8 @@ export default class Main extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-minimal pt-icon-moon"
 							onClick={(): void => {
-								let className = 'root';
-
-								if (document.body.className.indexOf('pt-dark') === -1) {
-									className += ' pt-dark';
-								}
-
-								document.body.className = className;
+								Theme.toggle();
+								Theme.save();
 							}}
 						/>
 					</div>

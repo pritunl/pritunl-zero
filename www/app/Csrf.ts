@@ -1,5 +1,6 @@
 /// <reference path="./References.d.ts"/>
 import * as SuperAgent from 'superagent';
+import * as Theme from './Theme';
 
 export let token = '';
 
@@ -15,6 +16,13 @@ export function load(): Promise<void> {
 				}
 
 				token = res.body.token;
+
+				if (res.body.theme === 'light') {
+					Theme.light();
+				} else {
+					Theme.dark();
+				}
+
 				resolve();
 			});
 	});
