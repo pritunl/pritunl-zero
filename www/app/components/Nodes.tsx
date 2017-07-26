@@ -2,10 +2,13 @@
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as CertificateTypes from '../types/CertificateTypes';
 import NodesStore from '../stores/NodesStore';
 import ServicesStore from '../stores/ServicesStore';
+import CertificatesStore from '../stores/CertificatesStore';
 import * as NodeActions from '../actions/NodeActions';
 import * as ServiceActions from '../actions/ServiceActions';
+import * as CertificateActions from '../actions/CertificateActions';
 import Node from './Node';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -13,6 +16,7 @@ import PageHeader from './PageHeader';
 interface State {
 	nodes: NodeTypes.NodesRo;
 	services: ServiceTypes.ServicesRo;
+	certificates: CertificateTypes.CertificatesRo;
 	disabled: boolean;
 }
 
@@ -31,6 +35,7 @@ export default class Nodes extends React.Component<{}, State> {
 		this.state = {
 			nodes: NodesStore.nodes,
 			services: ServicesStore.services,
+			certificates: CertificatesStore.certificates,
 			disabled: false,
 		};
 	}
@@ -38,13 +43,16 @@ export default class Nodes extends React.Component<{}, State> {
 	componentDidMount(): void {
 		NodesStore.addChangeListener(this.onChange);
 		ServicesStore.addChangeListener(this.onChange);
+		CertificatesStore.addChangeListener(this.onChange);
 		NodeActions.sync();
 		ServiceActions.sync();
+		CertificateActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		NodesStore.removeChangeListener(this.onChange);
 		ServicesStore.removeChangeListener(this.onChange);
+		CertificatesStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
@@ -52,6 +60,7 @@ export default class Nodes extends React.Component<{}, State> {
 			...this.state,
 			nodes: NodesStore.nodes,
 			services: ServicesStore.services,
+			certificates: CertificatesStore.certificates,
 		});
 	}
 
@@ -63,6 +72,7 @@ export default class Nodes extends React.Component<{}, State> {
 				key={node.id}
 				node={node}
 				services={this.state.services}
+				certificates={this.state.certificates}
 			/>);
 		});
 
