@@ -47,7 +47,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		acctBlock, _ := pem.Decode([]byte(cert.AcmeAccount))
 		if acctBlock == nil {
 			err = &errortypes.ParseError{
-				errors.Wrap(err, "acme: Failed to read account key"),
+				errors.New("acme: Failed to decode account key"),
 			}
 			return
 		}
