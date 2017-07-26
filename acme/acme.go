@@ -197,7 +197,14 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	cert.Key = string(pem.EncodeToMemory(certKeyBlock))
 	cert.Certificate = certPem
 	cert.AcmeHash = cert.Hash()
-	err = cert.CommitFields(db, set.NewSet("key", "certificate", "acme_hash"))
+
+	_, err = cert.Validate(db)
+	if err != nil {
+		return
+	}
+
+	err = cert.CommitFields(db, set.NewSet(
+		"key", "certificate", "acme_hash", "info"))
 	if err != nil {
 		return
 	}
