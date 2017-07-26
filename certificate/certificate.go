@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -51,6 +52,14 @@ func (c *Certificate) Validate(db *database.Database) (
 
 	if c.AcmeDomains == nil {
 		c.AcmeDomains = []string{}
+	}
+
+	err = c.UpdateInfo()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("certificate: Failed to update certificate info")
+		err = nil
 	}
 
 	return
