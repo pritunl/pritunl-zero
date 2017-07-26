@@ -30,6 +30,10 @@ const css = {
 		overflowY: 'hidden',
 	} as React.CSSProperties,
 	link: {
+		padding: '0 8px',
+		color: 'inherit',
+	} as React.CSSProperties,
+	sub: {
 		color: 'inherit',
 	} as React.CSSProperties,
 	heading: {
@@ -120,10 +124,11 @@ export default class Main extends React.Component<{}, State> {
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							to="/subscription"
-							style={css.link}
+							style={css.sub}
 						>
 							<button
 								className="pt-button pt-minimal pt-icon-credit-card"
+								style={css.link}
 								onClick={(): void => {
 									SubscriptionActions.sync(true);
 								}}
