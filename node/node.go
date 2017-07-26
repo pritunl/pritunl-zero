@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -20,22 +21,24 @@ var (
 )
 
 type Node struct {
-	Id               bson.ObjectId   `bson:"_id" json:"id"`
-	Name             string          `bson:"name" json:"name"`
-	Type             string          `bson:"type" json:"type"`
-	Timestamp        time.Time       `bson:"timestamp" json:"timestamp"`
-	Port             int             `bson:"port" json:"port"`
-	Protocol         string          `bson:"protocol" json:"protocol"`
-	ManagementDomain string          `bson:"management_domain" json:"management_domain"`
-	Services         []bson.ObjectId `bson:"services" json:"services"`
-	RequestsMin      int64           `bson:"requests_min" json:"requests_min"`
-	Memory           float64         `bson:"memory" json:"memory"`
-	Load1            float64         `bson:"load1" json:"load1"`
-	Load5            float64         `bson:"load5" json:"load5"`
-	Load15           float64         `bson:"load15" json:"load15"`
-	Handler          *Handler        `bson:"-" json:"-"`
-	reqLock          sync.Mutex      `bson:"-" json:"-"`
-	reqCount         *list.List      `bson:"-" json:"-"`
+	Id               bson.ObjectId            `bson:"_id" json:"id"`
+	Name             string                   `bson:"name" json:"name"`
+	Type             string                   `bson:"type" json:"type"`
+	Timestamp        time.Time                `bson:"timestamp" json:"timestamp"`
+	Port             int                      `bson:"port" json:"port"`
+	Protocol         string                   `bson:"protocol" json:"protocol"`
+	Certificate      bson.ObjectId            `bson:"certificate" json:"certificate"`
+	ManagementDomain string                   `bson:"management_domain" json:"management_domain"`
+	Services         []bson.ObjectId          `bson:"services" json:"services"`
+	RequestsMin      int64                    `bson:"requests_min" json:"requests_min"`
+	Memory           float64                  `bson:"memory" json:"memory"`
+	Load1            float64                  `bson:"load1" json:"load1"`
+	Load5            float64                  `bson:"load5" json:"load5"`
+	Load15           float64                  `bson:"load15" json:"load15"`
+	Handler          *Handler                 `bson:"-" json:"-"`
+	CertificateObj   *certificate.Certificate `bson:"-" json:"-"`
+	reqLock          sync.Mutex               `bson:"-" json:"-"`
+	reqCount         *list.List               `bson:"-" json:"-"`
 }
 
 func (n *Node) AddRequest() {
@@ -157,6 +160,28 @@ func (n *Node) update(db *database.Database) (err error) {
 	return
 }
 
+func (n *Node) loadCert(db *database.Database) (err error) {
+	if n.Certificate == "" {
+		n.CertificateObj = nil
+		return
+	}
+
+	cert, err := certificate.Get(db, n.Certificate)
+	if err != nil {
+		n.CertificateObj = nil
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+			break
+		}
+		return
+	} else {
+		n.CertificateObj = cert
+	}
+
+	return
+}
+
 func (n *Node) keepalive() {
 	db := database.GetDatabase()
 	defer db.Close()
@@ -202,6 +227,13 @@ func (n *Node) keepalive() {
 			logrus.WithFields(logrus.Fields{
 				"error": err,
 			}).Error("node: Failed to load service domains")
+		}
+
+		err = n.loadCert(db)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("node: Failed to load node certificate")
 		}
 
 		time.Sleep(1 * time.Second)
@@ -297,6 +329,11 @@ func (n *Node) Init() (err error) {
 	}
 
 	err = n.Handler.Load(db)
+	if err != nil {
+		return
+	}
+
+	err = n.loadCert(db)
 	if err != nil {
 		return
 	}
