@@ -4,7 +4,7 @@ import * as React from 'react';
 interface Field {
 	className?: string;
 	label: string;
-	value: string;
+	value: string | string[];
 }
 
 interface Bar {
@@ -35,11 +35,22 @@ export default class PageInfo extends React.Component<Props, {}> {
 		let bars: JSX.Element[] = [];
 
 		for (let field of this.props.fields || []) {
+			let value: string | JSX.Element[];
+
+			if (typeof field.value === 'string') {
+				value = field.value;
+			} else {
+				value = [];
+				for (let item of field.value) {
+					value.push(<div>{item}</div>)
+				}
+			}
+
 			fields.push(
 				<div key={field.label} style={css.item}>
 					{field.label}
 					<div className={'pt-text-muted ' + (field.className || '')}>
-						{field.value}
+						{value}
 					</div>
 				</div>,
 			);
