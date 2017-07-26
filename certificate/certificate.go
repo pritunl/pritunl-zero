@@ -40,6 +40,10 @@ type Certificate struct {
 func (c *Certificate) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	if c.Type == "" {
+		c.Type = Text
+	}
+
 	if c.Type != LetsEncrypt {
 		c.AcmeAccount = ""
 		c.AcmeDomains = []string{}
