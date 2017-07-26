@@ -218,7 +218,30 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 }
 
 func Update(db *database.Database, cert *certificate.Certificate) (err error) {
+	if cert.Type != certificate.LetsEncrypt {
+		return
+	}
+
 	if cert.AcmeHash != cert.Hash() {
+		err = Generate(db, cert)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func Renew(db *database.Database, cert *certificate.Certificate) (
+	err error) {
+
+	if cert.Type != certificate.LetsEncrypt {
+		return
+	}
+
+	if cert.Info != nil && !cert.Info.ExpiresOn.IsZero() &&
+		time.Until(cert.Info.ExpiresOn) < 336*time.Hour {
+
 		err = Generate(db, cert)
 		if err != nil {
 			return
