@@ -2,19 +2,25 @@ package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/dropbox/godropbox/container/set"
 )
 
-type csrfData struct {
-	Token string `json:"token"`
+type themeData struct {
 	Theme string `json:"theme"`
 }
 
-func csrfGet(c *gin.Context) {
+func themePut(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	sess := c.MustGet("session").(*session.Session)
+	data := &themeData{}
+
+	err := c.Bind(&data)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 
 	usr, err := sess.GetUser(db)
 	if err != nil {
@@ -22,15 +28,13 @@ func csrfGet(c *gin.Context) {
 		return
 	}
 
-	token, err := csrf.NewToken(db, sess.Id)
+	usr.Theme = data.Theme
+
+	err = usr.CommitFields(db, set.NewSet("theme"))
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 
-	data := &csrfData{
-		Token: token,
-		Theme: usr.Theme,
-	}
-	c.JSON(200, data)
+	return
 }

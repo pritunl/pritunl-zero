@@ -73,6 +73,8 @@ func Register(protocol string, engine *gin.Engine) {
 	activeCsrfGroup.GET("/subscription/update", subscriptionUpdateGet)
 	activeCsrfGroup.POST("/subscription", subscriptionPost)
 
+	activeCsrfGroup.PUT("/theme", themePut)
+
 	activeCsrfGroup.GET("/user", usersGet)
 	activeCsrfGroup.GET("/user/:user_id", userGet)
 	activeCsrfGroup.PUT("/user/:user_id", userPut)
