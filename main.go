@@ -48,6 +48,13 @@ func main() {
 			panic(err)
 		}
 		return
+	case "reset-id":
+		logger.Init()
+		err := cmd.ResetId()
+		if err != nil {
+			panic(err)
+		}
+		return
 	case "set":
 		Init()
 		err := cmd.SettingsSet()

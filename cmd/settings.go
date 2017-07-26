@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
+	"gopkg.in/mgo.v2/bson"
 	"strconv"
 )
 
@@ -27,6 +28,26 @@ func Mongo() (err error) {
 	logrus.WithFields(logrus.Fields{
 		"mongo_uri": config.Config.MongoUri,
 	}).Info("cmd.settings: Set MongoDB URI")
+
+	return
+}
+
+func ResetId() (err error) {
+	err = config.Load()
+	if err != nil {
+		return
+	}
+
+	config.Config.NodeId = bson.NewObjectId().Hex()
+
+	err = config.Save()
+	if err != nil {
+		return
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"node_id": config.Config.NodeId,
+	}).Info("cmd.settings: Reset node ID")
 
 	return
 }
