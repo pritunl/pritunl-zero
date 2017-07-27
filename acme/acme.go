@@ -240,7 +240,7 @@ func Renew(db *database.Database, cert *certificate.Certificate) (
 	}
 
 	if cert.Info != nil && !cert.Info.ExpiresOn.IsZero() &&
-		time.Until(cert.Info.ExpiresOn) < 336*time.Hour {
+		time.Until(cert.Info.ExpiresOn) < 168*time.Hour {
 
 		err = Generate(db, cert)
 		if err != nil {
