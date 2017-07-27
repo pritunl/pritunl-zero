@@ -61,8 +61,8 @@ export default class Users extends React.Component<{}, State> {
 	}
 
 	get selected(): boolean {
-		for (let val in this.state.selected) {
-			if (this.state.selected[val]) {
+		for (let key in this.state.selected) {
+			if (this.state.selected[key]) {
 				return true;
 			}
 		}

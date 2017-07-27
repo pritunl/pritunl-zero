@@ -104,6 +104,10 @@ export default class Log extends React.Component<Props, State> {
 
 		let fields: JSX.Element[] = [];
 		for (let key in log.fields) {
+			if (!log.fields.hasOwnProperty(key)) {
+				continue;
+			}
+
 			let val = log.fields[key];
 
 			fields.push(
@@ -138,7 +142,7 @@ export default class Log extends React.Component<Props, State> {
 						this.setState({
 							...this.state,
 							stack: true,
-						})
+						});
 					}}
 				/>
 			</div>

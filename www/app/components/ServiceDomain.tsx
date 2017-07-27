@@ -44,9 +44,9 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 					placeholder="Domain"
 					value={domain.domain || ''}
 					onChange={(evt): void => {
-						let domain = this.clone();
-						domain.domain = evt.target.value;
-						this.props.onChange(domain);
+						let state = this.clone();
+						state.domain = evt.target.value;
+						this.props.onChange(state);
 					}}
 				/>
 			</div>
@@ -60,9 +60,9 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 					placeholder="Host"
 					value={domain.host || ''}
 					onChange={(evt): void => {
-						let domain = this.clone();
-						domain.host = evt.target.value;
-						this.props.onChange(domain);
+						let state = this.clone();
+						state.host = evt.target.value;
+						this.props.onChange(state);
 					}}
 				/>
 			</div>

@@ -45,9 +45,9 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				<select
 					value={server.protocol}
 					onChange={(evt): void => {
-						let service = this.clone();
-						service.protocol = evt.target.value;
-						this.props.onChange(service);
+						let state = this.clone();
+						state.protocol = evt.target.value;
+						this.props.onChange(state);
 					}}
 				>
 					<option value="http">HTTP</option>
@@ -64,9 +64,9 @@ export default class ServiceServer extends React.Component<Props, {}> {
 					placeholder="Hostname"
 					value={server.hostname || ''}
 					onChange={(evt): void => {
-						let service = this.clone();
-						service.hostname = evt.target.value;
-						this.props.onChange(service);
+						let state = this.clone();
+						state.hostname = evt.target.value;
+						this.props.onChange(state);
 					}}
 				/>
 			</div>
@@ -79,9 +79,9 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				placeholder="Port"
 				value={server.port}
 				onChange={(evt): void => {
-					let service = this.clone();
-					service.port = parseInt(evt.target.value, 10);
-					this.props.onChange(service);
+					let state = this.clone();
+					state.port = parseInt(evt.target.value, 10);
+					this.props.onChange(state);
 				}}
 			/>
 			<button

@@ -42,7 +42,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 			} else {
 				value = [];
 				for (let i = 0; i < field.value.length; i++) {
-					value.push(<div key={i}>{field.value[i]}</div>)
+					value.push(<div key={i}>{field.value[i]}</div>);
 				}
 			}
 
