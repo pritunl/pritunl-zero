@@ -41,8 +41,8 @@ export default class PageInfo extends React.Component<Props, {}> {
 				value = field.value;
 			} else {
 				value = [];
-				for (let item of field.value) {
-					value.push(<div>{item}</div>)
+				for (let i = 0; i < field.value.length; i++) {
+					value.push(<div key={i}>{field.value[i]}</div>)
 				}
 			}
 
