@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -35,6 +36,7 @@ export default class PageTextArea extends React.Component<Props, {}> {
 			<textarea
 				className="pt-input"
 				style={css.textarea}
+				disabled={this.props.disabled}
 				type={this.props.type}
 				autoCapitalize="off"
 				spellCheck={false}
