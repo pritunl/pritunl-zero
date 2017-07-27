@@ -9,12 +9,14 @@ import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
 import Nodes from './Nodes';
+import Policies from './Policies';
 import Certificates from './Certificates';
 import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as NodeActions from '../actions/NodeActions';
+import * as PolicyActions from '../actions/PolicyActions';
 import * as CertificateActions from '../actions/CertificateActions';
 import * as LogActions from '../actions/LogActions';
 import * as ServiceActions from '../actions/ServiceActions';
@@ -111,6 +113,13 @@ export default class Main extends React.Component<{}, State> {
 							Nodes
 						</ReactRouter.Link>
 						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-filter"
+							style={css.link}
+							to="/policies"
+						>
+							Policies
+						</ReactRouter.Link>
+						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-endorsed"
 							style={css.link}
 							to="/certificates"
@@ -181,6 +190,18 @@ export default class Main extends React.Component<{}, State> {
 										});
 									} else if (pathname === '/nodes') {
 										NodeActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+									} else if (pathname === '/policies') {
+										PolicyActions.sync().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
@@ -289,6 +310,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/nodes" render={() => (
 					<Nodes/>
+				)}/>
+				<ReactRouter.Route path="/policies" render={() => (
+					<Policies/>
 				)}/>
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
