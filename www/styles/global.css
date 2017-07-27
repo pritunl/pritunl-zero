@@ -9,15 +9,19 @@
   box-sizing: border-box;
 }
 
-.root {
+body {
   background-color: #f5f8fa;
 }
 
-.root.pt-dark {
+body.pt-dark {
   background-color: #293742;
 }
 
 .pt-button:disabled, .pt-button.pt-disabled {
+  cursor: default !important;
+}
+
+.pt-input:disabled, .pt-input.pt-disabled {
   cursor: default !important;
 }
 
