@@ -86,6 +86,11 @@ func (d *Database) AcmeChallenges() (coll *Collection) {
 	return
 }
 
+func (d *Database) Logs() (coll *Collection) {
+	coll = d.getCollection("logs")
+	return
+}
+
 func Connect() (err error) {
 	mgoUrl, err := url.Parse(config.Config.MongoUri)
 	if err != nil {
@@ -164,7 +169,12 @@ func Connect() (err error) {
 }
 
 func GetDatabase() (db *Database) {
-	session := Session.Copy()
+	sess := Session
+	if sess == nil {
+		return
+	}
+
+	session := sess.Copy()
 	database := session.DB("")
 
 	db = &Database{
