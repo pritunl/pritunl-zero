@@ -155,7 +155,7 @@ func (r *Router) startRedirect() {
 		"production": constants.Production,
 		"protocol":   "http",
 		"port":       80,
-	}).Info("node: Starting redirect server")
+	}).Info("router: Starting redirect server")
 
 	err := r.redirectServer.ListenAndServe()
 	if err != nil {
@@ -163,7 +163,7 @@ func (r *Router) startRedirect() {
 			err = nil
 		} else {
 			err = &errortypes.UnknownError{
-				errors.Wrap(err, "node: Server listen failed"),
+				errors.Wrap(err, "router: Server listen failed"),
 			}
 			logrus.WithFields(logrus.Fields{
 				"error": err,
@@ -239,7 +239,7 @@ func (r *Router) startWeb() {
 		"production": constants.Production,
 		"protocol":   r.protocol,
 		"port":       r.port,
-	}).Info("node: Starting web server")
+	}).Info("router: Starting web server")
 
 	if r.protocol == "http" {
 		err := r.webServer.ListenAndServe()
@@ -248,7 +248,7 @@ func (r *Router) startWeb() {
 				err = nil
 			} else {
 				err = &errortypes.UnknownError{
-					errors.Wrap(err, "node: Server listen failed"),
+					errors.Wrap(err, "router: Server listen failed"),
 				}
 				logrus.WithFields(logrus.Fields{
 					"error": err,
@@ -263,7 +263,7 @@ func (r *Router) startWeb() {
 				err = nil
 			} else {
 				err = &errortypes.UnknownError{
-					errors.Wrap(err, "node: Server listen failed"),
+					errors.Wrap(err, "router: Server listen failed"),
 				}
 				logrus.WithFields(logrus.Fields{
 					"error": err,
