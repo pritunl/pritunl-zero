@@ -138,8 +138,17 @@ export default class Service extends React.Component<Props, State> {
 	}
 
 	onAddRole = (): void => {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let roles = [
 			...service.roles,
@@ -155,21 +164,29 @@ export default class Service extends React.Component<Props, State> {
 
 		roles.sort();
 
+		service.roles = roles;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
 			addRole: '',
-			service: {
-				...service,
-				roles: roles,
-			},
+			service: service,
 		});
 	}
 
 	onRemoveRole(role: string): void {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let roles = [
 			...service.roles,
@@ -182,21 +199,29 @@ export default class Service extends React.Component<Props, State> {
 
 		roles.splice(i, 1);
 
+		service.roles = roles;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
 			addRole: '',
-			service: {
-				...service,
-				roles: roles,
-			},
+			service: service,
 		});
 	}
 
 	onAddServer = (): void => {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let servers = [
 			...service.servers,
@@ -207,20 +232,28 @@ export default class Service extends React.Component<Props, State> {
 			},
 		];
 
+		service.servers = servers;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				servers: servers,
-			},
+			service: service,
 		});
 	}
 
 	onChangeServer(i: number, state: ServiceTypes.Server): void {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let servers = [
 			...service.servers,
@@ -228,20 +261,28 @@ export default class Service extends React.Component<Props, State> {
 
 		servers[i] = state;
 
+		service.servers = servers;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				servers: servers,
-			},
+			service: service,
 		});
 	}
 
 	onRemoveServer(i: number): void {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let servers = [
 			...service.servers,
@@ -249,40 +290,56 @@ export default class Service extends React.Component<Props, State> {
 
 		servers.splice(i, 1);
 
+		service.servers = servers;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				servers: servers,
-			},
+			service: service,
 		});
 	}
 
 	onAddDomain = (): void => {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let domains = [
 			...service.domains,
 			{},
 		];
 
+		service.domains = domains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				domains: domains,
-			},
+			service: service,
 		});
 	}
 
 	onChangeDomain(i: number, state: ServiceTypes.Domain): void {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let domains = [
 			...service.domains,
@@ -290,20 +347,28 @@ export default class Service extends React.Component<Props, State> {
 
 		domains[i] = state;
 
+		service.domains = domains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				domains: domains,
-			},
+			service: service,
 		});
 	}
 
 	onRemoveDomain(i: number): void {
-		let service: ServiceTypes.Service = this.state.service ||
-			this.props.service;
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
 
 		let domains = [
 			...service.domains,
@@ -311,14 +376,13 @@ export default class Service extends React.Component<Props, State> {
 
 		domains.splice(i, 1);
 
+		service.domains = domains;
+
 		this.setState({
 			...this.state,
 			changed: true,
 			message: '',
-			service: {
-				...service,
-				domains: domains,
-			},
+			service: service,
 		});
 	}
 
