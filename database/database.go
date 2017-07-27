@@ -46,6 +46,11 @@ func (d *Database) Services() (coll *Collection) {
 	return
 }
 
+func (d *Database) Policies() (coll *Collection) {
+	coll = d.getCollection("policies")
+	return
+}
+
 func (d *Database) Sessions() (coll *Collection) {
 	coll = d.getCollection("sessions")
 	return
@@ -209,6 +214,26 @@ func addIndexes() (err error) {
 	}
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"roles"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
+	coll = db.Policies()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"roles"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"services"},
 		Background: true,
 	})
 	if err != nil {
