@@ -167,6 +167,7 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 
 	err = coll.Insert(c)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 

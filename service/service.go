@@ -115,6 +115,7 @@ func (s *Service) Insert(db *database.Database) (err error) {
 
 	err = coll.Insert(s)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 

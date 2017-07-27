@@ -124,6 +124,7 @@ func (u *User) Insert(db *database.Database) (err error) {
 
 	err = coll.Insert(u)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
