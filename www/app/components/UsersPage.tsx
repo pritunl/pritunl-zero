@@ -4,7 +4,7 @@ import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
 
 interface Props {
-	onPage: () => void;
+	onPage?: () => void;
 }
 
 interface State {
@@ -84,7 +84,9 @@ export default class Users extends React.Component<Props, State> {
 				} : css.link}
 				onClick={(): void => {
 					UserActions.traverse(i);
-					this.props.onPage();
+					if (this.props.onPage) {
+						this.props.onPage();
+					}
 				}}
 			>
 				{i + 1}
@@ -102,7 +104,9 @@ export default class Users extends React.Component<Props, State> {
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(0);
-					this.props.onPage();
+					if (this.props.onPage) {
+						this.props.onPage();
+					}
 				}}
 			>
 				First
@@ -118,7 +122,9 @@ export default class Users extends React.Component<Props, State> {
 				type="button"
 				onClick={(): void => {
 					UserActions.traverse(this.state.pages);
-					this.props.onPage();
+					if (this.props.onPage) {
+						this.props.onPage();
+					}
 				}}
 			>
 				Last
