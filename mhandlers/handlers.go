@@ -67,6 +67,7 @@ func Register(protocol string, engine *gin.Engine) {
 	activeCsrfGroup.GET("/policy", policiesGet)
 	activeCsrfGroup.GET("/policy/:policy_id", policyGet)
 	activeCsrfGroup.PUT("/policy/:policy_id", policyPut)
+	activeCsrfGroup.POST("/policy", policyPost)
 	activeCsrfGroup.DELETE("/policy/:policy_id", policyDelete)
 
 	activeCsrfGroup.GET("/service", servicesGet)

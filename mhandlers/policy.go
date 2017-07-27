@@ -3,7 +3,6 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
