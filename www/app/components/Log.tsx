@@ -158,6 +158,7 @@ export default class Log extends React.Component<Props, State> {
 					style={css.textarea}
 					autoCapitalize="off"
 					spellCheck={false}
+					readOnly={true}
 					value={log.stack || ''}
 				/>
 			</Blueprint.Dialog>
