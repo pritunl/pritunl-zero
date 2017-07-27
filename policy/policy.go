@@ -9,16 +9,16 @@ import (
 )
 
 type Rule struct {
-	Type  string `bson:"type" json:"type"`
-	Value string `bson:"value" json:"value"`
+	Type   string   `bson:"type" json:"type"`
+	Values []string `bson:"values" json:"values"`
 }
 
 type Policy struct {
-	Id       bson.ObjectId   `bson:"_id,omitempty" json:"id"`
-	Name     string          `bson:"name" json:"name"`
-	Services []bson.ObjectId `bson:"services" json:"services"`
-	Roles    []string        `bson:"roles" json:"roles"`
-	Rules    []*Rule         `bson:"rules" json:"rules"`
+	Id       bson.ObjectId    `bson:"_id,omitempty" json:"id"`
+	Name     string           `bson:"name" json:"name"`
+	Services []bson.ObjectId  `bson:"services" json:"services"`
+	Roles    []string         `bson:"roles" json:"roles"`
+	Rules    map[string]*Rule `bson:"rules" json:"rules"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
