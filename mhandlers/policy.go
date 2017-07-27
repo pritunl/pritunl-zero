@@ -11,11 +11,11 @@ import (
 )
 
 type policyData struct {
-	Id       bson.ObjectId   `json:"id"`
-	Name     string          `json:"name"`
-	Services []bson.ObjectId `json:"services"`
-	Roles    []string        `json:"roles"`
-	Rules    []*policy.Rule  `json:"rules"`
+	Id       bson.ObjectId           `json:"id"`
+	Name     string                  `json:"name"`
+	Services []bson.ObjectId         `json:"services"`
+	Roles    []string                `json:"roles"`
+	Rules    map[string]*policy.Rule `json:"rules"`
 }
 
 func policyPut(c *gin.Context) {
