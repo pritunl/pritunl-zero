@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/colorize"
+	"sort"
 	"time"
 )
 
@@ -20,6 +21,8 @@ func format(entry *logrus.Entry) (output []byte) {
 		entry.Message,
 	)
 
+	keys := []string{}
+
 	var errStr string
 	for key, val := range entry.Data {
 		if key == "error" {
@@ -27,9 +30,15 @@ func format(entry *logrus.Entry) (output []byte) {
 			continue
 		}
 
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		msg += fmt.Sprintf(" %s %s=%v", whiteDiamond,
 			colorize.ColorString(key, colorize.CyanBold, colorize.None),
-			colorize.ColorString(fmt.Sprintf("%#v", val),
+			colorize.ColorString(fmt.Sprintf("%#v", entry.Data[key]),
 				colorize.GreenBold, colorize.None))
 	}
 
@@ -53,6 +62,8 @@ func formatPlain(entry *logrus.Entry) (output []byte) {
 		entry.Message,
 	)
 
+	keys := []string{}
+
 	var errStr string
 	for key, val := range entry.Data {
 		if key == "error" {
@@ -60,7 +71,13 @@ func formatPlain(entry *logrus.Entry) (output []byte) {
 			continue
 		}
 
-		msg += fmt.Sprintf(" ◆ %s=%v", key, fmt.Sprintf("%#v", val))
+	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		msg += fmt.Sprintf(" ◆ %s=%v", key,
+			fmt.Sprintf("%#v", entry.Data[key]))
 	}
 
 	if errStr != "" {
