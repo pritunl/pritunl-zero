@@ -15,6 +15,7 @@ const css = {
 		display: 'table-row',
 		width: '100%',
 		padding: 0,
+		boxShadow: 'none',
 	} as React.CSSProperties,
 	select: {
 		margin: '2px 0 0 0',
@@ -76,10 +77,10 @@ export default class User extends React.Component<Props, {}> {
 		}
 
 		return <div
-			className="pt-card"
+			className="pt-card pt-row"
 			style={cardStyle}
 		>
-			<div style={css.name}>
+			<div className="pt-cell" style={css.name}>
 				<div className="layout horizontal">
 					<label className="pt-control pt-checkbox" style={css.select}>
 						<input
@@ -96,13 +97,13 @@ export default class User extends React.Component<Props, {}> {
 					</ReactRouter.Link>
 				</div>
 			</div>
-			<div className="layout horizontal" style={css.type}>
+			<div className="pt-cell" style={css.type}>
 				{user.type}
 			</div>
-			<div className="layout horizontal" style={css.lastActivity}>
+			<div className="pt-cell" style={css.lastActivity}>
 				{MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'}
 			</div>
-			<div className="flex" style={css.roles}>
+			<div className="flex pt-cell" style={css.roles}>
 				<span
 					className="pt-tag pt-intent-danger"
 					style={css.tag}
