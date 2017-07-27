@@ -10,11 +10,13 @@ import Users from './Users';
 import UserDetailed from './UserDetailed';
 import Nodes from './Nodes';
 import Certificates from './Certificates';
+import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as NodeActions from '../actions/NodeActions';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as LogActions from '../actions/LogActions';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as SettingsActions from '../actions/SettingsActions';
 import * as SubscriptionActions from '../actions/SubscriptionActions';
@@ -116,6 +118,13 @@ export default class Main extends React.Component<{}, State> {
 							Certificates
 						</ReactRouter.Link>
 						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-history"
+							style={css.link}
+							to="/logs"
+						>
+							Logs
+						</ReactRouter.Link>
+						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-cog"
 							style={css.link}
 							to="/settings"
@@ -184,6 +193,18 @@ export default class Main extends React.Component<{}, State> {
 										});
 									} else if (pathname === '/certificates') {
 										CertificateActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+									} else if (pathname === '/logs') {
+										LogActions.sync().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
@@ -271,6 +292,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
+				)}/>
+				<ReactRouter.Route path="/logs" render={() => (
+					<Logs/>
 				)}/>
 				<ReactRouter.Route path="/services" render={() => (
 					<Services/>
