@@ -470,7 +470,7 @@ export default class Service extends React.Component<Props, State> {
 						}}
 					/>
 					<label style={css.itemsLabel}>
-						Domains
+						External Domains
 					</label>
 					{domains}
 					<button
@@ -482,7 +482,7 @@ export default class Service extends React.Component<Props, State> {
 						Add Domain
 					</button>
 					<label style={css.itemsLabel}>
-						Servers
+						Internal Servers
 					</label>
 					{servers}
 					<button
