@@ -106,7 +106,8 @@ export function formatDate(dateStr: string): string {
 
 	str += day + ' ';
 	str += date.getDate() + ' ';
-	str += month + ', ';
+	str += month + ' ';
+	str += date.getFullYear() + ', ';
 	str += hours + ':';
 	str += zeroPad(date.getMinutes(), 2) + ':';
 	str += zeroPad(date.getSeconds(), 2) + ' ';
