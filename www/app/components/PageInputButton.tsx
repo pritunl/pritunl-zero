@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	buttonClass?: string;
+	hidden?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -35,6 +36,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 		return <div
 			className="pt-control-group"
 			style={css.group}
+			hidden={this.props.hidden}
 		>
 			<div style={css.inputBox}>
 				<input
