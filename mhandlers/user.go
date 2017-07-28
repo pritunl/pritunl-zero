@@ -246,15 +246,15 @@ func usersGet(c *gin.Context) {
 
 func usersDelete(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	userIds := []bson.ObjectId{}
+	data := []bson.ObjectId{}
 
-	err := c.Bind(&userIds)
+	err := c.Bind(&data)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 
-	errData, err := user.Remove(db, userIds)
+	errData, err := user.Remove(db, data)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
