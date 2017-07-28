@@ -74,6 +74,36 @@ body.pt-dark {
   margin-right: 0;
 }
 
+.pt-row .pt-cell {
+  border-top: 1px solid rgba(16, 22, 26, 0.15);
+  border-bottom: 1px solid rgba(16, 22, 26, 0.15);
+}
+
+.pt-row .pt-cell:first-child {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-left: 1px solid rgba(16, 22, 26, 0.15);
+}
+
+.pt-row .pt-cell:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-right: 1px solid rgba(16, 22, 26, 0.15);
+}
+
+.pt-dark .pt-row .pt-cell {
+  border-top: 1px solid rgba(16, 22, 26, 0.5);
+  border-bottom: 1px solid rgba(16, 22, 26, 0.5);
+}
+
+.pt-dark .pt-row .pt-cell:first-child {
+  border-left: 1px solid rgba(16, 22, 26, 0.5);
+}
+
+.pt-dark .pt-row .pt-cell:last-child {
+  border-right: 1px solid rgba(16, 22, 26, 0.5);
+}
+
 /*******************************
           Flex Layout
 *******************************/
