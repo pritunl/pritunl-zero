@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/requires"
 	"os"
+	"strings"
 )
 
 var (
@@ -25,7 +26,7 @@ func initSender() {
 				return
 			}
 
-			if len(entry.Message) > 7 && entry.Message[:7] == "logger:" {
+			if strings.HasPrefix(entry.Message, "logger:") {
 				continue
 			}
 
