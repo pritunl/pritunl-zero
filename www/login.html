@@ -198,10 +198,12 @@
 
         xmlhttp.onreadystatechange = function() {
           if (xmlhttp.readyState === 4) {
-            submitElm.disabled = false;
-            for (var i = 0; i < authCancels.length; i++) {
-              authCancels[i].disabled = false;
-            }
+            setTimeout(function() {
+              submitElm.disabled = false;
+              for (var i = 0; i < authCancels.length; i++) {
+                authCancels[i].disabled = false;
+              }
+            }, 500);
 
             if (xmlhttp.status === 200) {
               setAlert();
