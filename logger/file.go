@@ -8,10 +8,6 @@ import (
 	"os"
 )
 
-func init() {
-	senders = append(senders, &fileSender{})
-}
-
 type fileSender struct{}
 
 func (s *fileSender) Init() {}
@@ -47,4 +43,8 @@ func (s *fileSender) send(entry *logrus.Entry) (err error) {
 	}
 
 	return
+}
+
+func init() {
+	senders = append(senders, &fileSender{})
 }
