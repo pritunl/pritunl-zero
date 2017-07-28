@@ -4,7 +4,7 @@ export const CHANGE = 'policy.change';
 
 export interface Rule {
 	type?: string;
-	value?: string;
+	values?: string[];
 }
 
 export interface Policy {
@@ -12,7 +12,7 @@ export interface Policy {
 	name?: string;
 	services?: string[];
 	roles?: string[];
-	rules?: Rule[];
+	rules?: {[key: string]: Rule};
 }
 
 export type Policies = Policy[];
