@@ -5,6 +5,7 @@ import * as ServiceTypes from '../types/ServiceTypes';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as MiscUtils from '../utils/MiscUtils';
 import ServicesStore from '../stores/ServicesStore';
+import PolicyRule from './PolicyRule';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
@@ -97,6 +98,38 @@ export default class Policy extends React.Component<Props, State> {
 		}
 
 		policy[name] = val;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			policy: policy,
+		});
+	}
+
+	setRule(name: string, rule: PolicyTypes.Rule): void {
+		let policy: any;
+
+		if (this.state.changed) {
+			policy = {
+				...this.state.policy,
+			};
+		} else {
+			policy = {
+				...this.props.policy,
+			};
+		}
+
+		let rules = {
+			...policy.rules,
+		};
+
+		if (rule.values == null) {
+			delete rules[name];
+		} else {
+			rules[name] = rule;
+		}
+
+		policy.rules = rules;
 
 		this.setState({
 			...this.state,
@@ -357,6 +390,10 @@ export default class Policy extends React.Component<Props, State> {
 			);
 		}
 
+		let operatingSystem = policy.rules.operating_system || {
+			type: 'operating_system',
+		};
+
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -434,6 +471,12 @@ export default class Policy extends React.Component<Props, State> {
 								value: policy.id || 'None',
 							},
 						]}
+					/>
+					<PolicyRule
+						rule={operatingSystem}
+						onChange={(val): void => {
+							this.setRule('operating_system', val);
+						}}
 					/>
 				</div>
 			</div>
