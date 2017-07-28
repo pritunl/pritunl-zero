@@ -13,7 +13,7 @@ const css = {
 	filters: {
 		margin: '-15px 0 5px 0',
 	} as React.CSSProperties,
-	username: {
+	input: {
 		width: '200px',
 		margin: '5px',
 	} as React.CSSProperties,
@@ -44,7 +44,7 @@ export default class UsersFilter extends React.Component<Props, {}> {
 
 		return <div className="layout horizontal wrap" style={css.filters}>
 			<SearchInput
-				style={css.username}
+				style={css.input}
 				placeholder="Username"
 				value={this.props.filter.username}
 				onChange={(val: string): void => {
