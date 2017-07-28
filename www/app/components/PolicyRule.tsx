@@ -26,31 +26,31 @@ const css = {
 };
 
 const systems: {[key: string]: string} = {
-	linux: "Linux",
-	macos_1010: "macOS 10.10",
-	macos_1011: "macOS 10.11",
-	macos_1012: "macOS 10.12",
-	macos_1013: "macOS 10.13",
-	windows_xp: "Windows XP",
-	windows_7: "Windows 7",
-	windows_vista: "Windows Vista",
-	windows_8: "Windows 8",
-	windows_10: "Windows 10",
-	chrome_os: "Chrome OS",
-	ios_8: "iOS 8",
-	ios_9: "iOS 9",
-	ios_10: "iOS 10",
-	ios_11: "iOS 11",
-	ios_12: "iOS 12",
-	android_4: "Android KitKat 4.4",
-	android_5: "Android Lollipop 5.0",
-	android_6: "Android Marshmallow 6.0",
-	android_7: "Android Nougat 7.0",
-	android_8: "Android 8.0",
-	blackberry_10: "Blackerry 10",
-	windows_phone: "Windows Phone",
-	firefox_os: "Firefox OS",
-	kindle: "Kindle",
+	linux: 'Linux',
+	macos_1010: 'macOS 10.10',
+	macos_1011: 'macOS 10.11',
+	macos_1012: 'macOS 10.12',
+	macos_1013: 'macOS 10.13',
+	windows_xp: 'Windows XP',
+	windows_7: 'Windows 7',
+	windows_vista: 'Windows Vista',
+	windows_8: 'Windows 8',
+	windows_10: 'Windows 10',
+	chrome_os: 'Chrome OS',
+	ios_8: 'iOS 8',
+	ios_9: 'iOS 9',
+	ios_10: 'iOS 10',
+	ios_11: 'iOS 11',
+	ios_12: 'iOS 12',
+	android_4: 'Android KitKat 4.4',
+	android_5: 'Android Lollipop 5.0',
+	android_6: 'Android Marshmallow 6.0',
+	android_7: 'Android Nougat 7.0',
+	android_8: 'Android 8.0',
+	blackberry_10: 'Blackerry 10',
+	windows_phone: 'Windows Phone',
+	firefox_os: 'Firefox OS',
+	kindle: 'Kindle',
 };
 
 export default class PolicyRule extends React.Component<Props, State> {
@@ -115,6 +115,10 @@ export default class PolicyRule extends React.Component<Props, State> {
 
 		let systemsDom: JSX.Element[] = [];
 		for (let system in systems) {
+			if (!systems.fields.hasOwnProperty(system)) {
+				continue;
+			}
+
 			systemsDom.push(
 				<option key={system} value={system}>{systems[system]}</option>,
 			);
