@@ -20,7 +20,6 @@ func Get(db *database.Database, certId bson.ObjectId) (
 }
 
 func GetAll(db *database.Database) (certs []*Certificate, err error) {
-
 	coll := db.Certificates()
 	certs = []*Certificate{}
 
