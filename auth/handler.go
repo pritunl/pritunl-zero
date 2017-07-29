@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base64"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
@@ -236,6 +237,27 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service) (
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
+		}
+		return
+	}
+
+	usrRoles := set.NewSet()
+	for _, role := range usr.Roles {
+		usrRoles.Add(role)
+	}
+
+	roleMatch := false
+	for _, role := range srvc.Roles {
+		if usrRoles.Contains(role) {
+			roleMatch = true
+			break
+		}
+	}
+
+	if !roleMatch {
+		errData = &errortypes.ErrorData{
+			Error:   "service_unauthorized",
+			Message: "Not authorized for service",
 		}
 		return
 	}
