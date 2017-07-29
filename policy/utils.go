@@ -5,13 +5,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, certId bson.ObjectId) (
-	cert *Policy, err error) {
+func Get(db *database.Database, policyId bson.ObjectId) (
+	polcy *Policy, err error) {
 
 	coll := db.Policies()
-	cert = &Policy{}
+	polcy = &Policy{}
 
-	err = coll.FindOneId(certId, cert)
+	err = coll.FindOneId(policyId, polcy)
 	if err != nil {
 		return
 	}
@@ -19,16 +19,16 @@ func Get(db *database.Database, certId bson.ObjectId) (
 	return
 }
 
-func GetAll(db *database.Database) (certs []*Policy, err error) {
+func GetAll(db *database.Database) (policies []*Policy, err error) {
 	coll := db.Policies()
-	certs = []*Policy{}
+	policies = []*Policy{}
 
 	cursor := coll.Find(bson.M{}).Iter()
 
-	cert := &Policy{}
-	for cursor.Next(cert) {
-		certs = append(certs, cert)
-		cert = &Policy{}
+	polcy := &Policy{}
+	for cursor.Next(polcy) {
+		policies = append(policies, polcy)
+		polcy = &Policy{}
 	}
 
 	err = cursor.Close()
@@ -40,11 +40,11 @@ func GetAll(db *database.Database) (certs []*Policy, err error) {
 	return
 }
 
-func Remove(db *database.Database, certId bson.ObjectId) (err error) {
+func Remove(db *database.Database, policyId bson.ObjectId) (err error) {
 	coll := db.Policies()
 
 	_, err = coll.RemoveAll(&bson.M{
-		"_id": certId,
+		"_id": policyId,
 	})
 	if err != nil {
 		err = database.ParseError(err)
