@@ -75,7 +75,7 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 			return
 		}
 
-		errData, err := auth.Validate(db, usr, host.Service)
+		errData, err := auth.Validate(db, usr, host.Service, re)
 		if err != nil {
 			http.Error(w, "Server error", 500)
 			return
