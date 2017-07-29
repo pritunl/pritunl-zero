@@ -67,7 +67,7 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 		settings.Router.ContinueTimeout) * time.Second
 
 	var tlsConfig *tls.Config
-	if settings.Router.SkipVerify {
+	if settings.Router.SkipVerify || net.ParseIP(server.Hostname) != nil {
 		tlsConfig = &tls.Config{
 			InsecureSkipVerify: true,
 		}
