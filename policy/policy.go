@@ -6,7 +6,6 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/service"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
