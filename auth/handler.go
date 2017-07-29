@@ -230,8 +230,8 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 	return
 }
 
-func Validate(db *database.Database, usr *user.User, srvc *service.Service) (
-	errData *errortypes.ErrorData, err error) {
+func Validate(db *database.Database, usr *user.User, srvc *service.Service,
+	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
