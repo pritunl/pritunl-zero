@@ -52,8 +52,8 @@ const (
 )
 
 type Agent struct {
-	System  string `bson:"os" json:"os"`
-	Browser string `bson:"browser" json:"browser"`
+	OperatingSystem string `bson:"operating_system" json:"operating_system"`
+	Browser         string `bson:"browser" json:"browser"`
 }
 
 func Parse(r *http.Request) (agnt *Agent) {
@@ -65,96 +65,96 @@ func Parse(r *http.Request) (agnt *Agent) {
 		switch client.Os.Major {
 		case "4":
 			if client.Os.Minor == "4" {
-				agnt.System = Android4
+				agnt.OperatingSystem = Android4
 				break
 			}
 			break
 		case "5":
-			agnt.System = Android5
+			agnt.OperatingSystem = Android5
 			break
 		case "6":
-			agnt.System = Android6
+			agnt.OperatingSystem = Android6
 			break
 		case "7":
-			agnt.System = Android7
+			agnt.OperatingSystem = Android7
 			break
 		case "8":
-			agnt.System = Android8
+			agnt.OperatingSystem = Android8
 			break
 		}
 		break
 	case "BlackBerry OS":
 		if client.Os.Major == "10" {
-			agnt.System = Blackberry10
+			agnt.OperatingSystem = Blackberry10
 			break
 		}
 		break
 	case "Firefox OS":
-		agnt.System = FirefoxOs
+		agnt.OperatingSystem = FirefoxOs
 		break
 	case "iOS":
 		switch client.Os.Major {
 		case "8":
-			agnt.System = Ios8
+			agnt.OperatingSystem = Ios8
 			break
 		case "9":
-			agnt.System = Ios9
+			agnt.OperatingSystem = Ios9
 			break
 		case "10":
-			agnt.System = Ios10
+			agnt.OperatingSystem = Ios10
 			break
 		case "11":
-			agnt.System = Ios11
+			agnt.OperatingSystem = Ios11
 			break
 		case "12":
-			agnt.System = Ios12
+			agnt.OperatingSystem = Ios12
 			break
 		}
 		break
 	case "Kindle":
-		agnt.System = Kindle
+		agnt.OperatingSystem = Kindle
 		break
 	case "Mac OS X":
 		if client.Os.Major == "10" {
 			switch client.Os.Minor {
 			case "10":
-				agnt.System = MacOs1010
+				agnt.OperatingSystem = MacOs1010
 				break
 			case "11":
-				agnt.System = MacOs1011
+				agnt.OperatingSystem = MacOs1011
 				break
 			case "12":
-				agnt.System = MacOs1012
+				agnt.OperatingSystem = MacOs1012
 				break
 			case "13":
-				agnt.System = MacOs1013
+				agnt.OperatingSystem = MacOs1013
 				break
 			}
 		}
 		break
 	case "Windows Phone":
-		agnt.System = WindowsPhone
+		agnt.OperatingSystem = WindowsPhone
 		break
 	case "Windows XP":
-		agnt.System = WindowsXp
+		agnt.OperatingSystem = WindowsXp
 		break
 	case "Windows 7":
-		agnt.System = Windows7
+		agnt.OperatingSystem = Windows7
 		break
 	case "Windows Vista":
-		agnt.System = WindowsVista
+		agnt.OperatingSystem = WindowsVista
 		break
 	case "Windows 8", "Windows 8.1", "Windows RT 8.1":
-		agnt.System = Windows8
+		agnt.OperatingSystem = Windows8
 		break
 	case "Windows 10":
-		agnt.System = Windows10
+		agnt.OperatingSystem = Windows10
 		break
 	case "Chrome OS":
-		agnt.System = ChromeOs
+		agnt.OperatingSystem = ChromeOs
 		break
 	case "Linux", "Debian", "Ubuntu":
-		agnt.System = Linux
+		agnt.OperatingSystem = Linux
 		break
 	}
 
