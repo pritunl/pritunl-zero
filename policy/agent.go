@@ -37,7 +37,27 @@ const (
 	Kindle       = "kindle"        // Kindle = Kindle
 )
 
-func OperatingSystem(r *http.Request) string {
+const (
+	Chrome                 = "chrome"                   // Chrome = Chrome + Chromium
+	ChromeMobile           = "chrome_mobile"            // Chrome Mobile = Chrome Mobile + Chrome Mobile iOS + Chrome Mobile WebView
+	Safari                 = "safari"                   // Safari = Safari
+	SafariMobile           = "safari_mobile"            // Safari Mobile = Mobile Safari + Mobile Safari UI/WKWebView
+	Firefox                = "firefox"                  // Firefox = Firefox + Firefox Beta
+	FirefoxMobile          = "firefox_mobile"           // Firefox Mobile = Firefox Mobile + Firefox iOS
+	Edge                   = "edge"                     // Microsoft Edge = Edge
+	InternetExplorer       = "internet_explorer"        // Internet Explorer = IE
+	InternetExplorerMobile = "internet_explorer_mobile" // Internet Explorer Mobile = IE Mobile
+	Opera                  = "opera"                    // Opera = Opera
+	OperaMobile            = "opera_mobile"             // Opera Mobile = Opera Mini + Opera Mobile + Opera Tablet + Opera Coast
+)
+
+type Agent struct {
+	System  string `bson:"os" json:"os"`
+	Browser string `bson:"browser" json:"browser"`
+}
+
+func Parse(r *http.Request) (agnt *Agent) {
+	agnt = &Agent{}
 	client := parser.Parse(r.UserAgent())
 
 	switch client.Os.Family {
@@ -45,73 +65,134 @@ func OperatingSystem(r *http.Request) string {
 		switch client.Os.Major {
 		case "4":
 			if client.Os.Minor == "4" {
-				return Android4
+				agnt.System = Android4
+				break
 			}
 			break
 		case "5":
-			return Android5
+			agnt.System = Android5
+			break
 		case "6":
-			return Android6
+			agnt.System = Android6
+			break
 		case "7":
-			return Android7
+			agnt.System = Android7
+			break
 		case "8":
-			return Android8
+			agnt.System = Android8
+			break
 		}
 		break
 	case "BlackBerry OS":
 		if client.Os.Major == "10" {
-			return Blackberry10
+			agnt.System = Blackberry10
+			break
 		}
 		break
 	case "Firefox OS":
-		return FirefoxOs
+		agnt.System = FirefoxOs
+		break
 	case "iOS":
 		switch client.Os.Major {
 		case "8":
-			return Ios8
+			agnt.System = Ios8
+			break
 		case "9":
-			return Ios9
+			agnt.System = Ios9
+			break
 		case "10":
-			return Ios10
+			agnt.System = Ios10
+			break
 		case "11":
-			return Ios11
+			agnt.System = Ios11
+			break
 		case "12":
-			return Ios12
+			agnt.System = Ios12
+			break
 		}
 		break
 	case "Kindle":
-		return Kindle
+		agnt.System = Kindle
+		break
 	case "Mac OS X":
 		if client.Os.Major == "10" {
 			switch client.Os.Minor {
 			case "10":
-				return MacOs1010
+				agnt.System = MacOs1010
+				break
 			case "11":
-				return MacOs1011
+				agnt.System = MacOs1011
+				break
 			case "12":
-				return MacOs1012
+				agnt.System = MacOs1012
+				break
 			case "13":
-				return MacOs1013
+				agnt.System = MacOs1013
+				break
 			}
 		}
 		break
 	case "Windows Phone":
-		return WindowsPhone
+		agnt.System = WindowsPhone
+		break
 	case "Windows XP":
-		return WindowsXp
+		agnt.System = WindowsXp
+		break
 	case "Windows 7":
-		return Windows7
+		agnt.System = Windows7
+		break
 	case "Windows Vista":
-		return WindowsVista
+		agnt.System = WindowsVista
+		break
 	case "Windows 8", "Windows 8.1", "Windows RT 8.1":
-		return Windows8
+		agnt.System = Windows8
+		break
 	case "Windows 10":
-		return Windows10
+		agnt.System = Windows10
+		break
 	case "Chrome OS":
-		return ChromeOs
+		agnt.System = ChromeOs
+		break
 	case "Linux", "Debian", "Ubuntu":
-		return Linux
+		agnt.System = Linux
+		break
 	}
 
-	return ""
+	switch client.UserAgent.Family {
+	case "Chrome", "Chromium":
+		agnt.Browser = Chrome
+		break
+	case "Chrome Mobile", "Chrome Mobile iOS", "Chrome Mobile WebView":
+		agnt.Browser = ChromeMobile
+		break
+	case "Safari":
+		agnt.Browser = Safari
+		break
+	case "Mobile Safari", "Mobile Safari UI/WKWebView":
+		agnt.Browser = SafariMobile
+		break
+	case "Firefox", "Firefox Beta":
+		agnt.Browser = Firefox
+		break
+	case "Firefox Mobile", "Firefox iOS":
+		agnt.Browser = FirefoxMobile
+		break
+	case "Edge":
+		agnt.Browser = Edge
+		break
+	case "IE":
+		agnt.Browser = InternetExplorer
+		break
+	case "IE Mobile":
+		agnt.Browser = InternetExplorerMobile
+		break
+	case "Opera":
+		agnt.Browser = Opera
+		break
+	case "Opera Mini", "Opera Mobile", "Opera Tablet", "Opera Coast":
+		agnt.Browser = OperaMobile
+		break
+	}
+
+	return
 }
