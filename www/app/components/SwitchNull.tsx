@@ -23,7 +23,7 @@ export default class SwitchNull extends React.Component<Props, {}> {
 		return <label className="pt-control pt-switch" style={style}>
 			<input
 				type="checkbox"
-				checked={this.props.checked}
+				checked={!!this.props.checked}
 				onChange={this.props.onToggle}
 			/>
 			<span className="pt-control-indicator"/>
