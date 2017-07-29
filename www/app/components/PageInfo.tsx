@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 interface Field {
-	className?: string;
+	valueClass?: string;
 	label: string;
 	value: string | string[];
 }
@@ -49,7 +49,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 			fields.push(
 				<div key={field.label} style={css.item}>
 					{field.label}
-					<div className={'pt-text-muted ' + (field.className || '')}>
+					<div className={field.valueClass || 'pt-text-muted'}>
 						{value}
 					</div>
 				</div>,
