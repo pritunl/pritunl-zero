@@ -57,6 +57,7 @@ export default class Policies extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			policies: PoliciesStore.policies,
+			services: ServicesStore.services,
 		});
 	}
 
