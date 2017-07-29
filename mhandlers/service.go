@@ -79,7 +79,9 @@ func servicePut(c *gin.Context) {
 
 func servicePost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	data := &serviceData{}
+	data := &serviceData{
+		ShareSession: true,
+	}
 
 	err := c.Bind(data)
 	if err != nil {
