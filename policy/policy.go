@@ -30,8 +30,8 @@ func (p *Policy) Validate(db *database.Database) (
 	return
 }
 
-func (p *Policy) ValidateUser(db *database.Database, srvc *service.Service,
-	r *http.Request) (errData *errortypes.ErrorData, err error) {
+func (p *Policy) ValidateUser(r *http.Request) (
+	errData *errortypes.ErrorData, err error) {
 
 	agnt := agent.Parse(r)
 
