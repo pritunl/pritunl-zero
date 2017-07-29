@@ -1,12 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as PolicyTypes from '../types/PolicyTypes';
-import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
-import PageSave from './PageSave';
-import PageInfo from './PageInfo';
-import ConfirmButton from './ConfirmButton';
-import PageInputButton from './PageInputButton';
 import PageSelectButton from './PageSelectButton';
 
 interface Props {
