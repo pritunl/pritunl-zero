@@ -393,6 +393,9 @@ export default class Policy extends React.Component<Props, State> {
 		let operatingSystem = policy.rules.operating_system || {
 			type: 'operating_system',
 		};
+		let browser = policy.rules.browser || {
+			type: 'browser',
+		};
 
 		return <div
 			className="pt-card"
@@ -476,6 +479,12 @@ export default class Policy extends React.Component<Props, State> {
 						rule={operatingSystem}
 						onChange={(val): void => {
 							this.setRule('operating_system', val);
+						}}
+					/>
+					<PolicyRule
+						rule={browser}
+						onChange={(val): void => {
+							this.setRule('browser', val);
 						}}
 					/>
 				</div>
