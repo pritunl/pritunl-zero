@@ -19,6 +19,58 @@ func Get(db *database.Database, policyId bson.ObjectId) (
 	return
 }
 
+func GetService(db *database.Database, serviceId bson.ObjectId) (
+	policies []*Policy, err error) {
+
+	coll := db.Policies()
+	policies = []*Policy{}
+
+	cursor := coll.Find(bson.M{
+		"services": serviceId,
+	}).Iter()
+
+	polcy := &Policy{}
+	for cursor.Next(polcy) {
+		policies = append(policies, polcy)
+		polcy = &Policy{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func GetRoles(db *database.Database, roles []string) (
+	policies []*Policy, err error) {
+
+	coll := db.Policies()
+	policies = []*Policy{}
+
+	cursor := coll.Find(bson.M{
+		"roles": &bson.M{
+			"$in": roles,
+		},
+	}).Iter()
+
+	polcy := &Policy{}
+	for cursor.Next(polcy) {
+		policies = append(policies, polcy)
+		polcy = &Policy{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (policies []*Policy, err error) {
 	coll := db.Policies()
 	policies = []*Policy{}
