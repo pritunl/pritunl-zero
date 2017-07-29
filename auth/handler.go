@@ -11,10 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -260,6 +262,30 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service,
 			Message: "Not authorized for service",
 		}
 		return
+	}
+
+	polices, err := policy.GetService(db, srvc.Id)
+	if err != nil {
+		return
+	}
+
+	for _, polcy := range polices {
+		errData, err = polcy.ValidateUser(db, srvc, r)
+		if err != nil || errData != nil {
+			return
+		}
+	}
+
+	polices, err = policy.GetRoles(db, usr.Roles)
+	if err != nil {
+		return
+	}
+
+	for _, polcy := range polices {
+		errData, err = polcy.ValidateUser(db, srvc, r)
+		if err != nil || errData != nil {
+			return
+		}
 	}
 
 	err = usr.SetActive(db)
