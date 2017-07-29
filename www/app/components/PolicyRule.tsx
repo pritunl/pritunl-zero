@@ -20,7 +20,7 @@ const css = {
 	} as React.CSSProperties,
 };
 
-const systems: {[key: string]: string} = {
+const operatingSystems: {[key: string]: string} = {
 	linux: 'Linux',
 	macos_1010: 'macOS 10.10',
 	macos_1011: 'macOS 10.11',
@@ -48,6 +48,20 @@ const systems: {[key: string]: string} = {
 	kindle: 'Kindle',
 };
 
+const browsers: {[key: string]: string} = {
+	chrome: 'Chrome',
+	chrome_mobile: 'Chrome Mobile',
+	safari: 'Safari',
+	safari_mobile: 'Safari Mobile',
+	firefox: 'Firefox',
+	firefox_mobile: 'Firefox Mobile',
+	edge: 'Microsoft Edge',
+	internet_explorer: 'Internet Explorer',
+	internet_explorer_mobile: 'Internet Explorer Mobile',
+	opera: 'Opera',
+	opera_mobile: 'Opera Mobile',
+};
+
 export default class PolicyRule extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -62,14 +76,12 @@ export default class PolicyRule extends React.Component<Props, State> {
 		};
 	}
 
-	onAddValue = (): void => {
+	onAddValue = (value: string): void => {
 		let rule = this.clone();
 
 		let values = [
 			...rule.values,
 		];
-
-		let value = this.state.addValue || 'linux';
 
 		if (values.indexOf(value) === -1) {
 			values.push(value);
@@ -105,17 +117,37 @@ export default class PolicyRule extends React.Component<Props, State> {
 		this.props.onChange(rule);
 	}
 
-	operatingSystem(): JSX.Element {
+	optionsSelect(): JSX.Element {
 		let rule = this.props.rule;
+		let defaultOption: string;
 
-		let systemsDom: JSX.Element[] = [];
-		for (let system in systems) {
-			if (!systems.fields.hasOwnProperty(system)) {
+		let label: string;
+		let selectLabel: string;
+		let options: {[key: string]: string};
+		switch (this.props.rule.type) {
+			case 'operating_system':
+				label = 'Allowed Operating Systems';
+				selectLabel = 'Operating Systems';
+				options = operatingSystems;
+				break;
+			case 'browser':
+				label = 'Allowed Browsers';
+				selectLabel = 'Browsers';
+				options = browsers;
+				break;
+		}
+
+		let optionsSelect: JSX.Element[] = [];
+		for (let option in options) {
+			if (!options.hasOwnProperty(option)) {
 				continue;
 			}
+			if (!defaultOption) {
+				defaultOption = option;
+			}
 
-			systemsDom.push(
-				<option key={system} value={system}>{systems[system]}</option>,
+			optionsSelect.push(
+				<option key={option} value={option}>{options[option]}</option>,
 			);
 		}
 
@@ -127,7 +159,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 					style={css.item}
 					key={value}
 				>
-					{systems[value] || value}
+					{options[value] || value}
 					<button
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
@@ -140,7 +172,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 
 		return <div>
 			<PageSwitch
-				label="Operating Systems"
+				label={selectLabel}
 				checked={rule.values != null}
 				onToggle={(): void => {
 					let state = this.clone();
@@ -152,7 +184,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 				className="pt-label"
 				hidden={rule.values == null}
 			>
-				Values
+				{label}
 				<div>
 					{values}
 				</div>
@@ -168,9 +200,11 @@ export default class PolicyRule extends React.Component<Props, State> {
 						addValue: val,
 					});
 				}}
-				onSubmit={this.onAddValue}
+				onSubmit={(): void => {
+					this.onAddValue(this.state.addValue || defaultOption);
+				}}
 			>
-				{systemsDom}
+				{optionsSelect}
 			</PageSelectButton>
 		</div>;
 	}
@@ -181,7 +215,10 @@ export default class PolicyRule extends React.Component<Props, State> {
 		let options: JSX.Element;
 		switch (rule.type) {
 			case 'operating_system':
-				options = this.operatingSystem();
+				options = this.optionsSelect();
+				break;
+			case 'browser':
+				options = this.optionsSelect();
 				break;
 		}
 
