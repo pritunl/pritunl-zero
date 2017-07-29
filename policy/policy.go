@@ -3,9 +3,12 @@ package policy
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/service"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 )
 
 type Rule struct {
@@ -23,6 +26,51 @@ type Policy struct {
 
 func (p *Policy) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
+
+	return
+}
+
+func (p *Policy) ValidateUser(db *database.Database, srvc *service.Service,
+	r *http.Request) (errData *errortypes.ErrorData, err error) {
+
+	agnt := agent.Parse(r)
+
+	for _, rule := range p.Rules {
+		switch rule.Type {
+		case OperatingSystem:
+			match := false
+			for _, value := range rule.Values {
+				if value == agnt.OperatingSystem {
+					match = true
+					break
+				}
+			}
+
+			if !match {
+				errData = &errortypes.ErrorData{
+					Error:   "operating_system_policy",
+					Message: "Operating system not allowed",
+				}
+				return
+			}
+		case Browser:
+			match := false
+			for _, value := range rule.Values {
+				if value == agnt.Browser {
+					match = true
+					break
+				}
+			}
+
+			if !match {
+				errData = &errortypes.ErrorData{
+					Error:   "browser_policy",
+					Message: "Browser not allowed",
+				}
+				return
+			}
+		}
+	}
 
 	return
 }
