@@ -1,4 +1,4 @@
-package policy
+package agent
 
 import (
 	"github.com/ua-parser/uap-go/uaparser"
