@@ -270,7 +270,7 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service,
 	}
 
 	for _, polcy := range polices {
-		errData, err = polcy.ValidateUser(db, srvc, r)
+		errData, err = polcy.ValidateUser(r)
 		if err != nil || errData != nil {
 			return
 		}
@@ -282,7 +282,7 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service,
 	}
 
 	for _, polcy := range polices {
-		errData, err = polcy.ValidateUser(db, srvc, r)
+		errData, err = polcy.ValidateUser(r)
 		if err != nil || errData != nil {
 			return
 		}
