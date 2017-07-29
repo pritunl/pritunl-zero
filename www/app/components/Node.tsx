@@ -387,6 +387,7 @@ export default class Node extends React.Component<Props, State> {
 								value: node.id || 'None',
 							},
 							{
+								valueClass: active ? '': 'pt-text-intent-danger',
 								label: 'Timestamp',
 								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
