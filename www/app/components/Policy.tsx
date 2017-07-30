@@ -395,6 +395,9 @@ export default class Policy extends React.Component<Props, State> {
 		};
 		let browser = policy.rules.browser || {
 			type: 'browser',
+		}
+		let location = policy.rules.location || {
+			type: 'location',
 		};
 
 		return <div
@@ -485,6 +488,12 @@ export default class Policy extends React.Component<Props, State> {
 						rule={browser}
 						onChange={(val): void => {
 							this.setRule('browser', val);
+						}}
+					/>
+					<PolicyRule
+						rule={location}
+						onChange={(val): void => {
+							this.setRule('location', val);
 						}}
 					/>
 				</div>
