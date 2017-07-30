@@ -1,6 +1,9 @@
 package agent
 
 import (
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/geo"
+	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/ua-parser/uap-go/uaparser"
 	"net/http"
 )
@@ -52,13 +55,32 @@ const (
 )
 
 type Agent struct {
-	OperatingSystem string `bson:"operating_system" json:"operating_system"`
-	Browser         string `bson:"browser" json:"browser"`
+	OperatingSystem string  `bson:"operating_system" json:"operating_system"`
+	Browser         string  `bson:"browser" json:"browser"`
+	Isp             string  `bson:"isp" json:"isp"`
+	Country         string  `bson:"country" json:"country"`
+	Region          string  `bson:"region" json:"region"`
+	City            string  `bson:"city" json:"city"`
+	Longitude       float64 `bson:"longitude" json:"longitude"`
+	Latitude        float64 `bson:"latitude" json:"latitude"`
 }
 
-func Parse(r *http.Request) (agnt *Agent) {
-	agnt = &Agent{}
+func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 	client := parser.Parse(r.UserAgent())
+
+	ge, err := geo.Get(db, utils.GetRemoteAddr(r))
+	if err != nil {
+		return
+	}
+
+	agnt = &Agent{
+		Isp:       ge.Isp,
+		Country:   ge.Country,
+		Region:    ge.Region,
+		City:      ge.City,
+		Longitude: ge.Longitude,
+		Latitude:  ge.Latitude,
+	}
 
 	switch client.Os.Family {
 	case "Android":

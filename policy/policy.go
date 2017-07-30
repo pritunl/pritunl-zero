@@ -34,7 +34,10 @@ func (p *Policy) Validate(db *database.Database) (
 func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
-	agnt := agent.Parse(r)
+	agnt, err := agent.Parse(db, r)
+	if err != nil {
+		return
+	}
 
 	for _, rule := range p.Rules {
 		switch rule.Type {
