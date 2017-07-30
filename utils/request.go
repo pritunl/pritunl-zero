@@ -2,8 +2,8 @@ package utils
 
 import (
 	"encoding/hex"
-	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"strings"
 )
 
@@ -18,23 +18,8 @@ func StripPort(hostport string) string {
 	return hostport[:colon]
 }
 
-func GetRemoteAddr(c *gin.Context) (addr string) {
-	addr = c.Request.Header.Get("CF-Connecting-IP")
-	if addr != "" {
-		return
-	}
-
-	addr = c.Request.Header.Get("X-Forwarded-For")
-	if addr != "" {
-		return
-	}
-
-	addr = c.Request.Header.Get("X-Real-Ip")
-	if addr != "" {
-		return
-	}
-
-	addr = strings.Split(c.Request.RemoteAddr, ":")[0]
+func GetRemoteAddr(r *http.Request) (addr string) {
+	addr = strings.Split(r.RemoteAddr, ":")[0]
 	return
 }
 
