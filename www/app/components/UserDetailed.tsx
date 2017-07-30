@@ -289,6 +289,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageDateTime
 						label="Active Until"
 						value={user.active_until}
+						disabled={user.disabled}
 						onChange={(val): void => {
 							this.set('active_until', val);
 						}}
