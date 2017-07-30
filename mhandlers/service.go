@@ -80,6 +80,7 @@ func servicePut(c *gin.Context) {
 func servicePost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	data := &serviceData{
+		Name:         "New Service",
 		ShareSession: true,
 	}
 
@@ -91,12 +92,7 @@ func servicePost(c *gin.Context) {
 
 	srvce := &service.Service{}
 
-	if data.Name == "" {
-		srvce.Name = "New Service"
-	} else {
-		srvce.Name = data.Name
-	}
-
+	srvce.Name = data.Name
 	srvce.ShareSession = data.ShareSession
 	srvce.Roles = data.Roles
 	srvce.Domains = data.Domains
