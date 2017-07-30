@@ -70,6 +70,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 				}
 				return
 			}
+			break
 		case Browser:
 			match := false
 			for _, value := range rule.Values {
@@ -99,6 +100,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 				}
 				return
 			}
+			break
 		}
 	}
 
