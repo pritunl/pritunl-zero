@@ -420,7 +420,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 		this.props.onChange(rule);
 	}
 
-	optionsSelect(): JSX.Element {
+	render(): JSX.Element {
 		let rule = this.props.rule;
 		let defaultOption: string;
 
@@ -524,27 +524,6 @@ export default class PolicyRule extends React.Component<Props, State> {
 			>
 				{optionsSelect}
 			</PageSelectButton>
-		</div>;
-	}
-
-	render(): JSX.Element {
-		let rule = this.props.rule;
-
-		let options: JSX.Element;
-		switch (rule.type) {
-			case 'operating_system':
-				options = this.optionsSelect();
-				break;
-			case 'browser':
-				options = this.optionsSelect();
-				break;
-			case 'location':
-				options = this.optionsSelect();
-				break;
-		}
-
-		return <div>
-			{options}
 		</div>;
 	}
 }
