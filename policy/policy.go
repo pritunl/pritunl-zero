@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
@@ -30,8 +31,8 @@ func (p *Policy) Validate(db *database.Database) (
 	return
 }
 
-func (p *Policy) ValidateUser(r *http.Request) (
-	errData *errortypes.ErrorData, err error) {
+func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
+	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
 	agnt := agent.Parse(r)
 
@@ -47,9 +48,22 @@ func (p *Policy) ValidateUser(r *http.Request) (
 			}
 
 			if !match {
-				errData = &errortypes.ErrorData{
-					Error:   "operating_system_policy",
-					Message: "Operating system not permitted",
+				if rule.Disable {
+					errData = &errortypes.ErrorData{
+						Error:   "unauthorized",
+						Message: "Not authorized",
+					}
+
+					usr.Disabled = true
+					err = usr.CommitFields(db, set.NewSet("disabled"))
+					if err != nil {
+						return
+					}
+				} else {
+					errData = &errortypes.ErrorData{
+						Error:   "operating_system_policy",
+						Message: "Operating system not permitted",
+					}
 				}
 				return
 			}
@@ -63,9 +77,22 @@ func (p *Policy) ValidateUser(r *http.Request) (
 			}
 
 			if !match {
-				errData = &errortypes.ErrorData{
-					Error:   "browser_policy",
-					Message: "Browser not permitted",
+				if rule.Disable {
+					errData = &errortypes.ErrorData{
+						Error:   "unauthorized",
+						Message: "Not authorized",
+					}
+
+					usr.Disabled = true
+					err = usr.CommitFields(db, set.NewSet("disabled"))
+					if err != nil {
+						return
+					}
+				} else {
+					errData = &errortypes.ErrorData{
+						Error:   "browser_policy",
+						Message: "Browser not permitted",
+					}
 				}
 				return
 			}
