@@ -63,6 +63,13 @@ class LogsStore extends EventEmitter {
 	}
 
 	_filterCallback(filter: LogTypes.Filter): void {
+		if ((this._filter !== null && filter === null) ||
+			(this._filter === {} && filter !== null) || (
+				filter && this._filter && (
+					filter.level !== this._filter.level
+				))) {
+			this._traverse(0);
+		}
 		this._filter = filter;
 		this.emitChange();
 	}
