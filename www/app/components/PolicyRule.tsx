@@ -26,6 +26,7 @@ const operatingSystems: {[key: string]: string} = {
 	macos_1011: 'macOS 10.11',
 	macos_1012: 'macOS 10.12',
 	macos_1013: 'macOS 10.13',
+	macos_1014: 'macOS 10.14',
 	windows_xp: 'Windows XP',
 	windows_7: 'Windows 7',
 	windows_vista: 'Windows Vista',

@@ -18,6 +18,7 @@ const (
 	MacOs1011    = "macos_1011"    // macOS 10.11 = Mac OS X (10/11)
 	MacOs1012    = "macos_1012"    // macOS 10.12 = Mac OS X (10/12)
 	MacOs1013    = "macos_1013"    // macOS 10.13 = Mac OS X (10/13)
+	MacOs1014    = "macos_1014"    // macOS 10.13 = Mac OS X (10/14)
 	WindowsXp    = "windows_xp"    // Windows XP = Windows XP
 	Windows7     = "windows_7"     // Windows 7 = Windows 7
 	WindowsVista = "windows_vista" // Windows Vista = Windows Vista
@@ -158,6 +159,9 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 				break
 			case "13":
 				agnt.OperatingSystem = MacOs1013
+				break
+			case "14":
+				agnt.OperatingSystem = MacOs1014
 				break
 			}
 		}
