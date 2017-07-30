@@ -58,8 +58,12 @@ type Agent struct {
 	OperatingSystem string  `bson:"operating_system" json:"operating_system"`
 	Browser         string  `bson:"browser" json:"browser"`
 	Isp             string  `bson:"isp" json:"isp"`
+	Continent       string  `bson:"continent" json:"continent"`
+	ContinentCode   string  `bson:"continent_code" json:"continent_code"`
 	Country         string  `bson:"country" json:"country"`
+	CountryCode     string  `bson:"country_code" json:"country_code"`
 	Region          string  `bson:"region" json:"region"`
+	RegionCode      string  `bson:"region_code" json:"region_code"`
 	City            string  `bson:"city" json:"city"`
 	Longitude       float64 `bson:"longitude" json:"longitude"`
 	Latitude        float64 `bson:"latitude" json:"latitude"`
@@ -74,12 +78,16 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 	}
 
 	agnt = &Agent{
-		Isp:       ge.Isp,
-		Country:   ge.Country,
-		Region:    ge.Region,
-		City:      ge.City,
-		Longitude: ge.Longitude,
-		Latitude:  ge.Latitude,
+		Isp:           ge.Isp,
+		Continent:     ge.Continent,
+		ContinentCode: ge.ContinentCode,
+		Country:       ge.Country,
+		CountryCode:   ge.CountryCode,
+		Region:        ge.Region,
+		RegionCode:    ge.RegionCode,
+		City:          ge.City,
+		Longitude:     ge.Longitude,
+		Latitude:      ge.Latitude,
 	}
 
 	switch client.Os.Family {
