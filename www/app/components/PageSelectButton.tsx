@@ -14,6 +14,19 @@ interface Props {
 const css = {
 	group: {
 		marginBottom: '15px',
+		width: '100%',
+		maxWidth: '280px',
+	} as React.CSSProperties,
+	select: {
+		width: '100%',
+		borderTopLeftRadius: '3px',
+		borderBottomLeftRadius: '3px',
+	} as React.CSSProperties,
+	selectInner: {
+		width: '100%',
+	} as React.CSSProperties,
+	selectBox: {
+		flex: '1',
 	} as React.CSSProperties,
 };
 
@@ -29,16 +42,19 @@ export default class PageSelectButton extends React.Component<Props, {}> {
 			style={css.group}
 			hidden={this.props.hidden}
 		>
-			<div className="pt-select">
-				<select
-					disabled={this.props.disabled}
-					value={this.props.value || ''}
-					onChange={(evt): void => {
-						this.props.onChange(evt.target.value);
-					}}
-				>
-					{this.props.children}
-				</select>
+			<div style={css.selectBox}>
+				<div className="pt-select" style={css.select}>
+					<select
+						style={css.selectInner}
+						disabled={this.props.disabled}
+						value={this.props.value || ''}
+						onChange={(evt): void => {
+							this.props.onChange(evt.target.value);
+						}}
+					>
+						{this.props.children}
+					</select>
+				</div>
 			</div>
 			<button
 				className={buttonClass}
