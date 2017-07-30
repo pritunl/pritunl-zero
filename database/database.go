@@ -96,6 +96,11 @@ func (d *Database) Logs() (coll *Collection) {
 	return
 }
 
+func (d *Database) Geo() (coll *Collection) {
+	coll = d.getCollection("geo")
+	return
+}
+
 func Connect() (err error) {
 	mgoUrl, err := url.Parse(config.Config.MongoUri)
 	if err != nil {
@@ -270,6 +275,19 @@ func addIndexes() (err error) {
 	err = coll.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
 		ExpireAfter: 3 * time.Minute,
+		Background:  true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+		return
+	}
+
+	coll = db.Geo()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:         []string{"t"},
+		ExpireAfter: 360 * time.Hour,
 		Background:  true,
 	})
 	if err != nil {
