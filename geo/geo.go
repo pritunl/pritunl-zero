@@ -18,14 +18,18 @@ var (
 )
 
 type Geo struct {
-	Address   string    `bson:"_id" json:"address"`
-	Isp       string    `bson:"i" json:"isp"`
-	Country   string    `bson:"c" json:"country"`
-	Region    string    `bson:"r" json:"region"`
-	City      string    `bson:"a" json:"city"`
-	Longitude float64   `bson:"x" json:"longitude"`
-	Latitude  float64   `bson:"y" json:"latitude"`
-	Timestamp time.Time `bson:"t" json:"-"`
+	Address       string    `bson:"_id" json:"address"`
+	Isp           string    `bson:"i" json:"isp"`
+	Continent     string    `bson:"z" json:"continent"`
+	ContinentCode string    `bson:"q" json:"continent_code"`
+	Country       string    `bson:"c" json:"country"`
+	CountryCode   string    `bson:"w" json:"country_code"`
+	Region        string    `bson:"r" json:"region"`
+	RegionCode    string    `bson:"e" json:"region_code"`
+	City          string    `bson:"a" json:"city"`
+	Longitude     float64   `bson:"x" json:"longitude"`
+	Latitude      float64   `bson:"y" json:"latitude"`
+	Timestamp     time.Time `bson:"t" json:"-"`
 }
 
 type geoData struct {
