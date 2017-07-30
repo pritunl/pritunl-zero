@@ -90,13 +90,13 @@ func servicePost(c *gin.Context) {
 		return
 	}
 
-	srvce := &service.Service{}
-
-	srvce.Name = data.Name
-	srvce.ShareSession = data.ShareSession
-	srvce.Roles = data.Roles
-	srvce.Domains = data.Domains
-	srvce.Servers = data.Servers
+	srvce := &service.Service{
+		Name:         data.Name,
+		ShareSession: data.ShareSession,
+		Roles:        data.Roles,
+		Domains:      data.Domains,
+		Servers:      data.Servers,
+	}
 
 	err = srvce.Insert(db)
 	if err != nil {
