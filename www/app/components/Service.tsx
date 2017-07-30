@@ -504,7 +504,7 @@ export default class Service extends React.Component<Props, State> {
 						]}
 					/>
 					<PageSwitch
-						label="Share Session with Subdomains"
+						label="Share session with subdomains"
 						checked={service.share_session}
 						onToggle={(): void => {
 							this.set('share_session', !service.share_session);
