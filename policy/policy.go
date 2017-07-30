@@ -11,8 +11,9 @@ import (
 )
 
 type Rule struct {
-	Type   string   `bson:"type" json:"type"`
-	Values []string `bson:"values" json:"values"`
+	Type    string   `bson:"type" json:"type"`
+	Disable bool     `bson:"disable" json:"disable"`
+	Values  []string `bson:"values" json:"values"`
 }
 
 type Policy struct {
