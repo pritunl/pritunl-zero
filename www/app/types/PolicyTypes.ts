@@ -4,6 +4,7 @@ export const CHANGE = 'policy.change';
 
 export interface Rule {
 	type?: string;
+	disable?: boolean;
 	values?: string[];
 }
 
