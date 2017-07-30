@@ -4,6 +4,7 @@ import * as BlueprintDateTime from '@blueprintjs/datetime';
 
 interface Props {
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	value: string;
 	onChange: (val: string) => void;
@@ -27,7 +28,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 			date = null;
 		}
 
-		if (!date) {
+		if (!date || this.props.disabled) {
 			dateStyle.opacity = 0.5;
 		}
 
@@ -38,7 +39,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 				</label>
 				<div style={dateStyle}>
 					<BlueprintDateTime.DateTimePicker
-						value={date}
+						value={this.props.disabled ? null : date}
 						timePickerProps={{
 							showArrowButtons: true,
 						}}
@@ -46,6 +47,10 @@ export default class PageDateTime extends React.Component<Props, {}> {
 							showActionsBar: true,
 						}}
 						onChange={(newDate: Date): void => {
+							if (this.props.disabled) {
+								return;
+							}
+
 							if (newDate) {
 								this.props.onChange(newDate.toJSON());
 							} else {
