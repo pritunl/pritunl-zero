@@ -180,6 +180,15 @@ export default class PolicyRule extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			/>
+			<PageSwitch
+				label="Disabled User on Failure"
+				checked={rule.disable}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.disable = !state.disable;
+					this.props.onChange(state);
+				}}
+			/>
 			<label
 				className="pt-label"
 				hidden={rule.values == null}
