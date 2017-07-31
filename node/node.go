@@ -13,6 +13,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -126,7 +127,8 @@ func (n *Node) CommitFields(db *database.Database, fields set.Set) (
 
 func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 	if n.ForwardedForHeader != "" {
-		addr = r.Header.Get(n.ForwardedForHeader)
+		addr = strings.TrimSpace(
+			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 1)[0])
 		if addr != "" {
 			return
 		}
