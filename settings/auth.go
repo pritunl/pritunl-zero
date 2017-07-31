@@ -7,15 +7,16 @@ import (
 var Auth *auth
 
 type Provider struct {
-	Id           bson.ObjectId `bson:"id" json:"id"`
-	Type         string        `bson:"type" json:"type"`
-	Label        string        `bson:"label" json:"label"`
-	DefaultRoles []string      `bson:"default_roles" json:"default_roles"`
-	AutoCreate   bool          `bson:"auto_create" json:"auto_create"`
-	Domain       string        `bson:"domain" json:"domain"`         // google
-	IssuerUrl    string        `bson:"issuer_url" json:"issuer_url"` // saml
-	SamlUrl      string        `bson:"saml_url" json:"saml_url"`     // saml
-	SamlCert     string        `bson:"saml_cert" json:"saml_cert"`   // saml
+	Id             bson.ObjectId `bson:"id" json:"id"`
+	Type           string        `bson:"type" json:"type"`
+	Label          string        `bson:"label" json:"label"`
+	DefaultRoles   []string      `bson:"default_roles" json:"default_roles"`
+	AutoCreate     bool          `bson:"auto_create" json:"auto_create"`
+	RoleManagement string        `bson:"role_management" json:"role_management"`
+	Domain         string        `bson:"domain" json:"domain"`         // google
+	IssuerUrl      string        `bson:"issuer_url" json:"issuer_url"` // saml
+	SamlUrl        string        `bson:"saml_url" json:"saml_url"`     // saml
+	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`   // saml
 }
 
 type auth struct {
