@@ -12,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -120,6 +121,18 @@ func (n *Node) CommitFields(db *database.Database, fields set.Set) (
 		return
 	}
 
+	return
+}
+
+func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
+	if n.ForwardedForHeader != "" {
+		addr = r.Header.Get(n.ForwardedForHeader)
+		if addr != "" {
+			return
+		}
+	}
+
+	addr = utils.StripPort(r.RemoteAddr)
 	return
 }
 
