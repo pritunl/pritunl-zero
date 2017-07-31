@@ -12,7 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
-	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
 )
 
@@ -149,7 +148,7 @@ func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.WithFields(logrus.Fields{
-				"client": utils.GetRemoteAddr(c.Request),
+				"client": node.Self.GetRemoteAddr(c.Request),
 				"error":  errors.New(fmt.Sprintf("%s", r)),
 			}).Error("middlewear: Handler panic")
 			c.Writer.WriteHeader(http.StatusInternalServerError)

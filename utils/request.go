@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/hex"
 	"gopkg.in/mgo.v2/bson"
-	"net/http"
 	"strings"
 )
 
@@ -16,11 +15,6 @@ func StripPort(hostport string) string {
 		return strings.TrimPrefix(hostport[:i], "[")
 	}
 	return hostport[:colon]
-}
-
-func GetRemoteAddr(r *http.Request) (addr string) {
-	addr = strings.Split(r.RemoteAddr, ":")[0]
-	return
 }
 
 func ParseObjectId(strId string) (objId bson.ObjectId, ok bool) {
