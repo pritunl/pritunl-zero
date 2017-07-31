@@ -17,6 +17,7 @@ export interface Node {
 	load5?: number;
 	load15?: number;
 	services?: string[];
+	forwarded_for_header?: string;
 }
 
 export type Nodes = Node[];
