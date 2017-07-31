@@ -4,15 +4,15 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-type ErrorWriter struct{}
+type ErrorWriter struct {
+	Prefix string
+	Fields logrus.Fields
+}
 
 func (w *ErrorWriter) Write(input []byte) (n int, err error) {
 	n = len(input)
-	logrus.Error(string(input))
-	return
-}
 
-func NewErrorWriter() (errWr *ErrorWriter) {
-	errWr = &ErrorWriter{}
+	logrus.WithFields(w.Fields).Error(w.Prefix + string(input))
+
 	return
 }
