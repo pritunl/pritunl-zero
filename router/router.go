@@ -117,7 +117,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 
 func (r *Router) initRedirect() (err error) {
 	r.redirectServer = &http.Server{
-		Addr:         "0.0.0.0:80",
+		Addr:         ":80",
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
 		Handler: http.HandlerFunc(func(
@@ -208,7 +208,7 @@ func (r *Router) initWeb() (err error) {
 	}
 
 	r.webServer = &http.Server{
-		Addr:           fmt.Sprintf("0.0.0.0:%d", r.port),
+		Addr:           fmt.Sprintf(":%d", r.port),
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
