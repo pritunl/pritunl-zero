@@ -398,7 +398,7 @@ export default class Service extends React.Component<Props, State> {
 				<ServiceDomain
 					key={index}
 					domain={service.domains[index]}
-					onChange={(state: string): void => {
+					onChange={(state: ServiceTypes.Domain): void => {
 						this.onChangeDomain(index, state);
 					}}
 					onRemove={(): void => {
