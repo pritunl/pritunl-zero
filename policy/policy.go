@@ -128,8 +128,8 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 					}
 				} else {
 					errData = &errortypes.ErrorData{
-						Error:   "location_policy",
-						Message: "Location not permitted",
+						Error:   "unauthorized",
+						Message: "Not authorized",
 					}
 				}
 				return
