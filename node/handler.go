@@ -3,9 +3,12 @@ package node
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
+	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -88,6 +91,22 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 		TLSClientConfig:       tlsConfig,
 	}
 
+	writer := &logger.ErrorWriter{
+		Prefix: "node: ",
+		Fields: logrus.Fields{
+			"service": host.Service.Name,
+			"domain":  host.Domain.Domain,
+			"server": fmt.Sprintf(
+				"%s://%s:%d",
+				server.Protocol,
+				server.Hostname,
+				server.Port,
+			),
+		},
+	}
+
+	lgr := log.New(writer, "", 0)
+
 	proxy = &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			req.Header.Set("X-Forwarded-For",
@@ -127,6 +146,7 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 			}
 		},
 		Transport: transport,
+		ErrorLog:  lgr,
 	}
 
 	return
