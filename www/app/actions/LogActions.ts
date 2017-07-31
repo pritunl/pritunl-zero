@@ -65,11 +65,11 @@ export function traverse(page: number): Promise<void> {
 	return sync();
 }
 
-export function filter(filter: LogTypes.Filter): Promise<void> {
+export function filter(filt: LogTypes.Filter): Promise<void> {
 	Dispatcher.dispatch({
 		type: LogTypes.FILTER,
 		data: {
-			filter: filter,
+			filter: filt,
 		},
 	});
 

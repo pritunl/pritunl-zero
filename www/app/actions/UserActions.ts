@@ -123,11 +123,11 @@ export function traverse(page: number): Promise<void> {
 	return sync();
 }
 
-export function filter(filter: UserTypes.Filter): Promise<void> {
+export function filter(filt: UserTypes.Filter): Promise<void> {
 	Dispatcher.dispatch({
 		type: UserTypes.FILTER,
 		data: {
-			filter: filter,
+			filter: filt,
 		},
 	});
 
