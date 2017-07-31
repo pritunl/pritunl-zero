@@ -11,14 +11,15 @@ import (
 )
 
 type nodeData struct {
-	Id               bson.ObjectId   `json:"id"`
-	Name             string          `json:"name"`
-	Type             string          `json:"type"`
-	Port             int             `json:"port"`
-	Protocol         string          `json:"protocol"`
-	Certificate      bson.ObjectId   `json:"certificate"`
-	ManagementDomain string          `json:"management_domain"`
-	Services         []bson.ObjectId `json:"services"`
+	Id                 bson.ObjectId   `json:"id"`
+	Name               string          `json:"name"`
+	Type               string          `json:"type"`
+	Port               int             `json:"port"`
+	Protocol           string          `json:"protocol"`
+	Certificate        bson.ObjectId   `json:"certificate"`
+	ManagementDomain   string          `json:"management_domain"`
+	Services           []bson.ObjectId `json:"services"`
+	ForwardedForHeader string          `json:"forwarded_for_header"`
 }
 
 func nodePut(c *gin.Context) {
@@ -50,6 +51,7 @@ func nodePut(c *gin.Context) {
 	nde.Certificate = data.Certificate
 	nde.ManagementDomain = data.ManagementDomain
 	nde.Services = data.Services
+	nde.ForwardedForHeader = data.ForwardedForHeader
 
 	fields := set.NewSet(
 		"name",
@@ -59,6 +61,7 @@ func nodePut(c *gin.Context) {
 		"certificate",
 		"management_domain",
 		"services",
+		"forwarded_for_header",
 	)
 
 	errData, err := nde.Validate(db)
