@@ -395,7 +395,7 @@ export default class Policy extends React.Component<Props, State> {
 		};
 		let browser = policy.rules.browser || {
 			type: 'browser',
-		}
+		};
 		let location = policy.rules.location || {
 			type: 'location',
 		};
