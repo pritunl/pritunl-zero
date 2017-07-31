@@ -7,6 +7,7 @@ import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
 import ServicesStore from '../stores/ServicesStore';
 import PageInput from './PageInput';
+import PageInputSwitch from './PageInputSwitch';
 import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
 import PageInfo from './PageInfo';
@@ -428,6 +429,16 @@ export default class Node extends React.Component<Props, State> {
 					>
 						{certificates}
 					</PageSelect>
+					<PageInputSwitch
+						label="Forwarded for header"
+						type="text"
+						placeholder="Forwarded for header"
+						value={node.forwarded_for_header}
+						defaultValue="X-Forwarded-For"
+						onChange={(val: string): void => {
+							this.set('forwarded_for_header', val);
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
