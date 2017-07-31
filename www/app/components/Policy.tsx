@@ -468,6 +468,12 @@ export default class Policy extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
+					<PolicyRule
+						rule={location}
+						onChange={(val): void => {
+							this.setRule('location', val);
+						}}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
@@ -488,12 +494,6 @@ export default class Policy extends React.Component<Props, State> {
 						rule={browser}
 						onChange={(val): void => {
 							this.setRule('browser', val);
-						}}
-					/>
-					<PolicyRule
-						rule={location}
-						onChange={(val): void => {
-							this.setRule('location', val);
 						}}
 					/>
 				</div>
