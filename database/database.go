@@ -7,6 +7,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"gopkg.in/mgo.v2"
 	"io/ioutil"
@@ -174,6 +175,33 @@ func Connect() (err error) {
 	}
 
 	Session.SetMode(mgo.Strong, true)
+
+	err = ValidateDatabase()
+	if err != nil {
+		Session = nil
+		return
+	}
+
+	return
+}
+
+func ValidateDatabase() (err error) {
+	db := GetDatabase()
+
+	names, err := db.database.CollectionNames()
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+
+	for _, name := range names {
+		if name == "servers" {
+			err = &errortypes.DatabaseError{
+				errors.New("database: Cannot connect to pritunl database"),
+			}
+			return
+		}
+	}
 
 	return
 }
