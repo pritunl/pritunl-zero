@@ -3,11 +3,12 @@ export const SYNC = 'settings.sync';
 export const CHANGE = 'settings.change';
 
 export interface Provider {
-	id: string;
-	type: string;
-	label: string;
-	default_roles: string[];
-	auto_create: boolean;
+	id?: string;
+	type?: string;
+	label?: string;
+	default_roles?: string[];
+	auto_create?: boolean;
+	role_management?: string;
 }
 
 export interface GoogleProvider extends Provider {

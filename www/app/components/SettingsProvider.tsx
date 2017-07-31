@@ -6,6 +6,7 @@ import PageInputButton from './PageInputButton';
 import PageTextArea from './PageTextArea';
 import PageSwitch from './PageSwitch';
 import PageInfo from './PageInfo';
+import PageSelect from './PageSelect';
 
 interface Props {
 	provider: SettingsTypes.ProviderAny;
@@ -266,6 +267,19 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			/>
+			<PageSelect
+				label="Role Management"
+				value={provider.role_management}
+				onChange={(val): void => {
+					let state = this.clone();
+					state.role_management = val;
+					this.props.onChange(state);
+				}}
+			>
+				<option value="set_on_insert">Set on insert</option>
+				<option value="merge">Merge</option>
+				<option value="overwrite">Overwrite</option>
+			</PageSelect>
 			{options}
 			<button
 				className="pt-button pt-intent-danger"
