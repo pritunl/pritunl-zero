@@ -45,6 +45,9 @@ const css = {
 		fontSize: '18px',
 		fontWeight: 'bold',
 	} as React.CSSProperties,
+	loading: {
+		margin: '0 5px 0 1px',
+	} as React.CSSProperties,
 };
 
 export default class Main extends React.Component<{}, State> {
@@ -88,7 +91,7 @@ export default class Main extends React.Component<{}, State> {
 						<div className="pt-navbar-heading"
 							style={css.heading}
 						>Pritunl Zero</div>
-						<Loading size="small"/>
+						<Loading style={css.loading} size="small"/>
 					</div>
 					<div className="pt-navbar-group pt-align-right">
 						<ReactRouter.Link
