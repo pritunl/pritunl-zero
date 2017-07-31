@@ -21,24 +21,25 @@ var (
 )
 
 type Node struct {
-	Id               bson.ObjectId            `bson:"_id" json:"id"`
-	Name             string                   `bson:"name" json:"name"`
-	Type             string                   `bson:"type" json:"type"`
-	Timestamp        time.Time                `bson:"timestamp" json:"timestamp"`
-	Port             int                      `bson:"port" json:"port"`
-	Protocol         string                   `bson:"protocol" json:"protocol"`
-	Certificate      bson.ObjectId            `bson:"certificate" json:"certificate"`
-	ManagementDomain string                   `bson:"management_domain" json:"management_domain"`
-	Services         []bson.ObjectId          `bson:"services" json:"services"`
-	RequestsMin      int64                    `bson:"requests_min" json:"requests_min"`
-	Memory           float64                  `bson:"memory" json:"memory"`
-	Load1            float64                  `bson:"load1" json:"load1"`
-	Load5            float64                  `bson:"load5" json:"load5"`
-	Load15           float64                  `bson:"load15" json:"load15"`
-	Handler          *Handler                 `bson:"-" json:"-"`
-	CertificateObj   *certificate.Certificate `bson:"-" json:"-"`
-	reqLock          sync.Mutex               `bson:"-" json:"-"`
-	reqCount         *list.List               `bson:"-" json:"-"`
+	Id                 bson.ObjectId            `bson:"_id" json:"id"`
+	Name               string                   `bson:"name" json:"name"`
+	Type               string                   `bson:"type" json:"type"`
+	Timestamp          time.Time                `bson:"timestamp" json:"timestamp"`
+	Port               int                      `bson:"port" json:"port"`
+	Protocol           string                   `bson:"protocol" json:"protocol"`
+	Certificate        bson.ObjectId            `bson:"certificate" json:"certificate"`
+	ManagementDomain   string                   `bson:"management_domain" json:"management_domain"`
+	Services           []bson.ObjectId          `bson:"services" json:"services"`
+	RequestsMin        int64                    `bson:"requests_min" json:"requests_min"`
+	ForwardedForHeader string                   `bson:"forwarded_for_header" json:"forwarded_for_header"`
+	Memory             float64                  `bson:"memory" json:"memory"`
+	Load1              float64                  `bson:"load1" json:"load1"`
+	Load5              float64                  `bson:"load5" json:"load5"`
+	Load15             float64                  `bson:"load15" json:"load15"`
+	Handler            *Handler                 `bson:"-" json:"-"`
+	CertificateObj     *certificate.Certificate `bson:"-" json:"-"`
+	reqLock            sync.Mutex               `bson:"-" json:"-"`
+	reqCount           *list.List               `bson:"-" json:"-"`
 }
 
 func (n *Node) AddRequest() {
