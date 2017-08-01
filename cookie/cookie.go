@@ -48,7 +48,7 @@ func (c *Cookie) GetSession(db *database.Database) (
 		return
 	}
 
-	sess, err = session.Get(db, sessId)
+	sess, err = session.GetUpdate(db, sessId)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
