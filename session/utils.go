@@ -45,7 +45,7 @@ func GetUpdate(db *database.Database, id string) (
 		return
 	}
 
-	sess.Timestamp = timestamp
+	sess.LastActive = timestamp
 
 	return
 }
