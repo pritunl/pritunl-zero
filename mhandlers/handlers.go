@@ -75,6 +75,9 @@ func Register(protocol string, engine *gin.Engine) {
 	activeCsrfGroup.POST("/service", servicePost)
 	activeCsrfGroup.DELETE("/service/:service_id", serviceDelete)
 
+	activeCsrfGroup.GET("/session/:user_id", sessionsGet)
+	activeCsrfGroup.DELETE("/session/:session_id", sessionDelete)
+
 	activeCsrfGroup.GET("/settings", settingsGet)
 	activeCsrfGroup.PUT("/settings", settingsPut)
 
