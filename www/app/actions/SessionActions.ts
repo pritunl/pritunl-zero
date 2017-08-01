@@ -53,7 +53,7 @@ export function reload(): Promise<void> {
 	return load(SessionsStore.userId);
 }
 
-export function remove(sessionId: string[]): Promise<void> {
+export function remove(sessionId: string): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
