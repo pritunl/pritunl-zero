@@ -2,6 +2,7 @@
 package session
 
 import (
+	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
@@ -9,9 +10,10 @@ import (
 )
 
 type Session struct {
-	Id        string        `bson:"_id" json:"-"`
-	UserId    bson.ObjectId `bson:"user_id" json:"-"`
-	Timestamp time.Time     `bson:"timestamp" json:"-"`
+	Id        string        `bson:"_id" json:"id"`
+	UserId    bson.ObjectId `bson:"user_id" json:"user_id"`
+	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Agent     *agent.Agent  `bson:"agent" json:"agent"`
 	user      *user.User    `bson:"-" json:"-"`
 }
 
