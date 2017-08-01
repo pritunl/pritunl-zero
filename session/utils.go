@@ -4,6 +4,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
@@ -19,6 +20,31 @@ func Get(db *database.Database, id string) (
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func GetUpdate(db *database.Database, id string) (
+	sess *Session, err error) {
+
+	coll := db.Sessions()
+	sess = &Session{}
+	timestamp := time.Now()
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$set": &bson.M{
+				"timestamp": timestamp,
+			},
+		},
+	}
+
+	_, err = coll.FindId(id).Apply(change, sess)
+	if err != nil {
+		return
+	}
+
+	sess.Timestamp = timestamp
 
 	return
 }
@@ -65,6 +91,7 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
 	sess = &Session{
 		Id:        id,
 		UserId:    userId,
+		Created:   time.Now(),
 		Timestamp: time.Now(),
 		Agent:     agnt,
 	}
