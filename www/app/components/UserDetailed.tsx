@@ -4,6 +4,7 @@ import * as UserActions from '../actions/UserActions';
 import * as UserTypes from '../types/UserTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import UserStore from '../stores/UserStore';
+import Sessions from './Sessions';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
@@ -316,6 +317,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 				disabled={this.state.disabled}
 				onSave={this.onNew}
 			/>}
+			<Sessions userId={userId}/>
 		</Page>;
 	}
 }
