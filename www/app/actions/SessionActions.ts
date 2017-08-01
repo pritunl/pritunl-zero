@@ -78,7 +78,7 @@ export function remove(sessionId: string): Promise<void> {
 EventDispatcher.register((action: SessionTypes.SessionDispatch) => {
 	switch (action.type) {
 		case SessionTypes.CHANGE:
-			// TODO sync();
+			reload();
 			break;
 	}
 });
