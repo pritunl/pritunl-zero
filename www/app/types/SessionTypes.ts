@@ -5,6 +5,7 @@ export const CHANGE = 'session.change';
 export interface Agent {
 	operating_system?: string;
 	browser?: string;
+	ip?: string;
 	isp?: string;
 	continent?: string;
 	continent_code?: string;
@@ -21,6 +22,7 @@ export interface Session {
 	id: string;
 	user_id?: string;
 	timestamp?: string;
+	last_active?: string;
 	agent?: Agent;
 }
 
