@@ -153,6 +153,53 @@ func (u *User) Upsert(db *database.Database) (err error) {
 	return
 }
 
+func (u *User) RolesMerge(roles []string) bool {
+	newRoles := set.NewSet()
+	curRoles := set.NewSet()
+
+	for _, role := range roles {
+		newRoles.Add(role)
+	}
+
+	for _, role := range u.Roles {
+		newRoles.Add(role)
+		curRoles.Add(role)
+	}
+
+	if !curRoles.IsEqual(newRoles) {
+		rls := []string{}
+
+		for role := range newRoles.Iter() {
+			rls = append(rls, role.(string))
+		}
+
+		u.Roles = rls
+		return true
+	}
+
+	return false
+}
+
+func (u *User) RolesOverwrite(roles []string) bool {
+	newRoles := set.NewSet()
+	curRoles := set.NewSet()
+
+	for _, role := range roles {
+		newRoles.Add(role)
+	}
+
+	for _, role := range u.Roles {
+		curRoles.Add(role)
+	}
+
+	if !curRoles.IsEqual(newRoles) {
+		u.Roles = roles
+		return true
+	}
+
+	return false
+}
+
 func (u *User) SetPassword(password string) (err error) {
 	if u.Type != Local {
 		err = &errortypes.UnknownError{
