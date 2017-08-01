@@ -134,6 +134,15 @@ func Callback(db *database.Database, sig, query string) (
 
 	tokn, err := Get(db, state)
 	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+			errData = &errortypes.ErrorData{
+				Error:   "invalid_state",
+				Message: "Authentication state invalid",
+			}
+			break
+		}
 		return
 	}
 
