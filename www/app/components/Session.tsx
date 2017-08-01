@@ -3,10 +3,16 @@ import * as React from 'react';
 import * as SessionTypes from '../types/SessionTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as Constants from '../Constants';
+import * as SessionActions from '../actions/SessionActions';
 import PageInfo from './PageInfo';
+import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	session: SessionTypes.SessionRo;
+}
+
+interface State {
+	disabled: boolean;
 }
 
 const css = {
@@ -22,9 +28,39 @@ const css = {
 		flex: 1,
 		minWidth: '250px',
 	} as React.CSSProperties,
+	remove: {
+		position: 'absolute',
+		top: '5px',
+		right: '5px',
+	} as React.CSSProperties,
 };
 
-export default class Session extends React.Component<Props, {}> {
+export default class Session extends React.Component<Props, State> {
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			disabled: false,
+		};
+	}
+
+	onDelete = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+		SessionActions.remove(this.props.session.id).then((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		});
+	}
+
 	render(): JSX.Element {
 		let session = this.props.session;
 		let agent = session.agent || {};
@@ -48,6 +84,15 @@ export default class Session extends React.Component<Props, {}> {
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
+					<div style={css.remove}>
+						<ConfirmButton
+							className="pt-minimal pt-intent-danger pt-icon-cross"
+							progressClassName="pt-intent-danger"
+							confirmMsg="Confirm policy remove"
+							disabled={this.state.disabled}
+							onConfirm={this.onDelete}
+						/>
+					</div>
 					<PageInfo
 						style={css.info}
 						fields={[
