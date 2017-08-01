@@ -85,12 +85,11 @@ export default class Session extends React.Component<Props, State> {
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
-						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-cross"
-							progressClassName="pt-intent-danger"
-							confirmMsg="Confirm policy remove"
+						<button
+							className="pt-button pt-minimal pt-intent-danger pt-icon-cross"
+							type="button"
 							disabled={this.state.disabled}
-							onConfirm={this.onDelete}
+							onClick={this.onDelete}
 						/>
 					</div>
 					<PageInfo
@@ -101,17 +100,12 @@ export default class Session extends React.Component<Props, State> {
 								value: session.id || 'None',
 							},
 							{
-								label: 'Timestamp',
+								label: 'Created',
 								value: MiscUtils.formatDate(session.timestamp) || 'Unknown',
 							},
 							{
-								label: 'Operating System',
-								value: Constants.operatingSystems[agent.operating_system] ||
-									'Unknown',
-							},
-							{
-								label: 'Browser',
-								value: Constants.browsers[agent.browser] || 'Unknown',
+								label: 'Last Active',
+								value: MiscUtils.formatDate(session.last_active) || 'Unknown',
 							},
 						]}
 					/>
@@ -121,9 +115,25 @@ export default class Session extends React.Component<Props, State> {
 						style={css.info}
 						fields={[
 							{
+								label: 'Operating System',
+								value: Constants.operatingSystems[agent.operating_system] ||
+								'Unknown',
+							},
+							{
+								label: 'Browser',
+								value: Constants.browsers[agent.browser] || 'Unknown',
+							},
+							{
 								label: 'ISP',
 								value: agent.isp || 'Unknown',
 							},
+						]}
+					/>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						style={css.info}
+						fields={[
 							{
 								label: 'Location',
 								value: [location, country, continent],
