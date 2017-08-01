@@ -54,7 +54,7 @@ func authSessionPost(c *gin.Context) {
 
 	cook := cookie.NewProxy(srvc, c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -111,7 +111,7 @@ func authCallbackGet(c *gin.Context) {
 
 	cook := cookie.NewProxy(srvc, c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {
 		c.AbortWithError(500, err)
 		return

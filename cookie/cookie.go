@@ -66,10 +66,10 @@ func (c *Cookie) GetSession(db *database.Database) (
 	return
 }
 
-func (c *Cookie) NewSession(db *database.Database, id bson.ObjectId,
-	remember bool) (sess *session.Session, err error) {
+func (c *Cookie) NewSession(db *database.Database, r *http.Request,
+	id bson.ObjectId, remember bool) (sess *session.Session, err error) {
 
-	sess, err = session.New(db, id)
+	sess, err = session.New(db, r, id)
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "cookie: Unknown session error"),
