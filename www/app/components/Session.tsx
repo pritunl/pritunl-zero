@@ -26,7 +26,7 @@ const css = {
 	} as React.CSSProperties,
 	group: {
 		flex: 1,
-		minWidth: '250px',
+		minWidth: '290px',
 	} as React.CSSProperties,
 	remove: {
 		position: 'absolute',
