@@ -34,7 +34,7 @@ func GetUpdate(db *database.Database, id string) (
 	change := mgo.Change{
 		Update: &bson.M{
 			"$set": &bson.M{
-				"timestamp": timestamp,
+				"last_active": timestamp,
 			},
 		},
 	}
@@ -89,11 +89,11 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
 
 	coll := db.Sessions()
 	sess = &Session{
-		Id:        id,
-		UserId:    userId,
-		Created:   time.Now(),
-		Timestamp: time.Now(),
-		Agent:     agnt,
+		Id:         id,
+		UserId:     userId,
+		Timestamp:  time.Now(),
+		LastActive: time.Now(),
+		Agent:      agnt,
 	}
 
 	err = coll.Insert(sess)

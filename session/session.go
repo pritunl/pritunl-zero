@@ -10,12 +10,12 @@ import (
 )
 
 type Session struct {
-	Id        string        `bson:"_id" json:"id"`
-	UserId    bson.ObjectId `bson:"user_id" json:"user_id"`
-	Created   time.Time     `bson:"created" json:"created"`
-	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
-	Agent     *agent.Agent  `bson:"agent" json:"agent"`
-	user      *user.User    `bson:"-" json:"-"`
+	Id         string        `bson:"_id" json:"id"`
+	UserId     bson.ObjectId `bson:"user_id" json:"user_id"`
+	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
+	LastActive time.Time     `bson:"last_active" json:"last_active"`
+	Agent      *agent.Agent  `bson:"agent" json:"agent"`
+	user       *user.User    `bson:"-" json:"-"`
 }
 
 func (s *Session) Remove(db *database.Database) (err error) {
