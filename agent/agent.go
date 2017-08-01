@@ -58,6 +58,7 @@ const (
 type Agent struct {
 	OperatingSystem string  `bson:"operating_system" json:"operating_system"`
 	Browser         string  `bson:"browser" json:"browser"`
+	Ip              string  `bson:"ip" json:"ip"`
 	Isp             string  `bson:"isp" json:"isp"`
 	Continent       string  `bson:"continent" json:"continent"`
 	ContinentCode   string  `bson:"continent_code" json:"continent_code"`
@@ -73,12 +74,15 @@ type Agent struct {
 func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 	client := parser.Parse(r.UserAgent())
 
+	ip := node.Self.GetRemoteAddr(r)
+
 	ge, err := geo.Get(db, node.Self.GetRemoteAddr(r))
 	if err != nil {
 		return
 	}
 
 	agnt = &Agent{
+		Ip:            ip,
 		Isp:           ge.Isp,
 		Continent:     ge.Continent,
 		ContinentCode: ge.ContinentCode,
