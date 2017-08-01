@@ -41,6 +41,7 @@ func GetUpdate(db *database.Database, id string) (
 
 	_, err = coll.FindId(id).Apply(change, sess)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 

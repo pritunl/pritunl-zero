@@ -40,6 +40,7 @@ func GetUpdate(db *database.Database, userId bson.ObjectId) (
 
 	_, err = coll.FindId(userId).Apply(change, usr)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
