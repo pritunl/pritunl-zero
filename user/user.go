@@ -234,17 +234,6 @@ func (u *User) CheckPassword(password string) bool {
 	return true
 }
 
-func (u *User) SetActive(db *database.Database) (err error) {
-	u.LastActive = time.Now()
-
-	err = u.CommitFields(db, set.NewSet("last_active"))
-	if err != nil {
-		return
-	}
-
-	return
-}
-
 func init() {
 	module := requires.New("user")
 	module.After("settings")

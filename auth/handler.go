@@ -276,11 +276,6 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 		return
 	}
 
-	err = usr.SetActive(db)
-	if err != nil {
-		return
-	}
-
 	return
 }
 
@@ -338,11 +333,6 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service,
 		if err != nil || errData != nil {
 			return
 		}
-	}
-
-	err = usr.SetActive(db)
-	if err != nil {
-		return
 	}
 
 	return

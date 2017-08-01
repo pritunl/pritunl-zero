@@ -4,7 +4,9 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 func Get(db *database.Database, userId bson.ObjectId) (
@@ -17,6 +19,31 @@ func Get(db *database.Database, userId bson.ObjectId) (
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func GetUpdate(db *database.Database, userId bson.ObjectId) (
+	usr *User, err error) {
+
+	coll := db.Users()
+	usr = &User{}
+	timestamp := time.Now()
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$set": &bson.M{
+				"last_active": timestamp,
+			},
+		},
+	}
+
+	_, err = coll.FindId(userId).Apply(change, usr)
+	if err != nil {
+		return
+	}
+
+	usr.LastActive = timestamp
 
 	return
 }

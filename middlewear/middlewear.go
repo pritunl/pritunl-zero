@@ -126,24 +126,6 @@ func CsrfToken(c *gin.Context) {
 	}
 }
 
-func UserActive(c *gin.Context) {
-	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
-
-	usr, err := sess.GetUser(db)
-	if err != nil {
-		c.AbortWithError(500, err)
-		return
-	}
-
-	err = usr.SetActive(db)
-	if err != nil {
-		return
-	}
-
-	c.Next()
-}
-
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
