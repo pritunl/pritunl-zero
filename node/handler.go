@@ -92,7 +92,7 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 	}
 
 	writer := &logger.ErrorWriter{
-		Prefix: "node: ",
+		Message: "node: Proxy server error",
 		Fields: logrus.Fields{
 			"service": host.Service.Name,
 			"domain":  host.Domain.Domain,
