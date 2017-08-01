@@ -3,6 +3,7 @@ package mhandlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 )
@@ -39,6 +40,8 @@ func sessionDelete(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
+
+	event.PublishDispatch(db, "session.change")
 
 	c.JSON(200, nil)
 }
