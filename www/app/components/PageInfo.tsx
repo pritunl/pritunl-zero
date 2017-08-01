@@ -14,6 +14,7 @@ interface Bar {
 }
 
 interface Props {
+	style?: React.CSSProperties;
 	hidden?: boolean;
 	fields?: Field[];
 	bars?: Bar[];
@@ -71,9 +72,19 @@ export default class PageInfo extends React.Component<Props, {}> {
 			);
 		}
 
+		let labelStyle: React.CSSProperties;
+		if (this.props.style) {
+			labelStyle = {
+				...css.label,
+				...this.props.style,
+			};
+		} else {
+			labelStyle = css.label;
+		}
+
 		return <label
 			className="pt-label"
-			style={css.label}
+			style={labelStyle}
 			hidden={this.props.hidden}
 		>
 			{fields}
