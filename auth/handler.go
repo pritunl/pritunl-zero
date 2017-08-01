@@ -174,39 +174,82 @@ func Callback(db *database.Database, sig, query string) (
 
 	username := params.Get("username")
 
-	if provider.AutoCreate {
-		usr = &user.User{
-			Type:     provider.Type,
-			Username: username,
-			Roles:    roles,
+	usr, err = user.GetUsername(db, provider.Type, username)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+			break
 		}
+		return
+	}
 
-		errData, err = usr.Validate(db)
-		if err != nil {
-			return
-		}
+	if usr == nil {
+		if provider.AutoCreate {
+			usr = &user.User{
+				Type:     provider.Type,
+				Username: username,
+				Roles:    roles,
+			}
 
-		if errData != nil {
-			return
-		}
+			errData, err = usr.Validate(db)
+			if err != nil {
+				return
+			}
 
-		err = usr.Upsert(db)
-		if err != nil {
+			if errData != nil {
+				return
+			}
+
+			err = usr.Upsert(db)
+			if err != nil {
+				return
+			}
+		} else {
+			errData = &errortypes.ErrorData{
+				Error:   "unauthorized",
+				Message: "Not authorized",
+			}
 			return
 		}
 	} else {
-		usr, err = user.GetUsername(db, provider.Type, username)
-		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				err = nil
-				errData = &errortypes.ErrorData{
-					Error:   "unauthorized",
-					Message: "Not authorized",
+		switch provider.RoleManagement {
+		case settings.Merge:
+			changed := usr.RolesMerge(roles)
+			if changed {
+				errData, err = usr.Validate(db)
+				if err != nil {
+					return
 				}
-				break
+
+				if errData != nil {
+					return
+				}
+
+				err = usr.CommitFields(db, set.NewSet("roles"))
+				if err != nil {
+					return
+				}
 			}
-			return
+			break
+		case settings.Overwrite:
+			changed := usr.RolesOverwrite(roles)
+			if changed {
+				errData, err = usr.Validate(db)
+				if err != nil {
+					return
+				}
+
+				if errData != nil {
+					return
+				}
+
+				err = usr.CommitFields(db, set.NewSet("roles"))
+				if err != nil {
+					return
+				}
+			}
+			break
 		}
 	}
 
