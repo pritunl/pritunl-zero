@@ -31,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	switch flag.Arg(0) {
-	case "node":
+	case "start":
 		Init()
 		err := cmd.Node()
 		if err != nil {
