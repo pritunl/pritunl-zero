@@ -11,8 +11,10 @@ import (
 )
 
 type settingsData struct {
-	AuthProviders  []*settings.Provider `json:"auth_providers"`
-	ElasticAddress string               `json:"elastic_address"`
+	AuthProviders   []*settings.Provider `json:"auth_providers"`
+	AuthExpire      int                  `json:"auth_expire"`
+	AuthMaxDuration int                  `json:"auth_max_duration"`
+	ElasticAddress  string               `json:"elastic_address"`
 }
 
 func getSettingsData() *settingsData {
@@ -37,13 +39,29 @@ func settingsPut(c *gin.Context) {
 		return
 	}
 
-	settings.Elastic.Address = data.ElasticAddress
-	err = settings.Commit(db, settings.Elastic, set.NewSet(
-		"address",
-	))
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
+	if settings.Elastic.Address != data.ElasticAddress {
+		settings.Elastic.Address = data.ElasticAddress
+		err = settings.Commit(db, settings.Elastic, set.NewSet(
+			"address",
+		))
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+
+	fields := set.NewSet(
+		"providers",
+	)
+
+	if settings.Auth.Expire != data.AuthExpire {
+		settings.Auth.Expire = data.AuthExpire
+		fields.Add("expire")
+	}
+
+	if settings.Auth.MaxDuration != data.AuthMaxDuration {
+		settings.Auth.MaxDuration = data.AuthMaxDuration
+		fields.Add("max_duration")
 	}
 
 	for _, provider := range data.AuthProviders {
@@ -53,9 +71,7 @@ func settingsPut(c *gin.Context) {
 	}
 
 	settings.Auth.Providers = data.AuthProviders
-	err = settings.Commit(db, settings.Auth, set.NewSet(
-		"providers",
-	))
+	err = settings.Commit(db, settings.Auth, fields)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
