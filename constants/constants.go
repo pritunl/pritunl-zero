@@ -8,9 +8,9 @@ import (
 const (
 	Version                = "1.0.0"
 	DatabaseVersion        = 1
-	ConfPath               = "/etc/pritunl_zero.json"
-	LogPath                = "/var/log/pritunl_zero.log"
-	TempPath               = "/tmp/pritunl_zero"
+	ConfPath               = "/etc/pritunl-zero.json"
+	LogPath                = "/var/log/pritunl-zero.log"
+	TempPath               = "/tmp/pritunl-zero"
 	Production             = false
 	BuildTest              = false
 	StaticRoot             = "www/dist"
