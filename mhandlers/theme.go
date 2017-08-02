@@ -1,10 +1,11 @@
 package mhandlers
 
 import (
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/session"
-	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type themeData struct {
@@ -18,13 +19,13 @@ func themePut(c *gin.Context) {
 
 	err := c.Bind(&data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	usr, err := sess.GetUser(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -32,7 +33,7 @@ func themePut(c *gin.Context) {
 
 	err = usr.CommitFields(db, set.NewSet("theme"))
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

@@ -36,13 +36,13 @@ func userGet(c *gin.Context) {
 
 	userId, ok := utils.ParseObjectId(c.Param("user_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	usr, err := user.Get(db, userId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -55,19 +55,19 @@ func userPut(c *gin.Context) {
 
 	userId, ok := utils.ParseObjectId(c.Param("user_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	usr, err := user.Get(db, userId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -96,7 +96,7 @@ func userPut(c *gin.Context) {
 	if usr.Type == user.Local && data.Password != "" {
 		err = usr.SetPassword(data.Password)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 
@@ -108,7 +108,7 @@ func userPut(c *gin.Context) {
 
 	errData, err := usr.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -119,7 +119,7 @@ func userPut(c *gin.Context) {
 
 	err = usr.CommitFields(db, fields)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -134,7 +134,7 @@ func userPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -155,14 +155,14 @@ func userPost(c *gin.Context) {
 	if usr.Type == user.Local && data.Password != "" {
 		err = usr.SetPassword(data.Password)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 	}
 
 	errData, err := usr.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -173,7 +173,7 @@ func userPost(c *gin.Context) {
 
 	err = usr.Insert(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -232,7 +232,7 @@ func usersGet(c *gin.Context) {
 
 	users, count, err := user.GetAll(db, &query, page, pageCount)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -250,13 +250,13 @@ func usersDelete(c *gin.Context) {
 
 	err := c.Bind(&data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	errData, err := user.Remove(db, data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

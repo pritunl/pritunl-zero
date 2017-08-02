@@ -13,13 +13,13 @@ func sessionsGet(c *gin.Context) {
 
 	userId, ok := utils.ParseObjectId(c.Param("user_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	sessions, err := session.GetAll(db, userId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -31,13 +31,13 @@ func sessionDelete(c *gin.Context) {
 
 	sessionId := c.Param("session_id")
 	if sessionId == "" {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := session.Remove(db, sessionId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

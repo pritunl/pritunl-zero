@@ -27,19 +27,19 @@ func certificatePut(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("cert_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	cert, err := certificate.Get(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -65,7 +65,7 @@ func certificatePut(c *gin.Context) {
 
 	errData, err := cert.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -76,20 +76,20 @@ func certificatePut(c *gin.Context) {
 
 	err = cert.CommitFields(db, fields)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	if cert.Type == certificate.LetsEncrypt {
 		err = acme.Update(db, cert)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 
 		err = acme.Renew(db, cert)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 	}
@@ -105,7 +105,7 @@ func certificatePost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -123,7 +123,7 @@ func certificatePost(c *gin.Context) {
 
 	errData, err := cert.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -134,20 +134,20 @@ func certificatePost(c *gin.Context) {
 
 	err = cert.Insert(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	if cert.Type == certificate.LetsEncrypt {
 		err = acme.Update(db, cert)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 
 		err = acme.Renew(db, cert)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 	}
@@ -162,13 +162,13 @@ func certificateDelete(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("cert_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := certificate.Remove(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -182,13 +182,13 @@ func certificateGet(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("cert_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	cert, err := certificate.Get(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -200,7 +200,7 @@ func certificatesGet(c *gin.Context) {
 
 	certs, err := certificate.GetAll(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

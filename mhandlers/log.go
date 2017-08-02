@@ -21,13 +21,13 @@ func logGet(c *gin.Context) {
 
 	logId, ok := utils.ParseObjectId(c.Param("log_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	usr, err := log.Get(db, logId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -59,7 +59,7 @@ func logsGet(c *gin.Context) {
 
 	logs, count, err := log.GetAll(db, &query, page, pageCount)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

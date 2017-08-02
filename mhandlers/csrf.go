@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type csrfData struct {
@@ -18,13 +19,13 @@ func csrfGet(c *gin.Context) {
 
 	usr, err := sess.GetUser(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	token, err := csrf.NewToken(db, sess.Id)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

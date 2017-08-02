@@ -12,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
 )
 
@@ -40,7 +41,7 @@ func Session(c *gin.Context) {
 
 	cook, sess, err := auth.CookieSession(db, c.Writer, c.Request)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -54,7 +55,7 @@ func SessionProxy(c *gin.Context) {
 
 	cook, sess, err := auth.CookieSessionProxy(db, srvc, c.Writer, c.Request)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -68,13 +69,13 @@ func Auth(c *gin.Context) {
 	cook := c.MustGet("cookie").(*cookie.Cookie)
 
 	if sess == nil {
-		c.AbortWithStatus(401)
+		utils.AbortWithStatus(c, 401)
 		return
 	}
 
 	usr, err := sess.GetUser(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -83,11 +84,11 @@ func Auth(c *gin.Context) {
 
 		err = cook.Remove(db)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 
-		c.AbortWithStatus(401)
+		utils.AbortWithStatus(c, 401)
 		return
 	}
 }
@@ -97,7 +98,7 @@ func CsrfToken(c *gin.Context) {
 	sess := c.MustGet("session").(*session.Session)
 
 	if sess == nil {
-		c.AbortWithStatus(401)
+		utils.AbortWithStatus(c, 401)
 		return
 	}
 
@@ -112,16 +113,16 @@ func CsrfToken(c *gin.Context) {
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
-			c.AbortWithStatus(401)
+			utils.AbortWithStatus(c, 401)
 			break
 		default:
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 		}
 		return
 	}
 
 	if !valid {
-		c.AbortWithStatus(401)
+		utils.AbortWithStatus(c, 401)
 		return
 	}
 }

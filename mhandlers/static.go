@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/static"
+	"github.com/pritunl/pritunl-zero/utils"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ func staticPath(c *gin.Context, pth string) {
 
 	file, ok := store.Files[pth]
 	if !ok {
-		c.AbortWithStatus(404)
+		utils.AbortWithStatus(c, 404)
 		return
 	}
 

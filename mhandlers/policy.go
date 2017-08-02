@@ -24,19 +24,19 @@ func policyPut(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	cert, err := policy.Get(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -54,7 +54,7 @@ func policyPut(c *gin.Context) {
 
 	errData, err := cert.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -65,7 +65,7 @@ func policyPut(c *gin.Context) {
 
 	err = cert.CommitFields(db, fields)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -80,7 +80,7 @@ func policyPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -93,7 +93,7 @@ func policyPost(c *gin.Context) {
 
 	errData, err := cert.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -104,7 +104,7 @@ func policyPost(c *gin.Context) {
 
 	err = cert.Insert(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -118,13 +118,13 @@ func policyDelete(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := policy.Remove(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -138,13 +138,13 @@ func policyGet(c *gin.Context) {
 
 	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	cert, err := policy.Get(db, certId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -156,7 +156,7 @@ func policiesGet(c *gin.Context) {
 
 	certs, err := policy.GetAll(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

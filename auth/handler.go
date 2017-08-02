@@ -15,6 +15,7 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"net/url"
@@ -91,7 +92,7 @@ func Request(c *gin.Context) {
 	}
 
 	if provider == nil {
-		c.AbortWithStatus(404)
+		utils.AbortWithStatus(c, 404)
 		return
 	}
 
@@ -101,7 +102,7 @@ func Request(c *gin.Context) {
 	case Google:
 		redirect, err := GoogleRequest(db, loc, provider)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 		c.Redirect(302, redirect)
@@ -109,14 +110,14 @@ func Request(c *gin.Context) {
 	case OneLogin, Okta:
 		body, err := SamlRequest(db, loc, provider)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 		c.Data(200, "text/html;charset=utf-8", body)
 		return
 	}
 
-	c.AbortWithStatus(404)
+	utils.AbortWithStatus(c, 404)
 }
 
 func Callback(db *database.Database, sig, query string) (

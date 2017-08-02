@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/utils"
 	"strings"
 )
 
@@ -25,13 +26,13 @@ func authSessionPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	usr, errData, err := auth.Local(db, data.Username, data.Password)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -54,7 +55,7 @@ func authSessionPost(c *gin.Context) {
 
 	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -68,7 +69,7 @@ func logoutGet(c *gin.Context) {
 	if sess != nil {
 		err := sess.Remove(db)
 		if err != nil {
-			c.AbortWithError(500, err)
+			utils.AbortWithError(c, 500, err)
 			return
 		}
 	}
@@ -87,7 +88,7 @@ func authCallbackGet(c *gin.Context) {
 
 	usr, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -110,7 +111,7 @@ func authCallbackGet(c *gin.Context) {
 
 	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

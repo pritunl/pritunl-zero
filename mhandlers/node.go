@@ -28,19 +28,19 @@ func nodePut(c *gin.Context) {
 
 	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	nde, err := node.Get(db, nodeId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -66,7 +66,7 @@ func nodePut(c *gin.Context) {
 
 	errData, err := nde.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -77,7 +77,7 @@ func nodePut(c *gin.Context) {
 
 	err = nde.CommitFields(db, fields)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -91,13 +91,13 @@ func nodeDelete(c *gin.Context) {
 
 	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := node.Remove(db, nodeId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -111,13 +111,13 @@ func nodeGet(c *gin.Context) {
 
 	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	nde, err := node.Get(db, nodeId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -129,7 +129,7 @@ func nodesGet(c *gin.Context) {
 
 	nodes, err := node.GetAll(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 

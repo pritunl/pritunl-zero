@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/utils"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func eventGet(c *gin.Context) {
 
 	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 	socket.Conn = conn
@@ -46,7 +47,7 @@ func eventGet(c *gin.Context) {
 
 	lst, err := event.SubscribeListener([]string{"dispatch"})
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 	socket.Listener = lst

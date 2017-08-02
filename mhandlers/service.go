@@ -25,19 +25,19 @@ func servicePut(c *gin.Context) {
 
 	serviceId, ok := utils.ParseObjectId(c.Param("service_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	srvce, err := service.Get(db, serviceId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -57,7 +57,7 @@ func servicePut(c *gin.Context) {
 
 	errData, err := srvce.Validate(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func servicePut(c *gin.Context) {
 
 	err = srvce.CommitFields(db, fields)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func servicePost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -100,7 +100,7 @@ func servicePost(c *gin.Context) {
 
 	err = srvce.Insert(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -114,13 +114,13 @@ func serviceDelete(c *gin.Context) {
 
 	serviceId, ok := utils.ParseObjectId(c.Param("service_id"))
 	if !ok {
-		c.AbortWithStatus(400)
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
 	err := service.Remove(db, serviceId)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -134,7 +134,7 @@ func servicesGet(c *gin.Context) {
 
 	services, err := service.GetAll(db)
 	if err != nil {
-		c.AbortWithError(500, err)
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
