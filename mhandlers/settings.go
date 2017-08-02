@@ -19,8 +19,10 @@ type settingsData struct {
 
 func getSettingsData() *settingsData {
 	return &settingsData{
-		AuthProviders:  settings.Auth.Providers,
-		ElasticAddress: settings.Elastic.Address,
+		AuthProviders:   settings.Auth.Providers,
+		AuthExpire:      settings.Auth.Expire,
+		AuthMaxDuration: settings.Auth.MaxDuration,
+		ElasticAddress:  settings.Elastic.Address,
 	}
 }
 
