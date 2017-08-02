@@ -115,6 +115,7 @@ export default class Log extends React.Component<Props, State> {
 				<span key={key + '-val'} style={css.value}>
 					{JSON.stringify(val)}
 				</span>,
+				<br/>,
 			);
 		}
 
