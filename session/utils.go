@@ -10,13 +10,13 @@ import (
 	"time"
 )
 
-func Get(db *database.Database, id string) (
+func Get(db *database.Database, sessId string) (
 	sess *Session, err error) {
 
 	coll := db.Sessions()
 	sess = &Session{}
 
-	err = coll.FindOneId(id, sess)
+	err = coll.FindOneId(sessId, sess)
 	if err != nil {
 		return
 	}
