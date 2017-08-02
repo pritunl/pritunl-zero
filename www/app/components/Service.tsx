@@ -510,6 +510,13 @@ export default class Service extends React.Component<Props, State> {
 							this.set('share_session', !service.share_session);
 						}}
 					/>
+					<PageSwitch
+						label="Allow WebSockets"
+						checked={service.websockets}
+						onToggle={(): void => {
+							this.set('websockets', !service.websockets);
+						}}
+					/>
 					<label className="pt-label">
 						Roles
 						<div>

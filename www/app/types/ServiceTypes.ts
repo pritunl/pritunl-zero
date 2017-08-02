@@ -17,6 +17,7 @@ export interface Service {
 	id: string;
 	name?: string;
 	share_session?: boolean;
+	websockets?: boolean;
 	domains?: Domain[];
 	roles?: string[];
 	servers?: Server[];
