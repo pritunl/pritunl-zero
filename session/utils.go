@@ -3,6 +3,7 @@ package session
 import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -24,8 +25,28 @@ func Get(db *database.Database, sessId string) (
 	return
 }
 
-func GetUpdate(db *database.Database, id string) (
+func GetUpdate(db *database.Database, sessId string) (
 	sess *Session, err error) {
+
+	query := bson.M{
+		"_id": sessId,
+	}
+
+	if settings.Auth.Expire != 0 {
+		expire := time.Now().Add(-time.Duration(
+			settings.Auth.Expire) * time.Hour)
+		query["last_active"] = &bson.M{
+			"$gte": expire,
+		}
+	}
+
+	if settings.Auth.MaxDuration != 0 {
+		expire := time.Now().Add(-time.Duration(
+			settings.Auth.MaxDuration) * time.Hour)
+		query["timestamp"] = &bson.M{
+			"$gte": expire,
+		}
+	}
 
 	coll := db.Sessions()
 	sess = &Session{}
@@ -39,7 +60,7 @@ func GetUpdate(db *database.Database, id string) (
 		},
 	}
 
-	_, err = coll.FindId(id).Apply(change, sess)
+	_, err = coll.Find(query).Apply(change, sess)
 	if err != nil {
 		err = database.ParseError(err)
 		return
