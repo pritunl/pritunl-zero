@@ -17,7 +17,7 @@ interface State {
 
 const css = {
 	header: {
-		marginTop: '-19px',
+		marginTop: '-5px',
 	} as React.CSSProperties,
 	heading: {
 		margin: '19px 0 0 0',
