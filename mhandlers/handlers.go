@@ -35,6 +35,8 @@ func Register(protocol string, engine *gin.Engine) {
 	csrfGroup := authGroup.Group("")
 	csrfGroup.Use(middlewear.CsrfToken)
 
+	engine.NoRoute(middlewear.NotFound)
+
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
 	dbGroup.GET("/auth/request", authRequestGet)

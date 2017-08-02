@@ -25,6 +25,8 @@ func Register(protocol string, engine *gin.Engine) {
 	}))
 	engine.Use(middlewear.Service)
 
+	engine.NoRoute(middlewear.NotFound)
+
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)
 

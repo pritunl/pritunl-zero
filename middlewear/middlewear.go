@@ -140,3 +140,7 @@ func Recovery(c *gin.Context) {
 
 	c.Next()
 }
+
+func NotFound(c *gin.Context) {
+	utils.AbortWithStatus(c, 404)
+}
