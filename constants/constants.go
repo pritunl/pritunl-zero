@@ -13,10 +13,8 @@ const (
 	TempPath               = "/tmp/pritunl-zero"
 	Production             = false
 	BuildTest              = false
-	StaticRoot             = "www/dist"
+	StaticRoot             = "/usr/share/pritunl-zero/www"
 	StaticTestingRoot      = "www"
-	ProxyStaticRoot        = "www_proxy/dist"
-	ProxyStaticTestingRoot = "www_proxy"
 	StaticCache            = false
 	RetryDelay             = 3 * time.Second
 )
