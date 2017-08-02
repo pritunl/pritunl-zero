@@ -73,7 +73,11 @@ export default class Services extends React.Component<{}, State> {
 							style={css.button}
 							type="button"
 							onClick={(): void => {
-								ServiceActions.create(null);
+								ServiceActions.create({
+									id: null,
+									share_session: true,
+									websockets: true,
+								});
 							}}
 						>New</button>
 					</div>
