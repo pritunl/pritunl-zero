@@ -163,6 +163,24 @@ export default class Settings extends React.Component<{}, State> {
 				</PagePanel>
 				<PagePanel>
 					<PageInput
+						label="Session Expire Hours"
+						type="text"
+						placeholder="Session expire"
+						value={this.state.settings.auth_expire}
+						onChange={(val): void => {
+							this.set('auth_expire', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="Session Max Duration Hours"
+						type="text"
+						placeholder="Session max duration"
+						value={this.state.settings.auth_max_duration}
+						onChange={(val): void => {
+							this.set('auth_max_duration', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
 						label="Elasticsearch Address"
 						type="text"
 						placeholder="Enter Elasticsearch address"
