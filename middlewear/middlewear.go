@@ -134,7 +134,8 @@ func Recovery(c *gin.Context) {
 				"client": node.Self.GetRemoteAddr(c.Request),
 				"error":  errors.New(fmt.Sprintf("%s", r)),
 			}).Error("middlewear: Handler panic")
-			c.Writer.WriteHeader(http.StatusInternalServerError)
+			utils.AbortWithStatus(c, 500)
+			return
 		}
 	}()
 
