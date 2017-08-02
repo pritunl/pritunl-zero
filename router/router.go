@@ -22,7 +22,6 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -50,56 +49,8 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 	n := len(proxies)
 
 	if host != nil && ok && n != 0 {
-		ndeScheme := ""
-		ndePort := ""
-		if node.Self.Protocol == "http" {
-			ndeScheme = "http"
-			if node.Self.Port != 80 {
-				ndePort += fmt.Sprintf(":%d", node.Self.Port)
-			}
-		} else {
-			ndeScheme = "https"
-			if node.Self.Port != 443 {
-				ndePort += fmt.Sprintf(":%d", node.Self.Port)
-			}
-		}
-		domain := fmt.Sprintf(
-			"%s://%s%s",
-			ndeScheme,
-			host.Domain.Domain,
-			ndePort,
-		)
-
-		origin := re.Header.Get("Origin")
-		if origin != "" {
-			u, err := url.Parse(origin)
-			if err != nil {
-				http.Error(w, "Server error", 500)
-				return
-			}
-			origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		}
-
-		referer := re.Header.Get("Referer")
-		if referer != "" {
-			u, err := url.Parse(referer)
-			if err != nil {
-				http.Error(w, "Server error", 500)
-				return
-			}
-			referer = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		}
-
-		if origin != "" && origin != domain {
-			http.Error(w, "CSRF origin error", 401)
-			return
-		}
-		if referer != "" && referer != domain {
-			http.Error(w, "CSRF referer error", 401)
-			return
-		}
-		if origin == "" && referer == "" {
-			http.Error(w, "CSRF origin referer error", 401)
+		valid := auth.CsrfCheck(w, re, host.Domain.Domain)
+		if !valid {
 			return
 		}
 
