@@ -20,9 +20,11 @@ type Provider struct {
 }
 
 type auth struct {
-	Id        string      `bson:"_id"`
-	Server    string      `bson:"server" default:"https://auth-test.pritunl.net"`
-	Providers []*Provider `bson:"providers"`
+	Id          string      `bson:"_id"`
+	Server      string      `bson:"server" default:"https://auth-test.pritunl.net"`
+	Expire      int         `bson:"expire" json:"expire"`
+	MaxDuration int         `bson:"max_duration" json:"max_duration"`
+	Providers   []*Provider `bson:"providers"`
 }
 
 func (a *auth) GetProvider(id bson.ObjectId) *Provider {
