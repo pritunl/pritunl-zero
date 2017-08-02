@@ -11,7 +11,7 @@ const (
 	ConfPath               = "/etc/pritunl-zero.json"
 	LogPath                = "/var/log/pritunl-zero.log"
 	TempPath               = "/tmp/pritunl-zero"
-	Production             = false
+	Production             = true
 	BuildTest              = false
 	StaticRoot             = "/usr/share/pritunl-zero/www"
 	StaticTestingRoot      = "www"
