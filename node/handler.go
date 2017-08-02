@@ -103,6 +103,9 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 				server.Port,
 			),
 		},
+		Filters: []string {
+			"context canceled",
+		},
 	}
 
 	lgr := log.New(writer, "", 0)
