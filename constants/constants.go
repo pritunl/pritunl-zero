@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	Version           = "1.0.618.26"
+	Version           = "1.0.618.80"
 	DatabaseVersion   = 1
 	ConfPath          = "/etc/pritunl-zero.json"
 	LogPath           = "/var/log/pritunl-zero.log"
 	TempPath          = "/tmp/pritunl-zero"
-	Production        = true
+	Production        = false
 	BuildTest         = false
 	StaticRoot        = "/usr/share/pritunl-zero/www"
 	StaticTestingRoot = "www"
