@@ -155,10 +155,8 @@ func Callback(db *database.Database, sig, query string) (
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
-			err = nil
-			errData = &errortypes.ErrorData{
-				Error:   "invalid_state",
-				Message: "Authentication state invalid",
+			err = &InvalidState{
+				errors.Wrap(err, "auth: Invalid state"),
 			}
 			break
 		}

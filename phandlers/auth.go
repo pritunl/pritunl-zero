@@ -91,7 +91,13 @@ func authCallbackGet(c *gin.Context) {
 
 	usr, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *auth.InvalidState:
+			c.Redirect(302, "/")
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
