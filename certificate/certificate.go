@@ -76,6 +76,13 @@ func (c *Certificate) Validate(db *database.Database) (
 func (c *Certificate) UpdateInfo() (err error) {
 	hash := c.Hash()
 
+	if c.Certificate == "" {
+		c.Info = &Info{
+			DnsNames: []string{},
+		}
+		return
+	}
+
 	if c.Info != nil && hash == c.Info.Hash {
 		return
 	}
