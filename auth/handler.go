@@ -242,16 +242,16 @@ func Callback(db *database.Database, sig, query string) (
 				Roles:    roles,
 			}
 
-			errData, err = usr.Validate(db)
-			if err != nil {
-				return
-			}
-
 			if errData != nil {
 				return
 			}
 
 			err = usr.Upsert(db)
+			if err != nil {
+				return
+			}
+
+			errData, err = usr.Validate(db)
 			if err != nil {
 				return
 			}
