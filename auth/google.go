@@ -16,15 +16,8 @@ const (
 	Google = "google"
 )
 
-func GoogleRequest(db *database.Database, location string,
-	provider *settings.Provider) (redirect string, err error) {
-
-	if provider.Type != Google {
-		err = &errortypes.ParseError{
-			errors.New("auth: Invalid provider type"),
-		}
-		return
-	}
+func GoogleRequest(db *database.Database, location string) (
+	redirect string, err error) {
 
 	coll := db.Tokens()
 
@@ -96,7 +89,6 @@ func GoogleRequest(db *database.Database, location string,
 		Type:      Google,
 		Secret:    secret,
 		Timestamp: time.Now(),
-		Provider:  provider.Id,
 	}
 
 	err = coll.Insert(tokn)

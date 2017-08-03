@@ -23,9 +23,9 @@ import (
 )
 
 type StateProvider struct {
-	Id    bson.ObjectId `json:"id"`
-	Type  string        `json:"type"`
-	Label string        `json:"label"`
+	Id    interface{} `json:"id"`
+	Type  string      `json:"type"`
+	Label string      `json:"label"`
 }
 
 type State struct {
@@ -37,13 +37,25 @@ func GetState() (state *State) {
 		Providers: []*StateProvider{},
 	}
 
+	google := false
+
 	for _, provider := range settings.Auth.Providers {
-		provider := &StateProvider{
-			Id:    provider.Id,
+		prv := &StateProvider{
 			Type:  provider.Type,
 			Label: provider.Label,
 		}
-		state.Providers = append(state.Providers, provider)
+
+		if provider.Type == Google {
+			if google {
+				continue
+			}
+			google = true
+			prv.Id = Google
+		} else {
+			prv.Id = provider.Id
+		}
+
+		state.Providers = append(state.Providers, prv)
 	}
 
 	return
@@ -56,6 +68,7 @@ func Local(db *database.Database, username, password string) (
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
+			usr = nil
 			err = nil
 			errData = &errortypes.ErrorData{
 				Error:   "auth_invalid",
@@ -81,40 +94,45 @@ func Local(db *database.Database, username, password string) (
 func Request(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	providerId := bson.ObjectIdHex(c.Query("id"))
-
-	var provider *settings.Provider
-	for _, prvidr := range settings.Auth.Providers {
-		if prvidr.Id == providerId {
-			provider = prvidr
-			break
-		}
-	}
-
-	if provider == nil {
-		utils.AbortWithStatus(c, 404)
-		return
-	}
-
 	loc := location.Get(c).String()
 
-	switch provider.Type {
-	case Google:
-		redirect, err := GoogleRequest(db, loc, provider)
+	id := c.Query("id")
+	if id == Google {
+		redirect, err := GoogleRequest(db, loc)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
+
 		c.Redirect(302, redirect)
 		return
-	case OneLogin, Okta:
-		body, err := SamlRequest(db, loc, provider)
-		if err != nil {
-			utils.AbortWithError(c, 500, err)
+	} else {
+		providerId := bson.ObjectIdHex(id)
+
+		var provider *settings.Provider
+		for _, prvidr := range settings.Auth.Providers {
+			if prvidr.Id == providerId {
+				provider = prvidr
+				break
+			}
+		}
+
+		if provider == nil {
+			utils.AbortWithStatus(c, 404)
 			return
 		}
-		c.Data(200, "text/html;charset=utf-8", body)
-		return
+
+		switch provider.Type {
+		case OneLogin, Okta:
+			body, err := SamlRequest(db, loc, provider)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			c.Data(200, "text/html;charset=utf-8", body)
+			return
+		}
 	}
 
 	utils.AbortWithStatus(c, 404)
@@ -160,12 +178,36 @@ func Callback(db *database.Database, sig, query string) (
 		return
 	}
 
-	provider := settings.Auth.GetProvider(tokn.Provider)
-	if provider == nil {
-		err = &errortypes.NotFoundError{
-			errors.New("auth: Auth provider not found"),
+	username := params.Get("username")
+
+	var provider *settings.Provider
+	if tokn.Type == Google {
+		domainSpl := strings.SplitN(username, "@", 2)
+		if len(domainSpl) == 2 {
+			domain := domainSpl[1]
+			for _, prv := range settings.Auth.Providers {
+				if prv.Type == Google && prv.Domain == domain {
+					provider = prv
+					break
+				}
+			}
 		}
-		return
+
+		if provider == nil {
+			errData = &errortypes.ErrorData{
+				Error:   "unauthorized",
+				Message: "Not authorized",
+			}
+			return
+		}
+	} else {
+		provider = settings.Auth.GetProvider(tokn.Provider)
+		if provider == nil {
+			err = &errortypes.NotFoundError{
+				errors.New("auth: Auth provider not found"),
+			}
+			return
+		}
 	}
 
 	err = tokn.Remove(db)
@@ -182,16 +224,16 @@ func Callback(db *database.Database, sig, query string) (
 		}
 	}
 
-	username := params.Get("username")
-
 	usr, err = user.GetUsername(db, provider.Type, username)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
+			usr = nil
 			err = nil
 			break
+		default:
+			return
 		}
-		return
 	}
 
 	if usr == nil {
