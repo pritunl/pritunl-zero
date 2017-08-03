@@ -64,10 +64,12 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 		}
 
 		if sess == nil {
-			err = cook.Remove(db)
-			if err != nil {
-				http.Error(w, "Server error", 500)
-				return
+			if cook != nil {
+				err = cook.Remove(db)
+				if err != nil {
+					http.Error(w, "Server error", 500)
+					return
+				}
 			}
 
 			r.pRouter.ServeHTTP(w, re)

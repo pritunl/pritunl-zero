@@ -55,6 +55,8 @@ func CookieSessionProxy(db *database.Database, srvc *service.Service,
 
 	cook, err = cookie.GetProxy(srvc, w, r)
 	if err != nil {
+		sess = nil
+		err = nil
 		return
 	}
 
