@@ -129,6 +129,13 @@ func CsrfToken(c *gin.Context) {
 
 func Recovery(c *gin.Context) {
 	defer func() {
+		if c.Errors != nil && len(c.Errors) != 0 {
+			logrus.WithFields(logrus.Fields{
+				"client": node.Self.GetRemoteAddr(c.Request),
+				"error":  c.Errors,
+			}).Error("middlewear: Handler error")
+		}
+
 		if r := recover(); r != nil {
 			logrus.WithFields(logrus.Fields{
 				"client": node.Self.GetRemoteAddr(c.Request),
