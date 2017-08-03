@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	Version                = "1.0.618.26"
-	DatabaseVersion        = 1
-	ConfPath               = "/etc/pritunl-zero.json"
-	LogPath                = "/var/log/pritunl-zero.log"
-	TempPath               = "/tmp/pritunl-zero"
-	Production             = true
-	BuildTest              = false
-	StaticRoot             = "www/dist"
-	StaticTestingRoot      = "www"
-	StaticCache            = false
-	RetryDelay             = 3 * time.Second
+	Version           = "1.0.618.26"
+	DatabaseVersion   = 1
+	ConfPath          = "/etc/pritunl-zero.json"
+	LogPath           = "/var/log/pritunl-zero.log"
+	TempPath          = "/tmp/pritunl-zero"
+	Production        = true
+	BuildTest         = false
+	StaticRoot        = "/usr/share/pritunl-zero/www"
+	StaticTestingRoot = "www"
+	StaticCache       = false
+	RetryDelay        = 3 * time.Second
 )
 
 var (
