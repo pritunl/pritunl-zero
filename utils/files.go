@@ -5,7 +5,6 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"io/ioutil"
 	"os"
-	"os/exec"
 )
 
 func Exists(pth string) (exists bool, err error) {
@@ -117,51 +116,6 @@ func RemoveAll(path string) (err error) {
 	if err != nil {
 		err = &errortypes.WriteError{
 			errors.Wrapf(err, "utils: Failed to remove '%s'", path),
-		}
-		return
-	}
-
-	return
-}
-
-func Copy(sourcePath, destPath string) (err error) {
-	cmd := exec.Command(
-		"/usr/bin/cp",
-		sourcePath,
-		destPath,
-	)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err = cmd.Run()
-	if err != nil {
-		err = errortypes.ExecError{
-			errors.Wrapf(err, "package: Failed to copy %s to %s",
-				sourcePath, destPath),
-		}
-		return
-	}
-
-	return
-}
-
-func CopyAll(sourcePath, destPath string) (err error) {
-	cmd := exec.Command(
-		"/usr/bin/cp",
-		"-r",
-		sourcePath,
-		destPath,
-	)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err = cmd.Run()
-	if err != nil {
-		err = errortypes.ExecError{
-			errors.Wrapf(err, "package: Failed to copy %s to %s",
-				sourcePath, destPath),
 		}
 		return
 	}
