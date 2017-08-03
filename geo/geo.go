@@ -38,6 +38,10 @@ type geoData struct {
 }
 
 func get(addr string) (ge *Geo, err error) {
+	if settings.System.License == "" {
+		return
+	}
+
 	reqGeoData := &geoData{
 		License: settings.System.License,
 		Address: addr,
@@ -83,6 +87,7 @@ func get(addr string) (ge *Geo, err error) {
 	ge = &Geo{}
 	err = json.NewDecoder(resp.Body).Decode(ge)
 	if err != nil {
+		ge = nil
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "geo: Failed to parse response"),
 		}
@@ -113,9 +118,12 @@ func Get(db *database.Database, addr string) (ge *Geo, err error) {
 			return
 		}
 
-		ge.Timestamp = time.Now()
-
-		coll.Insert(ge)
+		if ge != nil {
+			ge.Timestamp = time.Now()
+			coll.Insert(ge)
+		} else {
+			ge = &Geo{}
+		}
 	}
 
 	return

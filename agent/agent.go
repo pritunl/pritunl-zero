@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/geo"
 	"github.com/pritunl/pritunl-zero/node"
@@ -78,6 +79,10 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 
 	ge, err := geo.Get(db, node.Self.GetRemoteAddr(r))
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("agent: Failed to get geo IP information")
+		err = nil
 		return
 	}
 
