@@ -170,8 +170,10 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Type = nde.Type
 	n.Port = nde.Port
 	n.Protocol = nde.Protocol
+	n.Certificate = nde.Certificate
 	n.ManagementDomain = nde.ManagementDomain
 	n.Services = nde.Services
+	n.ForwardedForHeader = nde.ForwardedForHeader
 
 	return
 }
