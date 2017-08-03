@@ -30,6 +30,8 @@ func CookieSession(db *database.Database,
 
 	cook, err = cookie.Get(w, r)
 	if err != nil {
+		sess = nil
+		err = nil
 		return
 	}
 
