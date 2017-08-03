@@ -87,7 +87,17 @@ func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
 
 		val := val.Field(i).Interface()
 
-		data[tag] = val
+		switch valTyp := val.(type) {
+		case bson.ObjectId:
+			if valTyp == "" {
+				data[tag] = nil
+			} else {
+				data[tag] = val
+			}
+			break
+		default:
+			data[tag] = val
+		}
 	}
 
 	return
