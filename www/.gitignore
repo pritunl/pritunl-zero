@@ -2,3 +2,5 @@
 *.map
 node_modules/*
 jspm_packages/*
+!dist/**/*.js
+!dist/**/*.map
