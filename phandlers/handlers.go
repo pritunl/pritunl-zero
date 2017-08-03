@@ -15,8 +15,6 @@ var (
 )
 
 func Register(protocol string, engine *gin.Engine) {
-	engine.NoRoute(redirect)
-
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)
@@ -25,7 +23,7 @@ func Register(protocol string, engine *gin.Engine) {
 	}))
 	engine.Use(middlewear.Service)
 
-	engine.NoRoute(middlewear.NotFound)
+	engine.NoRoute(redirect)
 
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)
