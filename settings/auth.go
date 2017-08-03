@@ -39,7 +39,8 @@ func (a *auth) GetProvider(id bson.ObjectId) *Provider {
 
 func newAuth() interface{} {
 	return &auth{
-		Id: "auth",
+		Id:        "auth",
+		Providers: []*Provider{},
 	}
 }
 
