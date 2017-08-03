@@ -25,7 +25,7 @@ func Get(db *database.Database, sessId string) (
 	return
 }
 
-func GetUpdate(db *database.Database, sessId string) (
+func GetUpdate(db *database.Database, sessId string, r *http.Request) (
 	sess *Session, err error) {
 
 	query := bson.M{
@@ -67,6 +67,24 @@ func GetUpdate(db *database.Database, sessId string) (
 	}
 
 	sess.LastActive = timestamp
+
+	agnt, err := agent.Parse(db, r)
+	if err != nil {
+		return
+	}
+
+	if sess.Agent.Diff(agnt) {
+		sess.Agent = agnt
+		err = coll.UpdateId(sess.Id, &bson.M{
+			"$set": &bson.M{
+				"agent": agnt,
+			},
+		})
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+	}
 
 	return
 }

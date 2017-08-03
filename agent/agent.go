@@ -239,3 +239,24 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 
 	return
 }
+
+func (a *Agent) Diff(agnt *Agent) bool {
+	if a.OperatingSystem != agnt.OperatingSystem ||
+		a.Browser != agnt.Browser ||
+		a.Ip != agnt.Ip ||
+		a.Isp != agnt.Isp ||
+		a.Continent != agnt.Continent ||
+		a.ContinentCode != agnt.ContinentCode ||
+		a.Country != agnt.Country ||
+		a.CountryCode != agnt.CountryCode ||
+		a.Region != agnt.Region ||
+		a.RegionCode != agnt.RegionCode ||
+		a.City != agnt.City ||
+		a.Longitude != agnt.Longitude ||
+		a.Latitude != agnt.Latitude {
+
+		return true
+	}
+
+	return false
+}

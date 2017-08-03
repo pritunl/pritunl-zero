@@ -37,7 +37,7 @@ func (c *Cookie) Set(key string, val string) {
 	c.store.Values[key] = val
 }
 
-func (c *Cookie) GetSession(db *database.Database) (
+func (c *Cookie) GetSession(db *database.Database, r *http.Request) (
 	sess *session.Session, err error) {
 
 	sessId := c.Get("id")
@@ -48,7 +48,7 @@ func (c *Cookie) GetSession(db *database.Database) (
 		return
 	}
 
-	sess, err = session.GetUpdate(db, sessId)
+	sess, err = session.GetUpdate(db, sessId, r)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
