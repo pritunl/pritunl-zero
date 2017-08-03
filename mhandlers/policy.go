@@ -76,7 +76,9 @@ func policyPut(c *gin.Context) {
 
 func policyPost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	data := &policyData{}
+	data := &policyData{
+		Name: "New Policy",
+	}
 
 	err := c.Bind(data)
 	if err != nil {
