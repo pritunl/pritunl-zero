@@ -39,7 +39,7 @@ func newCsr(domains []string) (csr *x509.CertificateRequest,
 	key *ecdsa.PrivateKey, err error) {
 
 	key, err = ecdsa.GenerateKey(
-		elliptic.P256(),
+		elliptic.P384(),
 		rand.Reader,
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func newCsr(domains []string) (csr *x509.CertificateRequest,
 	csrReq := &x509.CertificateRequest{
 		SignatureAlgorithm: x509.ECDSAWithSHA256,
 		PublicKeyAlgorithm: x509.ECDSA,
-		PublicKey:          &key.PublicKey,
+		PublicKey:          key.Public(),
 		Subject: pkix.Name{
 			CommonName: domains[0],
 		},
