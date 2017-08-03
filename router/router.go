@@ -78,6 +78,20 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 
 		usr, err := sess.GetUser(db)
 		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				if cook != nil {
+					err = cook.Remove(db)
+					if err != nil {
+						http.Error(w, "Server error", 500)
+						return
+					}
+				}
+
+				r.pRouter.ServeHTTP(w, re)
+				return
+			}
+
 			http.Error(w, "Server error", 500)
 			return
 		}

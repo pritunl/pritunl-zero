@@ -45,6 +45,18 @@ func Session(c *gin.Context) {
 		return
 	}
 
+	_, err = sess.GetUser(db)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+			sess = nil
+			break
+		default:
+			return
+		}
+	}
+
 	c.Set("session", sess)
 	c.Set("cookie", cook)
 }
@@ -57,6 +69,18 @@ func SessionProxy(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
+	}
+
+	_, err = sess.GetUser(db)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+			sess = nil
+			break
+		default:
+			return
+		}
 	}
 
 	c.Set("session", sess)
