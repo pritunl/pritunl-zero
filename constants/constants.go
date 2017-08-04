@@ -11,8 +11,7 @@ const (
 	ConfPath        = "/etc/pritunl-zero.json"
 	LogPath         = "/var/log/pritunl-zero.log"
 	TempPath        = "/tmp/pritunl-zero"
-	BuildTest       = false
-	StaticCache     = false
+	StaticCache     = true
 	RetryDelay      = 3 * time.Second
 )
 
