@@ -49,7 +49,6 @@ const css = {
 		fontWeight: 'bold',
 	} as React.CSSProperties,
 	value: {
-		marginRight: '5px',
 	} as React.CSSProperties,
 	dialog: {
 		top: '5%',
@@ -111,11 +110,12 @@ export default class Log extends React.Component<Props, State> {
 			let val = log.fields[key];
 
 			fields.push(
-				<span key={key} style={css.key}>{key}: </span>,
-				<span key={key + '-val'} style={css.value}>
-					{JSON.stringify(val)}
-				</span>,
-				<br/>,
+				<div key={key}>
+					<span style={css.key}>{key}: </span>
+					<span style={css.value}>
+						{JSON.stringify(val)}
+					</span>
+				</div>,
 			);
 		}
 
