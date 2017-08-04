@@ -57,6 +57,11 @@ func (d *Database) Sessions() (coll *Collection) {
 	return
 }
 
+func (d *Database) Tasks() (coll *Collection) {
+	coll = d.getCollection("tasks")
+	return
+}
+
 func (d *Database) Tokens() (coll *Collection) {
 	coll = d.getCollection("tokens")
 	return
