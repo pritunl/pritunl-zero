@@ -183,10 +183,12 @@ func Callback(db *database.Database, sig, query string) (
 		domainSpl := strings.SplitN(username, "@", 2)
 		if len(domainSpl) == 2 {
 			domain := domainSpl[1]
-			for _, prv := range settings.Auth.Providers {
-				if prv.Type == Google && prv.Domain == domain {
-					provider = prv
-					break
+			if domain != "" {
+				for _, prv := range settings.Auth.Providers {
+					if prv.Type == Google && prv.Domain == domain {
+						provider = prv
+						break
+					}
 				}
 			}
 		}
