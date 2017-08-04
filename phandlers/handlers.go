@@ -37,7 +37,7 @@ func Register(protocol string, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
-	sessGroup.GET("/", staticIndexGet)
+	engine.GET("/", staticIndexGet)
 }
 
 func init() {
