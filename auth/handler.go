@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -252,6 +253,8 @@ func Callback(db *database.Database, sig, query string) (
 			if err != nil {
 				return
 			}
+
+			event.PublishDispatch(db, "user.change")
 
 			errData, err = usr.Validate(db)
 			if err != nil {
