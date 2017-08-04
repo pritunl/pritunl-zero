@@ -88,7 +88,7 @@ export default class Sessions extends React.Component<Props, State> {
 				hidden={!!sessions.length}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-cloud"/>
+					<span className="pt-icon pt-icon-user"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">No sessions</h4>
 			</div>
