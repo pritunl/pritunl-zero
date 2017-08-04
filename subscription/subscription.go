@@ -135,6 +135,19 @@ func Update() (errData *errortypes.ErrorData, err error) {
 	return
 }
 
+func update() {
+	for {
+		time.Sleep(30 * time.Minute)
+		err, _ := Update()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("subscription: Update error")
+			return
+		}
+	}
+}
+
 func init() {
 	module := requires.New("subscription")
 	module.After("settings")
