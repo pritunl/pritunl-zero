@@ -23567,7 +23567,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
             this.onNew = () => {
                 this.setState(Object.assign({}, this.state, { disabled: true }));
                 UserActions.create(this.state.user).then(() => {
-                    this.setState(Object.assign({}, this.state, { message: 'User has been created', changed: false, disabled: false }));
+                    this.setState(Object.assign({}, this.state, { message: 'User has been created', changed: false, disabled: false, locked: true }));
                 }).catch(() => {
                     this.setState(Object.assign({}, this.state, { message: '', disabled: false }));
                 });
@@ -23600,6 +23600,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
             this.state = {
                 changed: false,
                 disabled: false,
+                locked: false,
                 message: '',
                 addRole: '',
                 user: UserStore_1.default.userM
@@ -23621,25 +23622,25 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
             }
             let roles = [];
             for (let role of user.roles) {
-                roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.role, key: role }, role, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.role, key: role }, role, React.createElement("button", { className: "pt-tag-remove", disabled: this.state.locked, onMouseUp: () => {
                         this.onRemoveRole(role);
                     } })));
             }
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, { label: userId ? 'User Info' : 'New User' }), React.createElement(PageSplit_1.default, null, React.createElement(PagePanel_1.default, { className: "layout vertical" }, React.createElement(PageInput_1.default, { label: "Username", type: "text", placeholder: "Enter username", value: user.username, onChange: val => {
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, { label: userId ? 'User Info' : 'New User' }), React.createElement(PageSplit_1.default, null, React.createElement(PagePanel_1.default, { className: "layout vertical" }, React.createElement(PageInput_1.default, { disabled: this.state.locked, label: "Username", type: "text", placeholder: "Enter username", value: user.username, onChange: val => {
                     this.set('username', val);
-                } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', label: "Password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
-                } }), React.createElement(PageSelect_1.default, { label: "Type", value: user.type, onChange: val => {
+                } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", value: user.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", checked: user.administrator === 'super', onToggle: () => {
+                }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
                     if (this.state.user.administrator === 'super') {
                         this.set('administrator', '');
                     } else {
                         this.set('administrator', 'super');
                     }
-                } }), React.createElement(PageSwitch_1.default, { label: "Disabled", checked: user.disabled, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Disabled", disabled: this.state.locked, checked: user.disabled, onToggle: () => {
                     this.set('disabled', !this.state.user.disabled);
                 } })), React.createElement(PagePanel_1.default, null, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
@@ -23647,11 +23648,11 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                 }, {
                     label: 'Last Active',
                     value: MiscUtils.formatDate(user.last_active) || 'Inactive'
-                }] }), React.createElement(PageDateTime_1.default, { label: "Active Until", value: user.active_until, disabled: user.disabled, onChange: val => {
+                }] }), React.createElement(PageDateTime_1.default, { label: "Active Until", value: user.active_until, disabled: user.disabled || this.state.locked, onChange: val => {
                     this.set('active_until', val);
-                } }))), userId ? React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, onCancel: () => {
+                } }))), userId ? React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', addRole: '', user: UserStore_1.default.userM }));
-                }, onSave: this.onSave }) : React.createElement(PageNew_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, onSave: this.onNew }), React.createElement(Sessions_1.default, { userId: userId }));
+                }, onSave: this.onSave }) : React.createElement(PageNew_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onSave: this.onNew }), React.createElement(Sessions_1.default, { userId: userId }));
         }
     }
     exports.default = UserDetailed;
@@ -27314,7 +27315,7 @@ System.registerDynamic("app/components/PageInput.js", ["npm:react@15.6.1.js"], t
             } else {
                 value = this.props.value;
             }
-            return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: value, onChange: evt => {
+            return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: value, onChange: evt => {
                     this.props.onChange(evt.target.value);
                 } }));
         }
@@ -27348,13 +27349,13 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
             if (this.props.buttonClass) {
                 buttonClass += ' ' + this.props.buttonClass;
             }
-            return React.createElement("div", { className: "pt-control-group", style: css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+            return React.createElement("div", { className: "pt-control-group", style: css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
                     this.props.onChange(evt.target.value);
                 }, onKeyPress: evt => {
                     if (evt.key === 'Enter') {
                         this.props.onSubmit();
                     }
-                } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, onClick: this.props.onSubmit }, this.props.label)));
+                } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, disabled: this.props.disabled, onClick: this.props.onSubmit }, this.props.label)));
         }
     }
     exports.default = PageInputButton;
@@ -27403,7 +27404,7 @@ System.registerDynamic("app/components/PageSwitch.js", ["npm:react@15.6.1.js"], 
     };
     class PageSwitch extends React.Component {
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", checked: this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label));
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", disabled: this.props.disabled, checked: this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label));
         }
     }
     exports.default = PageSwitch;
@@ -30087,7 +30088,7 @@ System.registerDynamic("app/components/PageSelect.js", ["npm:react@15.6.1.js"], 
     };
     class PageSelect extends React.Component {
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label, React.createElement("div", { className: "pt-select" }, React.createElement("select", { value: this.props.value || '', onChange: evt => {
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label, React.createElement("div", { className: "pt-select" }, React.createElement("select", { disabled: this.props.disabled, value: this.props.value || '', onChange: evt => {
                     this.props.onChange(evt.target.value);
                 } }, this.props.children))));
         }
