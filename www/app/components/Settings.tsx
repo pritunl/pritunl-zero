@@ -183,7 +183,7 @@ export default class Settings extends React.Component<{}, State> {
 					<PageInput
 						label="Elasticsearch Address"
 						type="text"
-						placeholder="Enter Elasticsearch address"
+						placeholder="Elasticsearch address"
 						value={this.state.settings.elastic_address}
 						onChange={(val): void => {
 							this.set('elastic_address', val);
