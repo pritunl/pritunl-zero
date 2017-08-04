@@ -18,6 +18,9 @@ func Node() (err error) {
 	}
 
 	routr := &router.Router{}
+
+	routr.Init()
+
 	err = routr.Run()
 	if err != nil {
 		return

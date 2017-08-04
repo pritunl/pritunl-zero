@@ -402,11 +402,6 @@ func (r *Router) watchNode() {
 }
 
 func (r *Router) Run() (err error) {
-	if constants.Production {
-		gin.SetMode(gin.ReleaseMode)
-	} else {
-		gin.SetMode(gin.DebugMode)
-	}
 
 	r.nodeHash = r.hashNode()
 	go r.watchNode()
@@ -427,4 +422,12 @@ func (r *Router) Run() (err error) {
 	}
 
 	return
+}
+
+func (r *Router) Init() {
+	if constants.Production {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
 }
