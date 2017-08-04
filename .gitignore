@@ -9,4 +9,5 @@ Thumbs.db
 *.pyc
 *.egg
 *.egg-info
+build_keys.json
 /pritunl-zero
