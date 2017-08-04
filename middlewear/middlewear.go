@@ -45,15 +45,17 @@ func Session(c *gin.Context) {
 		return
 	}
 
-	_, err = sess.GetUser(db)
-	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			err = nil
-			sess = nil
-			break
-		default:
-			return
+	if sess != nil {
+		_, err = sess.GetUser(db)
+		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				err = nil
+				sess = nil
+				break
+			default:
+				return
+			}
 		}
 	}
 
@@ -71,15 +73,17 @@ func SessionProxy(c *gin.Context) {
 		return
 	}
 
-	_, err = sess.GetUser(db)
-	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			err = nil
-			sess = nil
-			break
-		default:
-			return
+	if sess != nil {
+		_, err = sess.GetUser(db)
+		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				err = nil
+				sess = nil
+				break
+			default:
+				return
+			}
 		}
 	}
 
