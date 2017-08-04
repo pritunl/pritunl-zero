@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/task"
 	"time"
 )
 
@@ -23,6 +24,7 @@ Commands:
 func Init() {
 	logger.Init()
 	requires.Init()
+	task.Init()
 }
 
 func main() {
