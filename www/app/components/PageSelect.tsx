@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	value: string;
 	onChange: (val: string) => void;
@@ -21,6 +22,7 @@ export default class PageSelect extends React.Component<Props, {}> {
 				{this.props.label}
 				<div className="pt-select">
 					<select
+						disabled={this.props.disabled}
 						value={this.props.value || ''}
 						onChange={(evt): void => {
 							this.props.onChange(evt.target.value);

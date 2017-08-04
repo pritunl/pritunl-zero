@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -39,6 +40,7 @@ export default class PageInput extends React.Component<Props, {}> {
 				className="pt-input"
 				style={css.input}
 				type={this.props.type}
+				disabled={this.props.disabled}
 				autoCapitalize="off"
 				spellCheck={false}
 				placeholder={this.props.placeholder}

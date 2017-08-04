@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	checked: boolean;
 	onToggle: () => void;
@@ -20,6 +21,7 @@ export default class PageSwitch extends React.Component<Props, {}> {
 			<label className="pt-control pt-switch" style={css.label}>
 				<input
 					type="checkbox"
+					disabled={this.props.disabled}
 					checked={this.props.checked}
 					onChange={this.props.onToggle}
 				/>

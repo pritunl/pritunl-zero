@@ -4,6 +4,7 @@ import * as React from 'react';
 interface Props {
 	buttonClass?: string;
 	hidden?: boolean;
+	disabled?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -43,6 +44,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 					className="pt-input"
 					style={css.input}
 					type={this.props.type}
+					disabled={this.props.disabled}
 					autoCapitalize="off"
 					spellCheck={false}
 					placeholder={this.props.placeholder}
@@ -60,6 +62,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 			<div>
 				<button
 					className={buttonClass}
+					disabled={this.props.disabled}
 					onClick={this.props.onSubmit}
 				>{this.props.label}</button>
 			</div>
