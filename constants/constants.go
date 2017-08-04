@@ -11,7 +11,6 @@ const (
 	ConfPath          = "/etc/pritunl-zero.json"
 	LogPath           = "/var/log/pritunl-zero.log"
 	TempPath          = "/tmp/pritunl-zero"
-	Production        = true
 	BuildTest         = false
 	StaticRoot        = "/usr/share/pritunl-zero/www"
 	StaticTestingRoot = "www"
@@ -20,7 +19,8 @@ const (
 )
 
 var (
-	Interrupt = false
-	CertPath  = filepath.Join(TempPath, "server.crt")
-	KeyPath   = filepath.Join(TempPath, "server.key")
+	Production = true
+	Interrupt  = false
+	CertPath   = filepath.Join(TempPath, "server.crt")
+	KeyPath    = filepath.Join(TempPath, "server.key")
 )

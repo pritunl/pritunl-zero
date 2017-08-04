@@ -34,6 +34,10 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "start":
+		if flag.Arg(1) == "--debug" {
+			constants.Production = false
+		}
+
 		Init()
 		err := cmd.Node()
 		if err != nil {
