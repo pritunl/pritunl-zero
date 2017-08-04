@@ -25,6 +25,7 @@ interface Props {
 interface State {
 	changed: boolean;
 	disabled: boolean;
+	locked: boolean;
 	message: string;
 	addRole: string;
 	user: UserTypes.User;
@@ -43,6 +44,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 		this.state = {
 			changed: false,
 			disabled: false,
+			locked: false,
 			message: '',
 			addRole: '',
 			user: UserStore.userM,
@@ -98,6 +100,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 				message: 'User has been created',
 				changed: false,
 				disabled: false,
+				locked: true,
 			});
 		}).catch((): void => {
 			this.setState({
@@ -192,6 +195,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					{role}
 					<button
 						className="pt-tag-remove"
+						disabled={this.state.locked}
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -205,6 +209,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 			<PageSplit>
 				<PagePanel className="layout vertical">
 					<PageInput
+						disabled={this.state.locked}
 						label="Username"
 						type="text"
 						placeholder="Enter username"
@@ -215,6 +220,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageInput
 						hidden={user.type !== 'local'}
+						disabled={this.state.locked}
 						label="Password"
 						type="password"
 						placeholder="Change password"
@@ -224,6 +230,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSelect
+						disabled={this.state.locked}
 						label="Type"
 						value={user.type}
 						onChange={(val): void => {
@@ -242,6 +249,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
+						disabled={this.state.locked}
 						buttonClass="pt-intent-success pt-icon-add"
 						label="Add"
 						type="text"
@@ -257,6 +265,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Administrator"
+						disabled={this.state.locked}
 						checked={user.administrator === 'super'}
 						onToggle={(): void => {
 							if (this.state.user.administrator === 'super') {
@@ -268,6 +277,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Disabled"
+						disabled={this.state.locked}
 						checked={user.disabled}
 						onToggle={(): void => {
 							this.set('disabled', !this.state.user.disabled);
@@ -290,7 +300,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageDateTime
 						label="Active Until"
 						value={user.active_until}
-						disabled={user.disabled}
+						disabled={user.disabled || this.state.locked}
 						onChange={(val): void => {
 							this.set('active_until', val);
 						}}
@@ -300,7 +310,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 			{userId ? <PageSave
 				message={this.state.message}
 				changed={this.state.changed}
-				disabled={this.state.disabled}
+				disabled={this.state.disabled || this.state.locked}
 				onCancel={(): void => {
 					this.setState({
 						...this.state,
@@ -314,7 +324,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 			/> : <PageNew
 				message={this.state.message}
 				changed={this.state.changed}
-				disabled={this.state.disabled}
+				disabled={this.state.disabled || this.state.locked}
 				onSave={this.onNew}
 			/>}
 			<Sessions userId={userId}/>
