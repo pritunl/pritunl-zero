@@ -89,7 +89,7 @@ export default class Certificates extends React.Component<{}, State> {
 				hidden={!!certsDom.length}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-cloud"/>
+					<span className="pt-icon pt-icon-endorsed"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">No certificates</h4>
 				<div className="pt-non-ideal-state-description">
