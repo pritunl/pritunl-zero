@@ -154,6 +154,7 @@ func init() {
 
 	module.Handler = func() (err error) {
 		Update()
+		go update()
 		return
 	}
 }
