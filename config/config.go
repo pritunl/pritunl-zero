@@ -13,7 +13,11 @@ import (
 	"time"
 )
 
-var Config = &ConfigData{}
+var (
+	Config            = &ConfigData{}
+	StaticRoot        = ""
+	StaticTestingRoot = ""
+)
 
 type ConfigData struct {
 	path     string `json:"-"`
@@ -116,6 +120,27 @@ func init() {
 	module := requires.New("config")
 
 	module.Handler = func() (err error) {
+		for _, pth := range constants.StaticRoot {
+			exists, _ := utils.ExistsDir(pth)
+			if exists {
+				StaticRoot = pth
+			}
+		}
+		if StaticRoot == "" {
+			StaticRoot = constants.StaticRoot[len(constants.StaticRoot)-1]
+		}
+
+		for _, pth := range constants.StaticTestingRoot {
+			exists, _ := utils.ExistsDir(pth)
+			if exists {
+				StaticTestingRoot = pth
+			}
+		}
+		if StaticTestingRoot == "" {
+			StaticTestingRoot = constants.StaticTestingRoot[len(
+				constants.StaticTestingRoot)-1]
+		}
+
 		err = utils.ExistsMkdir(constants.TempPath, 0700)
 		if err != nil {
 			return

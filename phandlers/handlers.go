@@ -3,6 +3,7 @@ package phandlers
 import (
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -47,9 +48,9 @@ func init() {
 	module.Handler = func() (err error) {
 		root := ""
 		if constants.Production {
-			root = constants.StaticRoot
+			root = config.StaticRoot
 		} else {
-			root = constants.StaticTestingRoot
+			root = config.StaticTestingRoot
 		}
 
 		index, err = static.NewFile(filepath.Join(root, "login.html"))

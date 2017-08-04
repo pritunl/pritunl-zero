@@ -2,6 +2,7 @@ package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/static"
@@ -10,7 +11,7 @@ import (
 )
 
 func staticPath(c *gin.Context, pth string) {
-	pth = constants.StaticRoot + pth
+	pth = config.StaticRoot + pth
 
 	file, ok := store.Files[pth]
 	if !ok {

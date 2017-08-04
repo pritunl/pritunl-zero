@@ -3,6 +3,7 @@ package mhandlers
 import (
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -97,7 +98,7 @@ func Register(protocol string, engine *gin.Engine) {
 		engine.GET("/login", staticLoginGet)
 		authGroup.GET("/static/*path", staticGet)
 	} else {
-		fs := gin.Dir(constants.StaticTestingRoot, false)
+		fs := gin.Dir(config.StaticTestingRoot, false)
 		fileServer = http.FileServer(fs)
 
 		sessGroup.GET("/", staticTestingGet)
@@ -118,7 +119,7 @@ func init() {
 
 	module.Handler = func() (err error) {
 		if constants.Production {
-			store, err = static.NewStore(constants.StaticRoot)
+			store, err = static.NewStore(config.StaticRoot)
 			if err != nil {
 				return
 			}
