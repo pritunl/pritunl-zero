@@ -123,6 +123,20 @@ func Remove(db *database.Database, userIds []bson.ObjectId) (
 		return
 	}
 
+	coll = db.Sessions()
+
+	_, err = coll.RemoveAll(&bson.M{
+		"user_id": &bson.M{
+			"$in": userIds,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.Users()
+
 	_, err = coll.RemoveAll(&bson.M{
 		"_id": &bson.M{
 			"$in": userIds,
