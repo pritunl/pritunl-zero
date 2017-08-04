@@ -304,6 +304,18 @@ func addIndexes() (err error) {
 		}
 	}
 
+	coll = db.Tasks()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:         []string{"timestamp"},
+		ExpireAfter: 720 * time.Hour,
+		Background:  true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
 	coll = db.Events()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"channel"},
