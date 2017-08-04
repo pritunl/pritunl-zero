@@ -98,7 +98,7 @@ export default class Policies extends React.Component<{}, State> {
 				hidden={!!policiesDom.length}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-cloud"/>
+					<span className="pt-icon pt-icon-filter"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">No policies</h4>
 				<div className="pt-non-ideal-state-description">
