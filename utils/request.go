@@ -77,9 +77,13 @@ func ParseObjectId(strId string) (objId bson.ObjectId, ok bool) {
 	return
 }
 
+func GetStatusMessage(code int) string {
+	return fmt.Sprintf("%d %s", code, httpErrCodes[code])
+}
+
 func AbortWithStatus(c *gin.Context, code int) {
 	r := render.String{
-		Format: fmt.Sprintf("%d %s", code, httpErrCodes[code]),
+		Format: GetStatusMessage(code),
 	}
 
 	c.Status(code)
@@ -92,6 +96,20 @@ func AbortWithStatus(c *gin.Context, code int) {
 func AbortWithError(c *gin.Context, code int, err error) {
 	AbortWithStatus(c, code)
 	c.Error(err)
+}
+
+func WriteStatus(w http.ResponseWriter, code int) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(code)
+	fmt.Fprintln(w, GetStatusMessage(code))
+}
+
+func WriteUnauthorized(w http.ResponseWriter, msg string) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(401)
+	fmt.Fprintln(w, "401 %s"+msg)
 }
 
 func CloneHeader(src http.Header) (dst http.Header) {
