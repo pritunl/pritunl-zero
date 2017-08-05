@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"strings"
 )
 
@@ -91,4 +92,14 @@ func AbortWithStatus(c *gin.Context, code int) {
 func AbortWithError(c *gin.Context, code int, err error) {
 	AbortWithStatus(c, code)
 	c.Error(err)
+}
+
+func CloneHeader(src http.Header) (dst http.Header) {
+	dst = make(http.Header, len(src))
+	for k, vv := range src {
+		vv2 := make([]string, len(vv))
+		copy(vv2, vv)
+		dst[k] = vv2
+	}
+	return dst
 }
