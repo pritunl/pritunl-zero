@@ -2,8 +2,10 @@ package mhandlers
 
 import (
 	"context"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"time"
@@ -34,6 +36,9 @@ func eventGet(c *gin.Context) {
 
 	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "mhandlers: Failed to upgrade request"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
