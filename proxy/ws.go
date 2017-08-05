@@ -1,35 +1,72 @@
 package proxy
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
-type WebSocket struct {
-	Director func(*http.Request) (*url.URL, http.Header)
-	upgrader *websocket.Upgrader
+type webSocket struct {
+	serverHost  string
+	serverProto string
+	proxyProto  string
+	proxyPort   int
+	upgrader    *websocket.Upgrader
 }
 
-func (w *WebSocket) Init() {
-	w.upgrader = &websocket.Upgrader{
-		HandshakeTimeout: time.Duration(
-			settings.Router.HandshakeTimeout) * time.Second,
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
+func (w *webSocket) Director(req *http.Request) (
+	u *url.URL, header http.Header) {
+
+	header = utils.CloneHeader(req.Header)
+	u = &url.URL{}
+	*u = *req.URL
+
+	u.Scheme = w.serverProto
+	u.Host = w.serverHost
+
+	header.Set("X-Forwarded-For",
+		strings.Split(req.RemoteAddr, ":")[0])
+	header.Set("X-Forwarded-Proto", w.proxyProto)
+	header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+
+	cookie := header.Get("Cookie")
+	start := strings.Index(cookie, "pritunl-zero=")
+	if start != -1 {
+		str := cookie[start:]
+		end := strings.Index(str, ";")
+		if end != -1 {
+			if len(str) > end+1 && string(str[end+1]) == " " {
+				end += 1
+			}
+			cookie = cookie[:start] + cookie[start+end+1:]
+		} else {
+			cookie = cookie[:start]
+		}
 	}
+
+	cookie = strings.TrimSpace(cookie)
+
+	if len(cookie) > 0 {
+		header.Set("Cookie", cookie)
+	} else {
+		header.Del("Cookie")
+	}
+
+	return
 }
 
-func (w *WebSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	u, header := w.Director(r)
 
 	header.Del("Upgrade")
@@ -84,6 +121,33 @@ func getUpgradeHeaders(resp *http.Response) (header http.Header) {
 	val = resp.Header.Get("Set-Cookie")
 	if val != "" {
 		header.Set("Set-Cookie", val)
+	}
+
+	return
+}
+
+func newWebSocket(proxyProto string, proxyPort int, host *Host,
+	server *service.Server) (ws *webSocket) {
+
+	ws = &webSocket{
+		serverHost: fmt.Sprintf("%s:%d", server.Hostname, server.Port),
+		proxyProto: proxyProto,
+		proxyPort:  proxyPort,
+		upgrader: &websocket.Upgrader{
+			HandshakeTimeout: time.Duration(
+				settings.Router.HandshakeTimeout) * time.Second,
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+	}
+
+	if server.Protocol == "http" {
+		ws.serverProto = "ws"
+	} else {
+		ws.serverProto = "wss"
 	}
 
 	return
