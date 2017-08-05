@@ -31,11 +31,6 @@ func Database(c *gin.Context) {
 	db.Close()
 }
 
-func Service(c *gin.Context) {
-	srvc := node.Self.Handler.Hosts[c.Request.Host].Service
-	c.Set("service", srvc)
-}
-
 func Session(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
