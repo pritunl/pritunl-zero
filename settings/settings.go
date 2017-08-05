@@ -14,6 +14,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Commit(db *database.Database, group interface{}, fields set.Set) (
@@ -189,6 +190,21 @@ func Update(name string) (err error) {
 	return
 }
 
+func update() {
+	for {
+		time.Sleep(30 * time.Second)
+		for name := range registry {
+			err := Update(name)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("settings: Update error")
+				return
+			}
+		}
+	}
+}
+
 func init() {
 	module := requires.New("settings")
 	module.After("database")
@@ -243,6 +259,8 @@ func init() {
 				return
 			}
 		}
+
+		go update()
 
 		return
 	}
