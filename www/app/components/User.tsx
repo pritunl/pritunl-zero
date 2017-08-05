@@ -76,6 +76,24 @@ export default class User extends React.Component<Props, {}> {
 			cardStyle.opacity = 0.6;
 		}
 
+		let userType: string;
+		switch (user.type) {
+			case 'local':
+				userType = 'Local';
+				break;
+			case 'google':
+				userType = 'Google';
+				break;
+			case 'onelogin':
+				userType = 'OneLogin';
+				break;
+			case 'okta':
+				userType = 'Okta';
+				break;
+			default:
+				userType = user.type;
+		}
+
 		return <div
 			className="pt-card pt-row"
 			style={cardStyle}
@@ -98,7 +116,7 @@ export default class User extends React.Component<Props, {}> {
 				</div>
 			</div>
 			<div className="pt-cell" style={css.type}>
-				{user.type}
+				{userType}
 			</div>
 			<div className="pt-cell" style={css.lastActivity}>
 				{MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'}

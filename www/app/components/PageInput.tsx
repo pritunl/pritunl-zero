@@ -24,11 +24,7 @@ const css = {
 export default class PageInput extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		let value: any = this.props.value;
-		if (isNaN(value)) {
-			value = this.props.value || '';
-		} else {
-			value = this.props.value;
-		}
+		value = isNaN(value) ? this.props.value || '' : this.props.value;
 
 		return <label
 			className="pt-label"
