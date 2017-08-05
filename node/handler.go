@@ -6,12 +6,15 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/logger"
+	"github.com/pritunl/pritunl-zero/proxy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
 	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -23,9 +26,10 @@ type Host struct {
 }
 
 type Handler struct {
-	Node    *Node
-	Hosts   map[string]*Host
-	Proxies map[string][]*httputil.ReverseProxy
+	Node      *Node
+	Hosts     map[string]*Host
+	Proxies   map[string][]*httputil.ReverseProxy
+	WsProxies map[string][]*proxy.WebSocket
 }
 
 func (h *Handler) loadServices(db *database.Database) (err error) {
@@ -54,7 +58,7 @@ func (h *Handler) loadServices(db *database.Database) (err error) {
 }
 
 func (h *Handler) initProxy(host *Host, server *service.Server) (
-	proxy *httputil.ReverseProxy) {
+	prxy *httputil.ReverseProxy) {
 
 	dialTimeout := time.Duration(
 		settings.Router.DialTimeout) * time.Second
@@ -103,14 +107,14 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 				server.Port,
 			),
 		},
-		Filters: []string {
+		Filters: []string{
 			"context canceled",
 		},
 	}
 
 	lgr := log.New(writer, "", 0)
 
-	proxy = &httputil.ReverseProxy{
+	prxy = &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			req.Header.Set("X-Forwarded-For",
 				strings.Split(req.RemoteAddr, ":")[0])
@@ -155,8 +159,62 @@ func (h *Handler) initProxy(host *Host, server *service.Server) (
 	return
 }
 
+func (h *Handler) initWsProxy(host *Host, server *service.Server) (
+	prxy *proxy.WebSocket) {
+
+	prxy = &proxy.WebSocket{
+		Director: func(req *http.Request) (u *url.URL, header http.Header) {
+			header = utils.CloneHeader(req.Header)
+			u = &url.URL{}
+			*u = *req.URL
+
+			if server.Protocol == "http" {
+				u.Scheme = "ws"
+			} else {
+				u.Scheme = "wss"
+			}
+			u.Host = fmt.Sprintf("%s:%d", server.Hostname, server.Port)
+
+			header.Set("X-Forwarded-For",
+				strings.Split(req.RemoteAddr, ":")[0])
+			header.Set("X-Forwarded-Proto", h.Node.Protocol)
+			header.Set("X-Forwarded-Port", strconv.Itoa(h.Node.Port))
+
+			cookie := header.Get("Cookie")
+			start := strings.Index(cookie, "pritunl-zero=")
+			if start != -1 {
+				str := cookie[start:]
+				end := strings.Index(str, ";")
+				if end != -1 {
+					if len(str) > end+1 && string(str[end+1]) == " " {
+						end += 1
+					}
+					cookie = cookie[:start] + cookie[start+end+1:]
+				} else {
+					cookie = cookie[:start]
+				}
+			}
+
+			cookie = strings.TrimSpace(cookie)
+
+			if len(cookie) > 0 {
+				header.Set("Cookie", cookie)
+			} else {
+				header.Del("Cookie")
+			}
+
+			return
+		},
+	}
+
+	prxy.Init()
+
+	return
+}
+
 func (h *Handler) initProxies() {
 	proxies := map[string][]*httputil.ReverseProxy{}
+	wsProxies := map[string][]*proxy.WebSocket{}
 
 	for domain, host := range h.Hosts {
 		domainProxies := []*httputil.ReverseProxy{}
@@ -167,9 +225,21 @@ func (h *Handler) initProxies() {
 			)
 		}
 		proxies[domain] = domainProxies
+
+		if host.Service.WebSockets {
+			domainWsProxies := []*proxy.WebSocket{}
+			for _, server := range host.Service.Servers {
+				domainWsProxies = append(
+					domainWsProxies,
+					h.initWsProxy(host, server),
+				)
+			}
+			wsProxies[domain] = domainWsProxies
+		}
 	}
 
 	h.Proxies = proxies
+	h.WsProxies = wsProxies
 
 	return
 }
