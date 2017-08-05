@@ -221,9 +221,14 @@ func (p *Proxy) watchNode() {
 			err := p.update()
 			if err != nil {
 				p.nodeHash = []byte{}
+				p.Hosts = map[string]*Host{}
+				p.wProxies = map[string][]*web{}
+				p.wsProxies = map[string][]*webSocket{}
+
 				logrus.WithFields(logrus.Fields{
 					"error": err,
-				}).Error("proxy: Failed to load proxy")
+				}).Error("proxy: Failed to load proxy state")
+
 				return
 			}
 
