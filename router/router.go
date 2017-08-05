@@ -49,10 +49,10 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 	n := len(proxies)
 
 	if host != nil && ok && n != 0 {
-		//valid := auth.CsrfCheck(w, re, host.Domain.Domain)
-		//if !valid {
-		//	return
-		//}
+		valid := auth.CsrfCheck(w, re, host.Domain.Domain)
+		if !valid {
+			return
+		}
 
 		db := database.GetDatabase()
 		defer db.Close()

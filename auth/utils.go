@@ -100,22 +100,8 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
 		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	}
 
-	referer := r.Header.Get("Referer")
-	if referer != "" {
-		u, err := url.Parse(referer)
-		if err != nil {
-			http.Error(w, "Server error", 500)
-			return false
-		}
-		referer = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-	}
-
 	if origin != "" && origin != match {
 		http.Error(w, "CSRF origin error", 401)
-		return false
-	}
-	if referer != "" && referer != match {
-		http.Error(w, "CSRF referer error", 401)
 		return false
 	}
 
