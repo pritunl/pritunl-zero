@@ -47,7 +47,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if host == nil || wLen == 0 {
-		http.Error(w, "Not found", 404)
+		utils.WriteStatus(w, 404)
 		return true
 	}
 
@@ -61,7 +61,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	cook, sess, err := auth.CookieSessionProxy(db, host.Service, w, r)
 	if err != nil {
-		http.Error(w, "Server error", 500)
+		WriteError(w, r, 500, err)
 		return true
 	}
 
@@ -69,7 +69,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		if cook != nil {
 			err = cook.Remove(db)
 			if err != nil {
-				http.Error(w, "Server error", 500)
+				WriteError(w, r, 500, err)
 				return true
 			}
 		}
@@ -84,7 +84,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			if cook != nil {
 				err = cook.Remove(db)
 				if err != nil {
-					http.Error(w, "Server error", 500)
+					WriteError(w, r, 500, err)
 					return true
 				}
 			}
@@ -92,20 +92,20 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			return false
 		}
 
-		http.Error(w, "Server error", 500)
+		WriteError(w, r, 500, err)
 		return true
 	}
 
 	errData, err := auth.Validate(db, usr, host.Service, r)
 	if err != nil {
-		http.Error(w, "Server error", 500)
+		WriteError(w, r, 500, err)
 		return true
 	}
 
 	if errData != nil {
 		err = cook.Remove(db)
 		if err != nil {
-			http.Error(w, "Server error", 500)
+			WriteError(w, r, 500, err)
 			return true
 		}
 

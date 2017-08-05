@@ -57,7 +57,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		return
 	}
 
-	http.Error(w, "Not found", 404)
+	utils.WriteStatus(w, 404)
 }
 
 func (r *Router) initRedirect() (err error) {

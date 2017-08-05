@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/utils"
 	"net/http"
 	"net/url"
 )
@@ -94,14 +95,14 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
 	if origin != "" {
 		u, err := url.Parse(origin)
 		if err != nil {
-			http.Error(w, "Server error", 500)
+			utils.WriteUnauthorized(w, "CSRF origin invalid")
 			return false
 		}
 		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	}
 
 	if origin != "" && origin != match {
-		http.Error(w, "CSRF origin error", 401)
+		utils.WriteUnauthorized(w, "CSRF origin error")
 		return false
 	}
 
