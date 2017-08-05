@@ -9,18 +9,16 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/acme"
-	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
-	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/phandlers"
+	"github.com/pritunl/pritunl-zero/proxy"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -41,93 +39,7 @@ type Router struct {
 	lock             sync.Mutex
 	redirectServer   *http.Server
 	webServer        *http.Server
-}
-
-func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
-	host := node.Self.Handler.Hosts[hst]
-	proxies, ok := node.Self.Handler.Proxies[hst]
-	wsProxies := node.Self.Handler.WsProxies[hst]
-	n := len(proxies)
-	n2 := 0
-	if wsProxies != nil {
-		n2 = len(wsProxies)
-	}
-
-	if host != nil && ok && n != 0 {
-		valid := auth.CsrfCheck(w, re, host.Domain.Domain)
-		if !valid {
-			return
-		}
-
-		db := database.GetDatabase()
-		defer db.Close()
-
-		cook, sess, err := auth.CookieSessionProxy(db, host.Service, w, re)
-		if err != nil {
-			http.Error(w, "Server error", 500)
-			return
-		}
-
-		if sess == nil {
-			if cook != nil {
-				err = cook.Remove(db)
-				if err != nil {
-					http.Error(w, "Server error", 500)
-					return
-				}
-			}
-
-			r.pRouter.ServeHTTP(w, re)
-			return
-		}
-
-		usr, err := sess.GetUser(db)
-		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				if cook != nil {
-					err = cook.Remove(db)
-					if err != nil {
-						http.Error(w, "Server error", 500)
-						return
-					}
-				}
-
-				r.pRouter.ServeHTTP(w, re)
-				return
-			}
-
-			http.Error(w, "Server error", 500)
-			return
-		}
-
-		errData, err := auth.Validate(db, usr, host.Service, re)
-		if err != nil {
-			http.Error(w, "Server error", 500)
-			return
-		}
-
-		if errData != nil {
-			err = cook.Remove(db)
-			if err != nil {
-				http.Error(w, "Server error", 500)
-				return
-			}
-
-			r.pRouter.ServeHTTP(w, re)
-			return
-		}
-
-		if wsProxies != nil && re.Header.Get("Upgrade") == "websocket" {
-			wsProxies[rand.Intn(n2)].ServeHTTP(w, re)
-			return
-		}
-
-		proxies[rand.Intn(n)].ServeHTTP(w, re)
-		return
-	}
-
-	http.Error(w, "Not found", 404)
+	proxy            *proxy.Proxy
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
@@ -139,7 +51,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		r.mRouter.ServeHTTP(w, re)
 		return
 	} else {
-		r.proxy(w, re, hst)
+		if !r.proxy.ServeHTTP(w, re) {
+			r.pRouter.ServeHTTP(w, re)
+		}
 		return
 	}
 
@@ -235,7 +149,7 @@ func (r *Router) initWeb() (err error) {
 			r.pRouter.Use(gin.Logger())
 		}
 
-		phandlers.Register(r.protocol, r.pRouter)
+		phandlers.Register(r.proxy, r.protocol, r.pRouter)
 	}
 
 	r.webServer = &http.Server{
@@ -440,4 +354,7 @@ func (r *Router) Init() {
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
+
+	r.proxy = &proxy.Proxy{}
+	r.proxy.Init()
 }
