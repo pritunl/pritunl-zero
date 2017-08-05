@@ -32,6 +32,11 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
+	if srvc == nil {
+		utils.AbortWithStatus(c, 404)
+		return
+	}
+
 	usr, errData, err := auth.Local(db, data.Username, data.Password)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -88,6 +93,11 @@ func authCallbackGet(c *gin.Context) {
 	srvc := c.MustGet("service").(*service.Service)
 	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
+
+	if srvc == nil {
+		utils.AbortWithStatus(c, 404)
+		return
+	}
 
 	usr, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
