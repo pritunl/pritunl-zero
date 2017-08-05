@@ -49,6 +49,7 @@ func Session(c *gin.Context) {
 				sess = nil
 				break
 			default:
+				utils.AbortWithError(c, 500, err)
 				return
 			}
 		}
@@ -62,7 +63,16 @@ func SessionProxy(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	srvc := c.MustGet("service").(*service.Service)
 
-	cook, sess, err := auth.CookieSessionProxy(db, srvc, c.Writer, c.Request)
+	if srvc == nil {
+		var sess *session.Session
+		var cook *cookie.Cookie
+		c.Set("session", sess)
+		c.Set("cookie", cook)
+		return
+	}
+
+	cook, sess, err := auth.CookieSessionProxy(
+		db, srvc, c.Writer, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -77,6 +87,7 @@ func SessionProxy(c *gin.Context) {
 				sess = nil
 				break
 			default:
+				utils.AbortWithError(c, 500, err)
 				return
 			}
 		}
