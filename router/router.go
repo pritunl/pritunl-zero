@@ -326,7 +326,6 @@ func (r *Router) watchNode() {
 }
 
 func (r *Router) Run() (err error) {
-
 	r.nodeHash = r.hashNode()
 	go r.watchNode()
 
