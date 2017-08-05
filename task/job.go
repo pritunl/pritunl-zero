@@ -7,7 +7,7 @@ import (
 )
 
 type Job struct {
-	Id        int64         `bson:"_id"`
+	Id        string        `bson:"_id"`
 	Name      string        `bson:"name"`
 	State     string        `bson:"state"`
 	Retry     bool          `bson:"retry"`

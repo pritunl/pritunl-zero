@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
@@ -37,7 +38,8 @@ func (t *Task) run(now time.Time) {
 	defer db.Close()
 
 	job := &Job{
-		Id:        now.Unix() - int64(now.Second()),
+		Id: fmt.Sprintf(
+			"%s-%d", t.Name, now.Unix()-int64(now.Second())),
 		Name:      t.Name,
 		State:     Running,
 		Retry:     t.Retry,
