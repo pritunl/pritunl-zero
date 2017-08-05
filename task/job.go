@@ -11,7 +11,7 @@ type Job struct {
 	Name      string        `bson:"name"`
 	State     string        `bson:"state"`
 	Retry     bool          `bson:"retry"`
-	NodeId    bson.ObjectId `bson:"node_id"`
+	Node      bson.ObjectId `bson:"node"`
 	Timestamp time.Time     `bson:"timestamp"`
 }
 

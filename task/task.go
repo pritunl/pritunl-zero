@@ -43,7 +43,7 @@ func (t *Task) run(now time.Time) {
 		Name:      t.Name,
 		State:     Running,
 		Retry:     t.Retry,
-		NodeId:    node.Self.Id,
+		Node:      node.Self.Id,
 		Timestamp: time.Now(),
 	}
 
