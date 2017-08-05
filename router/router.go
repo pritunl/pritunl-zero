@@ -118,7 +118,7 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 			return
 		}
 
-		if re.Header.Get("Upgrade") == "websocket" && wsProxies != nil {
+		if wsProxies != nil && re.Header.Get("Upgrade") == "websocket" {
 			wsProxies[rand.Intn(n2)].ServeHTTP(w, re)
 			return
 		}
