@@ -10,6 +10,7 @@ const (
 	DatabaseVersion = 1
 	ConfPath        = "/etc/pritunl-zero.json"
 	LogPath         = "/var/log/pritunl-zero.log"
+	LogPath2        = "/var/log/pritunl-zero.log.1"
 	TempPath        = "/tmp/pritunl-zero"
 	StaticCache     = true
 	RetryDelay      = 3 * time.Second
