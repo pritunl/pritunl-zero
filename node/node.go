@@ -38,7 +38,6 @@ type Node struct {
 	Load1              float64                  `bson:"load1" json:"load1"`
 	Load5              float64                  `bson:"load5" json:"load5"`
 	Load15             float64                  `bson:"load15" json:"load15"`
-	Handler            *Handler                 `bson:"-" json:"-"`
 	CertificateObj     *certificate.Certificate `bson:"-" json:"-"`
 	reqLock            sync.Mutex               `bson:"-" json:"-"`
 	reqCount           *list.List               `bson:"-" json:"-"`
@@ -240,13 +239,6 @@ func (n *Node) keepalive() {
 			}).Error("node: Failed to update node")
 		}
 
-		err = n.Handler.Load(db)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("node: Failed to load service domains")
-		}
-
 		err = n.loadCert(db)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -341,15 +333,6 @@ func (n *Node) Init() (err error) {
 	}
 
 	n.reqInit()
-
-	n.Handler = &Handler{
-		Node: n,
-	}
-
-	err = n.Handler.Load(db)
-	if err != nil {
-		return
-	}
 
 	err = n.loadCert(db)
 	if err != nil {
