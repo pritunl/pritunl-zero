@@ -46,7 +46,12 @@ type Router struct {
 func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 	host := node.Self.Handler.Hosts[hst]
 	proxies, ok := node.Self.Handler.Proxies[hst]
+	wsProxies := node.Self.Handler.WsProxies[hst]
 	n := len(proxies)
+	n2 := 0
+	if wsProxies != nil {
+		n2 = len(wsProxies)
+	}
 
 	if host != nil && ok && n != 0 {
 		valid := auth.CsrfCheck(w, re, host.Domain.Domain)
@@ -110,6 +115,11 @@ func (r *Router) proxy(w http.ResponseWriter, re *http.Request, hst string) {
 			}
 
 			r.pRouter.ServeHTTP(w, re)
+			return
+		}
+
+		if re.Header.Get("Upgrade") == "websocket" && wsProxies != nil {
+			wsProxies[rand.Intn(n2)].ServeHTTP(w, re)
 			return
 		}
 
