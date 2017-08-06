@@ -11,7 +11,7 @@ import (
 
 type Session struct {
 	Id         string        `bson:"_id" json:"id"`
-	UserId     bson.ObjectId `bson:"user_id" json:"user_id"`
+	User       bson.ObjectId `bson:"user" json:"user"`
 	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
 	LastActive time.Time     `bson:"last_active" json:"last_active"`
 	Agent      *agent.Agent  `bson:"agent" json:"agent"`
@@ -33,7 +33,7 @@ func (s *Session) GetUser(db *database.Database) (usr *user.User, err error) {
 		return
 	}
 
-	usr, err = user.GetUpdate(db, s.UserId)
+	usr, err = user.GetUpdate(db, s.User)
 	if err != nil {
 		return
 	}

@@ -96,7 +96,7 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	sessions = []*Session{}
 
 	cursor := coll.Find(bson.M{
-		"user_id": userId,
+		"user": userId,
 	}).Iter()
 
 	sess := &Session{}
@@ -130,7 +130,7 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
 	coll := db.Sessions()
 	sess = &Session{
 		Id:         id,
-		UserId:     userId,
+		User:       userId,
 		Timestamp:  time.Now(),
 		LastActive: time.Now(),
 		Agent:      agnt,
