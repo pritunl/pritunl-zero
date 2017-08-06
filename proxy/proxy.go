@@ -191,7 +191,6 @@ func (p *Proxy) hashNode() []byte {
 }
 
 func (p *Proxy) update() (err error) {
-
 	db := database.GetDatabase()
 	defer db.Close()
 
