@@ -15,6 +15,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sync"
+	"github.com/dropbox/godropbox/container/set"
+)
+
+var (
+	webSocketConns = set.NewSet()
+	webSocketConnsLock = sync.Mutex{}
 )
 
 type webSocket struct {
@@ -23,6 +30,43 @@ type webSocket struct {
 	proxyProto  string
 	proxyPort   int
 	upgrader    *websocket.Upgrader
+}
+
+type webSocketConn struct {
+	back *websocket.Conn
+	front *websocket.Conn
+}
+
+func (w* webSocketConn) Run() {
+	webSocketConnsLock.Lock()
+	webSocketConns.Add(w)
+	webSocketConnsLock.Unlock()
+
+	defer func() {
+		webSocketConnsLock.Lock()
+		webSocketConns.Remove(w)
+		webSocketConnsLock.Unlock()
+	}()
+
+	wait := make(chan bool, 2)
+	go func() {
+		io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
+		wait <- true
+	}()
+	go func() {
+		io.Copy(w.front.UnderlyingConn(), w.back.UnderlyingConn())
+		wait <- true
+	}()
+	<-wait
+}
+
+func (w* webSocketConn) Close() {
+	if w.back != nil {
+		w.back.Close()
+	}
+	if w.front != nil {
+		w.front.Close()
+	}
 }
 
 func (w *webSocket) Director(req *http.Request) (
@@ -98,16 +142,12 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 	defer frontConn.Close()
 
-	wait := make(chan bool, 2)
-	go func() {
-		io.Copy(backConn.UnderlyingConn(), frontConn.UnderlyingConn())
-		wait <- true
-	}()
-	go func() {
-		io.Copy(frontConn.UnderlyingConn(), backConn.UnderlyingConn())
-		wait <- true
-	}()
-	<-wait
+	conn := &webSocketConn{
+		front: frontConn,
+		back: backConn,
+	}
+
+	conn.Run()
 }
 
 func getUpgradeHeaders(resp *http.Response) (header http.Header) {
