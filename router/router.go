@@ -289,6 +289,7 @@ func (r *Router) Restart() {
 	}()
 
 	event.WebSocketsStop()
+	proxy.WebSocketsStop()
 
 	r.redirectServer = nil
 	r.webServer = nil
