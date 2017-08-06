@@ -192,3 +192,15 @@ func newWebSocket(proxyProto string, proxyPort int, host *Host,
 
 	return
 }
+
+func WebSocketsStop() {
+	webSocketConnsLock.Lock()
+	for socketInf := range webSocketConns.Iter() {
+		func() {
+			socket := socketInf.(*webSocketConn)
+			socket.Close()
+		}()
+	}
+	webSocketConns = set.NewSet()
+	webSocketConnsLock.Unlock()
+}
