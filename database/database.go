@@ -295,7 +295,7 @@ func addIndexes() (err error) {
 
 	coll = db.Sessions()
 	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"user_id"},
+		Key:        []string{"user"},
 		Background: true,
 	})
 	if err != nil {
