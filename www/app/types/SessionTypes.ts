@@ -20,7 +20,7 @@ export interface Agent {
 
 export interface Session {
 	id: string;
-	user_id?: string;
+	user?: string;
 	timestamp?: string;
 	last_active?: string;
 	agent?: Agent;
