@@ -62,9 +62,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 
 func (r *Router) initRedirect() (err error) {
 	r.redirectServer = &http.Server{
-		Addr:         ":80",
-		ReadTimeout:  1 * time.Minute,
-		WriteTimeout: 1 * time.Minute,
+		Addr:           ":80",
+		ReadTimeout:    1 * time.Minute,
+		WriteTimeout:   1 * time.Minute,
+		MaxHeaderBytes: 8192,
 		Handler: http.HandlerFunc(func(
 			w http.ResponseWriter, req *http.Request) {
 
