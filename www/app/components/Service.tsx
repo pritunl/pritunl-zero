@@ -632,7 +632,7 @@ export default class Service extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<label className="pt-label">
-						Whitelist Networks
+						Whitelisted Networks
 						<div>
 							{whitelistNets}
 						</div>
