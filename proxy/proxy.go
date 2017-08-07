@@ -12,14 +12,16 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"io"
 	"math/rand"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
 )
 
 type Host struct {
-	Service *service.Service
-	Domain  *service.Domain
+	Service           *service.Service
+	Domain            *service.Domain
+	WhitelistNetworks []*net.IPNet
 }
 
 type Proxy struct {
@@ -134,9 +136,25 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 
 	for _, srvc := range srvcs {
 		for _, domain := range srvc.Domains {
+			whitelistNets := []*net.IPNet{}
+
+			for _, cidr := range srvc.WhitelistNetworks {
+				_, network, err := net.ParseCIDR(cidr)
+				if err != nil {
+					logrus.WithFields(logrus.Fields{
+						"network": cidr,
+						"error":   err,
+					}).Error("proxy: Invalid whitelist network")
+					continue
+				}
+
+				whitelistNets = append(whitelistNets, network)
+			}
+
 			srvcDomain := &Host{
-				Service: srvc,
-				Domain:  domain,
+				Service:           srvc,
+				Domain:            domain,
+				WhitelistNetworks: whitelistNets,
 			}
 
 			hosts[domain.Domain] = srvcDomain
