@@ -20,6 +20,7 @@ interface State {
 	changed: boolean;
 	message: string;
 	addRole: string;
+	addWhitelistNet: string;
 	service: ServiceTypes.Service;
 }
 
@@ -34,7 +35,7 @@ const css = {
 		top: '5px',
 		right: '5px',
 	} as React.CSSProperties,
-	role: {
+	item: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
 	} as React.CSSProperties,
@@ -61,6 +62,7 @@ export default class Service extends React.Component<Props, State> {
 			changed: false,
 			message: '',
 			addRole: '',
+			addWhitelistNet: '',
 			service: null,
 		};
 	}
@@ -206,6 +208,79 @@ export default class Service extends React.Component<Props, State> {
 			changed: true,
 			message: '',
 			addRole: '',
+			service: service,
+		});
+	}
+
+	onAddWhitelistNet = (): void => {
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
+
+		let whitelist_networks = [
+			...service.whitelist_networks,
+		];
+
+		if (!this.state.addWhitelistNet) {
+			return;
+		}
+
+		if (whitelist_networks.indexOf(this.state.addWhitelistNet) === -1) {
+			whitelist_networks.push(this.state.addWhitelistNet);
+		}
+
+		whitelist_networks.sort();
+
+		service.whitelist_networks = whitelist_networks;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addWhitelistNet: '',
+			service: service,
+		});
+	}
+
+	onRemoveWhitelistNet(whitelistNet: string): void {
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
+
+		let whitelist_networks = [
+			...service.whitelist_networks,
+		];
+
+		let i = whitelist_networks.indexOf(whitelistNet);
+		if (i === -1) {
+			return;
+		}
+
+		whitelist_networks.splice(i, 1);
+
+		service.whitelist_networks = whitelist_networks;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addWhitelistNet: '',
 			service: service,
 		});
 	}
@@ -413,7 +488,7 @@ export default class Service extends React.Component<Props, State> {
 			roles.push(
 				<div
 					className="pt-tag pt-tag-removable pt-intent-primary"
-					style={css.role}
+					style={css.item}
 					key={role}
 				>
 					{role}
@@ -442,6 +517,25 @@ export default class Service extends React.Component<Props, State> {
 						this.onRemoveServer(index);
 					}}
 				/>,
+			);
+		}
+
+		let whitelistNets: JSX.Element[] = [];
+		for (let whitelistNet of service.whitelist_networks) {
+			whitelistNets.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={whitelistNet}
+				>
+					{whitelistNet}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveWhitelistNet(whitelistNet);
+						}}
+					/>
+				</div>,
 			);
 		}
 
@@ -536,6 +630,26 @@ export default class Service extends React.Component<Props, State> {
 							});
 						}}
 						onSubmit={this.onAddRole}
+					/>
+					<label className="pt-label">
+						Whitelist Networks
+						<div>
+							{whitelistNets}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success pt-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add network"
+						value={this.state.addWhitelistNet}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addWhitelistNet: val,
+							});
+						}}
+						onSubmit={this.onAddWhitelistNet}
 					/>
 				</div>
 			</div>
