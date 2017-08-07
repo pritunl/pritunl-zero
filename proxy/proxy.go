@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"crypto/md5"
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/database"
@@ -9,11 +8,9 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
-	"io"
 	"math/rand"
 	"net"
 	"net/http"
-	"strconv"
 	"time"
 )
 
