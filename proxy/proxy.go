@@ -57,6 +57,21 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
+	clientIp := net.ParseIP(node.Self.GetRemoteAddr(r))
+	if clientIp != nil {
+		for _, network := range host.WhitelistNetworks {
+			if network.Contains(clientIp) {
+				if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
+					wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r)
+					return true
+				}
+
+				wProxies[rand.Intn(wLen)].ServeHTTP(w, r)
+				return true
+			}
+		}
+	}
+
 	db := database.GetDatabase()
 	defer db.Close()
 
