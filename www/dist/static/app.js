@@ -15277,9 +15277,26 @@ System.registerDynamic("app/components/User.js", ["npm:react@15.6.1.js", "npm:re
             if (user.disabled) {
                 cardStyle.opacity = 0.6;
             }
+            let userType;
+            switch (user.type) {
+                case 'local':
+                    userType = 'Local';
+                    break;
+                case 'google':
+                    userType = 'Google';
+                    break;
+                case 'onelogin':
+                    userType = 'OneLogin';
+                    break;
+                case 'okta':
+                    userType = 'Okta';
+                    break;
+                default:
+                    userType = user.type;
+            }
             return React.createElement("div", { className: "pt-card pt-row", style: cardStyle }, React.createElement("div", { className: "pt-cell", style: css.name }, React.createElement("div", { className: "layout horizontal" }, React.createElement("label", { className: "pt-control pt-checkbox", style: css.select }, React.createElement("input", { type: "checkbox", checked: this.props.selected, onClick: evt => {
                     this.props.onSelect(evt.shiftKey);
-                } }), React.createElement("span", { className: "pt-control-indicator" })), React.createElement(ReactRouter.Link, { to: '/user/' + user.id, style: css.nameLink }, user.username))), React.createElement("div", { className: "pt-cell", style: css.type }, user.type), React.createElement("div", { className: "pt-cell", style: css.lastActivity }, MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'), React.createElement("div", { className: "flex pt-cell", style: css.roles }, React.createElement("span", { className: "pt-tag pt-intent-danger", style: css.tag, hidden: !user.administrator }, "admin"), roles));
+                } }), React.createElement("span", { className: "pt-control-indicator" })), React.createElement(ReactRouter.Link, { to: '/user/' + user.id, style: css.nameLink }, user.username))), React.createElement("div", { className: "pt-cell", style: css.type }, userType), React.createElement("div", { className: "pt-cell", style: css.lastActivity }, MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'), React.createElement("div", { className: "flex pt-cell", style: css.roles }, React.createElement("span", { className: "pt-tag pt-intent-danger", style: css.tag, hidden: !user.administrator }, "admin"), roles));
         }
     }
     exports.default = User;
@@ -26807,7 +26824,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
             top: '5px',
             right: '5px'
         },
-        role: {
+        item: {
             margin: '9px 5px 0 5px',
             height: '20px'
         },
@@ -26867,6 +26884,24 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                 service.roles = roles;
                 this.setState(Object.assign({}, this.state, { changed: true, message: '', addRole: '', service: service }));
             };
+            this.onAddWhitelistNet = () => {
+                let service;
+                if (this.state.changed) {
+                    service = Object.assign({}, this.state.service);
+                } else {
+                    service = Object.assign({}, this.props.service);
+                }
+                let whitelist_networks = [...service.whitelist_networks];
+                if (!this.state.addWhitelistNet) {
+                    return;
+                }
+                if (whitelist_networks.indexOf(this.state.addWhitelistNet) === -1) {
+                    whitelist_networks.push(this.state.addWhitelistNet);
+                }
+                whitelist_networks.sort();
+                service.whitelist_networks = whitelist_networks;
+                this.setState(Object.assign({}, this.state, { changed: true, message: '', addWhitelistNet: '', service: service }));
+            };
             this.onAddServer = () => {
                 let service;
                 if (this.state.changed) {
@@ -26898,6 +26933,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                 changed: false,
                 message: '',
                 addRole: '',
+                addWhitelistNet: '',
                 service: null
             };
         }
@@ -26926,6 +26962,22 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
             roles.splice(i, 1);
             service.roles = roles;
             this.setState(Object.assign({}, this.state, { changed: true, message: '', addRole: '', service: service }));
+        }
+        onRemoveWhitelistNet(whitelistNet) {
+            let service;
+            if (this.state.changed) {
+                service = Object.assign({}, this.state.service);
+            } else {
+                service = Object.assign({}, this.props.service);
+            }
+            let whitelist_networks = [...service.whitelist_networks];
+            let i = whitelist_networks.indexOf(whitelistNet);
+            if (i === -1) {
+                return;
+            }
+            whitelist_networks.splice(i, 1);
+            service.whitelist_networks = whitelist_networks;
+            this.setState(Object.assign({}, this.state, { changed: true, message: '', addWhitelistNet: '', service: service }));
         }
         onChangeServer(i, state) {
             let service;
@@ -26988,7 +27040,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
             }
             let roles = [];
             for (let role of service.roles) {
-                roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.role, key: role }, role, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: role }, role, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
                         this.onRemoveRole(role);
                     } })));
             }
@@ -27001,18 +27053,26 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                         this.onRemoveServer(index);
                     } }));
             }
+            let whitelistNets = [];
+            for (let whitelistNet of service.whitelist_networks) {
+                whitelistNets.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: whitelistNet }, whitelistNet, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                        this.onRemoveWhitelistNet(whitelistNet);
+                    } })));
+            }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement("label", { style: css.itemsLabel }, "External Domains"), domains, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers"), servers, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server")), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
-                    label: 'ID',
-                    value: service.id || 'None'
-                }] }), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", checked: service.share_session, onToggle: () => {
+                } }), React.createElement("label", { style: css.itemsLabel }, "External Domains"), domains, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers"), servers, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", checked: service.share_session, onToggle: () => {
                     this.set('share_session', !service.share_session);
                 } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", checked: service.websockets, onToggle: () => {
                     this.set('websockets', !service.websockets);
-                } }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                    label: 'ID',
+                    value: service.id || 'None'
+                }] }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Whitelist Networks", React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
+                    this.setState(Object.assign({}, this.state, { addWhitelistNet: val }));
+                }, onSubmit: this.onAddWhitelistNet }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, service: null }));
                 }, onSave: this.onSave }));
         }
@@ -27310,11 +27370,7 @@ System.registerDynamic("app/components/PageInput.js", ["npm:react@15.6.1.js"], t
     class PageInput extends React.Component {
         render() {
             let value = this.props.value;
-            if (isNaN(value)) {
-                value = this.props.value || '';
-            } else {
-                value = this.props.value;
-            }
+            value = isNaN(value) ? this.props.value || '' : this.props.value;
             return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: value, onChange: evt => {
                     this.props.onChange(evt.target.value);
                 } }));
