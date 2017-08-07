@@ -21,6 +21,7 @@ export interface Service {
 	domains?: Domain[];
 	roles?: string[];
 	servers?: Server[];
+	whitelist_networks?: string[];
 }
 
 export type Services = Service[];
