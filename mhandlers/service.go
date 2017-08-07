@@ -11,13 +11,14 @@ import (
 )
 
 type serviceData struct {
-	Id           bson.ObjectId     `json:"id"`
-	Name         string            `json:"name"`
-	ShareSession bool              `json:"share_session"`
-	WebSockets   bool              `json:"websockets"`
-	Domains      []*service.Domain `json:"domains"`
-	Roles        []string          `json:"roles"`
-	Servers      []*service.Server `json:"servers"`
+	Id                bson.ObjectId     `json:"id"`
+	Name              string            `json:"name"`
+	ShareSession      bool              `json:"share_session"`
+	WebSockets        bool              `json:"websockets"`
+	Domains           []*service.Domain `json:"domains"`
+	Roles             []string          `json:"roles"`
+	Servers           []*service.Server `json:"servers"`
+	WhitelistNetworks []string          `json:"whitelist_networks"`
 }
 
 func servicePut(c *gin.Context) {
@@ -48,6 +49,7 @@ func servicePut(c *gin.Context) {
 	srvce.Domains = data.Domains
 	srvce.Roles = data.Roles
 	srvce.Servers = data.Servers
+	srvce.WhitelistNetworks = data.WhitelistNetworks
 
 	fields := set.NewSet(
 		"name",
@@ -56,6 +58,7 @@ func servicePut(c *gin.Context) {
 		"domains",
 		"roles",
 		"servers",
+		"whitelist_networks",
 	)
 
 	errData, err := srvce.Validate(db)
@@ -94,12 +97,13 @@ func servicePost(c *gin.Context) {
 	}
 
 	srvce := &service.Service{
-		Name:         data.Name,
-		ShareSession: data.ShareSession,
-		WebSockets:   data.WebSockets,
-		Roles:        data.Roles,
-		Domains:      data.Domains,
-		Servers:      data.Servers,
+		Name:              data.Name,
+		ShareSession:      data.ShareSession,
+		WebSockets:        data.WebSockets,
+		Roles:             data.Roles,
+		Domains:           data.Domains,
+		Servers:           data.Servers,
+		WhitelistNetworks: data.WhitelistNetworks,
 	}
 
 	err = srvce.Insert(db)
