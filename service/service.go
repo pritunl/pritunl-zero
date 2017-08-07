@@ -78,8 +78,9 @@ func (s *Service) Validate(db *database.Database) (
 	}
 
 	for _, cidr := range s.WhitelistNetworks {
-		_, _, err := net.ParseCIDR(cidr)
+		_, _, err = net.ParseCIDR(cidr)
 		if err != nil {
+			err = nil
 			errData = &errortypes.ErrorData{
 				Error:   "whitelist_network_invalid",
 				Message: "Whitelist network not a valid subnet",
