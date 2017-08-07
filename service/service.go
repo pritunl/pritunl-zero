@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"gopkg.in/mgo.v2/bson"
+	"net"
 	"sort"
 )
 
@@ -71,6 +72,17 @@ func (s *Service) Validate(db *database.Database) (
 			errData = &errortypes.ErrorData{
 				Error:   "service_port_invalid",
 				Message: "Invalid service server port",
+			}
+			return
+		}
+	}
+
+	for _, cidr := range s.WhitelistNetworks {
+		_, _, err := net.ParseCIDR(cidr)
+		if err != nil {
+			errData = &errortypes.ErrorData{
+				Error:   "whitelist_network_invalid",
+				Message: "Whitelist network not a valid subnet",
 			}
 			return
 		}
