@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"bytes"
 	"crypto/md5"
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/auth"
@@ -196,18 +195,6 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 	return
 }
 
-func (p *Proxy) hashNode() []byte {
-	hash := md5.New()
-	io.WriteString(hash, node.Self.Protocol)
-	io.WriteString(hash, strconv.Itoa(node.Self.Port))
-
-	for _, srvc := range node.Self.Services {
-		io.WriteString(hash, srvc.String())
-	}
-
-	return hash.Sum(nil)
-}
-
 func (p *Proxy) update() (err error) {
 	db := database.GetDatabase()
 	defer db.Close()
@@ -231,28 +218,21 @@ func (p *Proxy) update() (err error) {
 
 func (p *Proxy) watchNode() {
 	for {
-		hash := p.hashNode()
-		if bytes.Compare(p.nodeHash, hash) != 0 {
-			p.nodeHash = hash
+		err := p.update()
+		if err != nil {
+			p.nodeHash = []byte{}
+			p.Hosts = map[string]*Host{}
+			p.wProxies = map[string][]*web{}
+			p.wsProxies = map[string][]*webSocket{}
 
-			err := p.update()
-			if err != nil {
-				p.nodeHash = []byte{}
-				p.Hosts = map[string]*Host{}
-				p.wProxies = map[string][]*web{}
-				p.wsProxies = map[string][]*webSocket{}
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("proxy: Failed to load proxy state")
 
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("proxy: Failed to load proxy state")
-
-				return
-			}
-
-			time.Sleep(2 * time.Second)
+			return
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 
 	return
