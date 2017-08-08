@@ -12,4 +12,5 @@ type Event struct {
 	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
 	Type      string        `bson:"type" json:"type"`
 	Agent     *agent.Agent  `bson:"agent" json:"agent"`
+	Message   string        `bson:"message" json:"message"`
 }
