@@ -225,7 +225,7 @@ export default class Service extends React.Component<Props, State> {
 			};
 		}
 
-		let whitelist_networks = [
+		let whitelistNets = [
 			...service.whitelist_networks,
 		];
 
@@ -233,13 +233,13 @@ export default class Service extends React.Component<Props, State> {
 			return;
 		}
 
-		if (whitelist_networks.indexOf(this.state.addWhitelistNet) === -1) {
-			whitelist_networks.push(this.state.addWhitelistNet);
+		if (whitelistNets.indexOf(this.state.addWhitelistNet) === -1) {
+			whitelistNets.push(this.state.addWhitelistNet);
 		}
 
-		whitelist_networks.sort();
+		whitelistNets.sort();
 
-		service.whitelist_networks = whitelist_networks;
+		service.whitelist_networks = whitelistNets;
 
 		this.setState({
 			...this.state,
