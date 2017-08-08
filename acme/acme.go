@@ -24,7 +24,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	logrus.WithFields(logrus.Fields{
 		"certificate": cert.Name,
 		"domains":     cert.AcmeDomains,
-	}).Info("router: Generating acme certificate")
+	}).Info("acme: Generating acme certificate")
 
 	if cert.AcmeDomains == nil || len(cert.AcmeDomains) == 0 {
 		err = &errortypes.UnknownError{
