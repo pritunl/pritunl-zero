@@ -14,12 +14,6 @@ sed -i 's|lib/node/index.js|lib/client.js|g' jspm_packages/npm/superagent@*.js
 tslint -c tslint.json app/**/*.ts*
 ```
 
-#### clean
-
-```
-find app/ -name "*.js*" -delete
-```
-
 ### development
 
 ```
