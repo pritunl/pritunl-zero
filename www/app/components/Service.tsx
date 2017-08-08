@@ -263,18 +263,18 @@ export default class Service extends React.Component<Props, State> {
 			};
 		}
 
-		let whitelist_networks = [
+		let whitelistNets = [
 			...service.whitelist_networks,
 		];
 
-		let i = whitelist_networks.indexOf(whitelistNet);
+		let i = whitelistNets.indexOf(whitelistNet);
 		if (i === -1) {
 			return;
 		}
 
-		whitelist_networks.splice(i, 1);
+		whitelistNets.splice(i, 1);
 
-		service.whitelist_networks = whitelist_networks;
+		service.whitelist_networks = whitelistNets;
 
 		this.setState({
 			...this.state,
