@@ -52,11 +52,3 @@ mv build.js.map dist/static/app.js.map
 cp index_dist.html dist/index.html
 cp login.html dist/login.html
 ```
-
-#### intellij settings
-
-Languages & Frameworks -> TypeScript: `Use TypeScript Service`
-
-Languages & Frameworks -> TypeScript: `Uncheck Enable TypeScript Compiler`
-
-Usage Scope: `!file:*.js`
