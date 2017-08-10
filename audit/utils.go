@@ -30,7 +30,7 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 
 	cursor := coll.Find(bson.M{
 		"u": userId,
-	}).Iter()
+	}).Sort("-$natural").Iter()
 
 	adt := &Audit{}
 	for cursor.Next(adt) {
