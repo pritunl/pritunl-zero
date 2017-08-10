@@ -5,7 +5,6 @@ import * as MiscUtils from '../utils/MiscUtils';
 import * as Constants from '../Constants';
 import * as SessionActions from '../actions/SessionActions';
 import PageInfo from './PageInfo';
-import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	session: SessionTypes.SessionRo;
