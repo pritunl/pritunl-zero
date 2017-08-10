@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"time"
 )
 
@@ -31,6 +32,30 @@ func (e *Event) Insert(db *database.Database) (err error) {
 	err = coll.Insert(e)
 	if err != nil {
 		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func NewEvent(db *database.Database, r *http.Request,
+	userId bson.ObjectId, typ, msg string) (err error) {
+
+	agnt, err := agent.Parse(db, r)
+	if err != nil {
+		return
+	}
+
+	evt := &Event{
+		User:      userId,
+		Timestamp: time.Now(),
+		Type:      typ,
+		Message:   msg,
+		Agent:     agnt,
+	}
+
+	err = evt.Insert(db)
+	if err != nil {
 		return
 	}
 
