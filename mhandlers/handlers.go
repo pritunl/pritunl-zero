@@ -38,6 +38,8 @@ func Register(protocol string, engine *gin.Engine) {
 
 	engine.NoRoute(middlewear.NotFound)
 
+	csrfGroup.GET("/audit/:user_id", auditsGet)
+
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
 	dbGroup.GET("/auth/request", authRequestGet)
