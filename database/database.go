@@ -102,6 +102,11 @@ func (d *Database) Logs() (coll *Collection) {
 	return
 }
 
+func (d *Database) Audits() (coll *Collection) {
+	coll = d.getCollection("audits")
+	return
+}
+
 func (d *Database) Geo() (coll *Collection) {
 	coll = d.getCollection("geo")
 	return
