@@ -14,8 +14,8 @@ type Event struct {
 	User      bson.ObjectId `bson:"u" json:"user"`
 	Timestamp time.Time     `bson:"t" json:"timestamp"`
 	Type      string        `bson:"y" json:"type"`
-	Agent     *agent.Agent  `bson:"a" json:"agent"`
 	Message   string        `bson:"m" json:"message"`
+	Agent     *agent.Agent  `bson:"a" json:"agent"`
 }
 
 func (e *Event) Insert(db *database.Database) (err error) {
