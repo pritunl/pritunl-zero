@@ -75,7 +75,7 @@ export default class Audits extends React.Component<Props, State> {
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
-					<h2 style={css.heading}>User Audits</h2>
+					<h2 style={css.heading}>User Audit Events</h2>
 					<div className="flex"/>
 				</div>
 			</PageHeader>
@@ -90,7 +90,7 @@ export default class Audits extends React.Component<Props, State> {
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
 					<span className="pt-icon pt-icon-search-template"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">No audits</h4>
+				<h4 className="pt-non-ideal-state-title">No audit events</h4>
 			</div>
 		</div>;
 	}
