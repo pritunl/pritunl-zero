@@ -265,6 +265,17 @@ func addIndexes() (err error) {
 		}
 	}
 
+	coll = db.Audits()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"user"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
 	coll = db.Policies()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"roles"},
