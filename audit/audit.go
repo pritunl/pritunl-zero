@@ -11,11 +11,11 @@ import (
 
 type Event struct {
 	Id        bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	User      bson.ObjectId `bson:"user" json:"user"`
-	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
-	Type      string        `bson:"type" json:"type"`
-	Agent     *agent.Agent  `bson:"agent" json:"agent"`
-	Message   string        `bson:"message" json:"message"`
+	User      bson.ObjectId `bson:"u" json:"user"`
+	Timestamp time.Time     `bson:"t" json:"timestamp"`
+	Type      string        `bson:"y" json:"type"`
+	Agent     *agent.Agent  `bson:"a" json:"agent"`
+	Message   string        `bson:"m" json:"message"`
 }
 
 func (e *Event) Insert(db *database.Database) (err error) {
