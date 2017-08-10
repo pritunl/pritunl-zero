@@ -2,6 +2,7 @@ package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
@@ -47,7 +48,34 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.AdminLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			return
+		}
+
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminLogin,
+		audit.Fields{
+			"method": "local",
+		},
+	)
+	if err != nil {
 		return
 	}
 
@@ -109,7 +137,34 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.AdminLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			return
+		}
+
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminLogin,
+		audit.Fields{
+			"method": "sso",
+		},
+	)
+	if err != nil {
 		return
 	}
 
