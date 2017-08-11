@@ -4,6 +4,7 @@ package session
 import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -16,6 +17,26 @@ type Session struct {
 	LastActive time.Time     `bson:"last_active" json:"last_active"`
 	Agent      *agent.Agent  `bson:"agent" json:"agent"`
 	user       *user.User    `bson:"-" json:"-"`
+}
+
+func (s *Session) Active() bool {
+	if settings.Auth.Expire != 0 {
+		if time.Since(s.LastActive) > time.Duration(
+			settings.Auth.Expire)*time.Hour {
+
+			return false
+		}
+	}
+
+	if settings.Auth.MaxDuration != 0 {
+		if time.Since(s.Timestamp) > time.Duration(
+			settings.Auth.MaxDuration)*time.Hour {
+
+			return false
+		}
+	}
+
+	return true
 }
 
 func (s *Session) Remove(db *database.Database) (err error) {
