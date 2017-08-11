@@ -2,6 +2,7 @@ package phandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
@@ -44,6 +45,20 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.LoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
@@ -55,6 +70,19 @@ func authSessionPost(c *gin.Context) {
 
 	if errData != nil {
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.Login,
+		audit.Fields{
+			"method": "local",
+		},
+	)
+	if err != nil {
 		return
 	}
 
@@ -112,6 +140,20 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.LoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
@@ -123,6 +165,19 @@ func authCallbackGet(c *gin.Context) {
 
 	if errData != nil {
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.Login,
+		audit.Fields{
+			"method": "sso",
+		},
+	)
+	if err != nil {
 		return
 	}
 
