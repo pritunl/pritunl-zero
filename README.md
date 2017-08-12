@@ -1,4 +1,4 @@
-# pritunl-zero: zero trust system
+# pritunl-zero: zero trust system (beta)
 
 [![github](https://img.shields.io/badge/github-pritunl-11bdc2.svg?style=flat)](https://github.com/pritunl)
 [![twitter](https://img.shields.io/badge/twitter-pritunl-55acee.svg?style=flat)](https://twitter.com/pritunl)
