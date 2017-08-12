@@ -1,22 +1,8 @@
 /// <reference path="../References.d.ts"/>
+import * as AgentTyeps from './AgentTypes';
+
 export const SYNC = 'audit.sync';
 export const CHANGE = 'audit.change';
-
-export interface Agent {
-	operating_system?: string;
-	browser?: string;
-	ip?: string;
-	isp?: string;
-	continent?: string;
-	continent_code?: string;
-	country?: string;
-	country_code?: string;
-	region?: string;
-	region_code?: string;
-	city?: string;
-	latitude?: number;
-	longitude?: number;
-}
 
 export interface Audit {
 	id: string;
@@ -24,7 +10,7 @@ export interface Audit {
 	timestamp?: string;
 	type?: string;
 	fields?: {[key: string]: string};
-	agent?: Agent;
+	agent?: AgentTyeps.Agent;
 }
 
 export type Audits = Audit[];

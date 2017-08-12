@@ -1,29 +1,15 @@
 /// <reference path="../References.d.ts"/>
+import * as AgentTyeps from './AgentTypes';
+
 export const SYNC = 'session.sync';
 export const CHANGE = 'session.change';
-
-export interface Agent {
-	operating_system?: string;
-	browser?: string;
-	ip?: string;
-	isp?: string;
-	continent?: string;
-	continent_code?: string;
-	country?: string;
-	country_code?: string;
-	region?: string;
-	region_code?: string;
-	city?: string;
-	latitude?: number;
-	longitude?: number;
-}
 
 export interface Session {
 	id: string;
 	user?: string;
 	timestamp?: string;
 	last_active?: string;
-	agent?: Agent;
+	agent?: AgentTyeps.Agent;
 }
 
 export type Sessions = Session[];
