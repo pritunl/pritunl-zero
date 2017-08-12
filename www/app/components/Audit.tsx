@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as AuditTypes from '../types/AuditTypes';
 import * as Constants from '../Constants';
+import * as AgentUtils from '../utils/AgentUtils';
 import PageInfo from './PageInfo';
 
 interface Props {
@@ -27,20 +28,6 @@ export default class Audit extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		let audit = this.props.audit;
 		let agent = audit.agent || {};
-
-		let continent = agent.continent && agent.continent_code ?
-			agent.continent + ' (' + agent.continent_code + ')' :
-			agent.continent || agent.continent_code || 'Unknown';
-
-		let location = (agent.city ? agent.city + ', ' : '') +
-			(agent.region || 'Unknown') +
-			(agent.region_code ? ' (' + agent.region_code + ')' : '');
-		let country = (agent.country || 'Unknown') +
-			(agent.country_code ? ' (' + agent.country_code + ')' : '');
-
-		let coordinates = agent.latitude && agent.longitude ?
-			agent.latitude + ', ' + agent.longitude : 'Unknown';
-
 
 		let fields: string[] = [];
 		for (let key in audit.fields) {
@@ -100,11 +87,15 @@ export default class Audit extends React.Component<Props, {}> {
 						fields={[
 							{
 								label: 'Location',
-								value: [location, country, continent],
+								value: [
+									AgentUtils.formatLocation(agent),
+									AgentUtils.formatCountry(agent),
+									AgentUtils.formatContinent(agent),
+								],
 							},
 							{
 								label: 'Coordinates',
-								value: coordinates,
+								value: AgentUtils.formatCoordinates(agent),
 							},
 						]}
 					/>
