@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as SessionTypes from '../types/SessionTypes';
 import * as MiscUtils from '../utils/MiscUtils';
+import * as AgentUtils from '../utils/AgentUtils';
 import * as Constants from '../Constants';
 import * as SessionActions from '../actions/SessionActions';
 import PageInfo from './PageInfo';
@@ -64,19 +65,6 @@ export default class Session extends React.Component<Props, State> {
 		let session = this.props.session;
 		let agent = session.agent || {};
 
-		let continent = agent.continent && agent.continent_code ?
-			agent.continent + ' (' + agent.continent_code + ')' :
-			agent.continent || agent.continent_code || 'Unknown';
-
-		let location = (agent.city ? agent.city + ', ' : '') +
-			(agent.region || 'Unknown') +
-			(agent.region_code ? ' (' + agent.region_code + ')' : '');
-		let country = (agent.country || 'Unknown') +
-			(agent.country_code ? ' (' + agent.country_code + ')' : '');
-
-		let coordinates = agent.latitude && agent.longitude ?
-			agent.latitude + ', ' + agent.longitude : 'Unknown';
-
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -135,11 +123,15 @@ export default class Session extends React.Component<Props, State> {
 						fields={[
 							{
 								label: 'Location',
-								value: [location, country, continent],
+								value: [
+									AgentUtils.formatLocation(agent),
+									AgentUtils.formatCountry(agent),
+									AgentUtils.formatContinent(agent),
+								],
 							},
 							{
 								label: 'Coordinates',
-								value: coordinates,
+								value: AgentUtils.formatCoordinates(agent),
 							},
 						]}
 					/>
