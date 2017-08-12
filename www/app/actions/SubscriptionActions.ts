@@ -94,7 +94,6 @@ export function checkout(plan: string, card: string,
 				email: email,
 			})
 			.set('Accept', 'application/json')
-			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -125,7 +124,6 @@ export function payment(key: string, plan: string, card: string,
 				email: email,
 			})
 			.set('Accept', 'application/json')
-			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
@@ -152,7 +150,6 @@ export function cancel(key: string): Promise<void> {
 				key: key,
 			})
 			.set('Accept', 'application/json')
-			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
