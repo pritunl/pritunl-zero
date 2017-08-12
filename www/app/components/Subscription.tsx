@@ -253,7 +253,7 @@ export default class Subscription extends React.Component<{}, State> {
 						onScriptError={(err): void => {
 							Alert.error('Failed to load Stripe Checkout');
 						}}
-						stripeKey="pk_test_4YSuzxPmd08oSV2s4kLi7zU2"
+						stripeKey="pk_live_plmoOl3lS3k5dMNQViZWGfVR"
 					>
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
@@ -405,7 +405,7 @@ export default class Subscription extends React.Component<{}, State> {
 						onScriptError={(err): void => {
 							Alert.error('Failed to load Stripe Checkout');
 						}}
-						stripeKey="pk_test_4YSuzxPmd08oSV2s4kLi7zU2"
+						stripeKey="pk_live_plmoOl3lS3k5dMNQViZWGfVR"
 					>
 						<button
 							className="pt-button pt-intent-success pt-icon-credit-card"
