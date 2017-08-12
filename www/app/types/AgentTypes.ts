@@ -1,5 +1,4 @@
 /// <reference path="../References.d.ts"/>
-
 export interface Agent {
 	operating_system?: string;
 	browser?: string;
