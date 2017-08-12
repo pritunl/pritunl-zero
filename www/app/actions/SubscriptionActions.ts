@@ -87,7 +87,7 @@ export function checkout(plan: string, card: string,
 
 	return new Promise<string>((resolve, reject): void => {
 		SuperAgent
-			.post('https://app-test.pritunl.net/subscription')
+			.post('https://app.pritunl.com/subscription')
 			.send({
 				plan: plan,
 				card: card,
@@ -117,7 +117,7 @@ export function payment(key: string, plan: string, card: string,
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.put('https://app-test.pritunl.net/subscription')
+			.put('https://app.pritunl.com/subscription')
 			.send({
 				key: key,
 				plan: plan,
@@ -147,7 +147,7 @@ export function cancel(key: string): Promise<void> {
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.delete('https://app-test.pritunl.net/subscription')
+			.delete('https://app.pritunl.com/subscription')
 			.send({
 				key: key,
 			})

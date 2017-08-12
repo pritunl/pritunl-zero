@@ -63,7 +63,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 
 	req, err := http.NewRequest(
 		"GET",
-		"https://app-test.pritunl.net/subscription",
+		"https://app.pritunl.com/subscription",
 		bytes.NewBuffer(data),
 	)
 	if err != nil {

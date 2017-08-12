@@ -21,7 +21,7 @@ type Provider struct {
 
 type auth struct {
 	Id          string      `bson:"_id"`
-	Server      string      `bson:"server" default:"https://auth-test.pritunl.net"`
+	Server      string      `bson:"server" default:"https://auth.pritunl.com"`
 	Expire      int         `bson:"expire" json:"expire" default:"72"`
 	MaxDuration int         `bson:"max_duration" json:"max_duration" default:"0"`
 	Providers   []*Provider `bson:"providers"`
