@@ -1,5 +1,5 @@
 /// <reference path="../References.d.ts"/>
-import * as AgentTyeps from './AgentTypes';
+import * as AgentTypes from './AgentTypes';
 
 export const SYNC = 'session.sync';
 export const CHANGE = 'session.change';
@@ -9,7 +9,7 @@ export interface Session {
 	user?: string;
 	timestamp?: string;
 	last_active?: string;
-	agent?: AgentTyeps.Agent;
+	agent?: AgentTypes.Agent;
 }
 
 export type Sessions = Session[];

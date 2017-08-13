@@ -1,5 +1,5 @@
 /// <reference path="../References.d.ts"/>
-import * as AgentTyeps from './AgentTypes';
+import * as AgentTypes from './AgentTypes';
 
 export const SYNC = 'audit.sync';
 export const CHANGE = 'audit.change';
@@ -10,7 +10,7 @@ export interface Audit {
 	timestamp?: string;
 	type?: string;
 	fields?: {[key: string]: string};
-	agent?: AgentTyeps.Agent;
+	agent?: AgentTypes.Agent;
 }
 
 export type Audits = Audit[];
