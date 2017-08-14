@@ -239,6 +239,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						}}
 					>
 						<option value="local">Local</option>
+						<option value="azure">Azure</option>
 						<option value="google">Google</option>
 						<option value="onelogin">OneLogin</option>
 						<option value="okta">Okta</option>
