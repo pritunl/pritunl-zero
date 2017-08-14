@@ -6,6 +6,7 @@ import (
 
 const (
 	Local    = "local"
+	Azure    = "azure"
 	Google   = "google"
 	OneLogin = "onelogin"
 	Okta     = "okta"
@@ -14,6 +15,7 @@ const (
 var (
 	types = set.NewSet(
 		Local,
+		Azure,
 		Google,
 		OneLogin,
 		Okta,
