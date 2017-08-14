@@ -13,10 +13,13 @@ type Provider struct {
 	DefaultRoles   []string      `bson:"default_roles" json:"default_roles"`
 	AutoCreate     bool          `bson:"auto_create" json:"auto_create"`
 	RoleManagement string        `bson:"role_management" json:"role_management"`
-	Domain         string        `bson:"domain" json:"domain"`         // google
-	IssuerUrl      string        `bson:"issuer_url" json:"issuer_url"` // saml
-	SamlUrl        string        `bson:"saml_url" json:"saml_url"`     // saml
-	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`   // saml
+	Tenant         string        `bson:"tenant" json:"tenant"`               // azure
+	ClientId       string        `bson:"client_id" json:"client_id"`         // azure
+	ClientSecret   string        `bson:"client_secret" json:"client_secret"` // azure
+	Domain         string        `bson:"domain" json:"domain"`               // google
+	IssuerUrl      string        `bson:"issuer_url" json:"issuer_url"`       // saml
+	SamlUrl        string        `bson:"saml_url" json:"saml_url"`           // saml
+	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`         // saml
 }
 
 type auth struct {
