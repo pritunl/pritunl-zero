@@ -11,6 +11,12 @@ export interface Provider {
 	role_management?: string;
 }
 
+export interface AzureProvider extends Provider {
+	tenant?: string;
+	client_id?: string;
+	client_secret?: string;
+}
+
 export interface GoogleProvider extends Provider {
 	domain?: string;
 }
@@ -21,7 +27,8 @@ export interface SamlProvider extends Provider {
 	saml_cert?: string;
 }
 
-export type ProviderAny = Provider & GoogleProvider & SamlProvider;
+export type ProviderAny = Provider & AzureProvider & GoogleProvider &
+	SamlProvider;
 export type Providers = ProviderAny[];
 
 export interface Settings {
