@@ -20,6 +20,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 )
 
@@ -29,13 +30,27 @@ type StateProvider struct {
 	Label string      `json:"label"`
 }
 
+type StateProviders []*StateProvider
+
+func (s StateProviders) Len() int {
+	return len(s)
+}
+
+func (s StateProviders) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s StateProviders) Less(i, j int) bool {
+	return s[i].Label < s[j].Label
+}
+
 type State struct {
-	Providers []*StateProvider `json:"providers"`
+	Providers StateProviders `json:"providers"`
 }
 
 func GetState() (state *State) {
 	state = &State{
-		Providers: []*StateProvider{},
+		Providers: StateProviders{},
 	}
 
 	google := false
@@ -58,6 +73,8 @@ func GetState() (state *State) {
 
 		state.Providers = append(state.Providers, prv)
 	}
+
+	sort.Sort(state.Providers)
 
 	return
 }
