@@ -124,6 +124,15 @@ func Request(c *gin.Context) {
 		}
 
 		switch provider.Type {
+		case Azure:
+			redirect, err := AzureRequest(db, loc, provider)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			c.Redirect(302, redirect)
+			return
 		case OneLogin, Okta:
 			body, err := SamlRequest(db, loc, provider)
 			if err != nil {
@@ -179,6 +188,14 @@ func Callback(db *database.Database, sig, query string) (
 
 	username := params.Get("username")
 
+	if username == "" {
+		errData = &errortypes.ErrorData{
+			Error:   "invalid_username",
+			Message: "Invalid username",
+		}
+		return
+	}
+
 	var provider *settings.Provider
 	if tokn.Type == Google {
 		domainSpl := strings.SplitN(username, "@", 2)
@@ -206,6 +223,28 @@ func Callback(db *database.Database, sig, query string) (
 		if provider == nil {
 			err = &errortypes.NotFoundError{
 				errors.New("auth: Auth provider not found"),
+			}
+			return
+		}
+	}
+
+	if provider.Type == Azure {
+		usernameSpl := strings.SplitN(username, "/", 2)
+		if len(usernameSpl) != 2 {
+			errData = &errortypes.ErrorData{
+				Error:   "invalid_username",
+				Message: "Invalid username",
+			}
+			return
+		}
+
+		tenant := usernameSpl[0]
+		username = usernameSpl[1]
+
+		if tenant != provider.Tenant {
+			errData = &errortypes.ErrorData{
+				Error:   "invalid_tenant",
+				Message: "Invalid tenant",
 			}
 			return
 		}
