@@ -42,6 +42,46 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		};
 	}
 
+	azure(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Directory ID"
+				type="text"
+				placeholder="Azure directory ID"
+				value={provider.tenant}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.tenant = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Application ID"
+				type="text"
+				placeholder="Azure application ID"
+				value={provider.client_id}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.client_id = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Application Secret"
+				type="text"
+				placeholder="Azure application secret"
+				value={provider.client_secret}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.client_secret = val;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	google(): JSX.Element {
 		let provider = this.props.provider;
 
@@ -148,6 +188,10 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		let options: JSX.Element;
 
 		switch (provider.type) {
+			case 'azure':
+				label = 'Azure';
+				options = this.azure();
+				break;
 			case 'google':
 				label = 'Google';
 				options = this.google();
