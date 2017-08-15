@@ -7,12 +7,9 @@ interface Props {
 	type: string;
 	placeholder: string;
 	value: string | number;
+	checked: boolean;
 	defaultValue: string;
-	onChange: (val: string) => void;
-}
-
-interface State {
-	checked?: boolean;
+	onChange: (state: boolean, val: string) => void;
 }
 
 const css = {
@@ -29,33 +26,18 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class PageInputSwitch extends React.Component<Props, State> {
-	constructor(props: any, context: any) {
-		super(props, context);
-		this.state = {
-			checked: false,
-		};
-	}
-
+export default class PageInputSwitch extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div hidden={this.props.hidden}>
 			<label className="pt-control pt-switch" style={css.switchLabel}>
 				<input
 					type="checkbox"
-					checked={!!this.props.value || this.state.checked}
+					checked={!!this.props.value || this.props.checked}
 					onChange={(): void => {
-						if (!!this.props.value || this.state.checked) {
-							this.setState({
-								...this.state,
-								checked: false,
-							});
-							this.props.onChange(null);
+						if (!!this.props.value || this.props.checked) {
+							this.props.onChange(false, null);
 						} else {
-							this.setState({
-								...this.state,
-								checked: true,
-							});
-							this.props.onChange(this.props.defaultValue);
+							this.props.onChange(true, this.props.defaultValue);
 						}
 					}}
 				/>
@@ -66,18 +48,14 @@ export default class PageInputSwitch extends React.Component<Props, State> {
 				<input
 					className="pt-input"
 					style={css.input}
-					hidden={!this.props.value && !this.state.checked}
+					hidden={!this.props.value && !this.props.checked}
 					type={this.props.type}
 					autoCapitalize="off"
 					spellCheck={false}
 					placeholder={this.props.placeholder}
 					value={this.props.value || ''}
 					onChange={(evt): void => {
-						this.setState({
-							...this.state,
-							checked: true,
-						});
-						this.props.onChange(evt.target.value);
+						this.props.onChange(true, evt.target.value);
 					}}
 				/>
 			</label>
