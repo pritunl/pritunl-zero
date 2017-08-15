@@ -3,8 +3,8 @@ package settings
 var Elastic *elastic
 
 type elastic struct {
-	Id      string `bson:"_id"`
-	Address string `bson:"address"`
+	Id        string   `bson:"_id"`
+	Addresses []string `bson:"addresses"`
 }
 
 func newElastic() interface{} {
