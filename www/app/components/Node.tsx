@@ -26,6 +26,7 @@ interface State {
 	message: string;
 	node: NodeTypes.Node;
 	addService: string;
+	forwardedChecked: boolean;
 }
 
 const css = {
@@ -80,6 +81,7 @@ export default class Node extends React.Component<Props, State> {
 			message: '',
 			node: null,
 			addService: null,
+			forwardedChecked: false,
 		};
 	}
 
@@ -434,9 +436,29 @@ export default class Node extends React.Component<Props, State> {
 						type="text"
 						placeholder="Forwarded for header"
 						value={node.forwarded_for_header}
+						checked={this.state.forwardedChecked}
 						defaultValue="X-Forwarded-For"
-						onChange={(val: string): void => {
-							this.set('forwarded_for_header', val);
+						onChange={(state: boolean, val: string): void => {
+							let node: NodeTypes.Node;
+
+							if (this.state.changed) {
+								node = {
+									...this.state.node,
+								};
+							} else {
+								node = {
+									...this.props.node,
+								};
+							}
+
+							node.forwarded_for_header = val;
+
+							this.setState({
+								...this.state,
+								changed: true,
+								forwardedChecked: state,
+								node: node,
+							});
 						}}
 					/>
 				</div>
@@ -452,6 +474,7 @@ export default class Node extends React.Component<Props, State> {
 					this.setState({
 						...this.state,
 						changed: false,
+						forwardedChecked: false,
 						node: null,
 					});
 				}}
