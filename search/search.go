@@ -12,8 +12,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/olivere/elastic.v5"
 	"io"
-	"net/http"
-	"net/url"
 	"time"
 )
 
@@ -21,17 +19,6 @@ var (
 	ctx    = context.Background()
 	client *elastic.Client
 )
-
-type Request struct {
-	User      string      `json:"user"`
-	Session   string      `json:"session"`
-	Address   string      `json:"address"`
-	Timestamp time.Time   `json:"timestamp"`
-	Path      string      `json:"path"`
-	Query     url.Values  `json:"query"`
-	Header    http.Header `json:"header"`
-	Body      string      `json:"body"`
-}
 
 type mapping struct {
 	Field string
