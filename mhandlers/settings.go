@@ -18,12 +18,17 @@ type settingsData struct {
 }
 
 func getSettingsData() *settingsData {
-	return &settingsData{
+	data := &settingsData{
 		AuthProviders:   settings.Auth.Providers,
 		AuthExpire:      settings.Auth.Expire,
 		AuthMaxDuration: settings.Auth.MaxDuration,
-		ElasticAddress:  settings.Elastic.Address,
 	}
+
+	if len(settings.Elastic.Addresses) != 0 {
+		data.ElasticAddress = settings.Elastic.Addresses[0]
+	}
+
+	return data
 }
 
 func settingsGet(c *gin.Context) {
@@ -41,10 +46,21 @@ func settingsPut(c *gin.Context) {
 		return
 	}
 
-	if settings.Elastic.Address != data.ElasticAddress {
-		settings.Elastic.Address = data.ElasticAddress
+	elasticAddr := ""
+	if len(settings.Elastic.Addresses) != 0 {
+		elasticAddr = settings.Elastic.Addresses[0]
+	}
+
+	if elasticAddr != data.ElasticAddress {
+		if data.ElasticAddress == "" {
+			settings.Elastic.Addresses = []string{}
+		} else {
+			settings.Elastic.Addresses = []string{
+				data.ElasticAddress,
+			}
+		}
 		err = settings.Commit(db, settings.Elastic, set.NewSet(
-			"address",
+			"addresses",
 		))
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
