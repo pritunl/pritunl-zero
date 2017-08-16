@@ -75,8 +75,6 @@ export default class Sessions extends React.Component<Props, State> {
 			/>);
 		});
 
-		let filterClass = 'pt-button pt-minimal pt-icon-chevron-down ';
-
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
@@ -84,7 +82,7 @@ export default class Sessions extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div>
 						<button
-							className={filterClass}
+							className="pt-button pt-minimal"
 							style={css.button}
 							type="button"
 							onClick={(): void => {
@@ -93,7 +91,9 @@ export default class Sessions extends React.Component<Props, State> {
 									showEnded: !this.state.showEnded,
 								});
 							}}
-						>Show ended sessions</button>
+						>
+							{(this.state.showEnded ? 'Hide' : 'Show') + ' ended sessions'}
+						</button>
 					</div>
 				</div>
 			</PageHeader>
