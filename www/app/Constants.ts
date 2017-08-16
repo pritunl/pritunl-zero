@@ -5,6 +5,8 @@ let md = new MobileDetect(window.navigator.userAgent);
 
 export const mobile = !!md.mobile();
 
+export const loadDelay = 500;
+
 export const operatingSystems: {[key: string]: string} = {
 	linux: 'Linux',
 	macos_1010: 'macOS 10.10',
