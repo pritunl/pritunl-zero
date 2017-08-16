@@ -72,11 +72,24 @@ export default class Sessions extends React.Component<Props, State> {
 			/>);
 		});
 
+		let filterClass = 'pt-button pt-intent-primary pt-icon-filter ';
+
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
 					<h2 style={css.heading}>User Sessions</h2>
 					<div className="flex"/>
+					<div>
+						<button
+						className={filterClass}
+						style={css.button}
+						type="button"
+						onClick={(): void => {
+						}}
+						>
+						Show Ended
+						</button>
+					</div>
 				</div>
 			</PageHeader>
 			<div>
