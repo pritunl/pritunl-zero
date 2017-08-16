@@ -150,7 +150,11 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
 func Remove(db *database.Database, id string) (err error) {
 	coll := db.Sessions()
 
-	err = coll.RemoveId(id)
+	err = coll.UpdateId(id, &bson.M{
+		"$set": &bson.M{
+			"removed": true,
+		},
+	})
 	if err != nil {
 		err = database.ParseError(err)
 

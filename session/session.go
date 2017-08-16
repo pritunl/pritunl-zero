@@ -15,11 +15,16 @@ type Session struct {
 	User       bson.ObjectId `bson:"user" json:"user"`
 	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
 	LastActive time.Time     `bson:"last_active" json:"last_active"`
+	Removed    bool          `bson:"removed" json:"removed"`
 	Agent      *agent.Agent  `bson:"agent" json:"agent"`
 	user       *user.User    `bson:"-" json:"-"`
 }
 
 func (s *Session) Active() bool {
+	if s.Removed {
+		return false
+	}
+
 	if settings.Auth.Expire != 0 {
 		if time.Since(s.LastActive) > time.Duration(
 			settings.Auth.Expire)*time.Hour {
