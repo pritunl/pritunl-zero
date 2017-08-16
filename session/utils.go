@@ -104,9 +104,10 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 
 	sess := &Session{}
 	for cursor.Next(sess) {
-		if sess.Active() {
-			sessions = append(sessions, sess)
+		if !sess.Active() {
+			sess.Removed = true
 		}
+		sessions = append(sessions, sess)
 		sess = &Session{}
 	}
 
