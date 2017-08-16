@@ -65,9 +65,16 @@ export default class Session extends React.Component<Props, State> {
 		let session = this.props.session;
 		let agent = session.agent || {};
 
+		let cardStyle = {
+			...css.card,
+		};
+		if (session.removed) {
+			cardStyle.opacity = 0.6;
+		}
+
 		return <div
 			className="pt-card"
-			style={css.card}
+			style={cardStyle}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
