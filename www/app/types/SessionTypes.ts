@@ -9,6 +9,7 @@ export interface Session {
 	user?: string;
 	timestamp?: string;
 	last_active?: string;
+	removed?: boolean;
 	agent?: AgentTypes.Agent;
 }
 
