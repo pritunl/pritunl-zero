@@ -72,7 +72,7 @@ export default class Sessions extends React.Component<Props, State> {
 			/>);
 		});
 
-		let filterClass = 'pt-button pt-intent-primary pt-icon-filter ';
+		let filterClass = 'pt-button pt-minimal pt-icon-chevron-down ';
 
 		return <div>
 			<PageHeader>
@@ -86,9 +86,7 @@ export default class Sessions extends React.Component<Props, State> {
 							type="button"
 							onClick={(): void => {
 							}}
-						>
-						Show Ended
-						</button>
+						/>
 					</div>
 				</div>
 			</PageHeader>
