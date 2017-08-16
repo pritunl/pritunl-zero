@@ -81,11 +81,11 @@ export default class Sessions extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div>
 						<button
-						className={filterClass}
-						style={css.button}
-						type="button"
-						onClick={(): void => {
-						}}
+							className={filterClass}
+							style={css.button}
+							type="button"
+							onClick={(): void => {
+							}}
 						>
 						Show Ended
 						</button>
