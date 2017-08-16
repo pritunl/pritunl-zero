@@ -126,11 +126,6 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
-		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r)
-		return true
-	}
-
 	index := search.Request{
 		User:      usr.Id.Hex(),
 		Session:   sess.Id,
@@ -145,6 +140,11 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	err = index.Index()
 	if err != nil {
 		WriteError(w, r, 500, err)
+		return true
+	}
+
+	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
+		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r)
 		return true
 	}
 
