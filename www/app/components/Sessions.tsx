@@ -13,6 +13,7 @@ interface Props {
 
 interface State {
 	sessions: SessionTypes.SessionsRo;
+	showEnded: boolean;
 	disabled: boolean;
 }
 
@@ -33,6 +34,7 @@ export default class Sessions extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			sessions: SessionsStore.sessions,
+			showEnded: false,
 			disabled: false,
 		};
 	}
@@ -64,6 +66,9 @@ export default class Sessions extends React.Component<Props, State> {
 
 		this.state.sessions.forEach((
 				session: SessionTypes.SessionRo): void => {
+			if (session.removed && !this.state.showEnded) {
+				return;
+			}
 			sessions.push(<Session
 				key={session.id}
 				session={session}
@@ -83,8 +88,12 @@ export default class Sessions extends React.Component<Props, State> {
 							style={css.button}
 							type="button"
 							onClick={(): void => {
+								this.setState({
+									...this.state,
+									showEnded: !this.state.showEnded,
+								});
 							}}
-						/>
+						>Show ended sessions</button>
 					</div>
 				</div>
 			</PageHeader>
