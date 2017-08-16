@@ -30,6 +30,9 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request) (
 
 	query := bson.M{
 		"_id": sessId,
+		"removed": &bson.M{
+			"$ne": true,
+		},
 	}
 
 	if settings.Auth.Expire != 0 {
