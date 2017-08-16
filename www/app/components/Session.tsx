@@ -82,6 +82,7 @@ export default class Session extends React.Component<Props, State> {
 						<button
 							className="pt-button pt-minimal pt-intent-danger pt-icon-cross"
 							type="button"
+							hidden={session.removed}
 							disabled={this.state.disabled}
 							onClick={this.onDelete}
 						/>
