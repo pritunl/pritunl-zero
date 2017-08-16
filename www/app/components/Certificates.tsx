@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as CertificateTypes from '../types/CertificateTypes';
 import CertificatesStore from '../stores/CertificatesStore';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as Constants from '../Constants';
 import Certificate from './Certificate';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -10,6 +11,7 @@ import PageHeader from './PageHeader';
 interface State {
 	certificates: CertificateTypes.CertificatesRo;
 	disabled: boolean;
+	initialized: boolean;
 }
 
 const css = {
@@ -33,12 +35,19 @@ export default class Certificates extends React.Component<{}, State> {
 		this.state = {
 			certificates: CertificatesStore.certificates,
 			disabled: false,
+			initialized: false,
 		};
 	}
 
 	componentDidMount(): void {
 		CertificatesStore.addChangeListener(this.onChange);
 		CertificateActions.sync();
+		setTimeout((): void => {
+			this.setState({
+				...this.state,
+				initialized: true,
+			});
+		}, Constants.loadDelay);
 	}
 
 	componentWillUnmount(): void {
@@ -86,7 +95,7 @@ export default class Certificates extends React.Component<{}, State> {
 			<div
 				className="pt-non-ideal-state"
 				style={css.noCerts}
-				hidden={!!certsDom.length}
+				hidden={!!certsDom.length || !this.state.initialized}
 			>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
 					<span className="pt-icon pt-icon-endorsed"/>
