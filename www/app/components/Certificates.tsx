@@ -86,9 +86,9 @@ export default class Certificates extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!certsDom.length}
-				iconClass="pt-icon-endorsed"
-				title="No certificates"
-				description="Add a new certificate to get started."
+				iconClass=""
+				title=""
+				description=""
 			/>
 		</Page>;
 	}

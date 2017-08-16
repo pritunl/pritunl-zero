@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
 import ServicesStore from '../stores/ServicesStore';
 import * as ServiceActions from '../actions/ServiceActions';
+import NonState from './NonState';
 import Service from './Service';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -21,9 +22,6 @@ const css = {
 	} as React.CSSProperties,
 	button: {
 		margin: '10px 0 0 0',
-	} as React.CSSProperties,
-	noServices: {
-		height: 'auto',
 	} as React.CSSProperties,
 };
 
@@ -86,19 +84,12 @@ export default class Services extends React.Component<{}, State> {
 			<div>
 				{servicesDom}
 			</div>
-			<div
-				className="pt-non-ideal-state"
-				style={css.noServices}
+			<NonState
 				hidden={!!servicesDom.length}
-			>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-cloud"/>
-				</div>
-				<h4 className="pt-non-ideal-state-title">No services</h4>
-				<div className="pt-non-ideal-state-description">
-					Add a new service to get started.
-				</div>
-			</div>
+				iconClass="pt-icon-cloud"
+				title="No services"
+				description="Add a new service to get started."
+			/>
 		</Page>;
 	}
 }

@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as SessionTypes from '../types/SessionTypes';
 import SessionsStore from '../stores/SessionsStore';
 import * as SessionActions from '../actions/SessionActions';
+import NonState from './NonState';
 import Session from './Session';
 import PageHeader from './PageHeader';
 
@@ -24,9 +25,6 @@ const css = {
 	} as React.CSSProperties,
 	button: {
 		margin: '10px 0 0 0',
-	} as React.CSSProperties,
-	noCerts: {
-		height: 'auto',
 	} as React.CSSProperties,
 };
 
@@ -93,16 +91,11 @@ export default class Sessions extends React.Component<Props, State> {
 			<div>
 				{sessions}
 			</div>
-			<div
-				className="pt-non-ideal-state"
-				style={css.noCerts}
+			<NonState
 				hidden={!!sessions.length}
-			>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-user"/>
-				</div>
-				<h4 className="pt-non-ideal-state-title">No sessions</h4>
-			</div>
+				iconClass="pt-icon-user"
+				title="No sessions"
+			/>
 		</div>;
 	}
 }

@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as AuditTypes from '../types/AuditTypes';
 import AuditsStore from '../stores/AuditsStore';
 import * as AuditActions from '../actions/AuditActions';
+import NonState from './NonState';
 import Audit from './Audit';
 import PageHeader from './PageHeader';
 
@@ -24,9 +25,6 @@ const css = {
 	} as React.CSSProperties,
 	button: {
 		margin: '10px 0 0 0',
-	} as React.CSSProperties,
-	noCerts: {
-		height: 'auto',
 	} as React.CSSProperties,
 };
 
@@ -82,16 +80,11 @@ export default class Audits extends React.Component<Props, State> {
 			<div>
 				{audits}
 			</div>
-			<div
-				className="pt-non-ideal-state"
-				style={css.noCerts}
+			<NonState
 				hidden={!!audits.length}
-			>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-search-template"/>
-				</div>
-				<h4 className="pt-non-ideal-state-title">No audit events</h4>
-			</div>
+				iconClass="pt-icon-search-template"
+				title="No audit events"
+			/>
 		</div>;
 	}
 }

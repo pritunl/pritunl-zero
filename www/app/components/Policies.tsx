@@ -6,6 +6,7 @@ import PoliciesStore from '../stores/PoliciesStore';
 import ServicesStore from '../stores/ServicesStore';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as ServiceActions from '../actions/ServiceActions';
+import NonState from './NonState';
 import Policy from './Policy';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -25,9 +26,6 @@ const css = {
 	} as React.CSSProperties,
 	button: {
 		margin: '10px 0 0 0',
-	} as React.CSSProperties,
-	noPolicies: {
-		height: 'auto',
 	} as React.CSSProperties,
 };
 
@@ -92,19 +90,12 @@ export default class Policies extends React.Component<{}, State> {
 			<div>
 				{policiesDom}
 			</div>
-			<div
-				className="pt-non-ideal-state"
-				style={css.noPolicies}
+			<NonState
 				hidden={!!policiesDom.length}
-			>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-filter"/>
-				</div>
-				<h4 className="pt-non-ideal-state-title">No policies</h4>
-				<div className="pt-non-ideal-state-description">
-					Add a new policy to get started.
-				</div>
-			</div>
+				iconClass="pt-icon-filter"
+				title="No policies"
+				description="Add a new policy to get started."
+			/>
 		</Page>;
 	}
 }
