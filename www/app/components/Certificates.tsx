@@ -1,9 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as Constants from '../Constants';
 import * as CertificateTypes from '../types/CertificateTypes';
 import CertificatesStore from '../stores/CertificatesStore';
 import * as CertificateActions from '../actions/CertificateActions';
-import * as Constants from '../Constants';
+import NonState from './NonState';
 import Certificate from './Certificate';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -92,19 +93,12 @@ export default class Certificates extends React.Component<{}, State> {
 			<div>
 				{certsDom}
 			</div>
-			<div
-				className="pt-non-ideal-state"
-				style={css.noCerts}
-				hidden={!!certsDom.length || !this.state.initialized}
-			>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-endorsed"/>
-				</div>
-				<h4 className="pt-non-ideal-state-title">No certificates</h4>
-				<div className="pt-non-ideal-state-description">
-					Add a new certificate to get started.
-				</div>
-			</div>
+			<NonState
+				hidden={!!certsDom.length}
+				iconClass="pt-icon-endorsed"
+				title="No certificates"
+				description="Add a new certificate to get started."
+			/>
 		</Page>;
 	}
 }
