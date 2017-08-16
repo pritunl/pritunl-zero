@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -127,6 +128,23 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
 		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r)
+		return true
+	}
+
+	index := search.Request{
+		User:      usr.Id.Hex(),
+		Session:   sess.Id,
+		Address:   clientIp.String(),
+		Timestamp: time.Now(),
+		Path:      r.URL.Path,
+		Query:     r.URL.Query(),
+		Header:    r.Header,
+		Body:      "", // TODO
+	}
+
+	err = index.Index()
+	if err != nil {
+		WriteError(w, r, 500, err)
 		return true
 	}
 
