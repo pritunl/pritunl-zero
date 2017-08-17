@@ -22,7 +22,7 @@ export default class PageSwitch extends React.Component<Props, {}> {
 				<input
 					type="checkbox"
 					disabled={this.props.disabled}
-					checked={this.props.checked}
+					checked={!!this.props.checked}
 					onChange={this.props.onToggle}
 				/>
 				<span className="pt-control-indicator"/>
