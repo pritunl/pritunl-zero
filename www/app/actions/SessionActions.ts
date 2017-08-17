@@ -11,7 +11,7 @@ import SessionsStore from '../stores/SessionsStore';
 
 let syncId: string;
 
-export function load(userId: string): Promise<void> {
+export function _load(userId: string): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
@@ -20,6 +20,9 @@ export function load(userId: string): Promise<void> {
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.get('/session/' + userId)
+			.query({
+				show_removed: SessionsStore.showRemoved,
+			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -49,8 +52,30 @@ export function load(userId: string): Promise<void> {
 	});
 }
 
+export function load(userId: string): Promise<void> {
+	Dispatcher.dispatch({
+		type: SessionTypes.SHOW_REMOVED,
+		data: {
+			showRemoved: false,
+		},
+	});
+
+	return _load(userId);
+}
+
 export function reload(): Promise<void> {
-	return load(SessionsStore.userId);
+	return _load(SessionsStore.userId);
+}
+
+export function showRemoved(state: boolean): Promise<void> {
+	Dispatcher.dispatch({
+		type: SessionTypes.SHOW_REMOVED,
+		data: {
+			showRemoved: state,
+		},
+	});
+
+	return reload();
 }
 
 export function remove(sessionId: string): Promise<void> {
