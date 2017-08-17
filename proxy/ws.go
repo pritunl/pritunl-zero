@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
@@ -15,7 +14,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -89,28 +87,13 @@ func (w *webSocket) Director(req *http.Request) (
 	header.Set("X-Forwarded-Proto", w.proxyProto)
 	header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
-	cookie := header.Get("Cookie")
-	start := strings.Index(cookie, "pritunl-zero=")
-	if start != -1 {
-		str := cookie[start:]
-		end := strings.Index(str, ";")
-		if end != -1 {
-			if len(str) > end+1 && string(str[end+1]) == " " {
-				end += 1
-			}
-			cookie = cookie[:start] + cookie[start+end+1:]
-		} else {
-			cookie = cookie[:start]
-		}
-	}
+	header.Del("Upgrade")
+	header.Del("Connection")
+	header.Del("Sec-Websocket-Key")
+	header.Del("Sec-Websocket-Version")
+	header.Del("Sec-Websocket-Extensions")
 
-	cookie = strings.TrimSpace(cookie)
-
-	if len(cookie) > 0 {
-		header.Set("Cookie", cookie)
-	} else {
-		header.Del("Cookie")
-	}
+	stripCookie(req)
 
 	return
 }
@@ -118,20 +101,21 @@ func (w *webSocket) Director(req *http.Request) (
 func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	sess *session.Session) {
 
-	stripCookie(r)
-
 	u, header := w.Director(r)
 
-	header.Del("Upgrade")
-	header.Del("Connection")
-	header.Del("Sec-Websocket-Key")
-	header.Del("Sec-Websocket-Version")
-	header.Del("Sec-Websocket-Extensions")
+	scheme := ""
+	if u.Scheme == "https" {
+		scheme = "wss"
+	} else {
+		scheme = "ws"
+	}
 
 	if settings.Elastic.ProxyRequests {
 		index := search.Request{
 			Address:   node.Self.GetRemoteAddr(r),
 			Timestamp: time.Now(),
+			Scheme:    scheme,
+			Host:      u.Host,
 			Path:      r.URL.Path,
 			Query:     r.URL.Query(),
 			Header:    r.Header,

@@ -56,6 +56,8 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 				index := search.Request{
 					Address:   node.Self.GetRemoteAddr(req),
 					Timestamp: time.Now(),
+					Scheme:    req.URL.Scheme,
+					Host:      req.URL.Host,
 					Path:      req.URL.Path,
 					Query:     req.URL.Query(),
 					Header:    req.Header,
