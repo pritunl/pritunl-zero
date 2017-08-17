@@ -3,9 +3,9 @@ package settings
 var Elastic *elastic
 
 type elastic struct {
-	Id        string   `bson:"_id"`
-	Addresses []string `bson:"addresses"`
-	Requests  bool     `bson:"requests"`
+	Id            string   `bson:"_id"`
+	Addresses     []string `bson:"addresses"`
+	ProxyRequests bool     `bson:"proxy_requests"`
 }
 
 func newElastic() interface{} {

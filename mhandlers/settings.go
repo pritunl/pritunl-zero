@@ -11,19 +11,19 @@ import (
 )
 
 type settingsData struct {
-	AuthProviders   []*settings.Provider `json:"auth_providers"`
-	AuthExpire      int                  `json:"auth_expire"`
-	AuthMaxDuration int                  `json:"auth_max_duration"`
-	ElasticAddress  string               `json:"elastic_address"`
-	ElasticRequests bool                 `json:"elastic_requests"`
+	AuthProviders        []*settings.Provider `json:"auth_providers"`
+	AuthExpire           int                  `json:"auth_expire"`
+	AuthMaxDuration      int                  `json:"auth_max_duration"`
+	ElasticAddress       string               `json:"elastic_address"`
+	ElasticProxyRequests bool                 `json:"elastic_proxy_requests"`
 }
 
 func getSettingsData() *settingsData {
 	data := &settingsData{
-		AuthProviders:   settings.Auth.Providers,
-		AuthExpire:      settings.Auth.Expire,
-		AuthMaxDuration: settings.Auth.MaxDuration,
-		ElasticRequests: settings.Elastic.Requests,
+		AuthProviders:        settings.Auth.Providers,
+		AuthExpire:           settings.Auth.Expire,
+		AuthMaxDuration:      settings.Auth.MaxDuration,
+		ElasticProxyRequests: settings.Elastic.ProxyRequests,
 	}
 
 	if len(settings.Elastic.Addresses) != 0 {
@@ -66,9 +66,9 @@ func settingsPut(c *gin.Context) {
 		fields.Add("addresses")
 	}
 
-	if settings.Elastic.Requests != data.ElasticRequests {
-		settings.Elastic.Requests = data.ElasticRequests
-		fields.Add("requests")
+	if settings.Elastic.ProxyRequests != data.ElasticProxyRequests {
+		settings.Elastic.ProxyRequests = data.ElasticProxyRequests
+		fields.Add("proxy_requests")
 	}
 
 	if fields.Len() != 0 {
