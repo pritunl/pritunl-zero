@@ -20,10 +20,6 @@ type Request struct {
 }
 
 func (r *Request) Index() (err error) {
-	err = Index("zero-requests", "request", r)
-	if err != nil {
-		return
-	}
-
+	Index("zero-requests", "request", r)
 	return
 }
