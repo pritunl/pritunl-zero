@@ -2,6 +2,7 @@ package search
 
 import (
 	"bytes"
+	"container/list"
 	"context"
 	"crypto/md5"
 	"github.com/Sirupsen/logrus"
@@ -12,12 +13,17 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/olivere/elastic.v5"
 	"io"
+	"sync"
 	"time"
 )
 
 var (
-	ctx    = context.Background()
-	client *elastic.Client
+	ctx          = context.Background()
+	client       *elastic.Client
+	buffer       = list.New()
+	failedBuffer = []*elastic.BulkIndexRequest{}
+	lock         = sync.Mutex{}
+	failedLock   = sync.Mutex{}
 )
 
 type mapping struct {
@@ -27,7 +33,7 @@ type mapping struct {
 	Index string
 }
 
-func Index(index, typ string, data interface{}) (err error) {
+func Index(index, typ string, data interface{}) {
 	clnt := client
 	if clnt == nil {
 		return
@@ -35,14 +41,12 @@ func Index(index, typ string, data interface{}) (err error) {
 
 	id := bson.NewObjectId().Hex()
 
-	_, err = clnt.Index().Index(index).Type(typ).
-		Id(id).BodyJson(data).Refresh("false").Do(ctx)
-	if err != nil {
-		err = errortypes.DatabaseError{
-			errors.Wrap(err, "search: Failed to index elastic data"),
-		}
-		return
-	}
+	request := elastic.NewBulkIndexRequest().Index(index).Type(typ).
+		Id(id).Doc(data)
+
+	lock.Lock()
+	buffer.PushBack(request)
+	lock.Unlock()
 
 	return
 }
@@ -251,12 +255,68 @@ func watchSearch() {
 	}
 }
 
+func worker() {
+	for {
+		time.Sleep(2 * time.Second)
+
+		requests := []*elastic.BulkIndexRequest{}
+
+		lock.Lock()
+		for elem := buffer.Front(); elem != nil; elem = elem.Next() {
+			request := elem.Value.(*elastic.BulkIndexRequest)
+			requests = append(requests, request)
+		}
+		buffer = list.New()
+		lock.Unlock()
+
+		clnt := client
+		if client == nil {
+			continue
+		}
+
+		if len(requests) == 0 {
+			continue
+		}
+
+		var err error
+		for i := 0; i < 10; i++ {
+			bulk := clnt.Bulk()
+
+			for _, request := range requests {
+				bulk.Add(request)
+			}
+
+			_, err = bulk.Do(ctx)
+			if err != nil {
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			err = nil
+			break
+		}
+
+		if err != nil {
+			failedLock.Lock()
+			failedBuffer = append(failedBuffer, requests...)
+			failedLock.Unlock()
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("search: Bulk insert failed, moving to failed buffer")
+
+			err = nil
+		}
+	}
+}
+
 func init() {
 	module := requires.New("search")
 	module.After("settings")
 
 	module.Handler = func() (err error) {
 		go watchSearch()
+		go worker()
 		return
 	}
 }
