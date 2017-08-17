@@ -11,6 +11,8 @@ type Request struct {
 	Session   string      `json:"session"`
 	Address   string      `json:"address"`
 	Timestamp time.Time   `json:"timestamp"`
+	Scheme    string      `json:"scheme"`
+	Host      string      `json:"host"`
 	Path      string      `json:"path"`
 	Query     url.Values  `json:"query"`
 	Header    http.Header `json:"header"`
