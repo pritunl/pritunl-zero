@@ -3,6 +3,7 @@ import * as AgentTypes from './AgentTypes';
 
 export const SYNC = 'session.sync';
 export const CHANGE = 'session.change';
+export const SHOW_REMOVED = 'session.show_removed';
 
 export interface Session {
 	id: string;
@@ -25,5 +26,6 @@ export interface SessionDispatch {
 		userId?: string;
 		session?: Session;
 		sessions?: Sessions;
+		showRemoved?: boolean;
 	};
 }
