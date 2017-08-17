@@ -1,17 +1,21 @@
 package proxy
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -123,6 +127,27 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	header.Del("Sec-Websocket-Key")
 	header.Del("Sec-Websocket-Version")
 	header.Del("Sec-Websocket-Extensions")
+
+	if settings.Elastic.ProxyRequests {
+		index := search.Request{
+			Address:   node.Self.GetRemoteAddr(r),
+			Timestamp: time.Now(),
+			Path:      r.URL.Path,
+			Query:     r.URL.Query(),
+			Header:    r.Header,
+		}
+
+		if sess != nil {
+			usr, _ := sess.GetUser(nil)
+
+			if usr != nil {
+				index.User = usr.Id.Hex()
+				index.Session = sess.Id
+			}
+		}
+
+		index.Index()
+	}
 
 	backConn, backResp, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
