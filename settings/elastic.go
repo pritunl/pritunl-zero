@@ -5,6 +5,7 @@ var Elastic *elastic
 type elastic struct {
 	Id        string   `bson:"_id"`
 	Addresses []string `bson:"addresses"`
+	Requests  bool     `bson:"requests"`
 }
 
 func newElastic() interface{} {
