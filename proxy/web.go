@@ -50,28 +50,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			req.URL.Scheme = w.serverProto
 			req.URL.Host = w.serverHost
 
-			cookie := req.Header.Get("Cookie")
-			start := strings.Index(cookie, "pritunl-zero=")
-			if start != -1 {
-				str := cookie[start:]
-				end := strings.Index(str, ";")
-				if end != -1 {
-					if len(str) > end+1 && string(str[end+1]) == " " {
-						end += 1
-					}
-					cookie = cookie[:start] + cookie[start+end+1:]
-				} else {
-					cookie = cookie[:start]
-				}
-			}
-
-			cookie = strings.TrimSpace(cookie)
-
-			if len(cookie) > 0 {
-				req.Header.Set("Cookie", cookie)
-			} else {
-				req.Header.Del("Cookie")
-			}
+			stripCookie(req)
 
 			if settings.Elastic.ProxyRequests {
 				index := search.Request{
