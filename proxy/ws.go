@@ -111,6 +111,8 @@ func (w *webSocket) Director(req *http.Request) (
 }
 
 func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	stripCookie(r)
+
 	u, header := w.Director(r)
 
 	header.Del("Upgrade")
