@@ -1,9 +1,18 @@
 package search
 
 import (
+	"github.com/dropbox/godropbox/container/set"
 	"net/http"
 	"net/url"
 	"time"
+)
+
+var (
+	RequestTypes = set.NewSet(
+		"application/xml",
+		"application/json",
+		"application/x-www-form-urlencoded",
+	)
 )
 
 type Request struct {

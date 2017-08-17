@@ -73,7 +73,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 				}
 
 				contentType := strings.ToLower(req.Header.Get("Content-Type"))
-				if contentType == "application/json" &&
+				if search.RequestTypes.Contains(contentType) &&
 					req.ContentLength != 0 &&
 					req.Body != nil {
 
