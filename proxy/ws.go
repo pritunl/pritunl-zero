@@ -3,10 +3,12 @@ package proxy
 import (
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
@@ -14,13 +16,12 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 	"sync"
-	"github.com/dropbox/godropbox/container/set"
+	"time"
 )
 
 var (
-	webSocketConns = set.NewSet()
+	webSocketConns     = set.NewSet()
 	webSocketConnsLock = sync.Mutex{}
 )
 
@@ -33,11 +34,11 @@ type webSocket struct {
 }
 
 type webSocketConn struct {
-	back *websocket.Conn
+	back  *websocket.Conn
 	front *websocket.Conn
 }
 
-func (w* webSocketConn) Run() {
+func (w *webSocketConn) Run() {
 	webSocketConnsLock.Lock()
 	webSocketConns.Add(w)
 	webSocketConnsLock.Unlock()
@@ -60,7 +61,7 @@ func (w* webSocketConn) Run() {
 	<-wait
 }
 
-func (w* webSocketConn) Close() {
+func (w *webSocketConn) Close() {
 	if w.back != nil {
 		w.back.Close()
 	}
@@ -110,7 +111,9 @@ func (w *webSocket) Director(req *http.Request) (
 	return
 }
 
-func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
+	sess *session.Session) {
+
 	stripCookie(r)
 
 	u, header := w.Director(r)
@@ -146,7 +149,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	conn := &webSocketConn{
 		front: frontConn,
-		back: backConn,
+		back:  backConn,
 	}
 
 	conn.Run()
