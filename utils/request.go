@@ -6,9 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"gopkg.in/mgo.v2/bson"
+	"io"
 	"net/http"
 	"strings"
 )
+
+type NopCloser struct {
+	io.Reader
+}
+
+func (NopCloser) Close() error {
+	return nil
+}
 
 var httpErrCodes = map[int]string{
 	400: "Bad Request",
