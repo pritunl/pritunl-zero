@@ -15,6 +15,7 @@ type settingsData struct {
 	AuthExpire      int                  `json:"auth_expire"`
 	AuthMaxDuration int                  `json:"auth_max_duration"`
 	ElasticAddress  string               `json:"elastic_address"`
+	ElasticRequests bool                 `json:"elastic_requests"`
 }
 
 func getSettingsData() *settingsData {
@@ -22,6 +23,7 @@ func getSettingsData() *settingsData {
 		AuthProviders:   settings.Auth.Providers,
 		AuthExpire:      settings.Auth.Expire,
 		AuthMaxDuration: settings.Auth.MaxDuration,
+		ElasticRequests: settings.Elastic.Requests,
 	}
 
 	if len(settings.Elastic.Addresses) != 0 {
@@ -46,6 +48,8 @@ func settingsPut(c *gin.Context) {
 		return
 	}
 
+	fields := set.NewSet()
+
 	elasticAddr := ""
 	if len(settings.Elastic.Addresses) != 0 {
 		elasticAddr = settings.Elastic.Addresses[0]
@@ -59,16 +63,23 @@ func settingsPut(c *gin.Context) {
 				data.ElasticAddress,
 			}
 		}
-		err = settings.Commit(db, settings.Elastic, set.NewSet(
-			"addresses",
-		))
+		fields.Add("addresses")
+	}
+
+	if settings.Elastic.Requests != data.ElasticRequests {
+		settings.Elastic.Requests = data.ElasticRequests
+		fields.Add("requests")
+	}
+
+	if fields.Len() != 0 {
+		err = settings.Commit(db, settings.Elastic, fields)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
 	}
 
-	fields := set.NewSet(
+	fields = set.NewSet(
 		"providers",
 	)
 
