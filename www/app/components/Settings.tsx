@@ -8,6 +8,7 @@ import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
 import PageSplit from './PageSplit';
 import PageInput from './PageInput';
+import PageSwitch from './PageSwitch';
 import PageSelectButton from './PageSelectButton';
 import PageSave from './PageSave';
 import SettingsProvider from './SettingsProvider';
@@ -188,6 +189,14 @@ export default class Settings extends React.Component<{}, State> {
 						value={this.state.settings.elastic_address}
 						onChange={(val): void => {
 							this.set('elastic_address', val);
+						}}
+					/>
+					<PageSwitch
+						label="Elasticsearch Log Proxy Requests"
+						checked={this.state.settings.elastic_proxy_requests}
+						onToggle={(): void => {
+							this.set('elastic_proxy_requests',
+								!this.state.settings.elastic_proxy_requests);
 						}}
 					/>
 				</PagePanel>
