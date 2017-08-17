@@ -90,6 +90,7 @@ export default class Sessions extends React.Component<Props, State> {
 									...this.state,
 									showEnded: !this.state.showEnded,
 								});
+								SessionActions.showRemoved(!this.state.showEnded);
 							}}
 						>
 							{(this.state.showEnded ? 'Hide' : 'Show') + ' ended sessions'}
