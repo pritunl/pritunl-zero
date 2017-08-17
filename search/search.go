@@ -179,6 +179,20 @@ func update(addrs []string) (err error) {
 	})
 
 	mappings = append(mappings, mapping{
+		Field: "scheme",
+		Type:  "keyword",
+		Store: false,
+		Index: "analyzed",
+	})
+
+	mappings = append(mappings, mapping{
+		Field: "host",
+		Type:  "keyword",
+		Store: false,
+		Index: "analyzed",
+	})
+
+	mappings = append(mappings, mapping{
 		Field: "path",
 		Type:  "keyword",
 		Store: false,
