@@ -1,12 +1,19 @@
 package proxy
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/logger"
+	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
+	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -26,46 +33,80 @@ type web struct {
 	ErrorLog    *log.Logger
 }
 
-func (w *web) Director(req *http.Request) {
-	req.Header.Set("X-Forwarded-For",
-		strings.Split(req.RemoteAddr, ":")[0])
-	req.Header.Set("X-Forwarded-Proto", w.proxyProto)
-	req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
+	sess *session.Session) {
 
-	if w.reqHost != "" {
-		req.Host = w.reqHost
-	}
-
-	req.URL.Scheme = w.serverProto
-	req.URL.Host = w.serverHost
-
-	cookie := req.Header.Get("Cookie")
-	start := strings.Index(cookie, "pritunl-zero=")
-	if start != -1 {
-		str := cookie[start:]
-		end := strings.Index(str, ";")
-		if end != -1 {
-			if len(str) > end+1 && string(str[end+1]) == " " {
-				end += 1
-			}
-			cookie = cookie[:start] + cookie[start+end+1:]
-		} else {
-			cookie = cookie[:start]
-		}
-	}
-
-	cookie = strings.TrimSpace(cookie)
-
-	if len(cookie) > 0 {
-		req.Header.Set("Cookie", cookie)
-	} else {
-		req.Header.Del("Cookie")
-	}
-}
-
-func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	prxy := &httputil.ReverseProxy{
-		Director:  w.Director,
+		Director: func(req *http.Request) {
+			req.Header.Set("X-Forwarded-For",
+				strings.Split(req.RemoteAddr, ":")[0])
+			req.Header.Set("X-Forwarded-Proto", w.proxyProto)
+			req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+
+			if w.reqHost != "" {
+				req.Host = w.reqHost
+			}
+
+			req.URL.Scheme = w.serverProto
+			req.URL.Host = w.serverHost
+
+			cookie := req.Header.Get("Cookie")
+			start := strings.Index(cookie, "pritunl-zero=")
+			if start != -1 {
+				str := cookie[start:]
+				end := strings.Index(str, ";")
+				if end != -1 {
+					if len(str) > end+1 && string(str[end+1]) == " " {
+						end += 1
+					}
+					cookie = cookie[:start] + cookie[start+end+1:]
+				} else {
+					cookie = cookie[:start]
+				}
+			}
+
+			cookie = strings.TrimSpace(cookie)
+
+			if len(cookie) > 0 {
+				req.Header.Set("Cookie", cookie)
+			} else {
+				req.Header.Del("Cookie")
+			}
+
+			if settings.Elastic.ProxyRequests {
+				index := search.Request{
+					Address:   node.Self.GetRemoteAddr(r),
+					Timestamp: time.Now(),
+					Path:      r.URL.Path,
+					Query:     r.URL.Query(),
+					Header:    r.Header,
+				}
+
+				if sess != nil {
+					usr, _ := sess.GetUser(nil)
+
+					if usr != nil {
+						index.User = usr.Id.Hex()
+						index.Session = sess.Id
+					}
+				}
+
+				contentType := strings.ToLower(req.Header.Get("Content-Type"))
+				if contentType == "application/json" &&
+					req.ContentLength != 0 &&
+					req.Body != nil {
+
+					bodyCopy := &bytes.Buffer{}
+					tee := io.TeeReader(req.Body, bodyCopy)
+					body, _ := ioutil.ReadAll(tee)
+					req.Body.Close()
+					req.Body = utils.NopCloser{bodyCopy}
+					index.Body = string(body)
+				}
+
+				index.Index()
+			}
+		},
 		Transport: w.Transport,
 		ErrorLog:  w.ErrorLog,
 	}
