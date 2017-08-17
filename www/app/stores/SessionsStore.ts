@@ -6,6 +6,7 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class SessionsStore extends EventEmitter {
 	_userId: string;
+	_showRemoved: boolean;
 	_sessions: SessionTypes.SessionsRo = Object.freeze([]);
 	_token = Dispatcher.register((this._callback).bind(this));
 
@@ -25,6 +26,10 @@ class SessionsStore extends EventEmitter {
 			});
 		});
 		return sessions;
+	}
+
+	get showRemoved(): boolean {
+		return this._showRemoved;
 	}
 
 	emitChange(): void {
@@ -50,10 +55,18 @@ class SessionsStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_setShowRemoved(state: boolean): void {
+		this._showRemoved = state;
+		this.emitChange();
+	}
+
 	_callback(action: SessionTypes.SessionDispatch): void {
 		switch (action.type) {
 			case SessionTypes.SYNC:
 				this._sync(action.data.userId, action.data.sessions);
+				break;
+			case SessionTypes.SHOW_REMOVED:
+				this._setShowRemoved(action.data.showRemoved);
 				break;
 		}
 	}
