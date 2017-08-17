@@ -54,7 +54,7 @@ func (s *Session) Remove(db *database.Database) (err error) {
 }
 
 func (s *Session) GetUser(db *database.Database) (usr *user.User, err error) {
-	if s.user != nil {
+	if s.user != nil || db == nil {
 		usr = s.user
 		return
 	}
