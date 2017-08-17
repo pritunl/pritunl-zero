@@ -54,11 +54,11 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 
 			if settings.Elastic.ProxyRequests {
 				index := search.Request{
-					Address:   node.Self.GetRemoteAddr(r),
+					Address:   node.Self.GetRemoteAddr(req),
 					Timestamp: time.Now(),
-					Path:      r.URL.Path,
-					Query:     r.URL.Query(),
-					Header:    r.Header,
+					Path:      req.URL.Path,
+					Query:     req.URL.Query(),
+					Header:    req.Header,
 				}
 
 				if sess != nil {
