@@ -6,10 +6,13 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
+	"strconv"
 )
 
 func sessionsGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+
+	showRemoved, _ := strconv.ParseBool(c.Query("show_removed"))
 
 	userId, ok := utils.ParseObjectId(c.Param("user_id"))
 	if !ok {
@@ -17,7 +20,7 @@ func sessionsGet(c *gin.Context) {
 		return
 	}
 
-	sessions, err := session.GetAll(db, userId)
+	sessions, err := session.GetAll(db, userId, showRemoved)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
