@@ -439,25 +439,25 @@ export default class Node extends React.Component<Props, State> {
 						checked={this.state.forwardedChecked}
 						defaultValue="X-Forwarded-For"
 						onChange={(state: boolean, val: string): void => {
-							let node: NodeTypes.Node;
+							let nde: NodeTypes.Node;
 
 							if (this.state.changed) {
-								node = {
+								nde = {
 									...this.state.node,
 								};
 							} else {
-								node = {
+								nde = {
 									...this.props.node,
 								};
 							}
 
-							node.forwarded_for_header = val;
+							nde.forwarded_for_header = val;
 
 							this.setState({
 								...this.state,
 								changed: true,
 								forwardedChecked: state,
-								node: node,
+								node: nde,
 							});
 						}}
 					/>
