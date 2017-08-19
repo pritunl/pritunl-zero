@@ -185,10 +185,8 @@ func userPost(c *gin.Context) {
 func usersGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	pageStr := c.Query("page")
-	page, _ := strconv.Atoi(pageStr)
-	pageCountStr := c.Query("page_count")
-	pageCount, _ := strconv.Atoi(pageCountStr)
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageCount, _ := strconv.Atoi(c.Query("page_count"))
 
 	query := bson.M{}
 
