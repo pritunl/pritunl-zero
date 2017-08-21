@@ -199,53 +199,56 @@ func (n *Node) loadCert(db *database.Database) (err error) {
 	return
 }
 
-func (n *Node) keepalive() {
+func (n *Node) sync() {
 	db := database.GetDatabase()
 	defer db.Close()
 
+	n.Timestamp = time.Now()
+
+	mem, err := utils.MemoryUsed()
+	if err != nil {
+		n.Memory = 0
+
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("node: Failed to get memory")
+	} else {
+		n.Memory = mem
+	}
+
+	load, err := utils.LoadAverage()
+	if err != nil {
+		n.Load1 = 0
+		n.Load5 = 0
+		n.Load15 = 0
+
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("node: Failed to get load")
+	} else {
+		n.Load1 = load.Load1
+		n.Load5 = load.Load5
+		n.Load15 = load.Load15
+	}
+
+	err = n.update(db)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("node: Failed to update node")
+	}
+
+	err = n.loadCert(db)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("node: Failed to load node certificate")
+	}
+}
+
+func (n *Node) keepalive() {
 	for {
-		n.Timestamp = time.Now()
-
-		mem, err := utils.MemoryUsed()
-		if err != nil {
-			n.Memory = 0
-
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("node: Failed to get memory")
-		} else {
-			n.Memory = mem
-		}
-
-		load, err := utils.LoadAverage()
-		if err != nil {
-			n.Load1 = 0
-			n.Load5 = 0
-			n.Load15 = 0
-
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("node: Failed to get load")
-		} else {
-			n.Load1 = load.Load1
-			n.Load5 = load.Load5
-			n.Load15 = load.Load15
-		}
-
-		err = n.update(db)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("node: Failed to update node")
-		}
-
-		err = n.loadCert(db)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("node: Failed to load node certificate")
-		}
-
+		n.sync()
 		time.Sleep(1 * time.Second)
 	}
 }
