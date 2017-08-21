@@ -76,6 +76,33 @@ func getCursorId(coll *database.Collection, channels []string) (
 	return
 }
 
+func getCursorIdRetry(channels []string) bson.ObjectId {
+	db := database.GetDatabase()
+	defer db.Close()
+
+	for {
+		coll := db.Events()
+
+		cursorId, err := getCursorId(coll, channels)
+		if err != nil {
+			err = database.ParseError(err)
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Subscribe cursor error")
+
+			db.Close()
+			db = database.GetDatabase()
+
+			time.Sleep(constants.RetryDelay)
+
+			continue
+		}
+
+		return cursorId
+	}
+}
+
 func Publish(db *database.Database, channel string, data interface{}) (
 	err error) {
 
@@ -112,15 +139,14 @@ func PublishDispatch(db *database.Database, typ string) (
 	return
 }
 
-func Subscribe(db *database.Database, channels []string,
-	duration time.Duration, onMsg func(*Event) bool) (err error) {
+func Subscribe(channels []string, duration time.Duration,
+	onMsg func(*Event) bool) {
 
+	db := database.GetDatabase()
+	defer db.Close()
 	coll := db.Events()
-	cursorId, err := getCursorId(coll, channels)
-	if err != nil {
-		err = database.ParseError(err)
-		return
-	}
+
+	cursorId := getCursorIdRetry(channels)
 
 	var channelBson interface{}
 	if len(channels) == 1 {
@@ -158,16 +184,24 @@ func Subscribe(db *database.Database, channels []string,
 		}
 
 		if iter.Err() != nil {
-			err = iter.Close()
-			return
-		}
+			err := iter.Close()
 
-		if iter.Timeout() {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Subscribe error")
+
+			time.Sleep(constants.RetryDelay)
+		} else if iter.Timeout() {
 			if !onMsg(nil) {
 				return
 			}
 			continue
 		}
+
+		iter.Close()
+		db.Close()
+		db = database.GetDatabase()
+		coll = db.Events()
 
 		query := &bson.M{
 			"_id": &bson.M{
@@ -192,10 +226,7 @@ func Register(channel string, event string, callback func(*Event)) {
 }
 
 func subscribe(channels []string) {
-	db := database.GetDatabase()
-	defer db.Close()
-
-	err := Subscribe(db, channels, 10*time.Second,
+	Subscribe(channels, 10*time.Second,
 		func(msg *Event) bool {
 			if msg == nil {
 				return true
@@ -213,15 +244,6 @@ func subscribe(channels []string) {
 
 			return true
 		})
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("event: Listener")
-	}
-
-	time.Sleep(constants.RetryDelay)
-
-	subscribe(channels)
 }
 
 func init() {

@@ -72,8 +72,10 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 		}
 
 		if iter.Err() != nil {
+			err := iter.Close()
+
 			logrus.WithFields(logrus.Fields{
-				"error": iter.Err(),
+				"error": err,
 			}).Error("event: Listener error")
 
 			time.Sleep(constants.RetryDelay)
@@ -84,6 +86,11 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 		if !l.state {
 			return
 		}
+
+		iter.Close()
+		db.Close()
+		db = database.GetDatabase()
+		coll = db.Events()
 
 		query := &bson.M{
 			"_id": &bson.M{
