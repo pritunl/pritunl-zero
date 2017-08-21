@@ -40,6 +40,7 @@ type Router struct {
 	redirectServer   *http.Server
 	webServer        *http.Server
 	proxy            *proxy.Proxy
+	stop             bool
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
@@ -297,6 +298,15 @@ func (r *Router) Restart() {
 	time.Sleep(250 * time.Millisecond)
 }
 
+func (r *Router) Shutdown() {
+	r.stop = true
+	r.Restart()
+	time.Sleep(1 * time.Second)
+	r.Restart()
+	time.Sleep(1 * time.Second)
+	r.Restart()
+}
+
 func (r *Router) hashNode() []byte {
 	hash := md5.New()
 	io.WriteString(hash, node.Self.Type)
@@ -344,6 +354,10 @@ func (r *Router) Run() (err error) {
 		r.waiter = sync.WaitGroup{}
 		r.startServers()
 		r.waiter.Wait()
+
+		if r.stop {
+			break
+		}
 	}
 
 	return
