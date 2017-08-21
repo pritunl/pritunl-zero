@@ -64,6 +64,8 @@ func staticTestingGet(c *gin.Context) {
 	if pth == "" {
 		if c.Request.URL.Path == "/config.js" {
 			pth = "config.js"
+		} else if c.Request.URL.Path == "/logo.png" {
+			pth = "logo.png"
 		} else if c.Request.URL.Path == "/build.js" {
 			pth = "build.js"
 		} else if c.Request.URL.Path == "/login" {

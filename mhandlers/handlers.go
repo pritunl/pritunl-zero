@@ -98,7 +98,7 @@ func Register(protocol string, engine *gin.Engine) {
 	if constants.Production {
 		sessGroup.GET("/", staticIndexGet)
 		engine.GET("/login", staticLoginGet)
-		engine.GET("/logo.png", staticLoginGet)
+		engine.GET("/logo.png", staticLogoGet)
 		authGroup.GET("/static/*path", staticGet)
 	} else {
 		fs := gin.Dir(config.StaticTestingRoot, false)
