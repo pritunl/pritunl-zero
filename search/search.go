@@ -21,7 +21,7 @@ var (
 	ctx          = context.Background()
 	client       *elastic.Client
 	buffer       = list.New()
-	failedBuffer = []*elastic.BulkIndexRequest{}
+	failedBuffer = list.New()
 	lock         = sync.Mutex{}
 	failedLock   = sync.Mutex{}
 )
@@ -255,7 +255,8 @@ func watchSearch() {
 	}
 }
 
-func sendRequests(clnt *elastic.Client, requests []*elastic.BulkIndexRequest) {
+func sendRequests(clnt *elastic.Client,
+	requests []*elastic.BulkIndexRequest, log bool) {
 	var err error
 
 	for i := 0; i < 10; i++ {
@@ -277,12 +278,16 @@ func sendRequests(clnt *elastic.Client, requests []*elastic.BulkIndexRequest) {
 
 	if err != nil {
 		failedLock.Lock()
-		failedBuffer = append(failedBuffer, requests...)
+		for _, request := range requests {
+			failedBuffer.PushBack(request)
+		}
 		failedLock.Unlock()
 
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("search: Bulk insert failed, moving to failed buffer")
+		if log {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("search: Bulk insert failed, moving to failed buffer")
+		}
 	}
 }
 
@@ -319,7 +324,45 @@ func worker() {
 		}
 
 		for _, group := range requests {
-			go sendRequests(clnt, group)
+			go sendRequests(clnt, group, true)
+		}
+	}
+}
+
+func failedWorker() {
+	for {
+		time.Sleep(1 * time.Second)
+
+		group := []*elastic.BulkIndexRequest{}
+		requests := [][]*elastic.BulkIndexRequest{}
+
+		lock.Lock()
+		for elem := failedBuffer.Front(); elem != nil; elem = elem.Next() {
+			if len(group) >= 10 {
+				requests = append(requests, group)
+				group = []*elastic.BulkIndexRequest{}
+			}
+			request := elem.Value.(*elastic.BulkIndexRequest)
+			group = append(group, request)
+		}
+		buffer = list.New()
+		lock.Unlock()
+
+		if len(group) > 0 {
+			requests = append(requests, group)
+		}
+
+		clnt := client
+		if client == nil {
+			continue
+		}
+
+		if len(requests) == 0 {
+			continue
+		}
+
+		for _, group := range requests {
+			go sendRequests(clnt, group, false)
 		}
 	}
 }
@@ -331,6 +374,7 @@ func init() {
 	module.Handler = func() (err error) {
 		go watchSearch()
 		go worker()
+		go failedWorker()
 		return
 	}
 }
