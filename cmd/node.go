@@ -2,12 +2,20 @@ package cmd
 
 import (
 	"github.com/pritunl/pritunl-zero/config"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/router"
 	"gopkg.in/mgo.v2/bson"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func Node() (err error) {
+	sig := make(chan os.Signal, 2)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
 	nde := &node.Node{
 		Id:   bson.ObjectIdHex(config.Config.NodeId),
 		Type: node.Management,
@@ -21,9 +29,19 @@ func Node() (err error) {
 
 	routr.Init()
 
-	err = routr.Run()
-	if err != nil {
-		return
+	go func() {
+		err = routr.Run()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	<-sig
+	go routr.Shutdown()
+	if constants.Production {
+		time.Sleep(10 * time.Second)
+	} else {
+		time.Sleep(300 * time.Millisecond)
 	}
 
 	return
