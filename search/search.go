@@ -255,19 +255,59 @@ func watchSearch() {
 	}
 }
 
+func sendRequests(clnt *elastic.Client, requests []*elastic.BulkIndexRequest) {
+	var err error
+
+	for i := 0; i < 10; i++ {
+		bulk := clnt.Bulk()
+
+		for _, request := range requests {
+			bulk.Add(request)
+		}
+
+		_, err = bulk.Do(ctx)
+		if err != nil {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		err = nil
+		break
+	}
+
+	if err != nil {
+		failedLock.Lock()
+		failedBuffer = append(failedBuffer, requests...)
+		failedLock.Unlock()
+
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("search: Bulk insert failed, moving to failed buffer")
+	}
+}
+
 func worker() {
 	for {
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 
-		requests := []*elastic.BulkIndexRequest{}
+		group := []*elastic.BulkIndexRequest{}
+		requests := [][]*elastic.BulkIndexRequest{}
 
 		lock.Lock()
 		for elem := buffer.Front(); elem != nil; elem = elem.Next() {
+			if len(group) >= 100 {
+				requests = append(requests, group)
+				group = []*elastic.BulkIndexRequest{}
+			}
 			request := elem.Value.(*elastic.BulkIndexRequest)
-			requests = append(requests, request)
+			group = append(group, request)
 		}
 		buffer = list.New()
 		lock.Unlock()
+
+		if len(group) > 0 {
+			requests = append(requests, group)
+		}
 
 		clnt := client
 		if client == nil {
@@ -278,34 +318,8 @@ func worker() {
 			continue
 		}
 
-		var err error
-		for i := 0; i < 10; i++ {
-			bulk := clnt.Bulk()
-
-			for _, request := range requests {
-				bulk.Add(request)
-			}
-
-			_, err = bulk.Do(ctx)
-			if err != nil {
-				time.Sleep(1 * time.Second)
-				continue
-			}
-
-			err = nil
-			break
-		}
-
-		if err != nil {
-			failedLock.Lock()
-			failedBuffer = append(failedBuffer, requests...)
-			failedLock.Unlock()
-
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("search: Bulk insert failed, moving to failed buffer")
-
-			err = nil
+		for _, group := range requests {
+			go sendRequests(clnt, group)
 		}
 	}
 }
