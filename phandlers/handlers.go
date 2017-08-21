@@ -15,6 +15,7 @@ import (
 
 var (
 	index *static.File
+	logo  *static.File
 )
 
 func Register(prxy *proxy.Proxy, protocol string, engine *gin.Engine) {
@@ -49,6 +50,7 @@ func Register(prxy *proxy.Proxy, protocol string, engine *gin.Engine) {
 	sessGroup.GET("/logout", logoutGet)
 
 	engine.GET("/", staticIndexGet)
+	engine.GET("/logo.png", staticLogoGet)
 }
 
 func init() {
@@ -64,6 +66,11 @@ func init() {
 		}
 
 		index, err = static.NewFile(filepath.Join(root, "login.html"))
+		if err != nil {
+			return
+		}
+
+		logo, err = static.NewFile(filepath.Join(root, "logo.png"))
 		if err != nil {
 			return
 		}

@@ -51,6 +51,10 @@ func staticLoginGet(c *gin.Context) {
 	staticPath(c, "/login.html")
 }
 
+func staticLogoGet(c *gin.Context) {
+	staticPath(c, "/logo.png")
+}
+
 func staticGet(c *gin.Context) {
 	staticPath(c, "/static"+c.Params.ByName("path"))
 }
