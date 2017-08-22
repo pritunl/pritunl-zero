@@ -35,7 +35,8 @@ const (
 	Android5     = "android_5"     // Android Lollipop 5.0 = Android (5/x)
 	Android6     = "android_6"     // Android Marshmallow 6.0 = Android (6/x)
 	Android7     = "android_7"     // Android Nougat 7.0 = Android (7/x)
-	Android8     = "android_8"     // Android 8.0 = Android (8/x)
+	Android8     = "android_8"     // Android Oreo 8.0 = Android (8/x)
+	Android9     = "android_9"     // Android 9.0 = Android (9/x)
 	Blackberry10 = "blackberry_10" // Blackerry 10 = BlackBerry OS (10/x)
 	WindowsPhone = "windows_phone" // Windows Phone = Windows Phone
 	FirefoxOs    = "firefox_os"    // Firefox OS = Firefox OS
@@ -120,6 +121,9 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 			break
 		case "8":
 			agnt.OperatingSystem = Android8
+			break
+		case "9":
+			agnt.OperatingSystem = Android9
 			break
 		}
 		break
