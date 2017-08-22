@@ -12,6 +12,6 @@ Csrf.load().then((): void => {
 
 	ReactDOM.render(
 		<div><Main/></div>,
-		document.getElementById('app')
+		document.getElementById('app'),
 	);
 });
