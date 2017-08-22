@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as AuditTypes from '../types/AuditTypes';
 import * as Constants from '../Constants';
 import * as AgentUtils from '../utils/AgentUtils';
+import * as MiscUtils from '../utils/MiscUtils';
 import PageInfo from './PageInfo';
 
 interface Props {
@@ -49,6 +50,10 @@ export default class Audit extends React.Component<Props, {}> {
 							{
 								label: 'ID',
 								value: audit.id || 'None',
+							},
+							{
+								label: 'Timestamp',
+								value: MiscUtils.formatDate(audit.timestamp) || 'Unknown',
 							},
 							{
 								label: 'Type',
