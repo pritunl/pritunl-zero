@@ -4,6 +4,7 @@ import * as ReactRouter from 'react-router-dom';
 import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
+import * as AuditActions from '../actions/AuditActions';
 import User from './User';
 import UsersFilter from './UsersFilter';
 import Page from './Page';
@@ -71,6 +72,7 @@ export default class Users extends React.Component<{}, State> {
 
 	componentDidMount(): void {
 		UsersStore.addChangeListener(this.onChange);
+		AuditActions.traverse(0);
 		UserActions.sync();
 	}
 
