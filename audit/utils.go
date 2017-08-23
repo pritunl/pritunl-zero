@@ -3,6 +3,7 @@ package audit
 import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
@@ -22,15 +23,25 @@ func Get(db *database.Database, adtId string) (
 	return
 }
 
-func GetAll(db *database.Database, userId bson.ObjectId) (
-	audits []*Audit, err error) {
+func GetAll(db *database.Database, userId bson.ObjectId,
+	page, pageCount int) (audits []*Audit, count int, err error) {
 
 	coll := db.Audits()
 	audits = []*Audit{}
 
-	cursor := coll.Find(bson.M{
+	qury := coll.Find(&bson.M{
 		"u": userId,
-	}).Sort("-$natural").Iter()
+	})
+
+	count, err = qury.Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
+
+	cursor := qury.Sort("-$natural").Skip(skip).Limit(pageCount).Iter()
 
 	adt := &Audit{}
 	for cursor.Next(adt) {
