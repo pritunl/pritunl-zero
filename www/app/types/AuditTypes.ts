@@ -2,6 +2,7 @@
 import * as AgentTypes from './AgentTypes';
 
 export const SYNC = 'audit.sync';
+export const TRAVERSE = 'audit.traverse';
 export const CHANGE = 'audit.change';
 
 export interface Audit {
@@ -25,5 +26,7 @@ export interface AuditDispatch {
 		userId?: string;
 		audit?: Audit;
 		audits?: Audits;
+		page?: number;
+		count?: number;
 	};
 }
