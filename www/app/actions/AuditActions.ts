@@ -20,6 +20,10 @@ export function load(userId: string): Promise<void> {
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.get('/audit/' + userId)
+			.query({
+				page: AuditsStore.page,
+				page_count: AuditsStore.pageCount,
+			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -40,7 +44,8 @@ export function load(userId: string): Promise<void> {
 					type: AuditTypes.SYNC,
 					data: {
 						userId: userId,
-						audits: res.body,
+						audits: res.body.audits,
+						count: res.body.count,
 					},
 				});
 
@@ -51,6 +56,17 @@ export function load(userId: string): Promise<void> {
 
 export function reload(): Promise<void> {
 	return load(AuditsStore.userId);
+}
+
+export function traverse(page: number): Promise<void> {
+	Dispatcher.dispatch({
+		type: AuditTypes.TRAVERSE,
+		data: {
+			page: page,
+		},
+	});
+
+	return reload();
 }
 
 EventDispatcher.register((action: AuditTypes.AuditDispatch) => {

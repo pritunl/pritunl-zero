@@ -7,6 +7,9 @@ import * as GlobalTypes from '../types/GlobalTypes';
 class AuditsStore extends EventEmitter {
 	_userId: string;
 	_audits: AuditTypes.AuditsRo = Object.freeze([]);
+	_page: number;
+	_pageCount: number;
+	_count: number;
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get userId(): string {
@@ -27,6 +30,22 @@ class AuditsStore extends EventEmitter {
 		return audits;
 	}
 
+	get page(): number {
+		return this._page || 0;
+	}
+
+	get pageCount(): number {
+		return this._pageCount || 10;
+	}
+
+	get pages(): number {
+		return Math.ceil(this.count / this.pageCount);
+	}
+
+	get count(): number {
+		return this._count || 0;
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -39,21 +58,32 @@ class AuditsStore extends EventEmitter {
 		this.removeListener(GlobalTypes.CHANGE, callback);
 	}
 
-	_sync(userId: string, audits: AuditTypes.Audit[]): void {
+	_traverse(page: number): void {
+		this._page = Math.min(this.pages, page);
+	}
+
+	_sync(userId: string, audits: AuditTypes.Audit[], count: number): void {
 		this._userId = userId;
 
 		for (let i = 0; i < audits.length; i++) {
 			audits[i] = Object.freeze(audits[i]);
 		}
 
+		this._count = count;
 		this._audits = Object.freeze(audits);
+		this._page = Math.min(this.pages, this.page);
+
 		this.emitChange();
 	}
 
 	_callback(action: AuditTypes.AuditDispatch): void {
 		switch (action.type) {
+			case AuditTypes.TRAVERSE:
+				this._traverse(action.data.page);
+				break;
+
 			case AuditTypes.SYNC:
-				this._sync(action.data.userId, action.data.audits);
+				this._sync(action.data.userId, action.data.audits, action.data.count);
 				break;
 		}
 	}
