@@ -22,6 +22,7 @@ const css = {
 		margin: '0 0 0 0',
 	} as React.CSSProperties,
 	link: {
+		userSelect: 'none',
 		margin: '5px 5px 0 0',
 	} as React.CSSProperties,
 	current: {
