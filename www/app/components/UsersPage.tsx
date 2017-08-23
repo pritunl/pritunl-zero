@@ -16,9 +16,11 @@ interface State {
 
 const css = {
 	button: {
+		userSelect: 'none',
 		margin: '0 5px 0 0',
 	} as React.CSSProperties,
 	buttonLast: {
+		userSelect: 'none',
 		margin: '0 0 0 0',
 	} as React.CSSProperties,
 	link: {
