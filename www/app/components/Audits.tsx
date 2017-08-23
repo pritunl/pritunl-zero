@@ -6,6 +6,7 @@ import * as AuditActions from '../actions/AuditActions';
 import NonState from './NonState';
 import Audit from './Audit';
 import PageHeader from './PageHeader';
+import AuditsPage from './AuditsPage';
 
 interface Props {
 	userId: string;
@@ -85,6 +86,7 @@ export default class Audits extends React.Component<Props, State> {
 				iconClass="pt-icon-search-template"
 				title="No audit events"
 			/>
+			<AuditsPage/>
 		</div>;
 	}
 }
