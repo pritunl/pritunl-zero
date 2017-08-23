@@ -32,7 +32,7 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Logs extends React.Component<Props, State> {
+export default class LogsPage extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
