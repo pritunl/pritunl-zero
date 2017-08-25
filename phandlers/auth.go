@@ -45,6 +45,16 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	errData, err = auth.Validate(db, usr, srvc, c.Request)
+	if err != nil {
+		return
+	}
+
+	if errData != nil {
 		err = audit.New(
 			db,
 			c.Request,
@@ -59,16 +69,6 @@ func authSessionPost(c *gin.Context) {
 			return
 		}
 
-		c.JSON(401, errData)
-		return
-	}
-
-	errData, err = auth.Validate(db, usr, srvc, c.Request)
-	if err != nil {
-		return
-	}
-
-	if errData != nil {
 		c.JSON(401, errData)
 		return
 	}
