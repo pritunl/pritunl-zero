@@ -12,6 +12,10 @@ import AuditsStore from '../stores/AuditsStore';
 let syncId: string;
 
 export function load(userId: string): Promise<void> {
+	if (!userId) {
+		return Promise.resolve();
+	}
+
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
