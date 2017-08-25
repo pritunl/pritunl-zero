@@ -12,6 +12,10 @@ import SessionsStore from '../stores/SessionsStore';
 let syncId: string;
 
 export function _load(userId: string): Promise<void> {
+	if (!userId) {
+		return Promise.resolve();
+	}
+
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
