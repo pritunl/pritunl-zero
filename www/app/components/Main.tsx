@@ -16,6 +16,7 @@ import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as SessionActions from '../actions/SessionActions';
+import * as AuditActions from '../actions/AuditActions';
 import * as NodeActions from '../actions/NodeActions';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as CertificateActions from '../actions/CertificateActions';
@@ -193,6 +194,17 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 										SessionActions.reload().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+										AuditActions.reload().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
