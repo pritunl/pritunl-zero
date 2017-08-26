@@ -95,6 +95,8 @@ func Register(protocol string, engine *gin.Engine) {
 	csrfGroup.POST("/user", userPost)
 	csrfGroup.DELETE("/user", usersDelete)
 
+	engine.GET("/robots.txt", middlewear.RobotsGet)
+
 	if constants.Production {
 		sessGroup.GET("/", staticIndexGet)
 		engine.GET("/login", staticLoginGet)

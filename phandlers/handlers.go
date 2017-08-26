@@ -51,6 +51,7 @@ func Register(prxy *proxy.Proxy, protocol string, engine *gin.Engine) {
 
 	engine.GET("/", staticIndexGet)
 	engine.GET("/logo.png", staticLogoGet)
+	engine.GET("/robots.txt", middlewear.RobotsGet)
 }
 
 func init() {
