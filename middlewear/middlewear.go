@@ -16,6 +16,10 @@ import (
 	"net/http"
 )
 
+const robots = `User-agent: *
+Disallow: /
+`
+
 func Limiter(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 1000000)
 }
@@ -181,6 +185,10 @@ func Recovery(c *gin.Context) {
 	}()
 
 	c.Next()
+}
+
+func RobotsGet(c *gin.Context) {
+	c.String(200, robots)
 }
 
 func NotFound(c *gin.Context) {
