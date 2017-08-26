@@ -56,10 +56,6 @@ export default class Audit extends React.Component<Props, {}> {
 								value: MiscUtils.formatDate(audit.timestamp) || 'Unknown',
 							},
 							{
-								label: 'Type',
-								value: audit.type,
-							},
-							{
 								label: 'Fields',
 								value: fields,
 							},
@@ -70,6 +66,10 @@ export default class Audit extends React.Component<Props, {}> {
 					<PageInfo
 						style={css.info}
 						fields={[
+							{
+								label: 'Type',
+								value: audit.type,
+							},
 							{
 								label: 'Operating System',
 								value: Constants.operatingSystems[agent.operating_system] ||
