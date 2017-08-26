@@ -76,7 +76,7 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request) (
 		return
 	}
 
-	if sess.Agent.Diff(agnt) {
+	if agnt != nil && (sess.Agent == nil || sess.Agent.Diff(agnt)) {
 		sess.Agent = agnt
 		err = coll.UpdateId(sess.Id, &bson.M{
 			"$set": &bson.M{
