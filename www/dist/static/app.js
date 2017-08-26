@@ -11943,7 +11943,7 @@ System.registerDynamic("app/components/Subscription.js", ["npm:react@15.6.1.js",
                     }).catch(() => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                     });
-                } }, "Activate License"), React.createElement(react_stripe_checkout_1.default, { label: "Pritunl Zero", image: "//s3.amazonaws.com/pritunl-static/logo_stripe.png", allowRememberMe: false, zipCode: true, amount: 5000, name: "Pritunl Zero", description: "Subscribe to Zero ($50/month)", panelLabel: "Subscribe", token: token => {
+                } }, "Activate License"), React.createElement(react_stripe_checkout_1.default, { label: "Pritunl Zero", image: "//s3.amazonaws.com/pritunl-static/logo_stripe.png", allowRememberMe: false, zipCode: true, amount: 5000, name: "Pritunl Zero - 7 Day Trial", description: "Subscribe to Zero ($50/month)", panelLabel: "Subscribe", token: token => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
                     SubscriptionActions.checkout('zero', token.id, token.email).then(message => {
                         this.setState(Object.assign({}, this.state, { disabled: false, message: message }));
@@ -11952,7 +11952,7 @@ System.registerDynamic("app/components/Subscription.js", ["npm:react@15.6.1.js",
                     });
                 }, onScriptError: err => {
                     Alert.error('Failed to load Stripe Checkout');
-                }, stripeKey: "pk_test_4YSuzxPmd08oSV2s4kLi7zU2" }, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-credit-card", style: css.button, disabled: this.state.disabled }, "Subscribe")))));
+                }, stripeKey: "pk_live_plmoOl3lS3k5dMNQViZWGfVR" }, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-credit-card", style: css.button, disabled: this.state.disabled }, "Subscribe")))));
         }
         reactivate() {
             let sub = this.state.subscription;
@@ -11976,7 +11976,7 @@ System.registerDynamic("app/components/Subscription.js", ["npm:react@15.6.1.js",
                     });
                 }, onScriptError: err => {
                     Alert.error('Failed to load Stripe Checkout');
-                }, stripeKey: "pk_test_4YSuzxPmd08oSV2s4kLi7zU2" }, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-credit-card", style: canceling ? css.button3 : css.button2, disabled: this.state.disabled }, canceling ? 'Reactivate Subscription' : 'Update Payment'))), React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement(ConfirmButton_1.default, { className: "pt-intent-danger pt-icon-delete", progressClassName: "pt-intent-danger", style: css.button2, disabled: this.state.disabled, label: "Remove License", onConfirm: () => {
+                }, stripeKey: "pk_live_plmoOl3lS3k5dMNQViZWGfVR" }, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-credit-card", style: canceling ? css.button3 : css.button2, disabled: this.state.disabled }, canceling ? 'Reactivate Subscription' : 'Update Payment'))), React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement(ConfirmButton_1.default, { className: "pt-intent-danger pt-icon-delete", progressClassName: "pt-intent-danger", style: css.button2, disabled: this.state.disabled, label: "Remove License", onConfirm: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
                     SubscriptionActions.activate('').then(() => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
@@ -15385,7 +15385,7 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@15.6.1.js", 
                         filter.type = val;
                     }
                     this.props.onFilter(filter);
-                } }, React.createElement("option", { value: "any" }, "Any"), React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(SwitchNull_1.default, { style: css.check, label: "Administrator", checked: this.props.filter.administrator, onToggle: () => {
+                } }, React.createElement("option", { value: "any" }, "Any"), React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(SwitchNull_1.default, { style: css.check, label: "Administrator", checked: this.props.filter.administrator, onToggle: () => {
                     let filter = Object.assign({}, this.props.filter);
                     if (filter.administrator === undefined) {
                         filter.administrator = true;
@@ -15422,12 +15422,15 @@ System.registerDynamic("app/components/UsersPage.js", ["npm:react@15.6.1.js", "a
     const UserActions = $__require("app/actions/UserActions.js");
     const css = {
         button: {
+            userSelect: 'none',
             margin: '0 5px 0 0'
         },
         buttonLast: {
+            userSelect: 'none',
             margin: '0 0 0 0'
         },
         link: {
+            userSelect: 'none',
             margin: '5px 5px 0 0'
         },
         current: {
@@ -15490,7 +15493,7 @@ System.registerDynamic("app/components/UsersPage.js", ["npm:react@15.6.1.js", "a
     exports.default = Users;
     
 });
-System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:react-router-dom@4.1.1.js", "app/stores/UsersStore.js", "app/actions/UserActions.js", "app/components/User.js", "app/components/UsersFilter.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/UsersPage.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:react-router-dom@4.1.1.js", "app/stores/UsersStore.js", "app/actions/UserActions.js", "app/actions/AuditActions.js", "app/components/User.js", "app/components/UsersFilter.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/UsersPage.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -15500,6 +15503,7 @@ System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:r
     const ReactRouter = $__require("npm:react-router-dom@4.1.1.js");
     const UsersStore_1 = $__require("app/stores/UsersStore.js");
     const UserActions = $__require("app/actions/UserActions.js");
+    const AuditActions = $__require("app/actions/AuditActions.js");
     const User_1 = $__require("app/components/User.js");
     const UsersFilter_1 = $__require("app/components/UsersFilter.js");
     const Page_1 = $__require("app/components/Page.js");
@@ -15570,6 +15574,7 @@ System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:r
         }
         componentDidMount() {
             UsersStore_1.default.addChangeListener(this.onChange);
+            AuditActions.traverse(0);
             UserActions.sync();
         }
         componentWillUnmount() {
@@ -15633,7 +15638,7 @@ System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:r
     exports.default = Users;
     
 });
-System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app/utils/MiscUtils.js", "app/Constants.js", "app/actions/SessionActions.js", "app/components/PageInfo.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app/utils/MiscUtils.js", "app/utils/AgentUtils.js", "app/Constants.js", "app/actions/SessionActions.js", "app/components/PageInfo.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -15641,6 +15646,7 @@ System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
     const MiscUtils = $__require("app/utils/MiscUtils.js");
+    const AgentUtils = $__require("app/utils/AgentUtils.js");
     const Constants = $__require("app/Constants.js");
     const SessionActions = $__require("app/actions/SessionActions.js");
     const PageInfo_1 = $__require("app/components/PageInfo.js");
@@ -15681,11 +15687,11 @@ System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app
         render() {
             let session = this.props.session;
             let agent = session.agent || {};
-            let continent = agent.continent && agent.continent_code ? agent.continent + ' (' + agent.continent_code + ')' : agent.continent || agent.continent_code || 'Unknown';
-            let location = (agent.city ? agent.city + ', ' : '') + (agent.region || 'Unknown') + (agent.region_code ? ' (' + agent.region_code + ')' : '');
-            let country = (agent.country || 'Unknown') + (agent.country_code ? ' (' + agent.country_code + ')' : '');
-            let coordinates = agent.latitude && agent.longitude ? agent.latitude + ', ' + agent.longitude : 'Unknown';
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger pt-icon-cross", type: "button", disabled: this.state.disabled, onClick: this.onDelete })), React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+            let cardStyle = Object.assign({}, css.card);
+            if (session.removed) {
+                cardStyle.opacity = 0.6;
+            }
+            return React.createElement("div", { className: "pt-card", style: cardStyle }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger pt-icon-cross", type: "button", hidden: session.removed, disabled: this.state.disabled, onClick: this.onDelete })), React.createElement(PageInfo_1.default, { style: css.info, fields: [{
                     label: 'ID',
                     value: session.id || 'None'
                 }, {
@@ -15705,17 +15711,17 @@ System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app
                     value: agent.isp || 'Unknown'
                 }] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
                     label: 'Location',
-                    value: [location, country, continent]
+                    value: [AgentUtils.formatLocation(agent), AgentUtils.formatCountry(agent), AgentUtils.formatContinent(agent)]
                 }, {
                     label: 'Coordinates',
-                    value: coordinates
+                    value: AgentUtils.formatCoordinates(agent)
                 }] }))));
         }
     }
     exports.default = Session;
     
 });
-System.registerDynamic("app/components/Sessions.js", ["npm:react@15.6.1.js", "app/stores/SessionsStore.js", "app/actions/SessionActions.js", "app/components/Session.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Sessions.js", ["npm:react@15.6.1.js", "app/stores/SessionsStore.js", "app/actions/SessionActions.js", "app/components/NonState.js", "app/components/Session.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -15724,20 +15730,18 @@ System.registerDynamic("app/components/Sessions.js", ["npm:react@15.6.1.js", "ap
     const React = $__require("npm:react@15.6.1.js");
     const SessionsStore_1 = $__require("app/stores/SessionsStore.js");
     const SessionActions = $__require("app/actions/SessionActions.js");
+    const NonState_1 = $__require("app/components/NonState.js");
     const Session_1 = $__require("app/components/Session.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
     const css = {
         header: {
-            marginTop: '-5px'
+            marginTop: '5px'
         },
         heading: {
             margin: '19px 0 0 0'
         },
         button: {
-            margin: '10px 0 0 0'
-        },
-        noCerts: {
-            height: 'auto'
+            margin: '15px 0 -5px 0'
         }
     };
     class Sessions extends React.Component {
@@ -15748,6 +15752,7 @@ System.registerDynamic("app/components/Sessions.js", ["npm:react@15.6.1.js", "ap
             };
             this.state = {
                 sessions: SessionsStore_1.default.sessions,
+                showEnded: false,
                 disabled: false
             };
         }
@@ -15766,12 +15771,251 @@ System.registerDynamic("app/components/Sessions.js", ["npm:react@15.6.1.js", "ap
             }
             let sessions = [];
             this.state.sessions.forEach(session => {
+                if (session.removed && !this.state.showEnded) {
+                    return;
+                }
                 sessions.push(React.createElement(Session_1.default, { key: session.id, session: session }));
             });
-            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Sessions"), React.createElement("div", { className: "flex" }))), React.createElement("div", null, sessions), React.createElement("div", { className: "pt-non-ideal-state", style: css.noCerts, hidden: !!sessions.length }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-user" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No sessions")));
+            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Sessions"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-minimal", style: css.button, type: "button", onClick: () => {
+                    this.setState(Object.assign({}, this.state, { showEnded: !this.state.showEnded }));
+                    SessionActions.showRemoved(!this.state.showEnded);
+                } }, (this.state.showEnded ? 'Hide' : 'Show') + ' ended sessions')))), React.createElement("div", null, sessions), React.createElement(NonState_1.default, { hidden: !!sessions.length, iconClass: "pt-icon-user", title: "No sessions" }));
         }
     }
     exports.default = Sessions;
+    
+});
+System.registerDynamic("app/utils/AgentUtils.js", [], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function formatContinent(agent) {
+        return agent.continent && agent.continent_code ? agent.continent + ' (' + agent.continent_code + ')' : agent.continent || agent.continent_code || 'Unknown';
+    }
+    exports.formatContinent = formatContinent;
+    function formatLocation(agent) {
+        return (agent.city ? agent.city + ', ' : '') + (agent.region || 'Unknown') + (agent.region_code ? ' (' + agent.region_code + ')' : '');
+    }
+    exports.formatLocation = formatLocation;
+    function formatCountry(agent) {
+        return (agent.country || 'Unknown') + (agent.country_code ? ' (' + agent.country_code + ')' : '');
+    }
+    exports.formatCountry = formatCountry;
+    function formatCoordinates(agent) {
+        return agent.latitude && agent.longitude ? agent.latitude + ', ' + agent.longitude : 'Unknown';
+    }
+    exports.formatCoordinates = formatCoordinates;
+    
+});
+System.registerDynamic("app/components/Audit.js", ["npm:react@15.6.1.js", "app/Constants.js", "app/utils/AgentUtils.js", "app/utils/MiscUtils.js", "app/components/PageInfo.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const Constants = $__require("app/Constants.js");
+    const AgentUtils = $__require("app/utils/AgentUtils.js");
+    const MiscUtils = $__require("app/utils/MiscUtils.js");
+    const PageInfo_1 = $__require("app/components/PageInfo.js");
+    const css = {
+        card: {
+            position: 'relative',
+            padding: '10px',
+            marginBottom: '5px'
+        },
+        info: {
+            marginBottom: '-5px'
+        },
+        group: {
+            flex: 1,
+            minWidth: '290px'
+        }
+    };
+    class Audit extends React.Component {
+        render() {
+            let audit = this.props.audit;
+            let agent = audit.agent || {};
+            let fields = [];
+            for (let key in audit.fields) {
+                if (!audit.fields.hasOwnProperty(key)) {
+                    continue;
+                }
+                fields.push(key + ': ' + audit.fields[key]);
+            }
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+                    label: 'ID',
+                    value: audit.id || 'None'
+                }, {
+                    label: 'Timestamp',
+                    value: MiscUtils.formatDate(audit.timestamp) || 'Unknown'
+                }, {
+                    label: 'Fields',
+                    value: fields
+                }] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+                    label: 'Type',
+                    value: audit.type
+                }, {
+                    label: 'Operating System',
+                    value: Constants.operatingSystems[agent.operating_system] || 'Unknown'
+                }, {
+                    label: 'Browser',
+                    value: Constants.browsers[agent.browser] || 'Unknown'
+                }, {
+                    label: 'ISP',
+                    value: agent.isp || 'Unknown'
+                }] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+                    label: 'Location',
+                    value: [AgentUtils.formatLocation(agent), AgentUtils.formatCountry(agent), AgentUtils.formatContinent(agent)]
+                }, {
+                    label: 'Coordinates',
+                    value: AgentUtils.formatCoordinates(agent)
+                }] }))));
+        }
+    }
+    exports.default = Audit;
+    
+});
+System.registerDynamic("app/components/AuditsPage.js", ["npm:react@15.6.1.js", "app/stores/AuditsStore.js", "app/actions/AuditActions.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const AuditsStore_1 = $__require("app/stores/AuditsStore.js");
+    const AuditActions = $__require("app/actions/AuditActions.js");
+    const css = {
+        button: {
+            userSelect: 'none',
+            margin: '0 5px 0 0'
+        },
+        buttonLast: {
+            userSelect: 'none',
+            margin: '0 0 0 0'
+        },
+        link: {
+            userSelect: 'none',
+            margin: '5px 5px 0 0'
+        },
+        current: {
+            opacity: 0.5
+        }
+    };
+    class AuditsPage extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign({}, this.state, { page: AuditsStore_1.default.page, pageCount: AuditsStore_1.default.pageCount, pages: AuditsStore_1.default.pages, count: AuditsStore_1.default.count }));
+            };
+            this.state = {
+                page: AuditsStore_1.default.page,
+                pageCount: AuditsStore_1.default.pageCount,
+                pages: AuditsStore_1.default.pages,
+                count: AuditsStore_1.default.count
+            };
+        }
+        componentDidMount() {
+            AuditsStore_1.default.addChangeListener(this.onChange);
+        }
+        componentWillUnmount() {
+            AuditsStore_1.default.removeChangeListener(this.onChange);
+        }
+        render() {
+            let page = this.state.page;
+            let pages = this.state.pages;
+            if (pages <= 1) {
+                return React.createElement("div", null);
+            }
+            let offset = 1;
+            if (pages < 5) {
+                offset = 0;
+            }
+            let links = [];
+            let start = Math.max(offset, page - 7);
+            let end = Math.min(pages - offset, start + 15);
+            for (let i = start; i < end; i++) {
+                links.push(React.createElement("a", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
+                        AuditActions.traverse(i);
+                        if (this.props.onPage) {
+                            this.props.onPage();
+                        }
+                    } }, i + 1));
+            }
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === 0 ? Object.assign({}, css.button, css.current) : css.button, type: "button", onClick: () => {
+                    AuditActions.traverse(0);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }, "First"), links, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === pages ? Object.assign({}, css.buttonLast, css.current) : css.buttonLast, type: "button", onClick: () => {
+                    AuditActions.traverse(this.state.pages);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }, "Last"));
+        }
+    }
+    exports.default = AuditsPage;
+    
+});
+System.registerDynamic("app/components/Audits.js", ["npm:react@15.6.1.js", "app/stores/AuditsStore.js", "app/actions/AuditActions.js", "app/components/NonState.js", "app/components/Audit.js", "app/components/PageHeader.js", "app/components/AuditsPage.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const AuditsStore_1 = $__require("app/stores/AuditsStore.js");
+    const AuditActions = $__require("app/actions/AuditActions.js");
+    const NonState_1 = $__require("app/components/NonState.js");
+    const Audit_1 = $__require("app/components/Audit.js");
+    const PageHeader_1 = $__require("app/components/PageHeader.js");
+    const AuditsPage_1 = $__require("app/components/AuditsPage.js");
+    const css = {
+        header: {
+            marginTop: '5px'
+        },
+        heading: {
+            margin: '19px 0 0 0'
+        },
+        button: {
+            margin: '10px 0 0 0'
+        }
+    };
+    class Audits extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign({}, this.state, { audits: AuditsStore_1.default.audits }));
+            };
+            this.state = {
+                audits: AuditsStore_1.default.audits,
+                disabled: false
+            };
+        }
+        componentDidMount() {
+            AuditsStore_1.default.addChangeListener(this.onChange);
+            if (this.props.userId) {
+                AuditActions.load(this.props.userId);
+            }
+        }
+        componentWillUnmount() {
+            AuditsStore_1.default.removeChangeListener(this.onChange);
+        }
+        render() {
+            if (!this.props.userId) {
+                return React.createElement("div", null);
+            }
+            let audits = [];
+            this.state.audits.forEach(audit => {
+                audits.push(React.createElement(Audit_1.default, { key: audit.id, audit: audit }));
+            });
+            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Audit Events"), React.createElement("div", { className: "flex" }))), React.createElement("div", null, audits), React.createElement(NonState_1.default, { hidden: !!audits.length, iconClass: "pt-icon-search-template", title: "No audit events" }), React.createElement(AuditsPage_1.default, null));
+        }
+    }
+    exports.default = Audits;
     
 });
 System.registerDynamic("npm:@blueprintjs/datetime@1.18.0/dist/dateInput.js", ["npm:tslib@1.7.1.js", "npm:classnames@2.2.5.js", "npm:moment@2.18.1.js", "npm:react@15.6.1.js", "npm:@blueprintjs/core@1.22.0.js", "npm:@blueprintjs/datetime@1.18.0/dist/common/dateUtils.js", "npm:@blueprintjs/datetime@1.18.0/dist/common/errors.js", "npm:@blueprintjs/datetime@1.18.0/dist/datePicker.js", "npm:@blueprintjs/datetime@1.18.0/dist/datePickerCore.js", "npm:@blueprintjs/datetime@1.18.0/dist/dateTimePicker.js"], true, function ($__require, exports, module) {
@@ -23538,7 +23782,7 @@ System.registerDynamic("app/components/PageNew.js", ["npm:react@15.6.1.js"], tru
     exports.default = PageNew;
     
 });
-System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js", "app/actions/UserActions.js", "app/utils/MiscUtils.js", "app/stores/UserStore.js", "app/components/Sessions.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInfo.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageDateTime.js", "app/components/PageSave.js", "app/components/PageNew.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js", "app/actions/UserActions.js", "app/utils/MiscUtils.js", "app/stores/UserStore.js", "app/components/Sessions.js", "app/components/Audits.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInfo.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageDateTime.js", "app/components/PageSave.js", "app/components/PageNew.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -23549,6 +23793,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     const UserStore_1 = $__require("app/stores/UserStore.js");
     const Sessions_1 = $__require("app/components/Sessions.js");
+    const Audits_1 = $__require("app/components/Audits.js");
     const Page_1 = $__require("app/components/Page.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
     const PagePanel_1 = $__require("app/components/PagePanel.js");
@@ -23649,7 +23894,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                     this.set('password', val);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", value: user.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
                     if (this.state.user.administrator === 'super') {
@@ -23669,7 +23914,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                     this.set('active_until', val);
                 } }))), userId ? React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', addRole: '', user: UserStore_1.default.userM }));
-                }, onSave: this.onSave }) : React.createElement(PageNew_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onSave: this.onNew }), React.createElement(Sessions_1.default, { userId: userId }));
+                }, onSave: this.onSave }) : React.createElement(PageNew_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onSave: this.onNew }), React.createElement(Sessions_1.default, { userId: userId }), React.createElement(Audits_1.default, { userId: userId }));
         }
     }
     exports.default = UserDetailed;
@@ -23759,24 +24004,15 @@ System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.j
         }
     };
     class PageInputSwitch extends React.Component {
-        constructor(props, context) {
-            super(props, context);
-            this.state = {
-                checked: false
-            };
-        }
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.switchLabel }, React.createElement("input", { type: "checkbox", checked: !!this.props.value || this.state.checked, onChange: () => {
-                    if (!!this.props.value || this.state.checked) {
-                        this.setState(Object.assign({}, this.state, { checked: false }));
-                        this.props.onChange(null);
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.switchLabel }, React.createElement("input", { type: "checkbox", checked: !!this.props.value || this.props.checked, onChange: () => {
+                    if (!!this.props.value || this.props.checked) {
+                        this.props.onChange(false, null);
                     } else {
-                        this.setState(Object.assign({}, this.state, { checked: true }));
-                        this.props.onChange(this.props.defaultValue);
+                        this.props.onChange(true, this.props.defaultValue);
                     }
-                } }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label), React.createElement("label", { className: "pt-label", style: css.inputLabel }, React.createElement("input", { className: "pt-input", style: css.input, hidden: !this.props.value && !this.state.checked, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
-                    this.setState(Object.assign({}, this.state, { checked: true }));
-                    this.props.onChange(evt.target.value);
+                } }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label), React.createElement("label", { className: "pt-label", style: css.inputLabel }, React.createElement("input", { className: "pt-input", style: css.input, hidden: !this.props.value && !this.props.checked, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+                    this.props.onChange(true, evt.target.value);
                 } })));
         }
     }
@@ -23906,7 +24142,8 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                 changed: false,
                 message: '',
                 node: null,
-                addService: null
+                addService: null,
+                forwardedChecked: false
             };
         }
         set(name, val) {
@@ -23986,10 +24223,17 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                     value: node.load15
                 }] }), React.createElement(PageSelect_1.default, { label: "Certificate", value: node.certificate, onChange: val => {
                     this.set('certificate', val);
-                } }, certificates), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, defaultValue: "X-Forwarded-For", onChange: val => {
-                    this.set('forwarded_for_header', val);
+                } }, certificates), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, checked: this.state.forwardedChecked, defaultValue: "X-Forwarded-For", onChange: (state, val) => {
+                    let nde;
+                    if (this.state.changed) {
+                        nde = Object.assign({}, this.state.node);
+                    } else {
+                        nde = Object.assign({}, this.props.node);
+                    }
+                    nde.forwarded_for_header = val;
+                    this.setState(Object.assign({}, this.state, { changed: true, forwardedChecked: state, node: nde }));
                 } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.node, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
-                    this.setState(Object.assign({}, this.state, { changed: false, node: null }));
+                    this.setState(Object.assign({}, this.state, { changed: false, forwardedChecked: false, node: null }));
                 }, onSave: this.onSave }));
         }
     }
@@ -24177,17 +24421,17 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
             switch (this.props.rule.type) {
                 case 'operating_system':
                     label = 'Permitted Operating Systems';
-                    selectLabel = 'Operating Systems';
+                    selectLabel = 'Operating System Policies';
                     options = Constants.operatingSystems;
                     break;
                 case 'browser':
                     label = 'Permitted Browsers';
-                    selectLabel = 'Browsers';
+                    selectLabel = 'Browser Policies';
                     options = Constants.browsers;
                     break;
                 case 'location':
                     label = 'Permitted Locations';
-                    selectLabel = 'Locations';
+                    selectLabel = 'Location Policies';
                     options = Constants.locations;
                     break;
             }
@@ -24469,7 +24713,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
     exports.default = Policy;
     
 });
-System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "app/stores/PoliciesStore.js", "app/stores/ServicesStore.js", "app/actions/PolicyActions.js", "app/actions/ServiceActions.js", "app/components/Policy.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "app/stores/PoliciesStore.js", "app/stores/ServicesStore.js", "app/actions/PolicyActions.js", "app/actions/ServiceActions.js", "app/components/NonState.js", "app/components/Policy.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24480,6 +24724,7 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "ap
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const PolicyActions = $__require("app/actions/PolicyActions.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
+    const NonState_1 = $__require("app/components/NonState.js");
     const Policy_1 = $__require("app/components/Policy.js");
     const Page_1 = $__require("app/components/Page.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
@@ -24492,9 +24737,6 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "ap
         },
         button: {
             margin: '10px 0 0 0'
-        },
-        noPolicies: {
-            height: 'auto'
         }
     };
     class Policies extends React.Component {
@@ -24526,7 +24768,7 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "ap
             });
             return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Policies"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
                     PolicyActions.create(null);
-                } }, "New")))), React.createElement("div", null, policiesDom), React.createElement("div", { className: "pt-non-ideal-state", style: css.noPolicies, hidden: !!policiesDom.length }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-filter" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No policies"), React.createElement("div", { className: "pt-non-ideal-state-description" }, "Add a new policy to get started.")));
+                } }, "New")))), React.createElement("div", null, policiesDom), React.createElement(NonState_1.default, { hidden: !!policiesDom.length, iconClass: "pt-icon-filter", title: "No policies", description: "Add a new policy to get started." }));
         }
     }
     exports.default = Policies;
@@ -24803,7 +25045,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
     exports.default = Certificate;
     
 });
-System.registerDynamic("app/components/Certificates.js", ["npm:react@15.6.1.js", "app/stores/CertificatesStore.js", "app/actions/CertificateActions.js", "app/components/Certificate.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Certificates.js", ["npm:react@15.6.1.js", "app/stores/CertificatesStore.js", "app/actions/CertificateActions.js", "app/components/NonState.js", "app/components/Certificate.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24812,6 +25054,7 @@ System.registerDynamic("app/components/Certificates.js", ["npm:react@15.6.1.js",
     const React = $__require("npm:react@15.6.1.js");
     const CertificatesStore_1 = $__require("app/stores/CertificatesStore.js");
     const CertificateActions = $__require("app/actions/CertificateActions.js");
+    const NonState_1 = $__require("app/components/NonState.js");
     const Certificate_1 = $__require("app/components/Certificate.js");
     const Page_1 = $__require("app/components/Page.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
@@ -24854,7 +25097,7 @@ System.registerDynamic("app/components/Certificates.js", ["npm:react@15.6.1.js",
             });
             return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Certificates"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
                     CertificateActions.create(null);
-                } }, "New")))), React.createElement("div", null, certsDom), React.createElement("div", { className: "pt-non-ideal-state", style: css.noCerts, hidden: !!certsDom.length }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No certificates"), React.createElement("div", { className: "pt-non-ideal-state-description" }, "Add a new certificate to get started.")));
+                } }, "New")))), React.createElement("div", null, certsDom), React.createElement(NonState_1.default, { hidden: !!certsDom.length, iconClass: "", title: "", description: "" }));
         }
     }
     exports.default = Certificates;
@@ -25060,19 +25303,22 @@ System.registerDynamic("app/components/LogsPage.js", ["npm:react@15.6.1.js", "ap
     const LogActions = $__require("app/actions/LogActions.js");
     const css = {
         button: {
+            userSelect: 'none',
             margin: '0 5px 0 0'
         },
         buttonLast: {
+            userSelect: 'none',
             margin: '0 0 0 0'
         },
         link: {
+            userSelect: 'none',
             margin: '5px 5px 0 0'
         },
         current: {
             opacity: 0.5
         }
     };
-    class Logs extends React.Component {
+    class LogsPage extends React.Component {
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
@@ -25125,7 +25371,7 @@ System.registerDynamic("app/components/LogsPage.js", ["npm:react@15.6.1.js", "ap
                 } }, "Last"));
         }
     }
-    exports.default = Logs;
+    exports.default = LogsPage;
     
 });
 System.registerDynamic("app/components/Logs.js", ["npm:react@15.6.1.js", "app/stores/LogsStore.js", "app/actions/LogActions.js", "app/components/Log.js", "app/components/LogsFilter.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/LogsPage.js"], true, function ($__require, exports, module) {
@@ -25268,6 +25514,42 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
         }
     }
     exports.default = new ServicesStore();
+    
+});
+System.registerDynamic("app/components/NonState.js", ["npm:react@15.6.1.js", "app/Constants.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const Constants = $__require("app/Constants.js");
+    const css = {
+        state: {
+            height: 'auto'
+        }
+    };
+    class NonState extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                initialized: false
+            };
+        }
+        componentDidMount() {
+            setTimeout(() => {
+                this.setState(Object.assign({}, this.state, { initialized: true }));
+            }, Constants.loadDelay);
+        }
+        render() {
+            let description;
+            if (this.props.description) {
+                description = React.createElement("div", { className: "pt-non-ideal-state-description" }, this.props.description);
+            }
+            return React.createElement("div", { className: "pt-non-ideal-state", style: css.state, hidden: this.props.hidden || !this.state.initialized }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: 'pt-icon ' + this.props.iconClass })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.props.title), description);
+        }
+    }
+    exports.default = NonState;
     
 });
 System.registerDynamic("app/components/ServiceDomain.js", ["npm:react@15.6.1.js"], true, function ($__require, exports, module) {
@@ -26342,6 +26624,7 @@ System.registerDynamic("app/Constants.js", ["npm:mobile-detect@1.3.6.js"], true,
     const MobileDetect = $__require("npm:mobile-detect@1.3.6.js");
     let md = new MobileDetect(window.navigator.userAgent);
     exports.mobile = !!md.mobile();
+    exports.loadDelay = 500;
     exports.operatingSystems = {
         linux: 'Linux',
         macos_1010: 'macOS 10.10',
@@ -26364,7 +26647,8 @@ System.registerDynamic("app/Constants.js", ["npm:mobile-detect@1.3.6.js"], true,
         android_5: 'Android Lollipop 5.0',
         android_6: 'Android Marshmallow 6.0',
         android_7: 'Android Nougat 7.0',
-        android_8: 'Android 8.0',
+        android_8: 'Android Oreo 8.0',
+        android_9: 'Android 9.0',
         blackberry_10: 'Blackerry 10',
         windows_phone: 'Windows Phone',
         firefox_os: 'Firefox OS',
@@ -26891,15 +27175,15 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                 } else {
                     service = Object.assign({}, this.props.service);
                 }
-                let whitelist_networks = [...service.whitelist_networks];
+                let whitelistNets = [...service.whitelist_networks];
                 if (!this.state.addWhitelistNet) {
                     return;
                 }
-                if (whitelist_networks.indexOf(this.state.addWhitelistNet) === -1) {
-                    whitelist_networks.push(this.state.addWhitelistNet);
+                if (whitelistNets.indexOf(this.state.addWhitelistNet) === -1) {
+                    whitelistNets.push(this.state.addWhitelistNet);
                 }
-                whitelist_networks.sort();
-                service.whitelist_networks = whitelist_networks;
+                whitelistNets.sort();
+                service.whitelist_networks = whitelistNets;
                 this.setState(Object.assign({}, this.state, { changed: true, message: '', addWhitelistNet: '', service: service }));
             };
             this.onAddServer = () => {
@@ -26970,13 +27254,13 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
             } else {
                 service = Object.assign({}, this.props.service);
             }
-            let whitelist_networks = [...service.whitelist_networks];
-            let i = whitelist_networks.indexOf(whitelistNet);
+            let whitelistNets = [...service.whitelist_networks];
+            let i = whitelistNets.indexOf(whitelistNet);
             if (i === -1) {
                 return;
             }
-            whitelist_networks.splice(i, 1);
-            service.whitelist_networks = whitelist_networks;
+            whitelistNets.splice(i, 1);
+            service.whitelist_networks = whitelistNets;
             this.setState(Object.assign({}, this.state, { changed: true, message: '', addWhitelistNet: '', service: service }));
         }
         onChangeServer(i, state) {
@@ -27070,7 +27354,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                     value: service.id || 'None'
                 }] }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Whitelist Networks", React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Whitelisted Networks", React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addWhitelistNet: val }));
                 }, onSubmit: this.onAddWhitelistNet }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, service: null }));
@@ -27080,7 +27364,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
     exports.default = Service;
     
 });
-System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "app/stores/ServicesStore.js", "app/actions/ServiceActions.js", "app/components/Service.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "app/stores/ServicesStore.js", "app/actions/ServiceActions.js", "app/components/NonState.js", "app/components/Service.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -27089,6 +27373,7 @@ System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "ap
     const React = $__require("npm:react@15.6.1.js");
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
+    const NonState_1 = $__require("app/components/NonState.js");
     const Service_1 = $__require("app/components/Service.js");
     const Page_1 = $__require("app/components/Page.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
@@ -27101,9 +27386,6 @@ System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "ap
         },
         button: {
             margin: '10px 0 0 0'
-        },
-        noServices: {
-            height: 'auto'
         }
     };
     class Services extends React.Component {
@@ -27135,7 +27417,7 @@ System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "ap
                         share_session: true,
                         websockets: true
                     });
-                } }, "New")))), React.createElement("div", null, servicesDom), React.createElement("div", { className: "pt-non-ideal-state", style: css.noServices, hidden: !!servicesDom.length }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-cloud" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No services"), React.createElement("div", { className: "pt-non-ideal-state-description" }, "Add a new service to get started.")));
+                } }, "New")))), React.createElement("div", null, servicesDom), React.createElement(NonState_1.default, { hidden: !!servicesDom.length, iconClass: "pt-icon-cloud", title: "No services", description: "Add a new service to get started." }));
         }
     }
     exports.default = Services;
@@ -27460,7 +27742,7 @@ System.registerDynamic("app/components/PageSwitch.js", ["npm:react@15.6.1.js"], 
     };
     class PageSwitch extends React.Component {
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", disabled: this.props.disabled, checked: this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label));
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", disabled: this.props.disabled, checked: !!this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label));
         }
     }
     exports.default = PageSwitch;
@@ -30184,6 +30466,22 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
         clone() {
             return Object.assign({}, this.props.provider);
         }
+        azure() {
+            let provider = this.props.provider;
+            return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Directory ID", type: "text", placeholder: "Azure directory ID", value: provider.tenant, onChange: val => {
+                    let state = this.clone();
+                    state.tenant = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageInput_1.default, { label: "Application ID", type: "text", placeholder: "Azure application ID", value: provider.client_id, onChange: val => {
+                    let state = this.clone();
+                    state.client_id = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageInput_1.default, { label: "Application Secret", type: "text", placeholder: "Azure application secret", value: provider.client_secret, onChange: val => {
+                    let state = this.clone();
+                    state.client_secret = val;
+                    this.props.onChange(state);
+                } }));
+        }
         google() {
             let provider = this.props.provider;
             return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Domain", type: "text", placeholder: "Google domain to match", value: provider.domain, onChange: val => {
@@ -30229,6 +30527,10 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
             let label = '';
             let options;
             switch (provider.type) {
+                case 'azure':
+                    label = 'Azure';
+                    options = this.azure();
+                    break;
                 case 'google':
                     label = 'Google';
                     options = this.google();
@@ -30294,7 +30596,7 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
     exports.default = SettingsProvider;
     
 });
-System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "app/stores/SettingsStore.js", "app/actions/SettingsActions.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInput.js", "app/components/PageSelectButton.js", "app/components/PageSave.js", "app/components/SettingsProvider.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "app/stores/SettingsStore.js", "app/actions/SettingsActions.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSelectButton.js", "app/components/PageSave.js", "app/components/SettingsProvider.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -30308,6 +30610,7 @@ System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "ap
     const PagePanel_1 = $__require("app/components/PagePanel.js");
     const PageSplit_1 = $__require("app/components/PageSplit.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
+    const PageSwitch_1 = $__require("app/components/PageSwitch.js");
     const PageSelectButton_1 = $__require("app/components/PageSelectButton.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
     const SettingsProvider_1 = $__require("app/components/SettingsProvider.js");
@@ -30382,12 +30685,14 @@ System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "ap
                         role_management: 'set_on_insert'
                     }];
                     this.set('auth_providers', authProviders);
-                } }, React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement(PageInput_1.default, { label: "Session Expire Hours", type: "text", placeholder: "Session expire", value: this.state.settings.auth_expire, onChange: val => {
+                } }, React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement(PageInput_1.default, { label: "Session Expire Hours", type: "text", placeholder: "Session expire", value: this.state.settings.auth_expire, onChange: val => {
                     this.set('auth_expire', parseInt(val, 10));
                 } }), React.createElement(PageInput_1.default, { label: "Session Max Duration Hours", type: "text", placeholder: "Session max duration", value: this.state.settings.auth_max_duration, onChange: val => {
                     this.set('auth_max_duration', parseInt(val, 10));
                 } }), React.createElement(PageInput_1.default, { label: "Elasticsearch Address", type: "text", placeholder: "Elasticsearch address", value: this.state.settings.elastic_address, onChange: val => {
                     this.set('elastic_address', val);
+                } }), React.createElement(PageSwitch_1.default, { label: "Elasticsearch Log Proxy Requests", checked: this.state.settings.elastic_proxy_requests, onToggle: () => {
+                    this.set('elastic_proxy_requests', !this.state.settings.elastic_proxy_requests);
                 } }))), React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', settings: SettingsStore_1.default.settingsM }));
                 }, onSave: this.onSave }));
@@ -30725,6 +31030,7 @@ System.registerDynamic("app/types/SessionTypes.js", [], true, function ($__requi
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.SYNC = 'session.sync';
   exports.CHANGE = 'session.change';
+  exports.SHOW_REMOVED = 'session.show_removed';
   
 });
 System.registerDynamic("app/stores/SessionsStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/SessionTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
@@ -30756,6 +31062,9 @@ System.registerDynamic("app/stores/SessionsStore.js", ["app/dispatcher/Dispatche
             });
             return sessions;
         }
+        get showRemoved() {
+            return this._showRemoved;
+        }
         emitChange() {
             this.emitDefer(GlobalTypes.CHANGE);
         }
@@ -30773,10 +31082,17 @@ System.registerDynamic("app/stores/SessionsStore.js", ["app/dispatcher/Dispatche
             this._sessions = Object.freeze(sessions);
             this.emitChange();
         }
+        _setShowRemoved(state) {
+            this._showRemoved = state;
+            this.emitChange();
+        }
         _callback(action) {
             switch (action.type) {
                 case SessionTypes.SYNC:
                     this._sync(action.data.userId, action.data.sessions);
+                    break;
+                case SessionTypes.SHOW_REMOVED:
+                    this._setShowRemoved(action.data.showRemoved);
                     break;
             }
         }
@@ -30800,12 +31116,17 @@ System.registerDynamic("app/actions/SessionActions.js", ["npm:superagent@3.5.2.j
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     const SessionsStore_1 = $__require("app/stores/SessionsStore.js");
     let syncId;
-    function load(userId) {
+    function _load(userId) {
+        if (!userId) {
+            return Promise.resolve();
+        }
         let curSyncId = MiscUtils.uuid();
         syncId = curSyncId;
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.get('/session/' + userId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.get('/session/' + userId).query({
+                show_removed: SessionsStore_1.default.showRemoved
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
                 if (curSyncId !== syncId) {
                     resolve();
@@ -30827,11 +31148,31 @@ System.registerDynamic("app/actions/SessionActions.js", ["npm:superagent@3.5.2.j
             });
         });
     }
+    exports._load = _load;
+    function load(userId) {
+        Dispatcher_1.default.dispatch({
+            type: SessionTypes.SHOW_REMOVED,
+            data: {
+                showRemoved: false
+            }
+        });
+        return _load(userId);
+    }
     exports.load = load;
     function reload() {
-        return load(SessionsStore_1.default.userId);
+        return _load(SessionsStore_1.default.userId);
     }
     exports.reload = reload;
+    function showRemoved(state) {
+        Dispatcher_1.default.dispatch({
+            type: SessionTypes.SHOW_REMOVED,
+            data: {
+                showRemoved: state
+            }
+        });
+        return reload();
+    }
+    exports.showRemoved = showRemoved;
     function remove(sessionId) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
@@ -30850,6 +31191,168 @@ System.registerDynamic("app/actions/SessionActions.js", ["npm:superagent@3.5.2.j
     EventDispatcher_1.default.register(action => {
         switch (action.type) {
             case SessionTypes.CHANGE:
+                reload();
+                break;
+        }
+    });
+    
+});
+System.registerDynamic("app/types/AuditTypes.js", [], true, function ($__require, exports, module) {
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.SYNC = 'audit.sync';
+  exports.TRAVERSE = 'audit.traverse';
+  exports.CHANGE = 'audit.change';
+  
+});
+System.registerDynamic("app/stores/AuditsStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuditTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("app/EventEmitter.js");
+    const AuditTypes = $__require("app/types/AuditTypes.js");
+    const GlobalTypes = $__require("app/types/GlobalTypes.js");
+    class AuditsStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._audits = Object.freeze([]);
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get userId() {
+            return this._userId;
+        }
+        get audits() {
+            return this._audits;
+        }
+        get auditsM() {
+            let audits = [];
+            this._audits.forEach(audit => {
+                audits.push(Object.assign({}, audit));
+            });
+            return audits;
+        }
+        get page() {
+            return this._page || 0;
+        }
+        get pageCount() {
+            return this._pageCount || 10;
+        }
+        get pages() {
+            return Math.ceil(this.count / this.pageCount);
+        }
+        get count() {
+            return this._count || 0;
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _traverse(page) {
+            this._page = Math.min(this.pages, page);
+        }
+        _sync(userId, audits, count) {
+            this._userId = userId;
+            for (let i = 0; i < audits.length; i++) {
+                audits[i] = Object.freeze(audits[i]);
+            }
+            this._count = count;
+            this._audits = Object.freeze(audits);
+            this._page = Math.min(this.pages, this.page);
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case AuditTypes.TRAVERSE:
+                    this._traverse(action.data.page);
+                    break;
+                case AuditTypes.SYNC:
+                    this._sync(action.data.userId, action.data.audits, action.data.count);
+                    break;
+            }
+        }
+    }
+    exports.default = new AuditsStore();
+    
+});
+System.registerDynamic("app/actions/AuditActions.js", ["npm:superagent@3.5.2.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/types/AuditTypes.js", "app/utils/MiscUtils.js", "app/stores/AuditsStore.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const SuperAgent = $__require("npm:superagent@3.5.2.js");
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventDispatcher_1 = $__require("app/dispatcher/EventDispatcher.js");
+    const Alert = $__require("app/Alert.js");
+    const Csrf = $__require("app/Csrf.js");
+    const Loader_1 = $__require("app/Loader.js");
+    const AuditTypes = $__require("app/types/AuditTypes.js");
+    const MiscUtils = $__require("app/utils/MiscUtils.js");
+    const AuditsStore_1 = $__require("app/stores/AuditsStore.js");
+    let syncId;
+    function load(userId) {
+        if (!userId) {
+            return Promise.resolve();
+        }
+        let curSyncId = MiscUtils.uuid();
+        syncId = curSyncId;
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.get('/audit/' + userId).query({
+                page: AuditsStore_1.default.page,
+                page_count: AuditsStore_1.default.pageCount
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (curSyncId !== syncId) {
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to load audits');
+                    reject(err);
+                    return;
+                }
+                Dispatcher_1.default.dispatch({
+                    type: AuditTypes.SYNC,
+                    data: {
+                        userId: userId,
+                        audits: res.body.audits,
+                        count: res.body.count
+                    }
+                });
+                resolve();
+            });
+        });
+    }
+    exports.load = load;
+    function reload() {
+        return load(AuditsStore_1.default.userId);
+    }
+    exports.reload = reload;
+    function traverse(page) {
+        Dispatcher_1.default.dispatch({
+            type: AuditTypes.TRAVERSE,
+            data: {
+                page: page
+            }
+        });
+        return reload();
+    }
+    exports.traverse = traverse;
+    EventDispatcher_1.default.register(action => {
+        switch (action.type) {
+            case AuditTypes.CHANGE:
                 reload();
                 break;
         }
@@ -32199,11 +32702,11 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
     function checkout(plan, card, email) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.post('https://app-test.pritunl.net/subscription').send({
+            SuperAgent.post('https://app.pritunl.com/subscription').send({
                 plan: plan,
                 card: card,
                 email: email
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
                 if (err) {
                     Alert.errorRes(res, 'Failed to checkout');
@@ -32219,12 +32722,12 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
     function payment(key, plan, card, email) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.put('https://app-test.pritunl.net/subscription').send({
+            SuperAgent.put('https://app.pritunl.com/subscription').send({
                 key: key,
                 plan: plan,
                 card: card,
                 email: email
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
                 if (err) {
                     Alert.errorRes(res, 'Failed to update payment');
@@ -32240,9 +32743,9 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
     function cancel(key) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.delete('https://app-test.pritunl.net/subscription').send({
+            SuperAgent.delete('https://app.pritunl.com/subscription').send({
                 key: key
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
                 if (err) {
                     Alert.errorRes(res, 'Failed to cancel subscription');
@@ -32264,7 +32767,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
     });
     
 });
-System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:react-router-dom@4.1.1.js", "app/Theme.js", "app/stores/SubscriptionStore.js", "app/components/Loading.js", "app/components/Subscription.js", "app/components/Users.js", "app/components/UserDetailed.js", "app/components/Nodes.js", "app/components/Policies.js", "app/components/Certificates.js", "app/components/Logs.js", "app/components/Services.js", "app/components/Settings.js", "app/actions/UserActions.js", "app/actions/SessionActions.js", "app/actions/NodeActions.js", "app/actions/PolicyActions.js", "app/actions/CertificateActions.js", "app/actions/LogActions.js", "app/actions/ServiceActions.js", "app/actions/SettingsActions.js", "app/actions/SubscriptionActions.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:react-router-dom@4.1.1.js", "app/Theme.js", "app/stores/SubscriptionStore.js", "app/components/Loading.js", "app/components/Subscription.js", "app/components/Users.js", "app/components/UserDetailed.js", "app/components/Nodes.js", "app/components/Policies.js", "app/components/Certificates.js", "app/components/Logs.js", "app/components/Services.js", "app/components/Settings.js", "app/actions/UserActions.js", "app/actions/SessionActions.js", "app/actions/AuditActions.js", "app/actions/NodeActions.js", "app/actions/PolicyActions.js", "app/actions/CertificateActions.js", "app/actions/LogActions.js", "app/actions/ServiceActions.js", "app/actions/SettingsActions.js", "app/actions/SubscriptionActions.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -32286,6 +32789,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:re
     const Settings_1 = $__require("app/components/Settings.js");
     const UserActions = $__require("app/actions/UserActions.js");
     const SessionActions = $__require("app/actions/SessionActions.js");
+    const AuditActions = $__require("app/actions/AuditActions.js");
     const NodeActions = $__require("app/actions/NodeActions.js");
     const PolicyActions = $__require("app/actions/PolicyActions.js");
     const CertificateActions = $__require("app/actions/CertificateActions.js");
@@ -32357,6 +32861,11 @@ System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:re
                                 this.setState(Object.assign({}, this.state, { disabled: false }));
                             });
                             SessionActions.reload().then(() => {
+                                this.setState(Object.assign({}, this.state, { disabled: false }));
+                            }).catch(() => {
+                                this.setState(Object.assign({}, this.state, { disabled: false }));
+                            });
+                            AuditActions.reload().then(() => {
                                 this.setState(Object.assign({}, this.state, { disabled: false }));
                             }).catch(() => {
                                 this.setState(Object.assign({}, this.state, { disabled: false }));
