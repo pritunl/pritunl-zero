@@ -35,7 +35,7 @@ class AuditsStore extends EventEmitter {
 	}
 
 	get pageCount(): number {
-		return this._pageCount || 50;
+		return this._pageCount || 10;
 	}
 
 	get pages(): number {
