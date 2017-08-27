@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/node"
@@ -37,6 +38,7 @@ func Node() (err error) {
 	}()
 
 	<-sig
+	logrus.Info("cmd.node: Shutting down...")
 	go routr.Shutdown()
 	if constants.Production {
 		time.Sleep(10 * time.Second)
