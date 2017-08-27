@@ -169,7 +169,10 @@ func (r *Router) initWeb() (err error) {
 				return
 			}
 		} else {
-			err = generateCert(constants.CertPath, constants.KeyPath)
+			err = certificate.SelfGenerateCert(
+				constants.CertPath,
+				constants.KeyPath,
+			)
 			if err != nil {
 				return
 			}
