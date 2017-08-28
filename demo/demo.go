@@ -9,8 +9,7 @@ import (
 )
 
 func IsDemo() bool {
-	_ = settings.System.Demo
-	return true
+	return settings.System.Demo
 }
 
 var Agent = &agent.Agent{
