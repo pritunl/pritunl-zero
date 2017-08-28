@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/geo"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/ua-parser/uap-go/uaparser"
 	"net/http"
 )
@@ -74,6 +75,10 @@ type Agent struct {
 }
 
 func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
+	if settings.System.Demo {
+		return
+	}
+
 	client := parser.Parse(r.UserAgent())
 
 	ip := node.Self.GetRemoteAddr(r)

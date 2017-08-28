@@ -3,6 +3,7 @@ package audit
 import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
@@ -61,6 +62,10 @@ func GetAll(db *database.Database, userId bson.ObjectId,
 func New(db *database.Database, r *http.Request,
 	userId bson.ObjectId, typ string, fields Fields) (
 	err error) {
+
+	if settings.System.Demo {
+		return
+	}
 
 	agnt, err := agent.Parse(db, r)
 	if err != nil {
