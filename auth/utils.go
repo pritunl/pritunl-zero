@@ -76,20 +76,18 @@ func CookieSessionProxy(db *database.Database, srvc *service.Service,
 }
 
 func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
-	scheme := ""
 	port := ""
 	if node.Self.Protocol == "http" {
-		scheme = "http"
 		if node.Self.Port != 80 {
 			port += fmt.Sprintf(":%d", node.Self.Port)
 		}
 	} else {
-		scheme = "https"
 		if node.Self.Port != 443 {
 			port += fmt.Sprintf(":%d", node.Self.Port)
 		}
 	}
-	match := fmt.Sprintf("%s://%s%s", scheme, domain, port)
+	match := fmt.Sprintf("http://%s%s", domain, port)
+	matchSec := fmt.Sprintf("https://%s%s", domain, port)
 
 	origin := r.Header.Get("Origin")
 	if origin != "" {
@@ -101,7 +99,7 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
 		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	}
 
-	if origin != "" && origin != match {
+	if origin != "" && origin != match && origin != matchSec {
 		utils.WriteUnauthorized(w, "CSRF origin error")
 		return false
 	}
