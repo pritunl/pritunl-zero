@@ -98,6 +98,10 @@ func (r *Router) initRedirect() (err error) {
 func (r *Router) startRedirect() {
 	defer r.waiter.Done()
 
+	if r.port == 80 {
+		return
+	}
+
 	logrus.WithFields(logrus.Fields{
 		"production": constants.Production,
 		"protocol":   "http",
