@@ -12,6 +12,7 @@ type system struct {
 	Id                   string `bson:"_id"`
 	Name                 string `bson:"name"`
 	DatabaseVersion      int    `bson:"database_version"`
+	Demo                 bool   `bson:"demo"`
 	License              string `bson:"license"`
 	CookieAuthKey        []byte `bson:"cookie_auth_key"`
 	CookieCryptoKey      []byte `bson:"cookie_crypto_key"`
