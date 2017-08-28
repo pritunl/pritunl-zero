@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strings"
@@ -13,6 +14,16 @@ import (
 
 func authStateGet(c *gin.Context) {
 	data := auth.GetState()
+
+	if demo.IsDemo() {
+		provider := &auth.StateProvider{
+			Id:    "demo",
+			Type:  "demo",
+			Label: "demo",
+		}
+		data.Providers = append(data.Providers, provider)
+	}
+
 	c.JSON(200, data)
 }
 

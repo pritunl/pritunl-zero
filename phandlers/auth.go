@@ -14,6 +14,16 @@ import (
 
 func authStateGet(c *gin.Context) {
 	data := auth.GetState()
+
+	if demo.IsDemo() {
+		provider := &auth.StateProvider{
+			Id:    "demo",
+			Type:  "demo",
+			Label: "demo",
+		}
+		data.Providers = append(data.Providers, provider)
+	}
+
 	c.JSON(200, data)
 }
 
