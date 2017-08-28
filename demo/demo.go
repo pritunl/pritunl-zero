@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/log"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
@@ -64,5 +65,32 @@ var Sessions = []*session.Session{
 		LastActive: time.Unix(1498018860, 0),
 		Removed:    false,
 		Agent:      Agent,
+	},
+}
+
+var Logs = []*log.Entry{
+	&log.Entry{
+		Id:        bson.NewObjectId(),
+		Level:     log.Info,
+		Timestamp: time.Unix(1498018860, 0),
+		Message:   "router: Starting redirect server",
+		Stack:     "",
+		Fields: map[string]interface{}{
+			"port":       80,
+			"production": true,
+			"protocol":   "http",
+		},
+	},
+	&log.Entry{
+		Id:        bson.NewObjectId(),
+		Level:     log.Info,
+		Timestamp: time.Unix(1498018860, 0),
+		Message:   "router: Starting web server",
+		Stack:     "",
+		Fields: map[string]interface{}{
+			"port":       443,
+			"production": true,
+			"protocol":   "https",
+		},
 	},
 }
