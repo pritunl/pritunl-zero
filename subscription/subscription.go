@@ -13,13 +13,13 @@ import (
 )
 
 var (
-	Subscription = &subscription{}
-	client       = &http.Client{
+	Sub    = &Subscription{}
+	client = &http.Client{
 		Timeout: 30 * time.Second,
 	}
 )
 
-type subscription struct {
+type Subscription struct {
 	Active            bool      `json:"active"`
 	Status            string    `json:"status"`
 	Plan              string    `json:"plan"`
@@ -46,10 +46,10 @@ type subscriptionData struct {
 }
 
 func Update() (errData *errortypes.ErrorData, err error) {
-	sub := &subscription{}
+	sub := &Subscription{}
 
 	if settings.System.License == "" {
-		Subscription = sub
+		Sub = sub
 		return
 	}
 
@@ -130,7 +130,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 		sub.TrialEnd = time.Unix(subData.TrialEnd, 0)
 	}
 
-	Subscription = sub
+	Sub = sub
 
 	return
 }

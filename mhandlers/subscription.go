@@ -16,7 +16,7 @@ type subscriptionPostData struct {
 }
 
 func subscriptionGet(c *gin.Context) {
-	c.JSON(200, subscription.Subscription)
+	c.JSON(200, subscription.Sub)
 }
 
 func subscriptionUpdateGet(c *gin.Context) {
@@ -74,5 +74,5 @@ func subscriptionPost(c *gin.Context) {
 	event.PublishDispatch(db, "subscription.change")
 	event.PublishDispatch(db, "settings.change")
 
-	c.JSON(200, subscription.Subscription)
+	c.JSON(200, subscription.Sub)
 }
