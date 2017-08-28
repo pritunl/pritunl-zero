@@ -5,6 +5,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -46,10 +47,22 @@ func userGet(c *gin.Context) {
 		return
 	}
 
+	if demo.IsDemo() {
+		if usr.Username == "demo" {
+			usr.LastActive = time.Now()
+		} else {
+			usr.LastActive = time.Time{}
+		}
+	}
+
 	c.JSON(200, usr)
 }
 
 func userPut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &userData{}
 
@@ -129,6 +142,10 @@ func userPut(c *gin.Context) {
 }
 
 func userPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &userData{}
 
@@ -234,6 +251,16 @@ func usersGet(c *gin.Context) {
 		return
 	}
 
+	if demo.IsDemo() {
+		for _, usr := range users {
+			if usr.Username == "demo" {
+				usr.LastActive = time.Now()
+			} else {
+				usr.LastActive = time.Time{}
+			}
+		}
+	}
+
 	data := &usersData{
 		Users: users,
 		Count: count,
@@ -243,6 +270,10 @@ func usersGet(c *gin.Context) {
 }
 
 func usersDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := []bson.ObjectId{}
 

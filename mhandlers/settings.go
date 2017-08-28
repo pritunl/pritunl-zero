@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -39,6 +40,10 @@ func settingsGet(c *gin.Context) {
 }
 
 func settingsPut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &settingsData{}
 

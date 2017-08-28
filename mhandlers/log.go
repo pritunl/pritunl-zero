@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/log"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -17,6 +18,11 @@ type logsData struct {
 }
 
 func logGet(c *gin.Context) {
+	if demo.IsDemo() {
+		c.JSON(200, demo.Logs[1])
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	logId, ok := utils.ParseObjectId(c.Param("log_id"))
@@ -35,6 +41,16 @@ func logGet(c *gin.Context) {
 }
 
 func logsGet(c *gin.Context) {
+	if demo.IsDemo() {
+		data := &logsData{
+			Logs:  demo.Logs,
+			Count: len(demo.Logs),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	pageStr := c.Query("page")

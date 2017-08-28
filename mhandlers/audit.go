@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strconv"
 )
@@ -14,6 +15,16 @@ type auditsData struct {
 }
 
 func auditsGet(c *gin.Context) {
+	if demo.IsDemo() {
+		data := &auditsData{
+			Audits: demo.Audits,
+			Count:  len(demo.Audits),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	page, _ := strconv.Atoi(c.Query("page"))

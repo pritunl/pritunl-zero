@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -22,6 +23,10 @@ type serviceData struct {
 }
 
 func servicePut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &serviceData{}
 
@@ -84,6 +89,10 @@ func servicePut(c *gin.Context) {
 }
 
 func servicePost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &serviceData{
 		Name:         "New Service",
@@ -118,6 +127,10 @@ func servicePost(c *gin.Context) {
 }
 
 func serviceDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	serviceId, ok := utils.ParseObjectId(c.Param("service_id"))

@@ -3,13 +3,21 @@ package mhandlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strconv"
+	"time"
 )
 
 func sessionsGet(c *gin.Context) {
+	if demo.IsDemo() {
+		demo.Sessions[0].LastActive = time.Now()
+		c.JSON(200, demo.Sessions)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	showRemoved, _ := strconv.ParseBool(c.Query("show_removed"))
@@ -30,6 +38,10 @@ func sessionsGet(c *gin.Context) {
 }
 
 func sessionDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	sessionId := c.Param("session_id")

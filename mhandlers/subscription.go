@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/subscription"
@@ -16,10 +17,19 @@ type subscriptionPostData struct {
 }
 
 func subscriptionGet(c *gin.Context) {
+	if demo.IsDemo() {
+		c.JSON(200, demo.Subscription)
+		return
+	}
 	c.JSON(200, subscription.Sub)
 }
 
 func subscriptionUpdateGet(c *gin.Context) {
+	if demo.IsDemo() {
+		c.JSON(200, demo.Subscription)
+		return
+	}
+
 	errData, err := subscription.Update()
 	if err != nil {
 		if errData != nil {
@@ -30,10 +40,14 @@ func subscriptionUpdateGet(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, subscription.Subscription)
+	c.JSON(200, subscription.Sub)
 }
 
 func subscriptionPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &subscriptionPostData{}
 

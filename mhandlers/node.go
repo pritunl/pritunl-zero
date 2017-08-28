@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -23,6 +24,10 @@ type nodeData struct {
 }
 
 func nodePut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &nodeData{}
 
@@ -87,6 +92,10 @@ func nodePut(c *gin.Context) {
 }
 
 func nodeDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
@@ -121,6 +130,14 @@ func nodeGet(c *gin.Context) {
 		return
 	}
 
+	if demo.IsDemo() {
+		nde.RequestsMin = 32
+		nde.Memory = 25.0
+		nde.Load1 = 10.0
+		nde.Load5 = 15.0
+		nde.Load15 = 20.0
+	}
+
 	c.JSON(200, nde)
 }
 
@@ -131,6 +148,16 @@ func nodesGet(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
+	}
+
+	if demo.IsDemo() {
+		for _, nde := range nodes {
+			nde.RequestsMin = 32
+			nde.Memory = 25.0
+			nde.Load1 = 10.0
+			nde.Load5 = 15.0
+			nde.Load15 = 20.0
+		}
 	}
 
 	c.JSON(200, nodes)

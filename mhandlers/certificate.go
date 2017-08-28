@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -22,6 +23,10 @@ type certificateData struct {
 }
 
 func certificatePut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &certificateData{}
 
@@ -100,6 +105,10 @@ func certificatePut(c *gin.Context) {
 }
 
 func certificatePost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &certificateData{
 		Name: "New Certificate",
@@ -160,6 +169,10 @@ func certificatePost(c *gin.Context) {
 }
 
 func certificateDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	certId, ok := utils.ParseObjectId(c.Param("cert_id"))
@@ -194,6 +207,11 @@ func certificateGet(c *gin.Context) {
 		return
 	}
 
+	if demo.IsDemo() {
+		cert.Key = "demo"
+		cert.AcmeAccount = "demo"
+	}
+
 	c.JSON(200, cert)
 }
 
@@ -204,6 +222,13 @@ func certificatesGet(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
+	}
+
+	if demo.IsDemo() {
+		for _, cert := range certs {
+			cert.Key = "demo"
+			cert.AcmeAccount = "demo"
+		}
 	}
 
 	c.JSON(200, certs)

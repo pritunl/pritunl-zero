@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -19,6 +20,10 @@ type policyData struct {
 }
 
 func policyPut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &policyData{}
 
@@ -75,6 +80,10 @@ func policyPut(c *gin.Context) {
 }
 
 func policyPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	data := &policyData{
 		Name: "New Policy",
@@ -116,6 +125,10 @@ func policyPost(c *gin.Context) {
 }
 
 func policyDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
