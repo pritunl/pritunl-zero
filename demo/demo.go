@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/log"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/subscription"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -93,4 +94,17 @@ var Logs = []*log.Entry{
 			"protocol":   "https",
 		},
 	},
+}
+
+var Subscription = &subscription.Subscription{
+	Active:            true,
+	Status:            "active",
+	Plan:              "zero",
+	Quantity:          1,
+	Amount:            5000,
+	PeriodEnd:         time.Unix(1893499200, 0),
+	TrialEnd:          time.Time{},
+	CancelAtPeriodEnd: false,
+	Balance:           0,
+	UrlKey:            "demo",
 }
