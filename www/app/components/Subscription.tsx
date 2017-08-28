@@ -269,7 +269,7 @@ export default class Subscription extends React.Component<{}, State> {
 	reactivate(): JSX.Element {
 		let sub = this.state.subscription;
 		let canceling = sub.cancel_at_period_end || sub.status === 'canceled';
-		let status = sub.cancel_at_period_end ? 'Canceled' : sub.status;
+		let status = sub.cancel_at_period_end ? 'canceled' : sub.status;
 		let periodEnd = MiscUtils.formatDateShort(sub.period_end);
 		let trialEnd = MiscUtils.formatDateShort(sub.trial_end);
 
