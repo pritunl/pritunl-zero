@@ -118,6 +118,12 @@
               for (var i = 0; i < state.providers.length; i++) {
                 provider = state.providers[i];
 
+                if (provider.id === 'demo') {
+                  usernameElm.value = 'demo';
+                  passwordElm.value = 'demo';
+                  continue;
+                }
+
                 buttons += '<button id="' + provider.id + '" ' +
                   'class="pt-button auth-button auth-' + provider.type + '"' +
                   '>' + provider.label + '</button>';
