@@ -130,3 +130,21 @@ func CloneHeader(src http.Header) (dst http.Header) {
 	}
 	return dst
 }
+
+func GetLocation(r *http.Request) string {
+	host := ""
+
+	switch {
+	case r.Header.Get("X-Host") != "":
+		host = r.Header.Get("X-Host")
+		break
+	case r.Host != "":
+		host = r.Host
+		break
+	case r.URL.Host != "":
+		host = r.URL.Host
+		break
+	}
+
+	return "https://" + host
+}

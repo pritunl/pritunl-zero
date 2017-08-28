@@ -1,7 +1,6 @@
 package mhandlers
 
 import (
-	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -20,9 +19,6 @@ func Register(protocol string, engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)
-	engine.Use(location.New(location.Config{
-		Scheme: protocol,
-	}))
 
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)

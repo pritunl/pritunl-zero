@@ -1,7 +1,6 @@
 package phandlers
 
 import (
-	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -22,9 +21,6 @@ func Register(prxy *proxy.Proxy, protocol string, engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)
-	engine.Use(location.New(location.Config{
-		Scheme: protocol,
-	}))
 
 	engine.Use(func(c *gin.Context) {
 		var srvc *service.Service

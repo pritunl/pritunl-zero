@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -112,7 +111,7 @@ func Local(db *database.Database, username, password string) (
 func Request(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	loc := location.Get(c).String()
+	loc := utils.GetLocation(c.Request)
 
 	id := c.Query("id")
 	if id == Google {
