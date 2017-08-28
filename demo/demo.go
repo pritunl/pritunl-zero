@@ -1,8 +1,10 @@
 package demo
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/audit"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -10,6 +12,20 @@ import (
 
 func IsDemo() bool {
 	return settings.System.Demo
+}
+
+func Blocked(c *gin.Context) bool {
+	if !IsDemo() {
+		return false
+	}
+
+	errData := &errortypes.ErrorData{
+		Error:   "demo_unavailable",
+		Message: "Not available in demo mode",
+	}
+	c.JSON(400, errData)
+
+	return true
 }
 
 var Agent = &agent.Agent{
