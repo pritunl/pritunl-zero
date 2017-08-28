@@ -69,8 +69,8 @@ type Agent struct {
 	Region          string  `bson:"region" json:"region"`
 	RegionCode      string  `bson:"region_code" json:"region_code"`
 	City            string  `bson:"city" json:"city"`
-	Longitude       float64 `bson:"longitude" json:"longitude"`
 	Latitude        float64 `bson:"latitude" json:"latitude"`
+	Longitude       float64 `bson:"longitude" json:"longitude"`
 }
 
 func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
