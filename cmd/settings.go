@@ -1,13 +1,15 @@
 package cmd
 
 import (
+	"encoding/json"
 	"flag"
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
-	"strconv"
 )
 
 func Mongo() (err error) {
@@ -60,10 +62,12 @@ func SettingsSet() (err error) {
 	defer db.Close()
 
 	var valParsed interface{}
-	if x, err := strconv.Atoi(val); err == nil {
-		valParsed = x
-	} else {
-		valParsed = val
+	err = json.Unmarshal([]byte(val), &valParsed)
+	if err != nil {
+		err = errortypes.ParseError{
+			errors.Wrap(err, "cmd.settings: Failed to parse value"),
+		}
+		return
 	}
 
 	err = settings.Set(db, group, key, valParsed)
