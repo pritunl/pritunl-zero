@@ -118,7 +118,7 @@ func WriteUnauthorized(w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(401)
-	fmt.Fprintln(w, "401 %s"+msg)
+	fmt.Fprintln(w, "401 "+msg)
 }
 
 func CloneHeader(src http.Header) (dst http.Header) {
