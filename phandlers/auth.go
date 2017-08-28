@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
