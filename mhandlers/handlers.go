@@ -15,7 +15,7 @@ var (
 	fileServer http.Handler
 )
 
-func Register(protocol string, engine *gin.Engine) {
+func Register(engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)

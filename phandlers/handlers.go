@@ -17,7 +17,7 @@ var (
 	logo  *static.File
 )
 
-func Register(prxy *proxy.Proxy, protocol string, engine *gin.Engine) {
+func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)

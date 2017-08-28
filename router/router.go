@@ -145,7 +145,7 @@ func (r *Router) initWeb() (err error) {
 			r.mRouter.Use(gin.Logger())
 		}
 
-		mhandlers.Register(r.protocol, r.mRouter)
+		mhandlers.Register(r.mRouter)
 	}
 
 	if r.typ == node.Proxy || r.typ == node.ManagementProxy {
@@ -155,7 +155,7 @@ func (r *Router) initWeb() (err error) {
 			r.pRouter.Use(gin.Logger())
 		}
 
-		phandlers.Register(r.proxy, r.protocol, r.pRouter)
+		phandlers.Register(r.proxy, r.pRouter)
 	}
 
 	r.webServer = &http.Server{
