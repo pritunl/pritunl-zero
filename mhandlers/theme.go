@@ -37,5 +37,6 @@ func themePut(c *gin.Context) {
 		return
 	}
 
+	c.JSON(200, data)
 	return
 }
