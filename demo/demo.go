@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -53,5 +54,15 @@ var Audits = []*audit.Audit{
 			"method": "local",
 		},
 		Agent: Agent,
+	},
+}
+
+var Sessions = []*session.Session{
+	&session.Session{
+		Id:         "jhgRu4n3oY0iXRYmLb77Ql5jNs2o7uWM",
+		Timestamp:  time.Unix(1498018860, 0),
+		LastActive: time.Unix(1498018860, 0),
+		Removed:    false,
+		Agent:      Agent,
 	},
 }
