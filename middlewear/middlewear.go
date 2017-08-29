@@ -45,16 +45,35 @@ func Session(c *gin.Context) {
 	}
 
 	if sess != nil {
-		_, err = sess.GetUser(db)
+		usr, err := sess.GetUser(db)
 		if err != nil {
 			switch err.(type) {
 			case *database.NotFoundError:
 				err = nil
 				sess = nil
+				usr = nil
 				break
 			default:
 				utils.AbortWithError(c, 500, err)
 				return
+			}
+		}
+
+		if usr != nil {
+			active, err := auth.SyncUser(db, usr)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			if !active {
+				err = nil
+				sess = nil
+
+				err = session.RemoveAll(db, usr.Id)
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
@@ -83,16 +102,35 @@ func SessionProxy(c *gin.Context) {
 	}
 
 	if sess != nil {
-		_, err = sess.GetUser(db)
+		usr, err := sess.GetUser(db)
 		if err != nil {
 			switch err.(type) {
 			case *database.NotFoundError:
 				err = nil
 				sess = nil
+				usr = nil
 				break
 			default:
 				utils.AbortWithError(c, 500, err)
 				return
+			}
+		}
+
+		if usr != nil {
+			active, err := auth.SyncUser(db, usr)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			if !active {
+				err = nil
+				sess = nil
+
+				err = session.RemoveAll(db, usr.Id)
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
