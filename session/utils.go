@@ -175,3 +175,27 @@ func Remove(db *database.Database, id string) (err error) {
 
 	return
 }
+
+func RemoveAll(db *database.Database, userId bson.ObjectId) (err error) {
+	coll := db.Sessions()
+
+	_, err = coll.UpdateAll(&bson.M{
+		"user": userId,
+	}, &bson.M{
+		"$set": &bson.M{
+			"removed": true,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
+	}
+
+	return
+}
