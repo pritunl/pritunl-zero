@@ -98,7 +98,7 @@ func GetAll(db *database.Database, userId bson.ObjectId, showRemoved bool) (
 	coll := db.Sessions()
 	sessions = []*Session{}
 
-	cursor := coll.Find(bson.M{
+	cursor := coll.Find(&bson.M{
 		"user": userId,
 	}).Iter()
 
