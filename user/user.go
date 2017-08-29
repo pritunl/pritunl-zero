@@ -21,6 +21,7 @@ type User struct {
 	Password      string        `bson:"password" json:"-"`
 	Theme         string        `bson:"theme" json:""`
 	LastActive    time.Time     `bson:"last_active" json:"last_active"`
+	LastSync      time.Time     `bson:"last_sync" json:"last_sync"`
 	Roles         []string      `bson:"roles" json:"roles"`
 	Administrator string        `bson:"administrator" json:"administrator"`
 	Disabled      bool          `bson:"disabled" json:"disabled"`
