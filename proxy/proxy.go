@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"math/rand"
@@ -107,6 +108,30 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 		WriteError(w, r, 500, err)
 		return true
+	}
+
+	active, err := auth.SyncUser(db, usr)
+	if err != nil {
+		WriteError(w, r, 500, err)
+		return true
+	}
+
+	if !active {
+		err = session.RemoveAll(db, usr.Id)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
+		}
+
+		if cook != nil {
+			err = cook.Remove(db)
+			if err != nil {
+				WriteError(w, r, 500, err)
+				return true
+			}
+		}
+
+		return false
 	}
 
 	errData, err := auth.Validate(db, usr, host.Service, r)
