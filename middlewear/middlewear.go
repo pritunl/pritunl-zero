@@ -117,7 +117,13 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	if usr.Disabled || usr.Administrator != "super" {
+	errData, err := auth.ValidateAdmin(db, usr)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
 		sess = nil
 
 		err = cook.Remove(db)
