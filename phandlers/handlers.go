@@ -45,6 +45,8 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
 
+	engine.GET("/check", checkGet)
+
 	engine.GET("/", staticIndexGet)
 	engine.GET("/logo.png", staticLogoGet)
 	engine.GET("/robots.txt", middlewear.RobotsGet)
