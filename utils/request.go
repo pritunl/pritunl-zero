@@ -114,6 +114,13 @@ func WriteStatus(w http.ResponseWriter, code int) {
 	fmt.Fprintln(w, GetStatusMessage(code))
 }
 
+func WriteText(w http.ResponseWriter, code int, text string) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(code)
+	fmt.Fprintln(w, text)
+}
+
 func WriteUnauthorized(w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
