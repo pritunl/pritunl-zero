@@ -46,6 +46,11 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if host == nil || wLen == 0 {
+		if r.URL.Path == "/check" {
+			utils.WriteText(w, 200, "ok")
+			return true
+		}
+
 		utils.WriteStatus(w, 404)
 		return true
 	}

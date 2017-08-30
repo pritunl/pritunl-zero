@@ -58,6 +58,11 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		return
 	}
 
+	if re.URL.Path == "/check" {
+		utils.WriteText(w, 200, "ok")
+		return
+	}
+
 	utils.WriteStatus(w, 404)
 }
 
@@ -82,6 +87,9 @@ func (r *Router) initRedirect() (err error) {
 						return
 					}
 				}
+			} else if req.URL.Path == "/check" {
+				utils.WriteText(w, 200, "ok")
+				return
 			}
 
 			req.URL.Host = req.Host
