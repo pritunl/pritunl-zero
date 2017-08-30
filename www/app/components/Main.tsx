@@ -34,6 +34,7 @@ const css = {
 	nav: {
 		overflowX: 'auto',
 		overflowY: 'hidden',
+		userSelect: 'none',
 	} as React.CSSProperties,
 	link: {
 		padding: '0 8px',
