@@ -87,7 +87,7 @@ func ParseObjectId(strId string) (objId bson.ObjectId, ok bool) {
 }
 
 func GetStatusMessage(code int) string {
-	return fmt.Sprintf("%d %s", code, httpErrCodes[code])
+	return fmt.Sprintf("%d %s", code, http.StatusText(code))
 }
 
 func AbortWithStatus(c *gin.Context, code int) {
