@@ -21,6 +21,7 @@ type Info struct {
 	Hash         string    `bson:"hash" json:"hash"`
 	SignatureAlg string    `bson:"signature_alg" json:"signature_alg"`
 	PublicKeyAlg string    `bson:"public_key_alg" json:"public_key_alg"`
+	Issuer       string    `bson:"issuer" json:"issuer"`
 	IssuedOn     time.Time `bson:"issued_on" json:"issued_on"`
 	ExpiresOn    time.Time `bson:"expires_on" json:"expires_on"`
 	DnsNames     []string  `bson:"dns_names" json:"dns_names"`
@@ -129,6 +130,7 @@ func (c *Certificate) UpdateInfo() (err error) {
 		Hash:         hash,
 		SignatureAlg: cert.SignatureAlgorithm.String(),
 		PublicKeyAlg: publicKeyAlg,
+		Issuer:       cert.Issuer.CommonName,
 		IssuedOn:     cert.NotBefore,
 		ExpiresOn:    cert.NotAfter,
 		DnsNames:     dnsNames,
