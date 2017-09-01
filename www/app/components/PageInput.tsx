@@ -5,7 +5,7 @@ import Help from './Help';
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
-	help?: string;
+	help: string;
 	label: string;
 	type: string;
 	placeholder: string;
