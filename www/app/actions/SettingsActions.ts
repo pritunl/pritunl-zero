@@ -24,6 +24,12 @@ export function sync(): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (curSyncId !== syncId) {
 					resolve();
 					return;
@@ -57,6 +63,12 @@ export function commit(
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to commit settings');

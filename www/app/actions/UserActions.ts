@@ -41,6 +41,12 @@ export function load(userId: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to load user');
 					reject(err);
@@ -87,6 +93,12 @@ export function sync(): Promise<void> {
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
 
 				if (curSyncId !== syncId) {
 					resolve();
@@ -146,6 +158,12 @@ export function commit(user: UserTypes.User): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to save user');
 					reject(err);
@@ -169,6 +187,12 @@ export function create(user: UserTypes.User): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to create user');
 					reject(err);
@@ -191,6 +215,12 @@ export function remove(userIds: string[]): Promise<void> {
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return
+				}
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to delete users');

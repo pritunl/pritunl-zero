@@ -24,6 +24,12 @@ export function sync(update: boolean): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (curSyncId !== syncId) {
 					resolve();
 					return;
@@ -65,6 +71,12 @@ export function activate(license: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to activate subscription');
 					reject(err);
@@ -97,6 +109,12 @@ export function checkout(plan: string, card: string,
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to checkout');
 					reject(err);
@@ -127,6 +145,12 @@ export function payment(key: string, plan: string, card: string,
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to update payment');
 					reject(err);
@@ -152,6 +176,12 @@ export function cancel(key: string): Promise<void> {
 			.set('Accept', 'application/json')
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to cancel subscription');

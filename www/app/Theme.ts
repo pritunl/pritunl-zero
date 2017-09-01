@@ -15,6 +15,12 @@ export function save(): Promise<void> {
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to save theme');
 					reject(err);

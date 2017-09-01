@@ -32,6 +32,12 @@ export function _load(userId: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (curSyncId !== syncId) {
 					resolve();
 					return;
@@ -92,6 +98,12 @@ export function remove(sessionId: string): Promise<void> {
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to delete session');

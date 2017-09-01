@@ -24,6 +24,12 @@ export function sync(): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (curSyncId !== syncId) {
 					resolve();
 					return;
@@ -59,6 +65,12 @@ export function commit(node: NodeTypes.Node): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to save node');
 					reject(err);
@@ -82,6 +94,12 @@ export function create(node: NodeTypes.Node): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
 					Alert.errorRes(res, 'Failed to create node');
 					reject(err);
@@ -103,6 +121,12 @@ export function remove(nodeId: string): Promise<void> {
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
+
+				if (res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to delete nodes');
