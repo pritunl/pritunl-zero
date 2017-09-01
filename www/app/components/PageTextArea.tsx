@@ -6,7 +6,6 @@ interface Props {
 	disabled?: boolean;
 	readOnly?: boolean;
 	label: string;
-	type: string;
 	placeholder: string;
 	rows: number;
 	value: string;
@@ -39,7 +38,6 @@ export default class PageTextArea extends React.Component<Props, {}> {
 				style={css.textarea}
 				disabled={this.props.disabled}
 				readOnly={this.props.readOnly}
-				type={this.props.type}
 				autoCapitalize="off"
 				spellCheck={false}
 				placeholder={this.props.placeholder}
