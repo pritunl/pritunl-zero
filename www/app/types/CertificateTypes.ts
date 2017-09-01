@@ -5,6 +5,7 @@ export const CHANGE = 'certificate.change';
 export interface Info {
 	signature_alg?: string;
 	public_key_alg?: string;
+	issuer?: string;
 	issued_on?: string;
 	expires_on?: string;
 	dns_names?: string[];
