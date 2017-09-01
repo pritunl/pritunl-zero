@@ -1,9 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
+	help?: string;
 	label: string;
 	type: string;
 	placeholder: string;
@@ -32,6 +34,10 @@ export default class PageInput extends React.Component<Props, {}> {
 			hidden={this.props.hidden}
 		>
 			{this.props.label}
+			<Help
+				title={this.props.label}
+				content={this.props.help}
+			/>
 			<input
 				className="pt-input"
 				style={css.input}
