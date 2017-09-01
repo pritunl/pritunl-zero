@@ -335,6 +335,10 @@ export default class Certificate extends React.Component<Props, State> {
 								value: info.public_key_alg || 'Unknown',
 							},
 							{
+								label: 'Issuer',
+								value: info.issuer || 'Unknown',
+							},
+							{
 								label: 'Issued On',
 								value: MiscUtils.formatDate(info.issued_on) || 'Unknown',
 							},
