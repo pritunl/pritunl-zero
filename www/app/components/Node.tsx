@@ -299,6 +299,7 @@ export default class Node extends React.Component<Props, State> {
 					</div>
 					<PageInput
 						label="Name"
+						help="Name of node"
 						type="text"
 						placeholder="Enter name"
 						value={node.name}
@@ -320,6 +321,7 @@ export default class Node extends React.Component<Props, State> {
 					<PageInput
 						hidden={node.type !== 'management_proxy'}
 						label="Management Domain"
+						help="Domain that will be used to access the management interface"
 						type="text"
 						placeholder="Enter management domain"
 						value={node.management_domain}

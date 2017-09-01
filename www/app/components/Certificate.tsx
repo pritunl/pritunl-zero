@@ -273,6 +273,7 @@ export default class Certificate extends React.Component<Props, State> {
 					</div>
 					<PageInput
 						label="Name"
+						help="Name of certificate"
 						type="text"
 						placeholder="Enter name"
 						value={cert.name}

@@ -415,6 +415,7 @@ export default class Policy extends React.Component<Props, State> {
 					</div>
 					<PageInput
 						label="Name"
+						help="Name of policy"
 						type="text"
 						placeholder="Enter name"
 						value={policy.name}

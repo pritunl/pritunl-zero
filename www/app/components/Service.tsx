@@ -556,6 +556,7 @@ export default class Service extends React.Component<Props, State> {
 					</div>
 					<PageInput
 						label="Name"
+						help="Name of service"
 						type="text"
 						placeholder="Enter name"
 						value={service.name}

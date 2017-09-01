@@ -212,6 +212,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageInput
 						disabled={this.state.locked}
 						label="Username"
+						help="Username, if using single sign-on username must match"
 						type="text"
 						placeholder="Enter username"
 						value={user.username}
@@ -223,6 +224,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						hidden={user.type !== 'local'}
 						disabled={this.state.locked}
 						label="Password"
+						help="Password, leave blank to keep current password"
 						type="password"
 						placeholder="Change password"
 						value={user.password}

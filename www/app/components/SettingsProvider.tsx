@@ -48,6 +48,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		return <div>
 			<PageInput
 				label="Directory ID"
+				help="Azure active directory ID"
 				type="text"
 				placeholder="Azure directory ID"
 				value={provider.tenant}
@@ -59,6 +60,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageInput
 				label="Application ID"
+				help="Azure application ID"
 				type="text"
 				placeholder="Azure application ID"
 				value={provider.client_id}
@@ -70,6 +72,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageInput
 				label="Application Secret"
+				help="Azure application secret"
 				type="text"
 				placeholder="Azure application secret"
 				value={provider.client_secret}
@@ -88,6 +91,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		return <div>
 			<PageInput
 				label="Domain"
+				help="Domain segment of email address to match"
 				type="text"
 				placeholder="Google domain to match"
 				value={provider.domain}
@@ -106,6 +110,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		return <div>
 			<PageInput
 				label="Issuer URL"
+				help="Single sign-on URL found in OneLogin app settings"
 				type="text"
 				placeholder="OneLogin issuer URL"
 				value={provider.issuer_url}
@@ -117,6 +122,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageInput
 				label="SAML 2.0 Endpoint (HTTP)"
+				help="SAML 2.0 endpoint found in OneLogin app settings"
 				type="text"
 				placeholder="OneLogin SAML endpoint"
 				value={provider.saml_url}
@@ -146,6 +152,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		return <div>
 			<PageInput
 				label="Identity Provider Single Sign-On URL"
+				help="Single sign-on URL found in Okta app settings"
 				type="text"
 				placeholder="Okta single sign-on URL"
 				value={provider.saml_url}
@@ -156,7 +163,8 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				}}
 			/>
 			<PageInput
-				label="Identity Provider Issuer"
+				label="Identity Provider Issuer URL"
+				help="Issuer URL found in Okta app settings"
 				type="text"
 				placeholder="Okta issuer URL"
 				value={provider.issuer_url}
@@ -248,6 +256,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageInput
 				label="Label"
+				help="Provider label that will be shown to users on the login page"
 				type="text"
 				placeholder="Provider label"
 				value={provider.label}
