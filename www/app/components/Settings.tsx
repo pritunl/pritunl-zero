@@ -176,7 +176,7 @@ export default class Settings extends React.Component<{}, State> {
 					/>
 					<PageInput
 						label="Session Max Duration Hours"
-						help="Number of hours from start of session until expire"
+						help="Number of hours from start of session until expiration"
 						type="text"
 						placeholder="Session max duration"
 						value={this.state.settings.auth_max_duration}
