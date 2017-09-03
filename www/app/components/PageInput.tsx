@@ -5,8 +5,8 @@ import Help from './Help';
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
-	help: string;
 	label: string;
+	help: string;
 	type: string;
 	placeholder: string;
 	value: string | number;
