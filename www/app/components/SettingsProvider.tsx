@@ -134,6 +134,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageTextArea
 				label="X.509 Certificate"
+				help="X.509 certificate found in OneLogin app settings"
 				placeholder="OneLogin X.509 certificate"
 				rows={6}
 				value={provider.saml_cert}
@@ -176,6 +177,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageTextArea
 				label="X.509 Certificate"
+				help="X.509 certificate found in Okta app settings"
 				placeholder="Okta X.509 certificate"
 				rows={6}
 				value={provider.saml_cert}

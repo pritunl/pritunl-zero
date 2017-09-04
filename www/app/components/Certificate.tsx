@@ -284,6 +284,7 @@ export default class Certificate extends React.Component<Props, State> {
 					<PageTextArea
 						readOnly={cert.type !== 'text'}
 						label="Private Key"
+						help="Certificate private key"
 						placeholder="Private key"
 						rows={6}
 						value={cert.key}
@@ -294,6 +295,7 @@ export default class Certificate extends React.Component<Props, State> {
 					<PageTextArea
 						readOnly={cert.type !== 'text'}
 						label="Certificate Chain"
+						help="Certificate followed by certificate chain"
 						placeholder="Certificate chain"
 						rows={6}
 						value={cert.certificate}
