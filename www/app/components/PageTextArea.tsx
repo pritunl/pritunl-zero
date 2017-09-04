@@ -1,11 +1,13 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	readOnly?: boolean;
 	label: string;
+	help: string;
 	placeholder: string;
 	rows: number;
 	value: string;
