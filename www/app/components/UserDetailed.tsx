@@ -37,6 +37,9 @@ const css = {
 	header: {
 		marginTop: '-19px',
 	} as React.CSSProperties,
+	heading: {
+		margin: '19px 0 0 0',
+	} as React.CSSProperties,
 	button: {
 		margin: '10px 0 0 10px',
 	} as React.CSSProperties,
@@ -231,8 +234,9 @@ export default class UserDetailed extends React.Component<Props, State> {
 		}
 
 		return <Page>
-			<PageHeader label={userId ? 'User Info' : 'New User'}>
+			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
+					<h2 style={css.heading}>{userId ? 'User Info' : 'New User'}</h2>
 					<div className="flex"/>
 					<div>
 						<ConfirmButton
