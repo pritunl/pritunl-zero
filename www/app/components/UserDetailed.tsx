@@ -41,7 +41,7 @@ const css = {
 		margin: '19px 0 0 0',
 	} as React.CSSProperties,
 	button: {
-		margin: '10px 0 0 10px',
+		margin: '10px 0 0 0',
 	} as React.CSSProperties,
 	role: {
 		margin: '9px 5px 0 5px',
