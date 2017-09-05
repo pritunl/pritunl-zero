@@ -247,7 +247,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 							className="pt-intent-danger pt-icon-delete"
 							progressClassName="pt-intent-danger"
 							style={css.button}
-							disabled={this.state.disabled}
+							disabled={this.state.disabled || this.state.locked}
 							hidden={!userId}
 							onConfirm={this.onDelete}
 						/>
