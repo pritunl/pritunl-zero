@@ -196,7 +196,10 @@ export default class UserDetailed extends React.Component<Props, State> {
 		UserActions.remove([this.props.userId]).then((): void => {
 			this.setState({
 				...this.state,
+				message: 'User has been deleted',
+				changed: false,
 				disabled: false,
+				locked: true,
 			});
 		}).catch((): void => {
 			this.setState({
