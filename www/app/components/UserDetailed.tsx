@@ -378,8 +378,8 @@ export default class UserDetailed extends React.Component<Props, State> {
 				disabled={this.state.disabled || this.state.locked}
 				onSave={this.onNew}
 			/>}
-			<Sessions userId={userId}/>
-			<Audits userId={userId}/>
+			{this.state.locked ? null : <Sessions userId={userId}/>}
+			{this.state.locked ? null : <Audits userId={userId}/>}
 		</Page>;
 	}
 }
