@@ -18,6 +18,7 @@ import PageSelect from './PageSelect';
 import PageDateTime from './PageDateTime';
 import PageSave from './PageSave';
 import PageNew from './PageNew';
+import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	userId?: string;
@@ -33,6 +34,12 @@ interface State {
 }
 
 const css = {
+	header: {
+		marginTop: '-19px',
+	} as React.CSSProperties,
+	button: {
+		margin: '10px 0 0 10px',
+	} as React.CSSProperties,
 	role: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
@@ -178,6 +185,24 @@ export default class UserDetailed extends React.Component<Props, State> {
 		});
 	}
 
+	onDelete = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+		UserActions.remove([this.props.userId]).then((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		});
+	}
+
 	render(): JSX.Element {
 		let userId = this.props.userId;
 		let user = this.state.user;
@@ -206,7 +231,21 @@ export default class UserDetailed extends React.Component<Props, State> {
 		}
 
 		return <Page>
-			<PageHeader label={userId ? 'User Info' : 'New User'}/>
+			<PageHeader label={userId ? 'User Info' : 'New User'}>
+				<div className="layout horizontal wrap" style={css.header}>
+					<div className="flex"/>
+					<div>
+						<ConfirmButton
+							label="Delete"
+							className="pt-intent-danger pt-icon-delete"
+							progressClassName="pt-intent-danger"
+							style={css.button}
+							disabled={this.state.disabled}
+							onConfirm={this.onDelete}
+						/>
+					</div>
+				</div>
+			</PageHeader>
 			<PageSplit>
 				<PagePanel className="layout vertical">
 					<PageInput
