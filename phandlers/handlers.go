@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/static"
+	"github.com/pritunl/pritunl-zero/utils"
 	"path/filepath"
 )
 
@@ -24,7 +25,7 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 
 	engine.Use(func(c *gin.Context) {
 		var srvc *service.Service
-		host := prxy.Hosts[c.Request.Host]
+		host := prxy.Hosts[utils.StripPort(c.Request.Host)]
 		if host != nil {
 			srvc = host.Service
 		}
