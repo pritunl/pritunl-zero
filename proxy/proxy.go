@@ -64,7 +64,9 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	if clientIp != nil {
 		for _, network := range host.WhitelistNetworks {
 			if network.Contains(clientIp) {
-				if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
+				if wsProxies != nil &&
+					r.Header.Get("Upgrade") == "websocket" {
+
 					wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, nil)
 					return true
 				}
