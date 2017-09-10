@@ -35,6 +35,10 @@ export default class PageTextArea extends React.Component<Props, {}> {
 			hidden={this.props.hidden}
 		>
 			{this.props.label}
+			<Help
+				title={this.props.label}
+				content={this.props.help}
+			/>
 			<textarea
 				className="pt-input"
 				style={css.textarea}
