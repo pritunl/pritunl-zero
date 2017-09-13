@@ -1,10 +1,12 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	label: string;
+	help: string;
 	value: string;
 	onChange: (val: string) => void;
 }
@@ -20,6 +22,10 @@ export default class PageSelect extends React.Component<Props, {}> {
 		return <div hidden={this.props.hidden}>
 			<label className="pt-label" style={css.label}>
 				{this.props.label}
+				<Help
+					title={this.props.label}
+					content={this.props.help}
+				/>
 				<div className="pt-select">
 					<select
 						disabled={this.props.disabled}
