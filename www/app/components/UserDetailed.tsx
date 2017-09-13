@@ -19,6 +19,7 @@ import PageDateTime from './PageDateTime';
 import PageSave from './PageSave';
 import PageNew from './PageNew';
 import ConfirmButton from './ConfirmButton';
+import Help from './Help';
 
 interface Props {
 	userId?: string;
@@ -296,6 +297,10 @@ export default class UserDetailed extends React.Component<Props, State> {
 					</PageSelect>
 					<label className="pt-label">
 						Roles
+						<Help
+							title="Roles"
+							content="User roles will be used to match with service roles. A user must have a matching role to access a service."
+						/>
 						<div>
 							{roles}
 						</div>
