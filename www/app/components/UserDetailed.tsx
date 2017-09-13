@@ -282,6 +282,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageSelect
 						disabled={this.state.locked}
 						label="Type"
+						help="A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login."
 						value={user.type}
 						onChange={(val): void => {
 							this.set('type', val);

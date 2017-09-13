@@ -309,6 +309,7 @@ export default class Node extends React.Component<Props, State> {
 					/>
 					<PageSelect
 						label="Type"
+						help="Management nodes will only provide access to the Pritunl Zero admin console. Proxy nodes will only provide access to the services added to the node."
 						value={node.type}
 						onChange={(val): void => {
 							this.set('type', val);
@@ -426,6 +427,7 @@ export default class Node extends React.Component<Props, State> {
 					/>
 					<PageSelect
 						label="Certificate"
+						help="The certificate to use for this nodes web server. The certificate must be valid for all the domains that this node provides access to. This includes the management domain and any service domains."
 						value={node.certificate}
 						onChange={(val): void => {
 							this.set('certificate', val);

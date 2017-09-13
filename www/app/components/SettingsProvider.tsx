@@ -322,6 +322,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageSelect
 				label="Role Management"
+				help="When the user authenticates for the first time a user will be created and the users roles will be set to the roles configured above. This is referenced as set on insert. It may be desired to update the roles on subsequent authentications. For this the merge mode can be used which will take the users current roles and merge them with the roles configured above using all the roles from both sets. Overwrite mode will replace the users roles on every authentication with the roles configured above. It is important to consider that if a users roles are modified those modifications will be lost when the overwrite mode is used."
 				value={provider.role_management}
 				onChange={(val): void => {
 					let state = this.clone();
