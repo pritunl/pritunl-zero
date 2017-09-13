@@ -1,11 +1,13 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as BlueprintDateTime from '@blueprintjs/datetime';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	label: string;
+	help: string;
 	value: string;
 	onChange: (val: string) => void;
 }
@@ -36,6 +38,10 @@ export default class PageDateTime extends React.Component<Props, {}> {
 			<div style={css.group}>
 				<label className="pt-label" style={css.label}>
 					{this.props.label}
+					<Help
+						title={this.props.label}
+						content={this.props.help}
+					/>
 				</label>
 				<div style={dateStyle}>
 					<BlueprintDateTime.DateTimePicker

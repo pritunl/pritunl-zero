@@ -353,6 +353,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageDateTime
 						label="Active Until"
+						help="Set this to schedule the user to be disabled at the set date and time. This is useful to give a user temporary access to a service."
 						value={user.active_until}
 						disabled={user.disabled || this.state.locked}
 						onChange={(val): void => {
