@@ -434,6 +434,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Certificate"
 						help="The certificate to use for this nodes web server. The certificate must be valid for all the domains that this node provides access to. This includes the management domain and any service domains."
 						value={node.certificate}
+						hidden={node.protocol === 'http'}
 						onChange={(val): void => {
 							this.set('certificate', val);
 						}}
