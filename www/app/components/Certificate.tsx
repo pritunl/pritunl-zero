@@ -10,6 +10,7 @@ import PageInfo from './PageInfo';
 import PageTextArea from './PageTextArea';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
+import Help from './Help';
 
 interface Props {
 	certificate: CertificateTypes.CertificateRo;
@@ -308,6 +309,10 @@ export default class Certificate extends React.Component<Props, State> {
 						hidden={cert.type !== 'lets_encrypt'}
 					>
 						LetsEncrypt Domains
+						<Help
+							title="LetsEncrypt Domains"
+							content="Enter domain names for the certificate. All domains names must point to a Pritunl Zero server in the cluster. The servers must also have port 80 publicy open. The port will need to stay open to renew the certificate"
+						/>
 					</label>
 					<div hidden={cert.type !== 'lets_encrypt'}>
 						{domains}
