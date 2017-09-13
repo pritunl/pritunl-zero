@@ -1,9 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	label: string;
+	help: string;
 	type: string;
 	placeholder: string;
 	value: string | number;
@@ -59,6 +61,10 @@ export default class PageInputSwitch extends React.Component<Props, {}> {
 					}}
 				/>
 			</label>
+			<Help
+				title={this.props.label}
+				content={this.props.help}
+			/>
 		</div>;
 	}
 }
