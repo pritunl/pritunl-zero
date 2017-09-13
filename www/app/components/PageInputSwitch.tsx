@@ -46,6 +46,10 @@ export default class PageInputSwitch extends React.Component<Props, {}> {
 				<span className="pt-control-indicator"/>
 				{this.props.label}
 			</label>
+			<Help
+				title={this.props.label}
+				content={this.props.help}
+			/>
 			<label className="pt-label" style={css.inputLabel}>
 				<input
 					className="pt-input"
@@ -61,10 +65,6 @@ export default class PageInputSwitch extends React.Component<Props, {}> {
 					}}
 				/>
 			</label>
-			<Help
-				title={this.props.label}
-				content={this.props.help}
-			/>
 		</div>;
 	}
 }
