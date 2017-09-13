@@ -1,10 +1,12 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	label: string;
+	help: string;
 	checked: boolean;
 	onToggle: () => void;
 }
@@ -27,6 +29,10 @@ export default class PageSwitch extends React.Component<Props, {}> {
 				/>
 				<span className="pt-control-indicator"/>
 				{this.props.label}
+				<Help
+					title={this.props.label}
+					content={this.props.help}
+				/>
 			</label>
 		</div>;
 	}
