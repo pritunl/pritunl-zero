@@ -7,6 +7,7 @@ import PageTextArea from './PageTextArea';
 import PageSwitch from './PageSwitch';
 import PageInfo from './PageInfo';
 import PageSelect from './PageSelect';
+import Help from './Help';
 
 interface Props {
 	provider: SettingsTypes.ProviderAny;
@@ -270,6 +271,10 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<label className="pt-label">
 				Default Roles
+				<Help
+					title="Default Roles"
+					content="When the user has authenticated for the first time these roles will be given to the user. These roles may also be used to update the users roles depending on the role management option."
+				/>
 				<div>
 					{roles}
 				</div>
