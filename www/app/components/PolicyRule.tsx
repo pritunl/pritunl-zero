@@ -4,6 +4,7 @@ import * as PolicyTypes from '../types/PolicyTypes';
 import * as Constants from '../Constants';
 import PageSwitch from './PageSwitch';
 import PageSelectButton from './PageSelectButton';
+import Help from './Help';
 
 interface Props {
 	rule: PolicyTypes.Rule;
@@ -161,6 +162,10 @@ export default class PolicyRule extends React.Component<Props, State> {
 				hidden={rule.values == null}
 			>
 				{label}
+				<Help
+					title={label}
+					content="One of the values must match for the check to pass"
+				/>
 				<div>
 					{values}
 				</div>
