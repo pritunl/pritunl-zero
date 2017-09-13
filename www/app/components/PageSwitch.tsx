@@ -29,11 +29,11 @@ export default class PageSwitch extends React.Component<Props, {}> {
 				/>
 				<span className="pt-control-indicator"/>
 				{this.props.label}
-				<Help
-					title={this.props.label}
-					content={this.props.help}
-				/>
 			</label>
+			<Help
+				title={this.props.label}
+				content={this.props.help}
+			/>
 		</div>;
 	}
 }
