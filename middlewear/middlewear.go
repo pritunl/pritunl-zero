@@ -170,6 +170,8 @@ func Auth(c *gin.Context) {
 			return
 		}
 
+		cookie.Clean(c.Writer, c.Request)
+
 		utils.AbortWithStatus(c, 401)
 		return
 	}

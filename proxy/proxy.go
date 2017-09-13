@@ -3,6 +3,7 @@ package proxy
 import (
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/auth"
+	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
@@ -95,6 +96,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			}
 		}
 
+		cookie.CleanProxy(w, r)
+
 		return false
 	}
 
@@ -108,6 +111,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 					WriteError(w, r, 500, err)
 					return true
 				}
+
+				cookie.CleanProxy(w, r)
 			}
 
 			return false
@@ -136,6 +141,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 				WriteError(w, r, 500, err)
 				return true
 			}
+
+			cookie.CleanProxy(w, r)
 		}
 
 		return false
@@ -153,6 +160,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			WriteError(w, r, 500, err)
 			return true
 		}
+
+		cookie.CleanProxy(w, r)
 
 		return false
 	}
