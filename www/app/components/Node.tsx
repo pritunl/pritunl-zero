@@ -437,7 +437,7 @@ export default class Node extends React.Component<Props, State> {
 					</PageSelect>
 					<PageInputSwitch
 						label="Forwarded for header"
-						help="Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer."
+						help="Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer. Additionally the nodes firewall should be configured to only accept requests from the load balancer to prevent requests being sent directly to the node bypassing the load balancer."
 						type="text"
 						placeholder="Forwarded for header"
 						value={node.forwarded_for_header}
