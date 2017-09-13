@@ -44,6 +44,18 @@ func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 	return
 }
 
+func Clean(w http.ResponseWriter, r *http.Request) {
+	cook := &http.Cookie{
+		Name:   "pritunl-zero-console",
+		Path:   "/",
+		Secure: true,
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cook)
+
+	return
+}
+
 func getCookieTopDomain(r *http.Request) string {
 	host := utils.StripPort(r.Host)
 	if strings.Count(host, ".") >= 2 {
@@ -109,6 +121,27 @@ func NewProxy(srvc *service.Service, w http.ResponseWriter, r *http.Request) (
 		w:     w,
 		r:     r,
 	}
+
+	return
+}
+
+func CleanProxy(w http.ResponseWriter, r *http.Request) {
+	cook := &http.Cookie{
+		Name:   "pritunl-zero",
+		Path:   "/",
+		Secure: true,
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cook)
+
+	cook = &http.Cookie{
+		Name:   "pritunl-zero",
+		Path:   "/",
+		Secure: true,
+		MaxAge: -1,
+		Domain: getCookieTopDomain(r),
+	}
+	http.SetCookie(w, cook)
 
 	return
 }
