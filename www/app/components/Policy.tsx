@@ -11,6 +11,7 @@ import PageInputButton from './PageInputButton';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
+import Help from './Help';
 
 interface Props {
 	policy: PolicyTypes.PolicyRo;
@@ -428,6 +429,10 @@ export default class Policy extends React.Component<Props, State> {
 						style={css.label}
 					>
 						Services
+						<Help
+							title="Services"
+							content="Services associated with this policy. All requests to the associated services must pass this policy check."
+						/>
 						<div>
 							{services}
 						</div>
@@ -449,6 +454,10 @@ export default class Policy extends React.Component<Props, State> {
 					</PageSelectButton>
 					<label className="pt-label">
 						Roles
+						<Help
+							title="Roles"
+							content="Roles associated with this policy. All requests from users with associated roles must pass this policy check."
+						/>
 						<div>
 							{roles}
 						</div>
