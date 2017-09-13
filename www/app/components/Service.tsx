@@ -10,6 +10,7 @@ import PageSave from './PageSave';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import PageInputButton from './PageInputButton';
+import Help from './Help';
 
 interface Props {
 	service: ServiceTypes.ServiceRo;
@@ -566,6 +567,10 @@ export default class Service extends React.Component<Props, State> {
 					/>
 					<label style={css.itemsLabel}>
 						External Domains
+						<Help
+							title="External Domains"
+							content="When a request comes into a proxy node the requests host will be used to match the request with the domain of a service. The external domain must point to either a node that has the service added or a load balancer that forwards to nodes serving the service. Some internal services will be expecting a specific host such as a web server that serves mutliple websites that is also matching the requests host to one of the mutliple websites. If the internal service is expecting a different host set the host field, otherwise leave it blank. Services that are associated with the same node should not also have the same domains."
+						/>
 					</label>
 					{domains}
 					<button
@@ -578,6 +583,10 @@ export default class Service extends React.Component<Props, State> {
 					</button>
 					<label style={css.itemsLabel}>
 						Internal Servers
+						<Help
+							title="Internal Servers"
+							content="After a proxy node receives an authenticated request it will be forwarded to the internal servers and the response will be sent back to the user. Multiple internal servers can be added to load balance the requests. This should only be done if outages are not expected as no health checks are preformed for each server. If outages are expected a load balancer such as AWS ELB should be used. If a domain is used with HTTPS the internal server must have a valid certificate. When an IP address is used with HTTPS the internal servers certificate will not be validated. These internal servers should ideally be configured to only accept requests from the private IP addresses of the Pritunl Zero nodes. It is important to consider that if the internal servers are configured to accept requests from other IP addresses those requests will be sent directly to the internal server and will bypass the authentication provided by Pritunl Zero."
+						/>
 					</label>
 					{servers}
 					<button
@@ -616,6 +625,10 @@ export default class Service extends React.Component<Props, State> {
 					/>
 					<label className="pt-label">
 						Roles
+						<Help
+							title="Roles"
+							content="The user roles that will be allowed access to this service. At least one role must match for the user to access the service."
+						/>
 						<div>
 							{roles}
 						</div>
@@ -636,6 +649,10 @@ export default class Service extends React.Component<Props, State> {
 					/>
 					<label className="pt-label">
 						Whitelisted Networks
+						<Help
+							title="Whitelisted Networks"
+							content="Allowed subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address."
+						/>
 						<div>
 							{whitelistNets}
 						</div>
