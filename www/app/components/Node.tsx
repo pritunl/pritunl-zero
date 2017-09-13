@@ -13,6 +13,7 @@ import PageSelectButton from './PageSelectButton';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
+import Help from './Help';
 
 interface Props {
 	node: NodeTypes.NodeRo;
@@ -364,6 +365,10 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('proxy') === -1}
 					>
 						Services
+						<Help
+							title="Services"
+							content="Services that can be accessed from this node. The nodes certificate must be valid for all the service domains. The node also needs to be able to access all the interal servers of the services."
+						/>
 						<div>
 							{services}
 						</div>
