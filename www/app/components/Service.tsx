@@ -590,6 +590,7 @@ export default class Service extends React.Component<Props, State> {
 					</button>
 					<PageSwitch
 						label="Share session with subdomains"
+						help="This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain."
 						checked={service.share_session}
 						onToggle={(): void => {
 							this.set('share_session', !service.share_session);
@@ -597,6 +598,7 @@ export default class Service extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Allow WebSockets"
+						help="This will allow WebSockets to be proxied to the user. If the internal service relies on WebSockets this must be enabled."
 						checked={service.websockets}
 						onToggle={(): void => {
 							this.set('websockets', !service.websockets);

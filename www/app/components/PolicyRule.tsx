@@ -137,6 +137,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 		return <div>
 			<PageSwitch
 				label={selectLabel}
+				help="Turn on to enable policy"
 				checked={rule.values != null}
 				onToggle={(): void => {
 					let state = this.clone();
@@ -146,6 +147,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 			/>
 			<PageSwitch
 				label="Disabled user on failure"
+				help="This will disable the user when the policy check fails. It is generally only useful for the location check to disable a user account when an authentication occurs from a foreign country. It is important to consider that the policy check is the last check that occurs durning an authentication. An autheitcation attempt with an incorrect password from a foreign country would not trigger a policy failure or disable the user."
 				checked={rule.disable}
 				hidden={rule.values == null}
 				onToggle={(): void => {

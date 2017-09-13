@@ -313,6 +313,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageSwitch
 				label="Create user on authentication"
+				help="Create the user on first authentication. If this is disabled all users must be manually created before they are able to authenticate."
 				checked={provider.auto_create}
 				onToggle={(): void => {
 					let state = this.clone();

@@ -317,6 +317,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Administrator"
+						help="Enable to give user administrator access to the management console"
 						disabled={this.state.locked}
 						checked={user.administrator === 'super'}
 						onToggle={(): void => {
@@ -329,6 +330,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Disabled"
+						help="Disables the user ending all active sessions and prevents new authentications"
 						disabled={this.state.locked}
 						checked={user.disabled}
 						onToggle={(): void => {
