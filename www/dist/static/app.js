@@ -23947,7 +23947,7 @@ System.registerDynamic("npm:@blueprintjs/datetime@1.22.0.js", ["npm:@blueprintjs
       GLOBAL = global;
   module.exports = $__require("npm:@blueprintjs/datetime@1.22.0/dist/index.js");
 });
-System.registerDynamic("app/components/PageDateTime.js", ["npm:react@15.6.1.js", "npm:@blueprintjs/datetime@1.22.0.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PageDateTime.js", ["npm:react@15.6.1.js", "npm:@blueprintjs/datetime@1.22.0.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -23955,6 +23955,7 @@ System.registerDynamic("app/components/PageDateTime.js", ["npm:react@15.6.1.js",
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
     const BlueprintDateTime = $__require("npm:@blueprintjs/datetime@1.22.0.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         group: {
             display: 'inline-block'
@@ -23973,7 +23974,7 @@ System.registerDynamic("app/components/PageDateTime.js", ["npm:react@15.6.1.js",
             if (!date || this.props.disabled) {
                 dateStyle.opacity = 0.5;
             }
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("div", { style: css.group }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label), React.createElement("div", { style: dateStyle }, React.createElement(BlueprintDateTime.DateTimePicker, { value: this.props.disabled ? null : date, timePickerProps: {
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("div", { style: css.group }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help })), React.createElement("div", { style: dateStyle }, React.createElement(BlueprintDateTime.DateTimePicker, { value: this.props.disabled ? null : date, timePickerProps: {
                     showArrowButtons: true
                 }, datePickerProps: {
                     showActionsBar: true
@@ -24021,7 +24022,7 @@ System.registerDynamic("app/components/PageNew.js", ["npm:react@15.6.1.js"], tru
     exports.default = PageNew;
     
 });
-System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js", "app/actions/UserActions.js", "app/utils/MiscUtils.js", "app/stores/UserStore.js", "app/components/Sessions.js", "app/components/Audits.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInfo.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageDateTime.js", "app/components/PageSave.js", "app/components/PageNew.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js", "app/actions/UserActions.js", "app/utils/MiscUtils.js", "app/stores/UserStore.js", "app/components/Sessions.js", "app/components/Audits.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/PagePanel.js", "app/components/PageSplit.js", "app/components/PageInfo.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageDateTime.js", "app/components/PageSave.js", "app/components/PageNew.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24046,6 +24047,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
     const PageSave_1 = $__require("app/components/PageSave.js");
     const PageNew_1 = $__require("app/components/PageNew.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         header: {
             marginTop: '-19px'
@@ -24149,17 +24151,17 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                     this.set('username', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", help: "Password, leave blank to keep current password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
-                } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", value: user.type, onChange: val => {
+                } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
+                }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", help: "Enable to give user administrator access to the management console", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
                     if (this.state.user.administrator === 'super') {
                         this.set('administrator', '');
                     } else {
                         this.set('administrator', 'super');
                     }
-                } }), React.createElement(PageSwitch_1.default, { label: "Disabled", disabled: this.state.locked, checked: user.disabled, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Disabled", help: "Disables the user ending all active sessions and prevents new authentications", disabled: this.state.locked, checked: user.disabled, onToggle: () => {
                     this.set('disabled', !this.state.user.disabled);
                 } })), React.createElement(PagePanel_1.default, null, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
@@ -24167,7 +24169,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                 }, {
                     label: 'Last Active',
                     value: MiscUtils.formatDate(user.last_active) || 'Inactive'
-                }] }), React.createElement(PageDateTime_1.default, { label: "Active Until", value: user.active_until, disabled: user.disabled || this.state.locked, onChange: val => {
+                }] }), React.createElement(PageDateTime_1.default, { label: "Active Until", help: "Set this to schedule the user to be disabled at the set date and time. This is useful to give a user temporary access to a service.", value: user.active_until, disabled: user.disabled || this.state.locked, onChange: val => {
                     this.set('active_until', val);
                 } }))), userId ? React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled || this.state.locked, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', addRole: '', user: UserStore_1.default.userM }));
@@ -24240,13 +24242,14 @@ System.registerDynamic("app/stores/NodesStore.js", ["app/dispatcher/Dispatcher.j
     exports.default = new NodesStore();
     
 });
-System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         switchLabel: {
             display: 'inline-block',
@@ -24268,7 +24271,7 @@ System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.j
                     } else {
                         this.props.onChange(true, this.props.defaultValue);
                     }
-                } }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label), React.createElement("label", { className: "pt-label", style: css.inputLabel }, React.createElement("input", { className: "pt-input", style: css.input, hidden: !this.props.value && !this.props.checked, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+                } }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label), React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("label", { className: "pt-label", style: css.inputLabel }, React.createElement("input", { className: "pt-input", style: css.input, hidden: !this.props.value && !this.props.checked, type: this.props.type, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
                     this.props.onChange(true, evt.target.value);
                 } })));
         }
@@ -24276,7 +24279,7 @@ System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.j
     exports.default = PageInputSwitch;
     
 });
-System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageInputSwitch.js", "app/components/PageSelect.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageInputSwitch.js", "app/components/PageSelect.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24293,6 +24296,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         card: {
             position: 'relative',
@@ -24442,7 +24446,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
             }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm node remove", disabled: active || this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of node", type: "text", placeholder: "Enter name", value: node.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement(PageSelect_1.default, { label: "Type", value: node.type, onChange: val => {
+                } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Management nodes will only provide access to the Pritunl Zero admin console. Proxy nodes will only provide access to the services added to the node.", value: node.type, onChange: val => {
                     this.set('type', val);
                 } }, React.createElement("option", { value: "management" }, "Management"), React.createElement("option", { value: "proxy" }, "Proxy"), React.createElement("option", { value: "management_proxy" }, "Management + Proxy")), React.createElement(PageInput_1.default, { hidden: node.type !== 'management_proxy', label: "Management Domain", help: "Domain that will be used to access the management interface", type: "text", placeholder: "Enter management domain", value: node.management_domain, onChange: val => {
                     this.set('management_domain', val);
@@ -24450,7 +24454,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                     this.set('protocol', evt.target.value);
                 } }, React.createElement("option", { value: "http" }, "HTTP"), React.createElement("option", { value: "https" }, "HTTPS"))), React.createElement("input", { className: "pt-input", style: css.port, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Port", value: node.port || 443, onChange: evt => {
                     this.set('port', parseInt(evt.target.value, 10));
-                } }))), React.createElement("label", { className: "pt-label", style: css.label, hidden: node.type.indexOf('proxy') === -1 }, "Services", React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { hidden: node.type.indexOf('proxy') === -1, label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
+                } }))), React.createElement("label", { className: "pt-label", style: css.label, hidden: node.type.indexOf('proxy') === -1 }, "Services", React.createElement(Help_1.default, { title: "Services", content: "Services that can be accessed from this node. The nodes certificate must be valid for all the service domains. The node also needs to be able to access all the interal servers of the services." }), React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { hidden: node.type.indexOf('proxy') === -1, label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { addService: val }));
                 }, onSubmit: this.onAddService }, servicesSelect)), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
@@ -24478,9 +24482,9 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                     progressClass: 'pt-no-stripes pt-intent-danger',
                     label: 'Load15',
                     value: node.load15
-                }] }), React.createElement(PageSelect_1.default, { label: "Certificate", value: node.certificate, onChange: val => {
+                }] }), React.createElement(PageSelect_1.default, { label: "Certificate", help: "The certificate to use for this nodes web server. The certificate must be valid for all the domains that this node provides access to. This includes the management domain and any service domains.", value: node.certificate, onChange: val => {
                     this.set('certificate', val);
-                } }, certificates), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, checked: this.state.forwardedChecked, defaultValue: "X-Forwarded-For", onChange: (state, val) => {
+                } }, certificates), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", help: "Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer. Additionally the nodes firewall should be configured to only accept requests from the load balancer to prevent requests being sent directly to the node bypassing the load balancer.", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, checked: this.state.forwardedChecked, defaultValue: "X-Forwarded-For", onChange: (state, val) => {
                     let nde;
                     if (this.state.changed) {
                         nde = Object.assign({}, this.state.node);
@@ -24621,7 +24625,7 @@ System.registerDynamic("app/stores/PoliciesStore.js", ["app/dispatcher/Dispatche
     exports.default = new PoliciesStore();
     
 });
-System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "app/Constants.js", "app/components/PageSwitch.js", "app/components/PageSelectButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "app/Constants.js", "app/components/PageSwitch.js", "app/components/PageSelectButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24631,6 +24635,7 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
     const Constants = $__require("app/Constants.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
     const PageSelectButton_1 = $__require("app/components/PageSelectButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         item: {
             margin: '9px 5px 0 5px',
@@ -24708,15 +24713,15 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
                         this.onRemoveValue(value);
                     } })));
             }
-            return React.createElement("div", null, React.createElement(PageSwitch_1.default, { label: selectLabel, checked: rule.values != null, onToggle: () => {
+            return React.createElement("div", null, React.createElement(PageSwitch_1.default, { label: selectLabel, help: "Turn on to enable policy", checked: rule.values != null, onToggle: () => {
                     let state = this.clone();
                     state.values = rule.values == null ? [] : null;
                     this.props.onChange(state);
-                } }), React.createElement(PageSwitch_1.default, { label: "Disabled user on failure", checked: rule.disable, hidden: rule.values == null, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Disabled user on failure", help: "This will disable the user when the policy check fails. It is generally only useful for the location check to disable a user account when an authentication occurs from a foreign country. It is important to consider that the policy check is the last check that occurs durning an authentication. An autheitcation attempt with an incorrect password from a foreign country would not trigger a policy failure or disable the user.", checked: rule.disable, hidden: rule.values == null, onToggle: () => {
                     let state = this.clone();
                     state.disable = !state.disable;
                     this.props.onChange(state);
-                } }), React.createElement("label", { className: "pt-label", hidden: rule.values == null }, label, React.createElement("div", null, values)), React.createElement(PageSelectButton_1.default, { hidden: rule.values == null, buttonClass: "pt-intent-success pt-icon-add", label: "Add", value: this.state.addValue, onChange: val => {
+                } }), React.createElement("label", { className: "pt-label", hidden: rule.values == null }, label, React.createElement(Help_1.default, { title: label, content: "One of the values must match for the check to pass" }), React.createElement("div", null, values)), React.createElement(PageSelectButton_1.default, { hidden: rule.values == null, buttonClass: "pt-intent-success pt-icon-add", label: "Add", value: this.state.addValue, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addValue: val }));
                 }, onSubmit: () => {
                     this.onAddValue(this.state.addValue || defaultOption);
@@ -24726,7 +24731,7 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
     exports.default = PolicyRule;
     
 });
-System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/actions/PolicyActions.js", "app/stores/ServicesStore.js", "app/components/PolicyRule.js", "app/components/PageInput.js", "app/components/PageSelectButton.js", "app/components/PageInputButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/actions/PolicyActions.js", "app/stores/ServicesStore.js", "app/components/PolicyRule.js", "app/components/PageInput.js", "app/components/PageSelectButton.js", "app/components/PageInputButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -24742,6 +24747,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         card: {
             position: 'relative',
@@ -24949,9 +24955,9 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
             };
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm policy remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of policy", type: "text", placeholder: "Enter name", value: policy.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement("label", { className: "pt-label", style: css.label }, "Services", React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
+                } }), React.createElement("label", { className: "pt-label", style: css.label }, "Services", React.createElement(Help_1.default, { title: "Services", content: "Services associated with this policy. All requests to the associated services must pass this policy check." }), React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { addService: val }));
-                }, onSubmit: this.onAddService }, servicesSelect), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                }, onSubmit: this.onAddService }, servicesSelect), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this policy. All requests from users with associated roles must pass this policy check." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement(PolicyRule_1.default, { rule: location, onChange: val => {
                     this.setRule('location', val);
@@ -25127,7 +25133,7 @@ System.registerDynamic("app/components/CertificateDomain.js", ["npm:react@15.6.1
     exports.default = CertificateDomain;
     
 });
-System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", "app/actions/CertificateActions.js", "app/utils/MiscUtils.js", "app/components/CertificateDomain.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageInfo.js", "app/components/PageTextArea.js", "app/components/PageSave.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", "app/actions/CertificateActions.js", "app/utils/MiscUtils.js", "app/components/CertificateDomain.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageInfo.js", "app/components/PageTextArea.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -25143,6 +25149,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
     const PageTextArea_1 = $__require("app/components/PageTextArea.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         card: {
             position: 'relative',
@@ -25274,7 +25281,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
                     this.set('key', val);
                 } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Certificate Chain", help: "Certificate followed by certificate chain", placeholder: "Certificate chain", rows: 6, value: cert.certificate, onChange: val => {
                     this.set('certificate', val);
-                } }), React.createElement("label", { style: css.itemsLabel, hidden: cert.type !== 'lets_encrypt' }, "LetsEncrypt Domains"), React.createElement("div", { hidden: cert.type !== 'lets_encrypt' }, domains), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, hidden: cert.type !== 'lets_encrypt', type: "button", onClick: this.onAddDomain }, "Add Domain")), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                } }), React.createElement("label", { style: css.itemsLabel, hidden: cert.type !== 'lets_encrypt' }, "LetsEncrypt Domains", React.createElement(Help_1.default, { title: "LetsEncrypt Domains", content: "Enter domain names for the certificate. All domains names must point to a Pritunl Zero server in the cluster. The servers must also have port 80 publicy open. The port will need to stay open to renew the certificate" })), React.createElement("div", { hidden: cert.type !== 'lets_encrypt' }, domains), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, hidden: cert.type !== 'lets_encrypt', type: "button", onClick: this.onAddDomain }, "Add Domain")), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: cert.id || 'None'
                 }, {
@@ -25295,7 +25302,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
                 }, {
                     label: 'DNS Names',
                     value: info.dns_names || 'Unknown'
-                }] }), React.createElement(PageSelect_1.default, { label: "Type", value: cert.type, onChange: val => {
+                }] }), React.createElement(PageSelect_1.default, { label: "Type", help: "Certificate type, use text to provide a certificate", value: cert.type, onChange: val => {
                     this.set('type', val);
                 } }, React.createElement("option", { value: "text" }, "Text"), React.createElement("option", { value: "lets_encrypt" }, "LetsEncrypt")))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.certificate, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, certificate: null }));
@@ -27341,7 +27348,7 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@15.6.1.js"
     exports.default = ConfirmButton;
     
 });
-System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -27357,6 +27364,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
     const PageInputButton_1 = $__require("app/components/PageInputButton.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         card: {
             position: 'relative',
@@ -27605,16 +27613,16 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
             }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement("label", { style: css.itemsLabel }, "External Domains"), domains, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers"), servers, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", checked: service.share_session, onToggle: () => {
+                } }), React.createElement("label", { style: css.itemsLabel }, "External Domains", React.createElement(Help_1.default, { title: "External Domains", content: "When a request comes into a proxy node the requests host will be used to match the request with the domain of a service. The external domain must point to either a node that has the service added or a load balancer that forwards to nodes serving the service. Some internal services will be expecting a specific host such as a web server that serves mutliple websites that is also matching the requests host to one of the mutliple websites. If the internal service is expecting a different host set the host field, otherwise leave it blank. Services that are associated with the same node should not also have the same domains." })), domains, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers", React.createElement(Help_1.default, { title: "Internal Servers", content: "After a proxy node receives an authenticated request it will be forwarded to the internal servers and the response will be sent back to the user. Multiple internal servers can be added to load balance the requests. This should only be done if outages are not expected as no health checks are preformed for each server. If outages are expected a load balancer such as AWS ELB should be used. If a domain is used with HTTPS the internal server must have a valid certificate. When an IP address is used with HTTPS the internal servers certificate will not be validated. These internal servers should ideally be configured to only accept requests from the private IP addresses of the Pritunl Zero nodes. It is important to consider that if the internal servers are configured to accept requests from other IP addresses those requests will be sent directly to the internal server and will bypass the authentication provided by Pritunl Zero." })), servers, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", help: "This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain.", checked: service.share_session, onToggle: () => {
                     this.set('share_session', !service.share_session);
-                } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", checked: service.websockets, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", help: "This will allow WebSockets to be proxied to the user. If the internal service relies on WebSockets this must be enabled.", checked: service.websockets, onToggle: () => {
                     this.set('websockets', !service.websockets);
                 } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: service.id || 'None'
-                }] }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                }] }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "The user roles that will be allowed access to this service. At least one role must match for the user to access the service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Whitelisted Networks", React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Whitelisted Networks", React.createElement(Help_1.default, { title: "Whitelisted Networks", content: "Allowed subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address." }), React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addWhitelistNet: val }));
                 }, onSubmit: this.onAddWhitelistNet }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, service: null }));
@@ -27960,70 +27968,6 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
     exports.default = PageInputButton;
     
 });
-System.registerDynamic("app/components/Help.js", ["npm:react@15.6.1.js", "npm:@blueprintjs/core@1.27.0.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const React = $__require("npm:react@15.6.1.js");
-    const Blueprint = $__require("npm:@blueprintjs/core@1.27.0.js");
-    const css = {
-        box: {
-            position: 'relative',
-            display: 'inline'
-        },
-        content: {
-            padding: '20px'
-        },
-        button: {
-            position: 'absolute',
-            top: '-7px',
-            left: '-2px',
-            padding: '7px',
-            background: 'none'
-        },
-        popover: {
-            width: '230px'
-        },
-        popoverTarget: {
-            top: '9px',
-            left: '18px'
-        },
-        dialog: {
-            maxWidth: '400px',
-            margin: '30px 20px'
-        }
-    };
-    let dialog = true;
-    class Help extends React.Component {
-        constructor(props, context) {
-            super(props, context);
-            this.state = {
-                popover: false
-            };
-        }
-        render() {
-            let helpElm;
-            if (this.state.popover) {
-                if (dialog) {
-                    helpElm = React.createElement(Blueprint.Dialog, { title: this.props.title, style: css.dialog, isOpen: this.state.popover, onClose: () => {
-                            this.setState(Object.assign({}, this.state, { popover: false }));
-                        } }, React.createElement("div", { className: "pt-dialog-body" }, this.props.content), React.createElement("div", { className: "pt-dialog-footer" }, React.createElement("div", { className: "pt-dialog-footer-actions" }, React.createElement("button", { className: "pt-button", type: "button", onClick: () => {
-                            this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
-                        } }, "Close"))));
-                } else {
-                    helpElm = React.createElement("span", { className: "pt-popover-target", style: css.popoverTarget }, React.createElement("span", { className: "pt-overlay pt-overlay-inline" }, React.createElement("span", null, React.createElement("div", { className: 'pt-transition-container ' + 'pt-tether-element-attached-middle ' + 'pt-tether-element-attached-left ' + 'pt-tether-target-attached-middle ' + 'pt-tether-target-attached-right pt-overlay-content', style: css.popover }, React.createElement("div", { className: "pt-popover" }, React.createElement("div", { className: "pt-popover-arrow" }, React.createElement("svg", { viewBox: "0 0 30 30" }, React.createElement("path", { className: "pt-popover-arrow-border", d: 'M8.11 6.302c1.015-.936 1.887-2.922 ' + '1.887-4.297v26c0-1.378-' + '.868-3.357-1.888-4.297L.925 ' + '17.09c-1.237-1.14-1.233-3.034 0-4.17L8.11 6.302z' }), React.createElement("path", { className: "pt-popover-arrow-fill", d: 'M8.787 7.036c1.22-1.125 2.21-3.376 ' + '2.21-5.03V0v30-2.005c0-1.654-' + '.983-3.9-2.21-5.03l-7.183-6.616c-' + '.81-.746-.802-1.96 0-2.7l7.183-6.614z' }))), React.createElement("div", { className: "pt-popover-content", style: css.content }, React.createElement("h5", null, this.props.title), React.createElement("div", null, this.props.content)))))));
-                }
-            }
-            return React.createElement("div", { style: css.box }, React.createElement("div", { className: "pt-button pt-minimal pt-icon-help", style: css.button, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
-                } }), helpElm);
-        }
-    }
-    exports.default = Help;
-    
-});
 System.registerDynamic("app/components/PageTextArea.js", ["npm:react@15.6.1.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
@@ -28054,13 +27998,14 @@ System.registerDynamic("app/components/PageTextArea.js", ["npm:react@15.6.1.js",
     exports.default = PageTextArea;
     
 });
-System.registerDynamic("app/components/PageSwitch.js", ["npm:react@15.6.1.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PageSwitch.js", ["npm:react@15.6.1.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         label: {
             display: 'inline-block'
@@ -28068,7 +28013,7 @@ System.registerDynamic("app/components/PageSwitch.js", ["npm:react@15.6.1.js"], 
     };
     class PageSwitch extends React.Component {
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", disabled: this.props.disabled, checked: !!this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label));
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-control pt-switch", style: css.label }, React.createElement("input", { type: "checkbox", disabled: this.props.disabled, checked: !!this.props.checked, onChange: this.props.onToggle }), React.createElement("span", { className: "pt-control-indicator" }), this.props.label), React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }));
         }
     }
     exports.default = PageSwitch;
@@ -28122,6 +28067,29 @@ System.registerDynamic("app/components/PageInfo.js", ["npm:react@15.6.1.js"], tr
         }
     }
     exports.default = PageInfo;
+    
+});
+System.registerDynamic("app/components/PageSelect.js", ["npm:react@15.6.1.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const Help_1 = $__require("app/components/Help.js");
+    const css = {
+        label: {
+            display: 'inline-block'
+        }
+    };
+    class PageSelect extends React.Component {
+        render() {
+            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("div", { className: "pt-select" }, React.createElement("select", { disabled: this.props.disabled, value: this.props.value || '', onChange: evt => {
+                    this.props.onChange(evt.target.value);
+                } }, this.props.children))));
+        }
+    }
+    exports.default = PageSelect;
     
 });
 System.registerDynamic('npm:react@15.6.1/lib/PooledClass.js', ['npm:react@15.6.1/lib/reactProdInvariant.js', 'npm:fbjs@0.8.14/lib/invariant.js', 'github:jspm/nodelibs-process@0.1.2.js'], true, function ($__require, exports, module) {
@@ -30738,29 +30706,71 @@ System.registerDynamic("npm:react@15.6.1.js", ["npm:react@15.6.1/react.js"], tru
       GLOBAL = global;
   module.exports = $__require("npm:react@15.6.1/react.js");
 });
-System.registerDynamic("app/components/PageSelect.js", ["npm:react@15.6.1.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Help.js", ["npm:react@15.6.1.js", "npm:@blueprintjs/core@1.27.0.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
+    const Blueprint = $__require("npm:@blueprintjs/core@1.27.0.js");
     const css = {
-        label: {
-            display: 'inline-block'
+        box: {
+            position: 'relative',
+            display: 'inline'
+        },
+        content: {
+            padding: '20px'
+        },
+        button: {
+            position: 'absolute',
+            top: '-7px',
+            left: '-2px',
+            padding: '7px',
+            background: 'none'
+        },
+        popover: {
+            width: '230px'
+        },
+        popoverTarget: {
+            top: '9px',
+            left: '18px'
+        },
+        dialog: {
+            maxWidth: '400px',
+            margin: '30px 20px'
         }
     };
-    class PageSelect extends React.Component {
+    let dialog = true;
+    class Help extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                popover: false
+            };
+        }
         render() {
-            return React.createElement("div", { hidden: this.props.hidden }, React.createElement("label", { className: "pt-label", style: css.label }, this.props.label, React.createElement("div", { className: "pt-select" }, React.createElement("select", { disabled: this.props.disabled, value: this.props.value || '', onChange: evt => {
-                    this.props.onChange(evt.target.value);
-                } }, this.props.children))));
+            let helpElm;
+            if (this.state.popover) {
+                if (dialog) {
+                    helpElm = React.createElement(Blueprint.Dialog, { title: this.props.title, style: css.dialog, isOpen: this.state.popover, onClose: () => {
+                            this.setState(Object.assign({}, this.state, { popover: false }));
+                        } }, React.createElement("div", { className: "pt-dialog-body" }, this.props.content), React.createElement("div", { className: "pt-dialog-footer" }, React.createElement("div", { className: "pt-dialog-footer-actions" }, React.createElement("button", { className: "pt-button", type: "button", onClick: () => {
+                            this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
+                        } }, "Close"))));
+                } else {
+                    helpElm = React.createElement("span", { className: "pt-popover-target", style: css.popoverTarget }, React.createElement("span", { className: "pt-overlay pt-overlay-inline" }, React.createElement("span", null, React.createElement("div", { className: 'pt-transition-container ' + 'pt-tether-element-attached-middle ' + 'pt-tether-element-attached-left ' + 'pt-tether-target-attached-middle ' + 'pt-tether-target-attached-right pt-overlay-content', style: css.popover }, React.createElement("div", { className: "pt-popover" }, React.createElement("div", { className: "pt-popover-arrow" }, React.createElement("svg", { viewBox: "0 0 30 30" }, React.createElement("path", { className: "pt-popover-arrow-border", d: 'M8.11 6.302c1.015-.936 1.887-2.922 ' + '1.887-4.297v26c0-1.378-' + '.868-3.357-1.888-4.297L.925 ' + '17.09c-1.237-1.14-1.233-3.034 0-4.17L8.11 6.302z' }), React.createElement("path", { className: "pt-popover-arrow-fill", d: 'M8.787 7.036c1.22-1.125 2.21-3.376 ' + '2.21-5.03V0v30-2.005c0-1.654-' + '.983-3.9-2.21-5.03l-7.183-6.616c-' + '.81-.746-.802-1.96 0-2.7l7.183-6.614z' }))), React.createElement("div", { className: "pt-popover-content", style: css.content }, React.createElement("h5", null, this.props.title), React.createElement("div", null, this.props.content)))))));
+                }
+            }
+            return React.createElement("div", { style: css.box }, React.createElement("div", { className: "pt-button pt-minimal pt-icon-help", style: css.button, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
+                } }), helpElm);
         }
     }
-    exports.default = PageSelect;
+    exports.default = Help;
     
 });
-System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageTextArea.js", "app/components/PageSwitch.js", "app/components/PageInfo.js", "app/components/PageSelect.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.js", "app/components/PageInput.js", "app/components/PageInputButton.js", "app/components/PageTextArea.js", "app/components/PageSwitch.js", "app/components/PageInfo.js", "app/components/PageSelect.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -30773,6 +30783,7 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const PageSelect_1 = $__require("app/components/PageSelect.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         card: {
             marginBottom: '5px'
@@ -30891,7 +30902,7 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
                     let state = this.clone();
                     state.label = val;
                     this.props.onChange(state);
-                } }), React.createElement("label", { className: "pt-label" }, "Default Roles", React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add default role", value: this.state.addRole, onChange: val => {
+                } }), React.createElement("label", { className: "pt-label" }, "Default Roles", React.createElement(Help_1.default, { title: "Default Roles", content: "When the user has authenticated for the first time these roles will be given to the user. These roles may also be used to update the users roles depending on the role management option." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add default role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: () => {
                     let rls = [...this.props.provider.default_roles];
@@ -30906,11 +30917,11 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
                     state.default_roles = rls;
                     this.props.onChange(state);
                     this.setState(Object.assign({}, this.state, { addRole: '' }));
-                } }), React.createElement(PageSwitch_1.default, { label: "Create user on authentication", checked: provider.auto_create, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Create user on authentication", help: "Create the user on first authentication. If this is disabled all users must be manually created before they are able to authenticate.", checked: provider.auto_create, onToggle: () => {
                     let state = this.clone();
                     state.auto_create = !state.auto_create;
                     this.props.onChange(state);
-                } }), React.createElement(PageSelect_1.default, { label: "Role Management", value: provider.role_management, onChange: val => {
+                } }), React.createElement(PageSelect_1.default, { label: "Role Management", help: "When the user authenticates for the first time a user will be created and the users roles will be set to the roles configured above. This is referenced as set on insert. It may be desired to update the roles on subsequent authentications. For this the merge mode can be used which will take the users current roles and merge them with the roles configured above using all the roles from both sets. Overwrite mode will replace the users roles on every authentication with the roles configured above. It is important to consider that if a users roles are modified those modifications will be lost when the overwrite mode is used.", value: provider.role_management, onChange: val => {
                     let state = this.clone();
                     state.role_management = val;
                     this.props.onChange(state);
@@ -31017,7 +31028,7 @@ System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "ap
                     this.set('auth_max_duration', parseInt(val, 10));
                 } }), React.createElement(PageInput_1.default, { label: "Elasticsearch Address", help: "Address of Elasticsearch server", type: "text", placeholder: "Elasticsearch address", value: this.state.settings.elastic_address, onChange: val => {
                     this.set('elastic_address', val);
-                } }), React.createElement(PageSwitch_1.default, { label: "Elasticsearch Log Proxy Requests", checked: this.state.settings.elastic_proxy_requests, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Elasticsearch Log Proxy Requests", help: "Send all user requests to the Elasticsearch server. The request header, URL query values and user information such as user ID, IP address and location will be included. If the request body contains form fields, json or xml this data will also be included.", checked: this.state.settings.elastic_proxy_requests, onToggle: () => {
                     this.set('elastic_proxy_requests', !this.state.settings.elastic_proxy_requests);
                 } }))), React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', settings: SettingsStore_1.default.settingsM }));
