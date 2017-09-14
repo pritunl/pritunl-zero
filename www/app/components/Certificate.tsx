@@ -362,7 +362,7 @@ export default class Certificate extends React.Component<Props, State> {
 					/>
 					<PageSelect
 						label="Type"
-						help="Certificate type, use text to provide a certificate"
+						help="Certificate type, use text to provide a certificate. LetsEncrypt provides free certificates that automatically renew."
 						value={cert.type}
 						onChange={(val): void => {
 							this.set('type', val);
