@@ -276,7 +276,7 @@ export default class Certificate extends React.Component<Props, State> {
 						label="Name"
 						help="Name of certificate"
 						type="text"
-						placeholder="Enter name"
+						placeholder="Name"
 						value={cert.name}
 						onChange={(val): void => {
 							this.set('name', val);
