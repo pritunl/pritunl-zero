@@ -135,7 +135,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let confirmElem: JSX.Element;
 
-		let style = this.props.style || {};
+		let style = {
+			...this.props.style,
+		};
 		style.position = 'relative';
 
 		if (Constants.mobile) {
