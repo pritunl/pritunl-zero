@@ -113,6 +113,11 @@ func GoogleRoles(provider *settings.Provider, username string) (roles []string, 
 		"https://www.googleapis.com/auth/admin.directory.group",
 	)
 	if err != nil {
+		err = errortypes.ParseError{
+			errors.Wrap(
+				err, "auth: Failed to parse google key",
+			),
+		}
 		return
 	}
 
@@ -122,11 +127,21 @@ func GoogleRoles(provider *settings.Provider, username string) (roles []string, 
 
 	service, err := admin.New(client)
 	if err != nil {
+		err = errortypes.ParseError{
+			errors.Wrap(
+				err, "auth: Failed to parse google client",
+			),
+		}
 		return
 	}
 
 	results, err := service.Groups.List().UserKey(username).Do()
 	if err != nil {
+		err = errortypes.ReadError{
+			errors.Wrap(
+				err, "auth: Google api error getting user groups",
+			),
+		}
 		return
 	}
 
