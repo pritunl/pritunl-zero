@@ -137,7 +137,7 @@ func GoogleRoles(provider *settings.Provider, username string) (roles []string, 
 
 	results, err := service.Groups.List().UserKey(username).Do()
 	if err != nil {
-		err = errortypes.ReadError{
+		err = errortypes.RequestError{
 			errors.Wrap(
 				err, "auth: Google api error getting user groups",
 			),
