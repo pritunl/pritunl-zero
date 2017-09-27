@@ -280,6 +280,17 @@ func Callback(db *database.Database, sig, query string) (
 		}
 	}
 
+	if provider.Type == Google {
+		googleRoles, err := GoogleRoles(provider, username)
+		if err != nil {
+			return
+		}
+
+		for _, role := range googleRoles {
+			roles = append(roles, role)
+		}
+	}
+
 	usr, err = user.GetUsername(db, provider.Type, username)
 	if err != nil {
 		switch err.(type) {
