@@ -102,6 +102,30 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			/>
+			<PageInput
+				label="Google Admin Email"
+				help="Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google private key."
+				type="text"
+				placeholder="Google admin email"
+				value={provider.google_email}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.google_email = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageTextArea
+				label="Google JSON Private Key"
+				help="Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google Admin Email."
+				placeholder="Google JSON private key"
+				rows={6}
+				value={provider.google_key}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.google_key = val;
+					this.props.onChange(state);
+				}}
+			/>
 		</div>;
 	}
 
