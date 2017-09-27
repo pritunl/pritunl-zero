@@ -8,6 +8,9 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/admin/directory/v1"
 	"net/http"
 	"time"
 )
@@ -98,6 +101,38 @@ func GoogleRequest(db *database.Database, location string) (
 	}
 
 	redirect = authData.Url
+
+	return
+}
+
+func GoogleRoles(provider *settings.Provider, username string) (roles []string, err error) {
+	roles = []string{}
+
+	conf, err := google.JWTConfigFromJSON(
+		[]byte(provider.GoogleKey),
+		"https://www.googleapis.com/auth/admin.directory.group",
+	)
+	if err != nil {
+		return
+	}
+
+	conf.Subject = provider.GoogleEmail
+
+	client := conf.Client(oauth2.NoContext)
+
+	service, err := admin.New(client)
+	if err != nil {
+		return
+	}
+
+	results, err := service.Groups.List().UserKey(username).Do()
+	if err != nil {
+		return
+	}
+
+	for _, group := range results.Groups {
+		roles = append(roles, group.Name)
+	}
 
 	return
 }
