@@ -17,6 +17,8 @@ type Provider struct {
 	ClientId       string        `bson:"client_id" json:"client_id"`         // azure
 	ClientSecret   string        `bson:"client_secret" json:"client_secret"` // azure
 	Domain         string        `bson:"domain" json:"domain"`               // google
+	GoogleKey      string        `bson:"google_key" json:"google_key"`       // google
+	GoogleEmail    string        `bson:"google_email" json:"google_email"`   // google
 	IssuerUrl      string        `bson:"issuer_url" json:"issuer_url"`       // saml
 	SamlUrl        string        `bson:"saml_url" json:"saml_url"`           // saml
 	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`         // saml
