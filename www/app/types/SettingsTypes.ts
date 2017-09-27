@@ -19,6 +19,8 @@ export interface AzureProvider extends Provider {
 
 export interface GoogleProvider extends Provider {
 	domain?: string;
+	google_key?: string;
+	google_email?: string;
 }
 
 export interface SamlProvider extends Provider {
