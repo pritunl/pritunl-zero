@@ -25275,13 +25275,13 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
                         this.onRemoveDomain(index);
                     } }));
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm certificate remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of certificate", type: "text", placeholder: "Enter name", value: cert.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm certificate remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of certificate", type: "text", placeholder: "Name", value: cert.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Private Key", help: "Certificate private key", placeholder: "Private key", rows: 6, value: cert.key, onChange: val => {
+                } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Private Key", help: "Certificate private key in PEM format", placeholder: "Private key", rows: 6, value: cert.key, onChange: val => {
                     this.set('key', val);
-                } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Certificate Chain", help: "Certificate followed by certificate chain", placeholder: "Certificate chain", rows: 6, value: cert.certificate, onChange: val => {
+                } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Certificate Chain", help: "Certificate followed by certificate chain in PEM format", placeholder: "Certificate chain", rows: 6, value: cert.certificate, onChange: val => {
                     this.set('certificate', val);
-                } }), React.createElement("label", { style: css.itemsLabel, hidden: cert.type !== 'lets_encrypt' }, "LetsEncrypt Domains", React.createElement(Help_1.default, { title: "LetsEncrypt Domains", content: "Enter domain names for the certificate. All domains names must point to a Pritunl Zero server in the cluster. The servers must also have port 80 publicy open. The port will need to stay open to renew the certificate" })), React.createElement("div", { hidden: cert.type !== 'lets_encrypt' }, domains), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, hidden: cert.type !== 'lets_encrypt', type: "button", onClick: this.onAddDomain }, "Add Domain")), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                } }), React.createElement("label", { style: css.itemsLabel, hidden: cert.type !== 'lets_encrypt' }, "LetsEncrypt Domains", React.createElement(Help_1.default, { title: "LetsEncrypt Domains", content: "Enter domain names for the certificate. All domains names must point to a Pritunl Zero server in the cluster. The servers must also have port 80 publicy open. The port will need to stay open to renew the certificate." })), React.createElement("div", { hidden: cert.type !== 'lets_encrypt' }, domains), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, hidden: cert.type !== 'lets_encrypt', type: "button", onClick: this.onAddDomain }, "Add Domain")), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: cert.id || 'None'
                 }, {
@@ -25302,7 +25302,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@15.6.1.js", 
                 }, {
                     label: 'DNS Names',
                     value: info.dns_names || 'Unknown'
-                }] }), React.createElement(PageSelect_1.default, { label: "Type", help: "Certificate type, use text to provide a certificate", value: cert.type, onChange: val => {
+                }] }), React.createElement(PageSelect_1.default, { label: "Type", help: "Certificate type, use text to provide a certificate. LetsEncrypt provides free certificates that automatically renew.", value: cert.type, onChange: val => {
                     this.set('type', val);
                 } }, React.createElement("option", { value: "text" }, "Text"), React.createElement("option", { value: "lets_encrypt" }, "LetsEncrypt")))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.certificate, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, certificate: null }));
@@ -27322,7 +27322,7 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@15.6.1.js"
         }
         render() {
             let confirmElem;
-            let style = this.props.style || {};
+            let style = Object.assign({}, this.props.style);
             style.position = 'relative';
             if (Constants.mobile) {
                 let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg : 'Confirm ' + (this.props.label || '');
@@ -30824,6 +30824,14 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
             return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Domain", help: "Domain segment of email address to match", type: "text", placeholder: "Google domain to match", value: provider.domain, onChange: val => {
                     let state = this.clone();
                     state.domain = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageInput_1.default, { label: "Google Admin Email", help: "Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google private key.", type: "text", placeholder: "Google admin email", value: provider.google_email, onChange: val => {
+                    let state = this.clone();
+                    state.google_email = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageTextArea_1.default, { label: "Google JSON Private Key", help: "Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google Admin Email.", placeholder: "Google JSON private key", rows: 6, value: provider.google_key, onChange: val => {
+                    let state = this.clone();
+                    state.google_key = val;
                     this.props.onChange(state);
                 } }));
         }
