@@ -116,7 +116,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageTextArea
 				label="Google JSON Private Key"
-				help="Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google Admin Email."
+				help="Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google admin email."
 				placeholder="Google JSON private key"
 				rows={6}
 				value={provider.google_key}
