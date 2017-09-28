@@ -46,10 +46,11 @@ func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 
 func Clean(w http.ResponseWriter, r *http.Request) {
 	cook := &http.Cookie{
-		Name:   "pritunl-zero-console",
-		Path:   "/",
-		Secure: true,
-		MaxAge: -1,
+		Name:     "pritunl-zero-console",
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   -1,
 	}
 	http.SetCookie(w, cook)
 
@@ -78,6 +79,7 @@ func newProxyStore(srvc *service.Service,
 		settings.System.ProxyCookieCryptoKey,
 	)
 	cookieStore.Options.Secure = true
+	cookieStore.Options.HttpOnly = true
 
 	if srvc.ShareSession {
 		cookieStore.Options.Domain = getCookieTopDomain(r)
@@ -127,19 +129,21 @@ func NewProxy(srvc *service.Service, w http.ResponseWriter, r *http.Request) (
 
 func CleanProxy(w http.ResponseWriter, r *http.Request) {
 	cook := &http.Cookie{
-		Name:   "pritunl-zero",
-		Path:   "/",
-		Secure: true,
-		MaxAge: -1,
+		Name:     "pritunl-zero",
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   -1,
 	}
 	http.SetCookie(w, cook)
 
 	cook = &http.Cookie{
-		Name:   "pritunl-zero",
-		Path:   "/",
-		Secure: true,
-		MaxAge: -1,
-		Domain: getCookieTopDomain(r),
+		Name:     "pritunl-zero",
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   -1,
+		Domain:   getCookieTopDomain(r),
 	}
 	http.SetCookie(w, cook)
 

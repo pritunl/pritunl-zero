@@ -169,6 +169,7 @@ func init() {
 		Store = sessions.NewCookieStore(
 			cookieAuthKey, cookieCryptoKey)
 		Store.Options.Secure = true
+		Store.Options.HttpOnly = true
 
 		return
 	}
