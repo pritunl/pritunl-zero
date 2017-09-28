@@ -86,7 +86,20 @@ func (u *User) Validate(db *database.Database) (
 }
 
 func (u *User) Format() {
-	sort.Strings(u.Roles)
+	roles := []string{}
+	rolesSet := set.NewSet()
+
+	for _, role := range u.Roles {
+		rolesSet.Add(role)
+	}
+
+	for role := range rolesSet.Iter() {
+		roles = append(roles, role.(string))
+	}
+
+	sort.Strings(roles)
+
+	u.Roles = roles
 }
 
 func (u *User) Commit(db *database.Database) (err error) {
