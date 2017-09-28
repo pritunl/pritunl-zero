@@ -104,7 +104,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			/>
 			<PageInput
 				label="Google Admin Email"
-				help="Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google private key."
+				help="Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google JSON private key."
 				type="text"
 				placeholder="Google admin email"
 				value={provider.google_email}
