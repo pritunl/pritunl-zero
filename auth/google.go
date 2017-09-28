@@ -105,8 +105,14 @@ func GoogleRequest(db *database.Database, location string) (
 	return
 }
 
-func GoogleRoles(provider *settings.Provider, username string) (roles []string, err error) {
+func GoogleRoles(provider *settings.Provider, username string) (
+	roles []string, err error) {
+
 	roles = []string{}
+
+	if provider.GoogleKey == "" && provider.GoogleEmail == "" {
+		return
+	}
 
 	conf, err := google.JWTConfigFromJSON(
 		[]byte(provider.GoogleKey),
