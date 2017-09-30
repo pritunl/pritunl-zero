@@ -352,6 +352,8 @@ func Callback(db *database.Database, sig, query string) (
 				if err != nil {
 					return
 				}
+
+				event.PublishDispatch(db, "user.change")
 			}
 			break
 		case settings.Overwrite:
@@ -370,6 +372,8 @@ func Callback(db *database.Database, sig, query string) (
 				if err != nil {
 					return
 				}
+
+				event.PublishDispatch(db, "user.change")
 			}
 			break
 		}
