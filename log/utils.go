@@ -2,6 +2,7 @@ package log
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -61,6 +62,8 @@ func Clear(db *database.Database) (err error) {
 		err = database.ParseError(err)
 		return
 	}
+
+	event.PublishDispatch(db, "log.change")
 
 	return
 }
