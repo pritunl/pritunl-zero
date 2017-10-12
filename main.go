@@ -68,6 +68,13 @@ func main() {
 			panic(err)
 		}
 		return
+	case "clear-logs":
+		Init()
+		err := cmd.ClearLogs()
+		if err != nil {
+			panic(err)
+		}
+		return
 	}
 
 	fmt.Println(help)
