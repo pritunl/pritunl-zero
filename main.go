@@ -15,10 +15,11 @@ const help = `
 Usage: pritunl-zero COMMAND
 
 Commands:
-  version  Show version
-  mongo    Set MongoDB URI
-  set      Set a setting
-  node     Start node
+  version     Show version
+  mongo       Set MongoDB URI
+  set         Set a setting
+  node        Start node
+  clear-logs  Clear logs
 `
 
 func Init() {
