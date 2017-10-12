@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -32,6 +33,8 @@ func (e *Entry) Insert(db *database.Database) (err error) {
 		err = database.ParseError(err)
 		return
 	}
+
+	event.PublishDispatch(db, "log.change")
 
 	return
 }
