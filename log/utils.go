@@ -52,3 +52,15 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
 
 	return
 }
+
+func Clear(db *database.Database) (err error) {
+	coll := db.Logs()
+
+	_, err = coll.RemoveAll(nil)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
