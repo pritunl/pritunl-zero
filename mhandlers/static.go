@@ -2,9 +2,9 @@ package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strings"
@@ -38,8 +38,8 @@ func staticPath(c *gin.Context, pth string) {
 }
 
 func staticIndexGet(c *gin.Context) {
-	sess := c.MustGet("session").(*session.Session)
-	if sess == nil {
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+	if !authr.IsValid() {
 		c.Redirect(302, "/login")
 		return
 	}
@@ -72,8 +72,8 @@ func staticTestingGet(c *gin.Context) {
 			c.Request.URL.Path = "/login.html"
 			pth = "login.html"
 		} else {
-			sess := c.MustGet("session").(*session.Session)
-			if sess == nil {
+			authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+			if !authr.IsValid() {
 				c.Redirect(302, "/login")
 				return
 			}

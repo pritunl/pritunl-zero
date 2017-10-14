@@ -3,9 +3,9 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -20,7 +20,7 @@ func themePut(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 	data := &themeData{}
 
 	err := c.Bind(&data)
@@ -29,7 +29,7 @@ func themePut(c *gin.Context) {
 		return
 	}
 
-	usr, err := sess.GetUser(db)
+	usr, err := authr.GetUser(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

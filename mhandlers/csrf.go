@@ -2,9 +2,9 @@ package mhandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -15,15 +15,15 @@ type csrfData struct {
 
 func csrfGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
-	usr, err := sess.GetUser(db)
+	usr, err := authr.GetUser(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	token, err := csrf.NewToken(db, sess.Id)
+	token, err := csrf.NewToken(db, authr.SessionId())
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
