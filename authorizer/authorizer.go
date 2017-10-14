@@ -77,5 +77,6 @@ func (a *Authorizer) SessionId() string {
 	if a.sess != nil {
 		return a.sess.Id
 	}
+
 	return ""
 }
