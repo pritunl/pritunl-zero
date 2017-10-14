@@ -40,3 +40,19 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 
 	return
 }
+
+func New() (authr *Authorizer) {
+	authr = &Authorizer{
+		isProxy: false,
+	}
+
+	return
+}
+
+func NewProxy() (authr *Authorizer) {
+	authr = &Authorizer{
+		isProxy: true,
+	}
+
+	return
+}
