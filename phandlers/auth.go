@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/service"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strings"
 )
@@ -113,10 +113,10 @@ func authSessionPost(c *gin.Context) {
 
 func logoutGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
-	if sess != nil {
-		err := sess.Remove(db)
+	if authr.IsValid() {
+		err := authr.Remove(db)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
