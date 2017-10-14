@@ -6,11 +6,11 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
@@ -99,7 +99,7 @@ func (w *webSocket) Director(req *http.Request) (
 }
 
 func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
-	sess *session.Session) {
+	authr *authorizer.Authorizer) {
 
 	u, header := w.Director(r)
 
@@ -121,12 +121,12 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			Header:    r.Header,
 		}
 
-		if sess != nil {
-			usr, _ := sess.GetUser(nil)
+		if authr.IsValid() {
+			usr, _ := authr.GetUser(nil)
 
 			if usr != nil {
 				index.User = usr.Id.Hex()
-				index.Session = sess.Id
+				index.Session = authr.SessionId()
 			}
 		}
 

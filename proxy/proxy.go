@@ -3,7 +3,7 @@ package proxy
 import (
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/auth"
-	"github.com/pritunl/pritunl-zero/cookie"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
@@ -81,45 +81,36 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	db := database.GetDatabase()
 	defer db.Close()
 
-	cook, sess, err := auth.CookieSessionProxy(db, host.Service, w, r)
+	authr, err := authorizer.AuthorizeProxy(db, host.Service, w, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
 		return true
 	}
 
-	if sess == nil {
-		if cook != nil {
-			err = cook.Remove(db)
-			if err != nil {
-				WriteError(w, r, 500, err)
-				return true
-			}
+	if !authr.IsValid() {
+		err = authr.Clear(db, w, r)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
 		}
-
-		cookie.CleanProxy(w, r)
 
 		return false
 	}
 
-	usr, err := sess.GetUser(db)
+	usr, err := authr.GetUser(db)
 	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			if cook != nil {
-				err = cook.Remove(db)
-				if err != nil {
-					WriteError(w, r, 500, err)
-					return true
-				}
-
-				cookie.CleanProxy(w, r)
-			}
-
-			return false
-		}
-
 		WriteError(w, r, 500, err)
 		return true
+	}
+
+	if usr == nil {
+		err = authr.Clear(db, w, r)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
+		}
+
+		return false
 	}
 
 	active, err := auth.SyncUser(db, usr)
@@ -135,14 +126,10 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			return true
 		}
 
-		if cook != nil {
-			err = cook.Remove(db)
-			if err != nil {
-				WriteError(w, r, 500, err)
-				return true
-			}
-
-			cookie.CleanProxy(w, r)
+		err = authr.Clear(db, w, r)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
 		}
 
 		return false
@@ -155,23 +142,21 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if errData != nil {
-		err = cook.Remove(db)
+		err = authr.Clear(db, w, r)
 		if err != nil {
 			WriteError(w, r, 500, err)
 			return true
 		}
 
-		cookie.CleanProxy(w, r)
-
 		return false
 	}
 
 	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
-		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, sess)
+		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, authr)
 		return true
 	}
 
-	wProxies[rand.Intn(wLen)].ServeHTTP(w, r, sess)
+	wProxies[rand.Intn(wLen)].ServeHTTP(w, r, authr)
 	return true
 }
 

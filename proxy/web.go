@@ -5,11 +5,11 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
-	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
@@ -34,7 +34,7 @@ type web struct {
 }
 
 func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
-	sess *session.Session) {
+	authr *authorizer.Authorizer) {
 
 	prxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
@@ -63,12 +63,12 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 					Header:    req.Header,
 				}
 
-				if sess != nil {
-					usr, _ := sess.GetUser(nil)
+				if authr.IsValid() {
+					usr, _ := authr.GetUser(nil)
 
 					if usr != nil {
 						index.User = usr.Id.Hex()
-						index.Session = sess.Id
+						index.Session = authr.SessionId()
 					}
 				}
 
