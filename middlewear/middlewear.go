@@ -6,7 +6,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/auth"
-	"github.com/pritunl/pritunl-zero/cookie"
+	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
@@ -38,25 +38,17 @@ func Database(c *gin.Context) {
 func Session(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	cook, sess, err := auth.CookieSession(db, c.Writer, c.Request)
+	authr, err := authorizer.Authorize(db, c.Writer, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	if sess != nil {
-		usr, err := sess.GetUser(db)
+	if authr.IsValid() {
+		usr, err := authr.GetUser(db)
 		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				err = nil
-				sess = nil
-				usr = nil
-				break
-			default:
-				utils.AbortWithError(c, 500, err)
-				return
-			}
+			utils.AbortWithError(c, 500, err)
+			return
 		}
 
 		if usr != nil {
@@ -67,19 +59,22 @@ func Session(c *gin.Context) {
 			}
 
 			if !active {
-				err = nil
-				sess = nil
+				err = authr.Clear(db, c.Writer, c.Request)
+				if err != nil {
+					utils.AbortWithError(c, 500, err)
+					return
+				}
 
 				err = session.RemoveAll(db, usr.Id)
 				if err != nil {
+					utils.AbortWithError(c, 500, err)
 					return
 				}
 			}
 		}
 	}
 
-	c.Set("session", sess)
-	c.Set("cookie", cook)
+	c.Set("authorizer", authr)
 }
 
 func SessionProxy(c *gin.Context) {
@@ -87,33 +82,22 @@ func SessionProxy(c *gin.Context) {
 	srvc := c.MustGet("service").(*service.Service)
 
 	if srvc == nil {
-		var sess *session.Session
-		var cook *cookie.Cookie
-		c.Set("session", sess)
-		c.Set("cookie", cook)
+		var authr *authorizer.Authorizer
+		c.Set("authorizer", authr)
 		return
 	}
 
-	cook, sess, err := auth.CookieSessionProxy(
-		db, srvc, c.Writer, c.Request)
+	authr, err := authorizer.AuthorizeProxy(db, srvc, c.Writer, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	if sess != nil {
-		usr, err := sess.GetUser(db)
+	if authr.IsValid() {
+		usr, err := authr.GetUser(db)
 		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				err = nil
-				sess = nil
-				usr = nil
-				break
-			default:
-				utils.AbortWithError(c, 500, err)
-				return
-			}
+			utils.AbortWithError(c, 500, err)
+			return
 		}
 
 		if usr != nil {
@@ -124,8 +108,11 @@ func SessionProxy(c *gin.Context) {
 			}
 
 			if !active {
-				err = nil
-				sess = nil
+				err = authr.Clear(db, c.Writer, c.Request)
+				if err != nil {
+					utils.AbortWithError(c, 500, err)
+					return
+				}
 
 				err = session.RemoveAll(db, usr.Id)
 				if err != nil {
@@ -135,23 +122,26 @@ func SessionProxy(c *gin.Context) {
 		}
 	}
 
-	c.Set("session", sess)
-	c.Set("cookie", cook)
+	c.Set("authorizer", authr)
 }
 
 func Auth(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
-	cook := c.MustGet("cookie").(*cookie.Cookie)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
-	if sess == nil {
+	if !authr.IsValid() {
 		utils.AbortWithStatus(c, 401)
 		return
 	}
 
-	usr, err := sess.GetUser(db)
+	usr, err := authr.GetUser(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if usr == nil {
+		utils.AbortWithStatus(c, 401)
 		return
 	}
 
@@ -162,15 +152,11 @@ func Auth(c *gin.Context) {
 	}
 
 	if errData != nil {
-		sess = nil
-
-		err = cook.Remove(db)
+		err = authr.Clear(db, c.Writer, c.Request)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
-
-		cookie.Clean(c.Writer, c.Request)
 
 		utils.AbortWithStatus(c, 401)
 		return
@@ -179,9 +165,9 @@ func Auth(c *gin.Context) {
 
 func CsrfToken(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	sess := c.MustGet("session").(*session.Session)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
-	if sess == nil {
+	if !authr.IsValid() {
 		utils.AbortWithStatus(c, 401)
 		return
 	}
@@ -193,7 +179,7 @@ func CsrfToken(c *gin.Context) {
 		token = c.Request.Header.Get("Csrf-Token")
 	}
 
-	valid, err := csrf.ValidateToken(db, sess.Id, token)
+	valid, err := csrf.ValidateToken(db, authr.SessionId(), token)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
