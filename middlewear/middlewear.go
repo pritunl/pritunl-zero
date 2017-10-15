@@ -82,7 +82,7 @@ func SessionProxy(c *gin.Context) {
 	srvc := c.MustGet("service").(*service.Service)
 
 	if srvc == nil {
-		var authr *authorizer.Authorizer
+		authr := authorizer.NewProxy()
 		c.Set("authorizer", authr)
 		return
 	}
