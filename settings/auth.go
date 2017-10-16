@@ -28,6 +28,7 @@ type auth struct {
 	Id          string      `bson:"_id"`
 	Server      string      `bson:"server" default:"https://auth.pritunl.com"`
 	Expire      int         `bson:"expire" json:"expire" default:"72"`
+	Window      int         `bson:"window" json:"window" default:"60"`
 	Sync        int         `bson:"sync" json:"sync" default:"1800"`
 	MaxDuration int         `bson:"max_duration" json:"max_duration" default:"24"`
 	Providers   []*Provider `bson:"providers"`
