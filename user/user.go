@@ -19,7 +19,7 @@ type User struct {
 	Type          string        `bson:"type" json:"type"`
 	Username      string        `bson:"username" json:"username"`
 	Password      string        `bson:"password" json:"-"`
-	Theme         string        `bson:"theme" json:""`
+	Theme         string        `bson:"theme" json:"-"`
 	LastActive    time.Time     `bson:"last_active" json:"last_active"`
 	LastSync      time.Time     `bson:"last_sync" json:"last_sync"`
 	Roles         []string      `bson:"roles" json:"roles"`
