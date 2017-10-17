@@ -72,6 +72,11 @@ func (d *Database) CsrfTokens() (coll *Collection) {
 	return
 }
 
+func (d *Database) Nonces() (coll *Collection) {
+	coll = d.getCollection("nonces")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
