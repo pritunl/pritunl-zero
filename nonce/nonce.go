@@ -12,9 +12,9 @@ type nonce struct {
 	Timestamp time.Time `bson:"timestamp"`
 }
 
-func Validate(db *database.Database, nonce string) (err error) {
+func Validate(db *database.Database, nce string) (err error) {
 	doc := &nonce{
-		Id:        nonce,
+		Id:        nce,
 		Timestamp: time.Now(),
 	}
 
