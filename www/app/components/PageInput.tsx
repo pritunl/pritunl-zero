@@ -10,7 +10,7 @@ interface Props {
 	type: string;
 	placeholder: string;
 	value: string | number;
-	onChange: (val: string) => void;
+	onChange?: (val: string) => void;
 }
 
 const css = {
@@ -48,7 +48,9 @@ export default class PageInput extends React.Component<Props, {}> {
 				placeholder={this.props.placeholder}
 				value={value}
 				onChange={(evt): void => {
-					this.props.onChange(evt.target.value);
+					if (this.props.onChange) {
+						this.props.onChange(evt.target.value);
+					}
 				}}
 			/>
 		</label>;
