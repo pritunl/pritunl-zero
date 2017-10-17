@@ -314,6 +314,18 @@ func addIndexes() (err error) {
 		return
 	}
 
+	coll = db.Nonces()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:         []string{"timestamp"},
+		ExpireAfter: 24 * time.Hour,
+		Background:  true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
 	coll = db.Sessions()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"user"},
