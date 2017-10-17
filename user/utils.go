@@ -49,6 +49,34 @@ func GetUpdate(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
+func GetTokenUpdate(db *database.Database, token string) (
+	usr *User, err error) {
+
+	coll := db.Users()
+	usr = &User{}
+	timestamp := time.Now()
+
+	change := mgo.Change{
+		Update: &bson.M{
+			"$set": &bson.M{
+				"last_active": timestamp,
+			},
+		},
+	}
+
+	_, err = coll.Find(&bson.M{
+		"token": token,
+	}).Apply(change, usr)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	usr.LastActive = timestamp
+
+	return
+}
+
 func GetUsername(db *database.Database, typ, username string) (
 	usr *User, err error) {
 
