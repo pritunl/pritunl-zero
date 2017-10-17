@@ -5,11 +5,12 @@ interface Props {
 	buttonClass?: string;
 	hidden?: boolean;
 	disabled?: boolean;
+	readOnly?: boolean;
 	label: string;
 	type: string;
 	placeholder: string;
 	value: string;
-	onChange: (val: string) => void;
+	onChange?: (val: string) => void;
 	onSubmit: () => void;
 }
 
@@ -45,12 +46,15 @@ export default class PageInputButton extends React.Component<Props, {}> {
 					style={css.input}
 					type={this.props.type}
 					disabled={this.props.disabled}
+					readOnly={this.props.readOnly}
 					autoCapitalize="off"
 					spellCheck={false}
 					placeholder={this.props.placeholder}
 					value={this.props.value || ''}
 					onChange={(evt): void => {
-						this.props.onChange(evt.target.value);
+						if (this.props.onChange) {
+							this.props.onChange(evt.target.value);
+						}
 					}}
 					onKeyPress={(evt): void => {
 						if (evt.key === 'Enter') {
