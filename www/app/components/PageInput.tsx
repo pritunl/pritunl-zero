@@ -5,6 +5,7 @@ import Help from './Help';
 interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
+	readOnly?: boolean;
 	label: string;
 	help: string;
 	type: string;
@@ -43,6 +44,7 @@ export default class PageInput extends React.Component<Props, {}> {
 				style={css.input}
 				type={this.props.type}
 				disabled={this.props.disabled}
+				readOnly={this.props.readOnly}
 				autoCapitalize="off"
 				spellCheck={false}
 				placeholder={this.props.placeholder}
