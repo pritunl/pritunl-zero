@@ -4,6 +4,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/signature"
 	"github.com/pritunl/pritunl-zero/user"
 	"net/http"
 )
@@ -12,6 +13,7 @@ type Authorizer struct {
 	isProxy bool
 	cook    *cookie.Cookie
 	sess    *session.Session
+	sig     *signature.Signature
 }
 
 func (a *Authorizer) IsValid() bool {
