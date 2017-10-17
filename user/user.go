@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -248,6 +249,20 @@ func (u *User) CheckPassword(password string) bool {
 	}
 
 	return true
+}
+
+func (u *User) GenerateToken() (err error) {
+	u.Token, err = utils.RandStr(32)
+	if err != nil {
+		return
+	}
+
+	u.Secret, err = utils.RandStr(32)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func init() {
