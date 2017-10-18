@@ -170,6 +170,13 @@ export function commit(user: UserTypes.User): Promise<void> {
 					return;
 				}
 
+				Dispatcher.dispatch({
+					type: UserTypes.LOAD,
+					data: {
+						user: res.body,
+					},
+				});
+
 				resolve();
 			});
 	});
