@@ -16,15 +16,16 @@ import (
 )
 
 type userData struct {
-	Id            bson.ObjectId `json:"id"`
-	Type          string        `json:"type"`
-	Username      string        `json:"username"`
-	Password      string        `json:"password"`
-	Roles         []string      `json:"roles"`
-	Administrator string        `json:"administrator"`
-	Permissions   []string      `json:"permissions"`
-	Disabled      bool          `json:"disabled"`
-	ActiveUntil   time.Time     `json:"active_until"`
+	Id             bson.ObjectId `json:"id"`
+	Type           string        `json:"type"`
+	Username       string        `json:"username"`
+	Password       string        `json:"password"`
+	Roles          []string      `json:"roles"`
+	Administrator  string        `json:"administrator"`
+	Permissions    []string      `json:"permissions"`
+	GenerateSecret bool          `json:"generate_secret"`
+	Disabled       bool          `json:"disabled"`
+	ActiveUntil    time.Time     `json:"active_until"`
 }
 
 type usersData struct {
@@ -107,6 +108,11 @@ func userPut(c *gin.Context) {
 
 	if usr.Disabled {
 		usr.ActiveUntil = time.Time{}
+	}
+
+	if usr.Type == user.Api && data.GenerateSecret {
+		usr.GenerateToken()
+		showSecret = true
 	}
 
 	fields := set.NewSet(
