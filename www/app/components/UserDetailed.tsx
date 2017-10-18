@@ -280,6 +280,31 @@ export default class UserDetailed extends React.Component<Props, State> {
 							this.set('password', val);
 						}}
 					/>
+					<PageInput
+						hidden={user.type !== 'api'}
+						disabled={this.state.locked}
+						readOnly={true}
+						label="Token"
+						help="API token"
+						type="text"
+						placeholder="Save to generate token"
+						value={user.token}
+					/>
+					<PageInputButton
+						hidden={user.type !== 'api' || !user.token || !user.secret}
+						disabled={this.state.locked}
+						readOnly={true}
+						buttonClass="pt-intent-danger pt-icon-delete"
+						label="Secret"
+						labelTop={true}
+						help="API secret"
+						type="text"
+						placeholder=""
+						value={user.secret}
+						onSubmit={(): void => {
+							this.set('secret', null);
+						}}
+					/>
 					<PageSelect
 						disabled={this.state.locked}
 						label="Type"
