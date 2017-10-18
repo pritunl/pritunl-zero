@@ -6,6 +6,7 @@ interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	readOnly?: boolean;
+	autoSelect?: boolean;
 	label: string;
 	help: string;
 	type: string;
@@ -25,6 +26,10 @@ const css = {
 };
 
 export default class PageInput extends React.Component<Props, {}> {
+	autoSelect = (evt: React.MouseEvent<HTMLInputElement>): void => {
+		evt.currentTarget.select();
+	}
+
 	render(): JSX.Element {
 		let value: any = this.props.value;
 		value = isNaN(value) ? this.props.value || '' : this.props.value;
@@ -49,6 +54,7 @@ export default class PageInput extends React.Component<Props, {}> {
 				spellCheck={false}
 				placeholder={this.props.placeholder}
 				value={value}
+				onClick={this.props.autoSelect ? this.autoSelect : null}
 				onChange={(evt): void => {
 					if (this.props.onChange) {
 						this.props.onChange(evt.target.value);
