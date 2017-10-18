@@ -55,6 +55,8 @@ func userGet(c *gin.Context) {
 		}
 	}
 
+	usr.Secret = ""
+
 	c.JSON(200, usr)
 }
 
@@ -84,6 +86,17 @@ func userPut(c *gin.Context) {
 		return
 	}
 
+	showSecret := false
+	if usr.Type != data.Type {
+		if data.Type == user.Api {
+			usr.GenerateToken()
+			showSecret = true
+		} else {
+			usr.Token = ""
+			usr.Secret = ""
+		}
+	}
+
 	usr.Type = data.Type
 	usr.Username = data.Username
 	usr.Roles = data.Roles
@@ -98,6 +111,8 @@ func userPut(c *gin.Context) {
 
 	fields := set.NewSet(
 		"type",
+		"token",
+		"secret",
 		"username",
 		"roles",
 		"administrator",
@@ -138,6 +153,10 @@ func userPut(c *gin.Context) {
 
 	event.PublishDispatch(db, "user.change")
 
+	if !showSecret {
+		usr.Secret = ""
+	}
+
 	c.JSON(200, usr)
 }
 
@@ -175,6 +194,10 @@ func userPost(c *gin.Context) {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
+	}
+
+	if usr.Type == user.Api {
+		usr.GenerateToken()
 	}
 
 	errData, err := usr.Validate(db)
@@ -253,6 +276,8 @@ func usersGet(c *gin.Context) {
 
 	if demo.IsDemo() {
 		for _, usr := range users {
+			usr.Secret = ""
+
 			if usr.Username == "demo" {
 				usr.LastActive = time.Now()
 			} else {
