@@ -276,14 +276,16 @@ func usersGet(c *gin.Context) {
 
 	if demo.IsDemo() {
 		for _, usr := range users {
-			usr.Secret = ""
-
 			if usr.Username == "demo" {
 				usr.LastActive = time.Now()
 			} else {
 				usr.LastActive = time.Time{}
 			}
 		}
+	}
+
+	for _, usr := range users {
+		usr.Secret = ""
 	}
 
 	data := &usersData{
