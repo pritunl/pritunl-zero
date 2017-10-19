@@ -172,6 +172,10 @@ func CsrfToken(c *gin.Context) {
 		return
 	}
 
+	if authr.IsApi() {
+		return
+	}
+
 	token := ""
 	if c.Request.Header.Get("Upgrade") == "websocket" {
 		token = c.Query("csrf_token")
