@@ -104,6 +104,7 @@ export default class UsersFilter extends React.Component<Props, {}> {
 					<option value="google">Google</option>
 					<option value="onelogin">OneLogin</option>
 					<option value="okta">Okta</option>
+					<option value="api">API</option>
 				</select>
 			</div>
 			<SwitchNull
