@@ -307,6 +307,16 @@ export default class UserDetailed extends React.Component<Props, State> {
 							this.set('secret', null);
 						}}
 					/>
+					<PageSwitch
+						hidden={user.type !== 'api' || !user.token || !!user.secret}
+						label="Generate new token and secret"
+						help="Enable to generate a new token and secret on save"
+						disabled={this.state.locked}
+						checked={user.generate_secret}
+						onToggle={(): void => {
+							this.set('generate_secret', !this.state.user.generate_secret);
+						}}
+					/>
 					<PageSelect
 						disabled={this.state.locked}
 						label="Type"
