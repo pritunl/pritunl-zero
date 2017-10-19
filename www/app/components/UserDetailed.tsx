@@ -310,7 +310,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<PageSwitch
 						hidden={user.type !== 'api' || !user.token || !!user.secret}
 						label="Generate new token and secret"
-						help="Enable to generate a new token and secret on save"
+						help="Enable to generate a new token and secret on save."
 						disabled={this.state.locked}
 						checked={user.generate_secret}
 						onToggle={(): void => {
