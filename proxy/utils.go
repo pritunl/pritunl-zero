@@ -18,6 +18,11 @@ func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
 }
 
 func stripCookie(r *http.Request) {
+	r.Header.Del("Pritunl-Zero-Token")
+	r.Header.Del("Pritunl-Zero-Signature")
+	r.Header.Del("Pritunl-Zero-Timestamp")
+	r.Header.Del("Pritunl-Zero-Nonce")
+
 	cookie := r.Header.Get("Cookie")
 	start := strings.Index(cookie, "pritunl-zero=")
 	if start != -1 {
