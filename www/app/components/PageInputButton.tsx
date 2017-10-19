@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Help from './Help';
 
 interface Props {
 	buttonClass?: string;
@@ -8,6 +9,7 @@ interface Props {
 	readOnly?: boolean;
 	label: string;
 	labelTop?: boolean;
+	help?: string;
 	type: string;
 	placeholder: string;
 	value: string;
@@ -54,6 +56,10 @@ export default class PageInputButton extends React.Component<Props, {}> {
 				hidden={this.props.hidden}
 			>
 				{this.props.label}
+				<Help
+					title={this.props.label}
+					content={this.props.help}
+				/>
 				<div
 					className="pt-control-group"
 					style={css.groupTop}
