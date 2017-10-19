@@ -56,24 +56,38 @@ func (a *Authorizer) Remove(db *database.Database) error {
 func (a *Authorizer) GetUser(db *database.Database) (
 	usr *user.User, err error) {
 
-	if a.sess == nil {
-		return
-	}
-
-	usr, err = a.sess.GetUser(db)
-	if err != nil {
-		switch err.(type) {
-		case *database.NotFoundError:
-			usr = nil
-			err = nil
-			break
-		default:
-			return
+	if a.sess != nil {
+		usr, err = a.sess.GetUser(db)
+		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				usr = nil
+				err = nil
+				break
+			default:
+				return
+			}
 		}
-	}
 
-	if usr == nil {
-		a.sess = nil
+		if usr == nil {
+			a.sess = nil
+		}
+	} else if a.sig != nil {
+		usr, err = a.sig.GetUser(db)
+		if err != nil {
+			switch err.(type) {
+			case *database.NotFoundError:
+				usr = nil
+				err = nil
+				break
+			default:
+				return
+			}
+		}
+
+		if usr == nil {
+			a.sig = nil
+		}
 	}
 
 	return
