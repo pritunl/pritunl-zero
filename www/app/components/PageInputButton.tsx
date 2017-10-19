@@ -7,6 +7,7 @@ interface Props {
 	hidden?: boolean;
 	disabled?: boolean;
 	readOnly?: boolean;
+	autoSelect?: boolean;
 	label: string;
 	labelTop?: boolean;
 	help?: string;
@@ -43,6 +44,10 @@ const css = {
 };
 
 export default class PageInputButton extends React.Component<Props, {}> {
+	autoSelect = (evt: React.MouseEvent<HTMLInputElement>): void => {
+		evt.currentTarget.select();
+	}
+
 	render(): JSX.Element {
 		let buttonClass = 'pt-button';
 		if (this.props.buttonClass) {
@@ -76,6 +81,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 							spellCheck={false}
 							placeholder={this.props.placeholder}
 							value={this.props.value || ''}
+							onClick={this.props.autoSelect ? this.autoSelect : null}
 							onChange={(evt): void => {
 								if (this.props.onChange) {
 									this.props.onChange(evt.target.value);
