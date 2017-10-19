@@ -21,7 +21,7 @@ func (a *Authorizer) IsApi() bool {
 }
 
 func (a *Authorizer) IsValid() bool {
-	return a.sess != nil
+	return a.sess != nil || a.sig != nil
 }
 
 func (a *Authorizer) Clear(db *database.Database, w http.ResponseWriter,
