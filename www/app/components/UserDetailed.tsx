@@ -284,6 +284,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						hidden={user.type !== 'api'}
 						disabled={this.state.locked}
 						readOnly={true}
+						autoSelect={true}
 						label="Token"
 						help="API token"
 						type="text"
@@ -294,6 +295,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						hidden={user.type !== 'api' || !user.token || !user.secret}
 						disabled={this.state.locked}
 						readOnly={true}
+						autoSelect={true}
 						buttonClass="pt-intent-danger pt-icon-delete"
 						label="Secret"
 						labelTop={true}
