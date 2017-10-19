@@ -28,6 +28,7 @@ func (a *Authorizer) Clear(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (err error) {
 
 	a.sess = nil
+	a.sig = nil
 
 	if a.cook != nil {
 		err = a.cook.Remove(db)
