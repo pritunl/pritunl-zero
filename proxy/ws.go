@@ -93,7 +93,7 @@ func (w *webSocket) Director(req *http.Request) (
 	header.Del("Sec-Websocket-Version")
 	header.Del("Sec-Websocket-Extensions")
 
-	stripCookie(req)
+	stripCookieHeaders(req)
 
 	return
 }

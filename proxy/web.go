@@ -50,7 +50,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			req.URL.Scheme = w.serverProto
 			req.URL.Host = w.serverHost
 
-			stripCookie(req)
+			stripCookieHeaders(req)
 
 			if settings.Elastic.ProxyRequests {
 				index := search.Request{

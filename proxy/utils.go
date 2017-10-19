@@ -17,7 +17,7 @@ func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
 	}).Error("proxy: Serve error")
 }
 
-func stripCookie(r *http.Request) {
+func stripCookieHeaders(r *http.Request) {
 	r.Header.Del("Pritunl-Zero-Token")
 	r.Header.Del("Pritunl-Zero-Signature")
 	r.Header.Del("Pritunl-Zero-Timestamp")
