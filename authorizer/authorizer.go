@@ -16,6 +16,10 @@ type Authorizer struct {
 	sig     *signature.Signature
 }
 
+func (a *Authorizer) IsApi() bool {
+	return a.sig != nil
+}
+
 func (a *Authorizer) IsValid() bool {
 	return a.sess != nil
 }
