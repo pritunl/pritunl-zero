@@ -60,6 +60,33 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 func AuthorizeProxy(db *database.Database, srvc *service.Service,
 	w http.ResponseWriter, r *http.Request) (authr *Authorizer, err error) {
 
+	token := r.Header.Get("Pritunl-Zero-Token")
+	sigStr := r.Header.Get("Pritunl-Zero-Signature")
+
+	if token != "" && sigStr != "" {
+		timestamp := r.Header.Get("Pritunl-Zero-Timestamp")
+		nonce := r.Header.Get("Pritunl-Zero-Nonce")
+
+		sig, e := signature.Parse(
+			token,
+			sigStr,
+			timestamp,
+			nonce,
+			r.Method,
+			r.URL.Path,
+		)
+		if e != nil {
+			err = e
+			return
+		}
+
+		authr = &Authorizer{
+			isProxy: true,
+			sig:     sig,
+		}
+		return
+	}
+
 	cook, sess, err := auth.CookieSessionProxy(db, srvc, w, r)
 	if err != nil {
 		return
