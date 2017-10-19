@@ -11,9 +11,12 @@ export interface User {
 	type?: string;
 	username?: string;
 	password?: string;
+	token?: string;
+	secret?: string;
 	last_active?: string;
 	roles?: string[];
 	administrator?: string;
+	generate_secret?: boolean;
 	disabled?: boolean;
 	active_until?: string;
 	permissions?: string[];
