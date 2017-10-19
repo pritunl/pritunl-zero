@@ -12,7 +12,7 @@ func Parse(token, sigStr, timeStr, nonce, method, path string) (
 
 	timestampInt, _ := strconv.ParseInt(timeStr, 10, 64)
 	if timestampInt == 0 {
-		err = errortypes.ApiError{
+		err = errortypes.AuthenticationError{
 			errors.New("signature: Invalid authentication timestamp"),
 		}
 		return
