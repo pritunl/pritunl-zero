@@ -40,18 +40,17 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 			isProxy: false,
 			sig:     sig,
 		}
-		return
-	}
+	} else {
+		cook, sess, err := auth.CookieSession(db, w, r)
+		if err != nil {
+			return
+		}
 
-	cook, sess, err := auth.CookieSession(db, w, r)
-	if err != nil {
-		return
-	}
-
-	authr = &Authorizer{
-		isProxy: false,
-		cook:    cook,
-		sess:    sess,
+		authr = &Authorizer{
+			isProxy: false,
+			cook:    cook,
+			sess:    sess,
+		}
 	}
 
 	return
