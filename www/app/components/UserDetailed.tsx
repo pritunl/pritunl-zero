@@ -299,7 +299,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						buttonClass="pt-intent-danger pt-icon-delete"
 						label="Secret"
 						labelTop={true}
-						help="API secret"
+						help="API secret, will only be shown once"
 						type="text"
 						placeholder=""
 						value={user.secret}
