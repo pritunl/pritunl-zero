@@ -41,8 +41,9 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 			sig:     sig,
 		}
 	} else {
-		cook, sess, err := auth.CookieSession(db, w, r)
-		if err != nil {
+		cook, sess, e := auth.CookieSession(db, w, r)
+		if e != nil {
+			err = e
 			return
 		}
 
