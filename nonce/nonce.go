@@ -8,7 +8,7 @@ import (
 )
 
 type nonce struct {
-	Id        string    `bson:"nonce"`
+	Id        string    `bson:"_id"`
 	Timestamp time.Time `bson:"timestamp"`
 }
 
