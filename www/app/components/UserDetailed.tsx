@@ -291,21 +291,16 @@ export default class UserDetailed extends React.Component<Props, State> {
 						placeholder="Save to generate token"
 						value={user.token}
 					/>
-					<PageInputButton
+					<PageInput
 						hidden={user.type !== 'api' || !user.token || !user.secret}
 						disabled={this.state.locked}
 						readOnly={true}
 						autoSelect={true}
-						buttonClass="pt-intent-danger pt-icon-delete"
 						label="Secret"
-						labelTop={true}
 						help="API secret, will only be shown once"
 						type="text"
 						placeholder=""
 						value={user.secret}
-						onSubmit={(): void => {
-							this.set('secret', null);
-						}}
 					/>
 					<PageSwitch
 						hidden={user.type !== 'api' || !user.token || !!user.secret}
