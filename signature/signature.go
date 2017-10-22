@@ -46,14 +46,14 @@ func (s *Signature) GetUser(db *database.Database) (
 
 func (s *Signature) Validate(db *database.Database) (err error) {
 	if s.Token == "" {
-		err = errortypes.AuthenticationError{
+		err = &errortypes.AuthenticationError{
 			errors.New("signature: Invalid authentication token"),
 		}
 		return
 	}
 
 	if len(s.Nonce) < 16 || len(s.Nonce) > 128 {
-		err = errortypes.AuthenticationError{
+		err = &errortypes.AuthenticationError{
 			errors.New("signature: Invalid authentication nonce"),
 		}
 		return
@@ -62,7 +62,7 @@ func (s *Signature) Validate(db *database.Database) (err error) {
 	if time.Since(s.Timestamp) > time.Duration(
 		settings.Auth.Window)*time.Second {
 
-		err = errortypes.AuthenticationError{
+		err = &errortypes.AuthenticationError{
 			errors.New("signature: Authentication timestamp outside window"),
 		}
 		return
@@ -81,7 +81,7 @@ func (s *Signature) Validate(db *database.Database) (err error) {
 	}
 
 	if usr == nil || usr.Token == "" || usr.Secret == "" {
-		err = errortypes.AuthenticationError{
+		err = &errortypes.AuthenticationError{
 			errors.New("signature: User not found"),
 		}
 		return
@@ -106,7 +106,7 @@ func (s *Signature) Validate(db *database.Database) (err error) {
 	sig := base64.StdEncoding.EncodeToString(rawSignature)
 
 	if subtle.ConstantTimeCompare([]byte(s.Signature), []byte(sig)) != 1 {
-		err = errortypes.AuthenticationError{
+		err = &errortypes.AuthenticationError{
 			errors.New("signature: Invalid signature"),
 		}
 		return
