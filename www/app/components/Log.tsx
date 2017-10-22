@@ -51,9 +51,7 @@ const css = {
 	value: {
 	} as React.CSSProperties,
 	dialog: {
-		top: '5%',
-		height: '90%',
-		maxHeight: '500px',
+		height: '500px',
 		width: '90%',
 		maxWidth: '700px',
 	} as React.CSSProperties,
