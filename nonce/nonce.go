@@ -22,11 +22,13 @@ func Validate(db *database.Database, nce string) (err error) {
 
 	err = coll.Insert(doc)
 	if err != nil {
+		err = database.ParseError(err)
 		switch err.(type) {
 		case *database.DuplicateKeyError:
 			err = &errortypes.AuthenticationError{
 				errors.New("nonce: Duplicate authentication nonce"),
 			}
+			break
 		}
 		return
 	}
