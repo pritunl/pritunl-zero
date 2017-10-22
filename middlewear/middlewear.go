@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
@@ -40,7 +41,13 @@ func Session(c *gin.Context) {
 
 	authr, err := authorizer.Authorize(db, c.Writer, c.Request)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *errortypes.AuthenticationError:
+			utils.AbortWithError(c, 401, err)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
