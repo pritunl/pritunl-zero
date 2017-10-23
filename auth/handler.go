@@ -8,17 +8,13 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
-	"github.com/pritunl/pritunl-zero/policy"
-	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
-	"net/http"
 	"net/url"
 	"strings"
 )
@@ -321,82 +317,6 @@ func Callback(db *database.Database, sig, query string) (
 				event.PublishDispatch(db, "user.change")
 			}
 			break
-		}
-	}
-
-	return
-}
-
-func ValidateAdmin(db *database.Database, usr *user.User) (
-	errData *errortypes.ErrorData, err error) {
-
-	if usr.Disabled || usr.Administrator != "super" {
-		errData = &errortypes.ErrorData{
-			Error:   "unauthorized",
-			Message: "Not authorized",
-		}
-		return
-	}
-
-	return
-}
-
-func Validate(db *database.Database, usr *user.User,
-	authr *authorizer.Authorizer, srvc *service.Service,
-	r *http.Request) (errData *errortypes.ErrorData, err error) {
-
-	if usr.Disabled {
-		errData = &errortypes.ErrorData{
-			Error:   "unauthorized",
-			Message: "Not authorized",
-		}
-		return
-	}
-
-	usrRoles := set.NewSet()
-	for _, role := range usr.Roles {
-		usrRoles.Add(role)
-	}
-
-	roleMatch := false
-	for _, role := range srvc.Roles {
-		if usrRoles.Contains(role) {
-			roleMatch = true
-			break
-		}
-	}
-
-	if !roleMatch {
-		errData = &errortypes.ErrorData{
-			Error:   "service_unauthorized",
-			Message: "Not authorized for service",
-		}
-		return
-	}
-
-	if !authr.IsApi() {
-		polices, err := policy.GetService(db, srvc.Id)
-		if err != nil {
-			return
-		}
-
-		for _, polcy := range polices {
-			errData, err = polcy.ValidateUser(db, usr, r)
-			if err != nil || errData != nil {
-				return
-			}
-		}
-
-		polices, err = policy.GetRoles(db, usr.Roles)
-		if err != nil {
-			return
-		}
-
-		for _, polcy := range polices {
-			errData, err = polcy.ValidateUser(db, usr, r)
-			if err != nil || errData != nil {
-				return
-			}
 		}
 	}
 
