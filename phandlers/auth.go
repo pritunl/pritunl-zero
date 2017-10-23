@@ -61,7 +61,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	errData, err = auth.Validate(db, usr, authr, srvc, c.Request)
+	errData, err = authorizer.Validate(db, usr, authr, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -160,7 +160,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	errData, err = auth.Validate(db, usr, authr, srvc, c.Request)
+	errData, err = authorizer.Validate(db, usr, authr, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

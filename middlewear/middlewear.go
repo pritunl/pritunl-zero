@@ -152,7 +152,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	errData, err := auth.ValidateAdmin(db, usr)
+	errData, err := authorizer.ValidateAdmin(db, usr)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
