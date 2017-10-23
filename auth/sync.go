@@ -37,7 +37,7 @@ func SyncUser(db *database.Database, usr *user.User) (
 			nil,
 		)
 		if e != nil {
-			err = errortypes.RequestError{
+			err = &errortypes.RequestError{
 				errors.Wrap(e, "auth: Auth request failed"),
 			}
 			return
@@ -45,7 +45,7 @@ func SyncUser(db *database.Database, usr *user.User) (
 
 		resp, e := client.Do(req)
 		if e != nil {
-			err = errortypes.RequestError{
+			err = &errortypes.RequestError{
 				errors.Wrap(e, "auth: Auth request failed"),
 			}
 			return

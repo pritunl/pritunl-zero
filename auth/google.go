@@ -52,7 +52,7 @@ func GoogleRequest(db *database.Database, location string) (
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "auth: Auth request failed"),
 		}
 		return
@@ -62,7 +62,7 @@ func GoogleRequest(db *database.Database, location string) (
 
 	resp, err := client.Do(req)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "auth: Auth request failed"),
 		}
 		return
@@ -70,7 +70,7 @@ func GoogleRequest(db *database.Database, location string) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrapf(err, "auth: Auth server error %d", resp.StatusCode),
 		}
 		return
@@ -79,7 +79,7 @@ func GoogleRequest(db *database.Database, location string) (
 	authData := &authData{}
 	err = json.NewDecoder(resp.Body).Decode(authData)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(
 				err, "auth: Failed to parse auth response",
 			),
@@ -119,7 +119,7 @@ func GoogleRoles(provider *settings.Provider, username string) (
 		"https://www.googleapis.com/auth/admin.directory.group",
 	)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(
 				err, "auth: Failed to parse google key",
 			),
@@ -133,7 +133,7 @@ func GoogleRoles(provider *settings.Provider, username string) (
 
 	service, err := admin.New(client)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(
 				err, "auth: Failed to parse google client",
 			),
@@ -143,7 +143,7 @@ func GoogleRoles(provider *settings.Provider, username string) (
 
 	results, err := service.Groups.List().UserKey(username).Do()
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(
 				err, "auth: Google api error getting user groups",
 			),

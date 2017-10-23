@@ -64,7 +64,7 @@ func SamlRequest(db *database.Database, location string,
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "auth: Auth request failed"),
 		}
 		return
@@ -74,7 +74,7 @@ func SamlRequest(db *database.Database, location string,
 
 	resp, err := client.Do(req)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "auth: Auth request failed"),
 		}
 		return
@@ -82,7 +82,7 @@ func SamlRequest(db *database.Database, location string,
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrapf(err, "auth: Auth server error %d", resp.StatusCode),
 		}
 		return
@@ -90,7 +90,7 @@ func SamlRequest(db *database.Database, location string,
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(
 				err, "auth: Failed to parse auth response",
 			),

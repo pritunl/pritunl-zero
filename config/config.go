@@ -105,7 +105,7 @@ func Save() (err error) {
 func GetModTime() (mod time.Time, err error) {
 	stat, err := os.Stat(constants.ConfPath)
 	if err != nil {
-		err = errortypes.ReadError{
+		err = &errortypes.ReadError{
 			errors.Wrap(err, "config: Failed to stat conf file"),
 		}
 		return

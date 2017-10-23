@@ -56,7 +56,7 @@ func putIndex(clnt *elastic.Client, index string, typ string,
 
 	exists, err := clnt.IndexExists(index).Do(ctx)
 	if err != nil {
-		err = errortypes.DatabaseError{
+		err = &errortypes.DatabaseError{
 			errors.Wrap(err, "search: Failed to check elastic index"),
 		}
 		return
@@ -102,7 +102,7 @@ func putIndex(clnt *elastic.Client, index string, typ string,
 
 	_, err = clnt.CreateIndex(index).BodyJson(data).Do(ctx)
 	if err != nil {
-		err = errortypes.DatabaseError{
+		err = &errortypes.DatabaseError{
 			errors.Wrap(err, "search: Failed to create elastic index"),
 		}
 		return
@@ -121,7 +121,7 @@ func newClient(addrs []string) (clnt *elastic.Client, err error) {
 		elastic.SetURL(addrs...),
 	)
 	if err != nil {
-		err = errortypes.DatabaseError{
+		err = &errortypes.DatabaseError{
 			errors.Wrap(err, "search: Failed to create elastic client"),
 		}
 		return

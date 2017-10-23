@@ -64,7 +64,7 @@ func SettingsSet() (err error) {
 	var valParsed interface{}
 	err = json.Unmarshal([]byte(val), &valParsed)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(err, "cmd.settings: Failed to parse value"),
 		}
 		return

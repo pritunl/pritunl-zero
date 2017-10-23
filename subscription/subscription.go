@@ -67,7 +67,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "subscription: Subscription request failed"),
 		}
 		return
@@ -77,7 +77,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "subscription: Subscription request failed"),
 		}
 		return
@@ -96,7 +96,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 			}).Error("subscription: Subscription error")
 		}
 
-		err = errortypes.RequestError{
+		err = &errortypes.RequestError{
 			errors.Wrap(err, "subscription: Subscription server error"),
 		}
 		return
@@ -105,7 +105,7 @@ func Update() (errData *errortypes.ErrorData, err error) {
 	subData := &subscriptionData{}
 	err = json.NewDecoder(resp.Body).Decode(subData)
 	if err != nil {
-		err = errortypes.ParseError{
+		err = &errortypes.ParseError{
 			errors.Wrap(
 				err,
 				"subscription: Failed to parse subscription response",
