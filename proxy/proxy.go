@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/validator"
 	"gopkg.in/mgo.v2/bson"
 	"math/rand"
 	"net"
@@ -135,7 +136,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	errData, err := authorizer.Validate(db, usr, authr, host.Service, r)
+	errData, err := validator.Validate(db, usr, authr, host.Service, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
 		return true

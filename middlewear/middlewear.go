@@ -14,6 +14,7 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/validator"
 	"net/http"
 )
 
@@ -152,7 +153,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	errData, err := authorizer.ValidateAdmin(db, usr)
+	errData, err := validator.ValidateAdmin(db, usr)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

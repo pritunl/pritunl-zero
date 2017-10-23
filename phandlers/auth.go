@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/validator"
 	"strings"
 )
 
@@ -61,7 +62,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	errData, err = authorizer.Validate(db, usr, authr, srvc, c.Request)
+	errData, err = validator.Validate(db, usr, authr, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -160,7 +161,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	errData, err = authorizer.Validate(db, usr, authr, srvc, c.Request)
+	errData, err = validator.Validate(db, usr, authr, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
