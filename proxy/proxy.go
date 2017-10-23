@@ -135,7 +135,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	errData, err := auth.Validate(db, usr, host.Service, r)
+	errData, err := auth.Validate(db, usr, authr, host.Service, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
 		return true
