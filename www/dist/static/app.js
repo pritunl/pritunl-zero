@@ -15519,7 +15519,7 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@15.6.1.js", 
                         filter.type = val;
                     }
                     this.props.onFilter(filter);
-                } }, React.createElement("option", { value: "any" }, "Any"), React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(SwitchNull_1.default, { style: css.check, label: "Administrator", checked: this.props.filter.administrator, onToggle: () => {
+                } }, React.createElement("option", { value: "any" }, "Any"), React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"), React.createElement("option", { value: "api" }, "API"))), React.createElement(SwitchNull_1.default, { style: css.check, label: "Administrator", checked: this.props.filter.administrator, onToggle: () => {
                     let filter = Object.assign({}, this.props.filter);
                     if (filter.administrator === undefined) {
                         filter.administrator = true;
@@ -24151,9 +24151,11 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                     this.set('username', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", help: "Password, leave blank to keep current password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
+                } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api', disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Token", help: "API token", type: "text", placeholder: "Save to generate token", value: user.token }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api' || !user.token || !user.secret, disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Secret", help: "API secret, will only be shown once", type: "text", placeholder: "", value: user.secret }), React.createElement(PageSwitch_1.default, { hidden: user.type !== 'api' || !user.token || !!user.secret, label: "Generate new token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", disabled: this.state.locked, checked: user.generate_secret, onToggle: () => {
+                    this.set('generate_secret', !this.state.user.generate_secret);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"), React.createElement("option", { value: "api" }, "API")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", help: "Enable to give user administrator access to the management console", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
                     if (this.state.user.administrator === 'super') {
@@ -25417,9 +25419,7 @@ System.registerDynamic("app/components/Log.js", ["npm:react@15.6.1.js", "npm:@bl
         },
         value: {},
         dialog: {
-            top: '5%',
-            height: '90%',
-            maxHeight: '500px',
+            height: '500px',
             width: '90%',
             maxWidth: '700px'
         },
@@ -27919,27 +27919,44 @@ System.registerDynamic("app/components/PageInput.js", ["npm:react@15.6.1.js", "a
         }
     };
     class PageInput extends React.Component {
+        constructor() {
+            super(...arguments);
+            this.autoSelect = evt => {
+                evt.currentTarget.select();
+            };
+        }
         render() {
             let value = this.props.value;
             value = isNaN(value) ? this.props.value || '' : this.props.value;
-            return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: value, onChange: evt => {
-                    this.props.onChange(evt.target.value);
+            return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: value, onClick: this.props.autoSelect ? this.autoSelect : null, onChange: evt => {
+                    if (this.props.onChange) {
+                        this.props.onChange(evt.target.value);
+                    }
                 } }));
         }
     }
     exports.default = PageInput;
     
 });
-System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@15.6.1.js");
+    const Help_1 = $__require("app/components/Help.js");
     const css = {
         group: {
             marginBottom: '15px',
+            width: '100%',
+            maxWidth: '280px'
+        },
+        groupTop: {
+            width: '100%',
+            maxWidth: '280px'
+        },
+        label: {
             width: '100%',
             maxWidth: '280px'
         },
@@ -27948,21 +27965,44 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
         },
         inputBox: {
             flex: '1'
+        },
+        buttonTop: {
+            marginTop: '5px'
         }
     };
     class PageInputButton extends React.Component {
+        constructor() {
+            super(...arguments);
+            this.autoSelect = evt => {
+                evt.currentTarget.select();
+            };
+        }
         render() {
             let buttonClass = 'pt-button';
             if (this.props.buttonClass) {
                 buttonClass += ' ' + this.props.buttonClass;
             }
-            return React.createElement("div", { className: "pt-control-group", style: css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
-                    this.props.onChange(evt.target.value);
-                }, onKeyPress: evt => {
-                    if (evt.key === 'Enter') {
-                        this.props.onSubmit();
-                    }
-                } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, disabled: this.props.disabled, onClick: this.props.onSubmit }, this.props.label)));
+            if (this.props.labelTop) {
+                return React.createElement("label", { className: "pt-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("div", { className: "pt-control-group", style: css.groupTop, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onClick: this.props.autoSelect ? this.autoSelect : null, onChange: evt => {
+                        if (this.props.onChange) {
+                            this.props.onChange(evt.target.value);
+                        }
+                    }, onKeyPress: evt => {
+                        if (evt.key === 'Enter') {
+                            this.props.onSubmit();
+                        }
+                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, style: css.buttonTop, disabled: this.props.disabled, onClick: this.props.onSubmit }))));
+            } else {
+                return React.createElement("div", { className: "pt-control-group", style: css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+                        if (this.props.onChange) {
+                            this.props.onChange(evt.target.value);
+                        }
+                    }, onKeyPress: evt => {
+                        if (evt.key === 'Enter') {
+                            this.props.onSubmit();
+                        }
+                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, disabled: this.props.disabled, onClick: this.props.onSubmit }, this.props.label)));
+            }
         }
     }
     exports.default = PageInputButton;
@@ -30825,11 +30865,11 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
                     let state = this.clone();
                     state.domain = val;
                     this.props.onChange(state);
-                } }), React.createElement(PageInput_1.default, { label: "Google Admin Email", help: "Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google private key.", type: "text", placeholder: "Google admin email", value: provider.google_email, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { label: "Google Admin Email", help: "Optional, the email address of an administrator user in the Google G Suite to delegate API access to. This user will be used to get the groups of Google users. Only needed when providing the Google JSON private key.", type: "text", placeholder: "Google admin email", value: provider.google_email, onChange: val => {
                     let state = this.clone();
                     state.google_email = val;
                     this.props.onChange(state);
-                } }), React.createElement(PageTextArea_1.default, { label: "Google JSON Private Key", help: "Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google Admin Email.", placeholder: "Google JSON private key", rows: 6, value: provider.google_key, onChange: val => {
+                } }), React.createElement(PageTextArea_1.default, { label: "Google JSON Private Key", help: "Optional, private key for service account in JSON format. This will copy the Google users groups to Pritunl Zero. Also requires Google admin email.", placeholder: "Google JSON private key", rows: 6, value: provider.google_key, onChange: val => {
                     let state = this.clone();
                     state.google_key = val;
                     this.props.onChange(state);
@@ -31338,6 +31378,12 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.6.0.js",
                     reject(err);
                     return;
                 }
+                Dispatcher_1.default.dispatch({
+                    type: UserTypes.LOAD,
+                    data: {
+                        user: res.body
+                    }
+                });
                 resolve();
             });
         });
