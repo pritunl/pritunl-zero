@@ -396,7 +396,8 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 	return
 }
 
-func Validate(db *database.Database, usr *user.User, srvc *service.Service,
+func Validate(db *database.Database, usr *user.User,
+	authr *authorizer.Authorizer, srvc *service.Service,
 	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
@@ -428,27 +429,29 @@ func Validate(db *database.Database, usr *user.User, srvc *service.Service,
 		return
 	}
 
-	polices, err := policy.GetService(db, srvc.Id)
-	if err != nil {
-		return
-	}
-
-	for _, polcy := range polices {
-		errData, err = polcy.ValidateUser(db, usr, r)
-		if err != nil || errData != nil {
+	if !authr.IsApi() {
+		polices, err := policy.GetService(db, srvc.Id)
+		if err != nil {
 			return
 		}
-	}
 
-	polices, err = policy.GetRoles(db, usr.Roles)
-	if err != nil {
-		return
-	}
+		for _, polcy := range polices {
+			errData, err = polcy.ValidateUser(db, usr, r)
+			if err != nil || errData != nil {
+				return
+			}
+		}
 
-	for _, polcy := range polices {
-		errData, err = polcy.ValidateUser(db, usr, r)
-		if err != nil || errData != nil {
+		polices, err = policy.GetRoles(db, usr.Roles)
+		if err != nil {
 			return
+		}
+
+		for _, polcy := range polices {
+			errData, err = polcy.ValidateUser(db, usr, r)
+			if err != nil || errData != nil {
+				return
+			}
 		}
 	}
 
