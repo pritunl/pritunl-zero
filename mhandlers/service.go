@@ -14,6 +14,7 @@ import (
 type serviceData struct {
 	Id                bson.ObjectId     `json:"id"`
 	Name              string            `json:"name"`
+	Type              string            `json:"type"`
 	ShareSession      bool              `json:"share_session"`
 	WebSockets        bool              `json:"websockets"`
 	Domains           []*service.Domain `json:"domains"`
@@ -49,6 +50,7 @@ func servicePut(c *gin.Context) {
 	}
 
 	srvce.Name = data.Name
+	srvce.Type = data.Type
 	srvce.ShareSession = data.ShareSession
 	srvce.WebSockets = data.WebSockets
 	srvce.Domains = data.Domains
@@ -58,6 +60,7 @@ func servicePut(c *gin.Context) {
 
 	fields := set.NewSet(
 		"name",
+		"type",
 		"share_session",
 		"websockets",
 		"domains",
@@ -107,6 +110,7 @@ func servicePost(c *gin.Context) {
 
 	srvce := &service.Service{
 		Name:              data.Name,
+		Type:              data.Type,
 		ShareSession:      data.ShareSession,
 		WebSockets:        data.WebSockets,
 		Roles:             data.Roles,
