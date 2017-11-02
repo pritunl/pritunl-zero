@@ -36,6 +36,10 @@ type Service struct {
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	if s.Type == "" {
+		s.Type = Http
+	}
+
 	if s.Domains == nil {
 		s.Domains = []*Domain{}
 	}
