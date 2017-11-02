@@ -25,6 +25,7 @@ const css = {
 		left: '-2px',
 		padding: '7px',
 		background: 'none',
+		opacity: 0.3,
 	} as React.CSSProperties,
 	popover: {
 		width: '230px',
