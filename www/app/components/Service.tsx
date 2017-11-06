@@ -5,6 +5,7 @@ import * as ServiceActions from '../actions/ServiceActions';
 import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
 import PageInput from './PageInput';
+import PageSelect from './PageSelect';
 import PageSwitch from './PageSwitch';
 import PageSave from './PageSave';
 import PageInfo from './PageInfo';
@@ -565,6 +566,16 @@ export default class Service extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<PageSelect
+						label="Type"
+						help="TODO"
+						value={service.type}
+						onChange={(val): void => {
+							this.set('type', val);
+						}}
+					>
+						<option value="http">HTTP</option>
+					</PageSelect>
 					<label style={css.itemsLabel}>
 						External Domains
 						<Help
