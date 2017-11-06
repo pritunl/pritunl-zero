@@ -608,6 +608,16 @@ export default class Service extends React.Component<Props, State> {
 					>
 						Add Server
 					</button>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						fields={[
+							{
+								label: 'ID',
+								value: service.id || 'None',
+							},
+						]}
+					/>
 					<PageSwitch
 						label="Share session with subdomains"
 						help="This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain."
@@ -623,16 +633,6 @@ export default class Service extends React.Component<Props, State> {
 						onToggle={(): void => {
 							this.set('websockets', !service.websockets);
 						}}
-					/>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: service.id || 'None',
-							},
-						]}
 					/>
 					<label className="pt-label">
 						Roles
