@@ -568,7 +568,7 @@ export default class Service extends React.Component<Props, State> {
 					/>
 					<PageSelect
 						label="Type"
-						help="TODO"
+						help="Service type"
 						value={service.type}
 						onChange={(val): void => {
 							this.set('type', val);
