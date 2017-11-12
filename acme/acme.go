@@ -148,7 +148,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		err = cli.ChallengeReady(acctKey, challenge)
 		if err != nil {
 			err = &errortypes.RequestError{
-				errors.Wrapf(e, "acme: Failed to challenge %s", domain),
+				errors.Wrapf(err, "acme: Failed to challenge %s", domain),
 			}
 			return
 		}
