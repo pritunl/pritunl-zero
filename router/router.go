@@ -79,13 +79,15 @@ func (r *Router) initRedirect() (err error) {
 				token := acme.ParsePath(req.URL.Path)
 				if token != "" {
 					chal, err := acme.GetChallenge(token)
-					if err == nil {
+					if err != nil {
+						utils.WriteStatus(w, 400)
+					} else {
 						logrus.WithFields(logrus.Fields{
 							"token": token,
 						}).Info("router: Acme challenge requested")
 						io.WriteString(w, chal.Resource)
-						return
 					}
+					return
 				}
 			} else if req.URL.Path == "/check" {
 				utils.WriteText(w, 200, "ok")
