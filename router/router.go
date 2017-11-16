@@ -217,6 +217,7 @@ func (r *Router) startWeb() {
 				logrus.WithFields(logrus.Fields{
 					"error": err,
 				}).Error("router: Web server error")
+				return
 			}
 		}
 	} else {
@@ -232,6 +233,7 @@ func (r *Router) startWeb() {
 				logrus.WithFields(logrus.Fields{
 					"error": err,
 				}).Error("router: Web server error")
+				return
 			}
 		}
 	}
