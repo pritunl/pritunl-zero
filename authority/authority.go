@@ -11,6 +11,7 @@ import (
 type Authority struct {
 	Id    bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Name  string        `bson:"name" json:"name"`
+	Type  string        `bson:"type" json:"type"`
 	Roles []string      `bson:"roles" json:"roles"`
 }
 
