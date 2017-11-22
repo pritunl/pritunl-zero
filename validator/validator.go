@@ -25,6 +25,36 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 	return
 }
 
+func ValidateUser(db *database.Database, usr *user.User,
+	authr *authorizer.Authorizer, r *http.Request) (
+	errData *errortypes.ErrorData, err error) {
+
+	if usr.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
+
+	if !authr.IsApi() {
+		polices, e := policy.GetRoles(db, usr.Roles)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for _, polcy := range polices {
+			errData, err = polcy.ValidateUser(db, usr, r)
+			if err != nil || errData != nil {
+				return
+			}
+		}
+	}
+
+	return
+}
+
 func ValidateProxy(db *database.Database, usr *user.User,
 	authr *authorizer.Authorizer, srvc *service.Service,
 	r *http.Request) (errData *errortypes.ErrorData, err error) {
