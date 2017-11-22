@@ -19,6 +19,7 @@ type nodeData struct {
 	Protocol           string          `json:"protocol"`
 	Certificate        bson.ObjectId   `json:"certificate"`
 	ManagementDomain   string          `json:"management_domain"`
+	UserDomain         string          `json:"user_domain"`
 	Services           []bson.ObjectId `json:"services"`
 	ForwardedForHeader string          `json:"forwarded_for_header"`
 }
@@ -55,6 +56,7 @@ func nodePut(c *gin.Context) {
 	nde.Protocol = data.Protocol
 	nde.Certificate = data.Certificate
 	nde.ManagementDomain = data.ManagementDomain
+	nde.UserDomain = data.UserDomain
 	nde.Services = data.Services
 	nde.ForwardedForHeader = data.ForwardedForHeader
 
@@ -65,6 +67,7 @@ func nodePut(c *gin.Context) {
 		"protocol",
 		"certificate",
 		"management_domain",
+		"user_domain",
 		"services",
 		"forwarded_for_header",
 	)
