@@ -26,7 +26,7 @@ func (a *Authority) Validate(db *database.Database) (
 }
 
 func (a *Authority) Commit(db *database.Database) (err error) {
-	coll := db.Certificates()
+	coll := db.Authorities()
 
 	err = coll.Commit(a.Id, a)
 	if err != nil {
@@ -39,7 +39,7 @@ func (a *Authority) Commit(db *database.Database) (err error) {
 func (a *Authority) CommitFields(db *database.Database, fields set.Set) (
 	err error) {
 
-	coll := db.Certificates()
+	coll := db.Authorities()
 
 	err = coll.CommitFields(a.Id, a, fields)
 	if err != nil {
@@ -50,7 +50,7 @@ func (a *Authority) CommitFields(db *database.Database, fields set.Set) (
 }
 
 func (a *Authority) Insert(db *database.Database) (err error) {
-	coll := db.Certificates()
+	coll := db.Authorities()
 
 	if a.Id != "" {
 		err = &errortypes.DatabaseError{
