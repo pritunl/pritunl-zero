@@ -19,6 +19,7 @@ type Authority struct {
 	Name       string        `bson:"name" json:"name"`
 	Type       string        `bson:"type" json:"type"`
 	Roles      []string      `bson:"roles" json:"roles"`
+	Expire     int           `bson:"expire" json:"expire"`
 	PrivateKey string        `bson:"private_key" json:"private_key"`
 }
 
@@ -65,7 +66,8 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	serial := serialHash.Sum64()
 
 	validAfter := time.Now().Add(-5 * time.Minute).Unix()
-	validBefore := time.Now().Add(24 * time.Hour).Unix()
+	validBefore := time.Now().Add(
+		time.Duration(a.Expire) * time.Minute).Unix()
 
 	cert := &ssh.Certificate{
 		Key:             pubKey,
@@ -106,6 +108,13 @@ func (a *Authority) Validate(db *database.Database) (
 
 	if a.Type == "" {
 		a.Type = Local
+	}
+
+	if a.PrivateKey == "" {
+		err = a.GenerateRsaPrivateKey()
+		if err != nil {
+			return
+		}
 	}
 
 	return
