@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	Store *sessions.CookieStore
+	Store     *sessions.CookieStore
+	UserStore *sessions.CookieStore
 )
 
 type Cookie struct {
@@ -133,31 +134,59 @@ func init() {
 	module.After("settings")
 
 	module.Handler = func() (err error) {
+		db := database.GetDatabase()
+		defer db.Close()
+
 		cookieAuthKey := settings.System.CookieAuthKey
 		cookieCryptoKey := settings.System.CookieCryptoKey
 		proxyCookieAuthKey := settings.System.ProxyCookieAuthKey
 		proxyCookieCryptoKey := settings.System.ProxyCookieCryptoKey
+		userCookieAuthKey := settings.System.UserCookieAuthKey
+		userCookieCryptoKey := settings.System.UserCookieCryptoKey
 
-		if len(cookieAuthKey) == 0 || len(cookieCryptoKey) == 0 ||
-			len(proxyCookieAuthKey) == 0 || len(proxyCookieCryptoKey) == 0 {
-
-			db := database.GetDatabase()
-			defer db.Close()
-
+		if len(cookieAuthKey) == 0 || len(cookieCryptoKey) == 0 {
 			cookieAuthKey = securecookie.GenerateRandomKey(64)
 			cookieCryptoKey = securecookie.GenerateRandomKey(32)
-			proxyCookieAuthKey = securecookie.GenerateRandomKey(64)
-			proxyCookieCryptoKey = securecookie.GenerateRandomKey(32)
 			settings.System.CookieAuthKey = cookieAuthKey
 			settings.System.CookieCryptoKey = cookieCryptoKey
-			settings.System.ProxyCookieAuthKey = proxyCookieAuthKey
-			settings.System.ProxyCookieCryptoKey = proxyCookieCryptoKey
 
 			fields := set.NewSet(
 				"cookie_auth_key",
 				"cookie_crypto_key",
+			)
+
+			err = settings.Commit(db, settings.System, fields)
+			if err != nil {
+				return
+			}
+		}
+
+		if len(proxyCookieAuthKey) == 0 || len(proxyCookieCryptoKey) == 0 {
+			proxyCookieAuthKey = securecookie.GenerateRandomKey(64)
+			proxyCookieCryptoKey = securecookie.GenerateRandomKey(32)
+			settings.System.ProxyCookieAuthKey = proxyCookieAuthKey
+			settings.System.ProxyCookieCryptoKey = proxyCookieCryptoKey
+
+			fields := set.NewSet(
 				"proxy_cookie_auth_key",
 				"proxy_cookie_crypto_key",
+			)
+
+			err = settings.Commit(db, settings.System, fields)
+			if err != nil {
+				return
+			}
+		}
+
+		if len(userCookieAuthKey) == 0 || len(userCookieCryptoKey) == 0 {
+			userCookieAuthKey = securecookie.GenerateRandomKey(64)
+			userCookieCryptoKey = securecookie.GenerateRandomKey(32)
+			settings.System.UserCookieAuthKey = userCookieAuthKey
+			settings.System.UserCookieCryptoKey = userCookieCryptoKey
+
+			fields := set.NewSet(
+				"user_cookie_auth_key",
+				"user_cookie_crypto_key",
 			)
 
 			err = settings.Commit(db, settings.System, fields)
@@ -170,6 +199,11 @@ func init() {
 			cookieAuthKey, cookieCryptoKey)
 		Store.Options.Secure = true
 		Store.Options.HttpOnly = true
+
+		UserStore = sessions.NewCookieStore(
+			userCookieAuthKey, userCookieCryptoKey)
+		UserStore.Options.Secure = true
+		UserStore.Options.HttpOnly = true
 
 		return
 	}
