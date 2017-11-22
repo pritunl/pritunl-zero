@@ -31,6 +31,7 @@ type Node struct {
 	Protocol           string                   `bson:"protocol" json:"protocol"`
 	Certificate        bson.ObjectId            `bson:"certificate" json:"certificate"`
 	ManagementDomain   string                   `bson:"management_domain" json:"management_domain"`
+	UserDomain         string                   `bson:"user_domain" json:"user_domain"`
 	Services           []bson.ObjectId          `bson:"services" json:"services"`
 	RequestsMin        int64                    `bson:"requests_min" json:"requests_min"`
 	ForwardedForHeader string                   `bson:"forwarded_for_header" json:"forwarded_for_header"`
@@ -77,11 +78,19 @@ func (n *Node) Validate(db *database.Database) (
 		n.Type = Management
 	}
 
-	if n.Type != ManagementProxy {
+	if n.Type == Management {
 		n.ManagementDomain = ""
+		n.UserDomain = ""
+	} else {
+		if !strings.Contains(n.Type, Management) {
+			n.ManagementDomain = ""
+		}
+		if !strings.Contains(n.Type, User) {
+			n.UserDomain = ""
+		}
 	}
 
-	if n.Type != Proxy && n.Type != ManagementProxy {
+	if !strings.Contains(n.Type, Proxy) {
 		n.Services = []bson.ObjectId{}
 	}
 
@@ -175,6 +184,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Protocol = nde.Protocol
 	n.Certificate = nde.Certificate
 	n.ManagementDomain = nde.ManagementDomain
+	n.UserDomain = nde.UserDomain
 	n.Services = nde.Services
 	n.ForwardedForHeader = nde.ForwardedForHeader
 
