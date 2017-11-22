@@ -17,6 +17,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/phandlers"
 	"github.com/pritunl/pritunl-zero/proxy"
+	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
 	"net/http"
@@ -33,7 +34,9 @@ type Router struct {
 	protocol         string
 	certificate      *certificate.Certificate
 	managementDomain string
+	userDomain       string
 	mRouter          *gin.Engine
+	uRouter          *gin.Engine
 	pRouter          *gin.Engine
 	waiter           sync.WaitGroup
 	lock             sync.Mutex
@@ -48,8 +51,16 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 	if r.typ == node.Management {
 		r.mRouter.ServeHTTP(w, re)
 		return
-	} else if r.typ == node.ManagementProxy && hst == r.managementDomain {
+	} else if r.typ == node.User {
+		r.uRouter.ServeHTTP(w, re)
+		return
+	} else if strings.Contains(
+		r.typ, node.Management) && hst == r.managementDomain {
+
 		r.mRouter.ServeHTTP(w, re)
+		return
+	} else if strings.Contains(r.typ, node.User) && hst == r.userDomain {
+		r.uRouter.ServeHTTP(w, re)
 		return
 	} else {
 		if !r.proxy.ServeHTTP(w, re) {
@@ -136,6 +147,7 @@ func (r *Router) startRedirect() {
 func (r *Router) initWeb() (err error) {
 	r.typ = node.Self.Type
 	r.managementDomain = node.Self.ManagementDomain
+	r.userDomain = node.Self.UserDomain
 	r.certificate = node.Self.CertificateObj
 
 	r.port = node.Self.Port
@@ -148,7 +160,7 @@ func (r *Router) initWeb() (err error) {
 		r.protocol = "https"
 	}
 
-	if r.typ == node.Management || r.typ == node.ManagementProxy {
+	if strings.Contains(r.typ, node.Management) {
 		r.mRouter = gin.New()
 
 		if !constants.Production {
@@ -158,7 +170,17 @@ func (r *Router) initWeb() (err error) {
 		mhandlers.Register(r.mRouter)
 	}
 
-	if r.typ == node.Proxy || r.typ == node.ManagementProxy {
+	if strings.Contains(r.typ, node.User) {
+		r.uRouter = gin.New()
+
+		if !constants.Production {
+			r.uRouter.Use(gin.Logger())
+		}
+
+		uhandlers.Register(r.uRouter)
+	}
+
+	if strings.Contains(r.typ, node.Proxy) {
 		r.pRouter = gin.New()
 
 		if !constants.Production {
@@ -330,6 +352,7 @@ func (r *Router) hashNode() []byte {
 	hash := md5.New()
 	io.WriteString(hash, node.Self.Type)
 	io.WriteString(hash, node.Self.ManagementDomain)
+	io.WriteString(hash, node.Self.UserDomain)
 	io.WriteString(hash, strconv.Itoa(node.Self.Port))
 	io.WriteString(hash, node.Self.Protocol)
 
