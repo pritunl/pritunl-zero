@@ -1,9 +1,25 @@
 package authority
 
 import (
+	"bytes"
+	"encoding/base64"
 	"github.com/pritunl/pritunl-zero/database"
+	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
 )
+
+func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
+	b := &bytes.Buffer{}
+	b.WriteString(cert.Type())
+	b.WriteByte(' ')
+	e := base64.NewEncoder(base64.StdEncoding, b)
+	e.Write(cert.Marshal())
+	e.Close()
+	b.WriteByte(' ')
+	b.Write([]byte(comment))
+	b.WriteByte('\n')
+	return b.Bytes()
+}
 
 func Get(db *database.Database, authrId bson.ObjectId) (
 	authr *Authority, err error) {
