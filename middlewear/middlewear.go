@@ -133,6 +133,53 @@ func SessionProxy(c *gin.Context) {
 	c.Set("authorizer", authr)
 }
 
+func SessionUser(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	authr, err := authorizer.AuthorizeUser(db, c.Writer, c.Request)
+	if err != nil {
+		switch err.(type) {
+		case *errortypes.AuthenticationError:
+			utils.AbortWithError(c, 401, err)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	if authr.IsValid() {
+		usr, err := authr.GetUser(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if usr != nil {
+			active, err := auth.SyncUser(db, usr)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			if !active {
+				err = authr.Clear(db, c.Writer, c.Request)
+				if err != nil {
+					utils.AbortWithError(c, 500, err)
+					return
+				}
+
+				err = session.RemoveAll(db, usr.Id)
+				if err != nil {
+					return
+				}
+			}
+		}
+	}
+
+	c.Set("authorizer", authr)
+}
+
 func Auth(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
@@ -154,6 +201,44 @@ func Auth(c *gin.Context) {
 	}
 
 	errData, err := validator.ValidateAdmin(db, usr)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = authr.Clear(db, c.Writer, c.Request)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		utils.AbortWithStatus(c, 401)
+		return
+	}
+}
+
+func AuthUser(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+
+	if !authr.IsValid() {
+		utils.AbortWithStatus(c, 401)
+		return
+	}
+
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if usr == nil {
+		utils.AbortWithStatus(c, 401)
+		return
+	}
+
+	errData, err := validator.ValidateUser(db, usr, authr, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
