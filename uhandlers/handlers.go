@@ -29,6 +29,9 @@ func Register(engine *gin.Engine) {
 	authGroup := sessGroup.Group("")
 	authGroup.Use(middlewear.AuthUser)
 
+	csrfGroup := authGroup.Group("")
+	csrfGroup.Use(middlewear.CsrfToken)
+
 	engine.NoRoute(middlewear.NotFound)
 
 	engine.GET("/auth/state", authStateGet)
@@ -39,8 +42,8 @@ func Register(engine *gin.Engine) {
 
 	engine.GET("/check", checkGet)
 
-	engine.GET("/", staticIndexGet)
-	engine.GET("/logo.png", staticLogoGet)
+	authGroup.GET("/csrf", csrfGet)
+
 	engine.GET("/robots.txt", middlewear.RobotsGet)
 }
 
