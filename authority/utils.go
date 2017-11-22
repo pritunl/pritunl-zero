@@ -2,8 +2,14 @@ package authority
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/base64"
+	"encoding/pem"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -32,6 +38,25 @@ func MarshalAuthorizedKey(key ssh.PublicKey, comment string) []byte {
 	b.Write([]byte(comment))
 	b.WriteByte('\n')
 	return b.Bytes()
+}
+
+func GenerateRsaKey() (pemKey []byte, err error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "authority: Failed to generate rsa key"),
+		}
+		return
+	}
+
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	}
+
+	pemKey = pem.EncodeToMemory(block)
+
+	return
 }
 
 func Get(db *database.Database, authrId bson.ObjectId) (
