@@ -15,6 +15,16 @@ type Authority struct {
 	Roles []string      `bson:"roles" json:"roles"`
 }
 
+func (a *Authority) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if a.Type == "" {
+		a.Type = Local
+	}
+
+	return
+}
+
 func (a *Authority) Commit(db *database.Database) (err error) {
 	coll := db.Certificates()
 
