@@ -10,6 +10,7 @@ import Users from './Users';
 import UserDetailed from './UserDetailed';
 import Nodes from './Nodes';
 import Policies from './Policies';
+import Authorities from './Authorities';
 import Certificates from './Certificates';
 import Logs from './Logs';
 import Services from './Services';
@@ -19,6 +20,7 @@ import * as SessionActions from '../actions/SessionActions';
 import * as AuditActions from '../actions/AuditActions';
 import * as NodeActions from '../actions/NodeActions';
 import * as PolicyActions from '../actions/PolicyActions';
+import * as AuthorityActions from '../actions/AuthorityActions';
 import * as CertificateActions from '../actions/CertificateActions';
 import * as LogActions from '../actions/LogActions';
 import * as ServiceActions from '../actions/ServiceActions';
@@ -124,6 +126,13 @@ export default class Main extends React.Component<{}, State> {
 							to="/policies"
 						>
 							Policies
+						</ReactRouter.Link>
+						<ReactRouter.Link
+							className="pt-button pt-minimal pt-icon-endorsed"
+							style={css.link}
+							to="/authorities"
+						>
+							Authorities
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-endorsed"
@@ -240,6 +249,18 @@ export default class Main extends React.Component<{}, State> {
 												disabled: false,
 											});
 										});
+									} else if (pathname === '/authorities') {
+										AuthorityActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/certificates') {
 										CertificateActions.sync().then((): void => {
 											this.setState({
@@ -341,6 +362,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/policies" render={() => (
 					<Policies/>
+				)}/>
+				<ReactRouter.Route path="/authorities" render={() => (
+					<Authorities/>
 				)}/>
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
