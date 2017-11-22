@@ -2,6 +2,7 @@ package authority
 
 import (
 	"bytes"
+	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -84,6 +85,27 @@ func GenerateEcKey() (pemKey []byte, err error) {
 	}
 
 	pemKey = pem.EncodeToMemory(block)
+
+	return
+}
+
+func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
+	block, _ := pem.Decode([]byte(data))
+
+	switch block.Type {
+	case "RSA PRIVATE KEY":
+		key, err = x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			return
+		}
+		break
+	case "EC PRIVATE KEY":
+		key, err = x509.ParseECPrivateKey(block.Bytes)
+		if err != nil {
+			return
+		}
+		break
+	}
 
 	return
 }
