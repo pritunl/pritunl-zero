@@ -5,7 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, authId bson.ObjectId) (
+func Get(db *database.Database, authrId bson.ObjectId) (
 	authr *Authority, err error) {
 
 	coll := db.Authorities()
