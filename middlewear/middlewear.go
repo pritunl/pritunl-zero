@@ -37,10 +37,10 @@ func Database(c *gin.Context) {
 	db.Close()
 }
 
-func Session(c *gin.Context) {
+func SessionAdmin(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	authr, err := authorizer.Authorize(db, c.Writer, c.Request)
+	authr, err := authorizer.AuthorizeAdmin(db, c.Writer, c.Request)
 	if err != nil {
 		switch err.(type) {
 		case *errortypes.AuthenticationError:
@@ -180,7 +180,7 @@ func SessionUser(c *gin.Context) {
 	c.Set("authorizer", authr)
 }
 
-func Auth(c *gin.Context) {
+func AuthAdmin(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 

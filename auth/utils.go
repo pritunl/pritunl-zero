@@ -25,11 +25,11 @@ func Get(db *database.Database, state string) (tokn *Token, err error) {
 	return
 }
 
-func CookieSession(db *database.Database,
+func CookieSessionAdmin(db *database.Database,
 	w http.ResponseWriter, r *http.Request) (
 	cook *cookie.Cookie, sess *session.Session, err error) {
 
-	cook, err = cookie.Get(w, r)
+	cook, err = cookie.GetAdmin(w, r)
 	if err != nil {
 		sess = nil
 		err = nil

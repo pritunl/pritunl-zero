@@ -39,7 +39,7 @@ func (a *Authorizer) Clear(db *database.Database, w http.ResponseWriter,
 
 	switch a.typ {
 	case Admin:
-		cookie.Clean(w, r)
+		cookie.CleanAdmin(w, r)
 		break
 	case Proxy:
 		cookie.CleanProxy(w, r)

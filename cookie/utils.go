@@ -13,7 +13,9 @@ import (
 	"strings"
 )
 
-func Get(w http.ResponseWriter, r *http.Request) (cook *Cookie, err error) {
+func GetAdmin(w http.ResponseWriter, r *http.Request) (
+	cook *Cookie, err error) {
+
 	store, err := Store.New(r, "pritunl-zero-console")
 	if err != nil {
 		err = &errortypes.UnknownError{
@@ -32,7 +34,7 @@ func Get(w http.ResponseWriter, r *http.Request) (cook *Cookie, err error) {
 	return
 }
 
-func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
+func NewAdmin(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 	store, _ := Store.New(r, "pritunl-zero-console")
 
 	cook = &Cookie{
@@ -44,7 +46,7 @@ func New(w http.ResponseWriter, r *http.Request) (cook *Cookie) {
 	return
 }
 
-func Clean(w http.ResponseWriter, r *http.Request) {
+func CleanAdmin(w http.ResponseWriter, r *http.Request) {
 	cook := &http.Cookie{
 		Name:     "pritunl-zero-console",
 		Path:     "/",

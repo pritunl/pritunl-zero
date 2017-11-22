@@ -24,10 +24,10 @@ func Register(engine *gin.Engine) {
 	dbGroup.Use(middlewear.Database)
 
 	sessGroup := dbGroup.Group("")
-	sessGroup.Use(middlewear.Session)
+	sessGroup.Use(middlewear.SessionAdmin)
 
 	authGroup := sessGroup.Group("")
-	authGroup.Use(middlewear.Auth)
+	authGroup.Use(middlewear.AuthAdmin)
 
 	csrfGroup := authGroup.Group("")
 	csrfGroup.Use(middlewear.CsrfToken)

@@ -94,7 +94,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	cook := cookie.New(c.Writer, c.Request)
+	cook := cookie.NewAdmin(c.Writer, c.Request)
 
 	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {
@@ -186,7 +186,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	cook := cookie.New(c.Writer, c.Request)
+	cook := cookie.NewAdmin(c.Writer, c.Request)
 
 	_, err = cook.NewSession(db, c.Request, usr.Id, true)
 	if err != nil {

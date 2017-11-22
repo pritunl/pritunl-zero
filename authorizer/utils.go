@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Authorize(db *database.Database, w http.ResponseWriter,
+func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (authr *Authorizer, err error) {
 
 	token := r.Header.Get("Pritunl-Zero-Token")
@@ -41,7 +41,7 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 			sig: sig,
 		}
 	} else {
-		cook, sess, e := auth.CookieSession(db, w, r)
+		cook, sess, e := auth.CookieSessionAdmin(db, w, r)
 		if e != nil {
 			err = e
 			return
@@ -145,7 +145,7 @@ func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 	return
 }
 
-func New() (authr *Authorizer) {
+func NewAdmin() (authr *Authorizer) {
 	authr = &Authorizer{
 		typ: Admin,
 	}
