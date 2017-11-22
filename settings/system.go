@@ -18,6 +18,8 @@ type system struct {
 	CookieCryptoKey      []byte `bson:"cookie_crypto_key"`
 	ProxyCookieAuthKey   []byte `bson:"proxy_cookie_auth_key"`
 	ProxyCookieCryptoKey []byte `bson:"proxy_cookie_crypto_key"`
+	UserCookieAuthKey    []byte `bson:"user_cookie_auth_key"`
+	UserCookieCryptoKey  []byte `bson:"user_cookie_crypto_key"`
 }
 
 func newSystem() interface{} {
