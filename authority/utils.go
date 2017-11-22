@@ -96,12 +96,18 @@ func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
 	case "RSA PRIVATE KEY":
 		key, err = x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "authority: Failed to parse rsa key"),
+			}
 			return
 		}
 		break
 	case "EC PRIVATE KEY":
 		key, err = x509.ParseECPrivateKey(block.Bytes)
 		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "authority: Failed to parse ec key"),
+			}
 			return
 		}
 		break
