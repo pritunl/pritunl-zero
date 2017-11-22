@@ -36,7 +36,6 @@ type authData struct {
 
 func authSessionPost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
-	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 	srvc := c.MustGet("service").(*service.Service)
 	data := &authData{}
 
@@ -62,7 +61,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	errData, err = validator.ValidateProxy(db, usr, authr, srvc, c.Request)
+	errData, err = validator.ValidateProxy(db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -135,7 +134,6 @@ func authRequestGet(c *gin.Context) {
 func authCallbackGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	srvc := c.MustGet("service").(*service.Service)
-	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
 
@@ -161,7 +159,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	errData, err = validator.ValidateProxy(db, usr, authr, srvc, c.Request)
+	errData, err = validator.ValidateProxy(db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

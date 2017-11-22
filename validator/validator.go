@@ -2,7 +2,6 @@ package validator
 
 import (
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
@@ -26,8 +25,7 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 }
 
 func ValidateUser(db *database.Database, usr *user.User,
-	authr *authorizer.Authorizer, r *http.Request) (
-	errData *errortypes.ErrorData, err error) {
+	isApi bool, r *http.Request) (errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
@@ -37,7 +35,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 		return
 	}
 
-	if !authr.IsApi() {
+	if !isApi {
 		polices, e := policy.GetRoles(db, usr.Roles)
 		if e != nil {
 			err = e
@@ -56,8 +54,8 @@ func ValidateUser(db *database.Database, usr *user.User,
 }
 
 func ValidateProxy(db *database.Database, usr *user.User,
-	authr *authorizer.Authorizer, srvc *service.Service,
-	r *http.Request) (errData *errortypes.ErrorData, err error) {
+	isApi bool, srvc *service.Service, r *http.Request) (
+	errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
@@ -88,7 +86,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 		return
 	}
 
-	if !authr.IsApi() {
+	if !isApi {
 		polices, e := policy.GetService(db, srvc.Id)
 		if e != nil {
 			err = e

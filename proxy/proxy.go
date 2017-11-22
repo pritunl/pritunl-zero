@@ -136,7 +136,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	errData, err := validator.ValidateProxy(db, usr, authr, host.Service, r)
+	errData, err := validator.ValidateProxy(
+		db, usr, authr.IsApi(), host.Service, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
 		return true
