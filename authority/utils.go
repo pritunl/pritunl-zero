@@ -21,6 +21,19 @@ func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	return b.Bytes()
 }
 
+func MarshalAuthorizedKey(key ssh.PublicKey, comment string) []byte {
+	b := &bytes.Buffer{}
+	b.WriteString(key.Type())
+	b.WriteByte(' ')
+	e := base64.NewEncoder(base64.StdEncoding, b)
+	e.Write(key.Marshal())
+	e.Close()
+	b.WriteByte(' ')
+	b.Write([]byte(comment))
+	b.WriteByte('\n')
+	return b.Bytes()
+}
+
 func Get(db *database.Database, authrId bson.ObjectId) (
 	authr *Authority, err error) {
 
