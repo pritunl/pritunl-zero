@@ -1,7 +1,7 @@
 package node
 
 const (
-	Management      = "management"
-	Proxy           = "proxy"
-	ManagementProxy = "management_proxy"
+	Management = "management"
+	User       = "user"
+	Proxy      = "proxy"
 )
