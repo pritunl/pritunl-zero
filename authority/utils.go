@@ -6,12 +6,12 @@ import (
 )
 
 func Get(db *database.Database, authId bson.ObjectId) (
-	auth *Authority, err error) {
+	authr *Authority, err error) {
 
 	coll := db.Authorities()
-	auth = &Authority{}
+	authr = &Authority{}
 
-	err = coll.FindOneId(authId, auth)
+	err = coll.FindOneId(authrId, authr)
 	if err != nil {
 		return
 	}
@@ -19,16 +19,16 @@ func Get(db *database.Database, authId bson.ObjectId) (
 	return
 }
 
-func GetAll(db *database.Database) (auths []*Authority, err error) {
+func GetAll(db *database.Database) (authrs []*Authority, err error) {
 	coll := db.Authorities()
-	auths = []*Authority{}
+	authrs = []*Authority{}
 
 	cursor := coll.Find(bson.M{}).Iter()
 
-	auth := &Authority{}
-	for cursor.Next(auth) {
-		auths = append(auths, auth)
-		auth = &Authority{}
+	authr := &Authority{}
+	for cursor.Next(authr) {
+		authrs = append(authrs, authr)
+		authr = &Authority{}
 	}
 
 	err = cursor.Close()
@@ -40,11 +40,11 @@ func GetAll(db *database.Database) (auths []*Authority, err error) {
 	return
 }
 
-func Remove(db *database.Database, authId bson.ObjectId) (err error) {
+func Remove(db *database.Database, authrId bson.ObjectId) (err error) {
 	coll := db.Authorities()
 
 	_, err = coll.RemoveAll(&bson.M{
-		"_id": authId,
+		"_id": authrId,
 	})
 	if err != nil {
 		err = database.ParseError(err)
