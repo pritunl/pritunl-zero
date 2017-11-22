@@ -128,7 +128,7 @@ export default class Main extends React.Component<{}, State> {
 							Policies
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-endorsed"
+							className="pt-button pt-minimal pt-icon-office"
 							style={css.link}
 							to="/authorities"
 						>

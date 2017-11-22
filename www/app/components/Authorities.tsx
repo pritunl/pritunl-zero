@@ -85,7 +85,7 @@ export default class Authorities extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!authoritiesDom.length}
-				iconClass="pt-icon-filter"
+				iconClass="pt-icon-office"
 				title="No authorities"
 				description="Add a new authority to get started."
 			/>
