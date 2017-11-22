@@ -2,6 +2,8 @@ package authority
 
 import (
 	"bytes"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -52,6 +54,33 @@ func GenerateRsaKey() (pemKey []byte, err error) {
 	block := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	}
+
+	pemKey = pem.EncodeToMemory(block)
+
+	return
+}
+
+func GenerateEcKey() (pemKey []byte, err error) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "authority: Failed to generate ec key"),
+		}
+		return
+	}
+
+	keyBytes, err := x509.MarshalECPrivateKey(privateKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to marshal ec key"),
+		}
+		return
+	}
+
+	block := &pem.Block{
+		Type:  "EC PRIVATE KEY",
+		Bytes: keyBytes,
 	}
 
 	pemKey = pem.EncodeToMemory(block)
