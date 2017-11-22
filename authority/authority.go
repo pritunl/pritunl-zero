@@ -6,13 +6,37 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 )
 
 type Authority struct {
-	Id    bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name  string        `bson:"name" json:"name"`
-	Type  string        `bson:"type" json:"type"`
-	Roles []string      `bson:"roles" json:"roles"`
+	Id         bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Type       string        `bson:"type" json:"type"`
+	Roles      []string      `bson:"roles" json:"roles"`
+	PrivateKey string        `bson:"private_key" json:"private_key"`
+}
+
+func (a *Authority) GenerateRsaPrivateKey() (err error) {
+	keyBytes, err := GenerateRsaKey()
+	if err != nil {
+		return
+	}
+
+	a.PrivateKey = strings.TrimSpace(string(keyBytes))
+
+	return
+}
+
+func (a *Authority) GenerateEcPrivateKey() (err error) {
+	keyBytes, err := GenerateEcKey()
+	if err != nil {
+		return
+	}
+
+	a.PrivateKey = strings.TrimSpace(string(keyBytes))
+
+	return
 }
 
 func (a *Authority) Validate(db *database.Database) (
