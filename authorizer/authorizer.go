@@ -10,10 +10,10 @@ import (
 )
 
 type Authorizer struct {
-	isProxy bool
-	cook    *cookie.Cookie
-	sess    *session.Session
-	sig     *signature.Signature
+	typ  string
+	cook *cookie.Cookie
+	sess *session.Session
+	sig  *signature.Signature
 }
 
 func (a *Authorizer) IsApi() bool {
@@ -37,10 +37,16 @@ func (a *Authorizer) Clear(db *database.Database, w http.ResponseWriter,
 		}
 	}
 
-	if a.isProxy {
-		cookie.CleanProxy(w, r)
-	} else {
+	switch a.typ {
+	case Admin:
 		cookie.Clean(w, r)
+		break
+	case Proxy:
+		cookie.CleanProxy(w, r)
+		break
+	case User:
+		cookie.CleanUser(w, r)
+		break
 	}
 
 	return

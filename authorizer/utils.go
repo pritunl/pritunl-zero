@@ -37,8 +37,8 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 		}
 
 		authr = &Authorizer{
-			isProxy: false,
-			sig:     sig,
+			typ: Admin,
+			sig: sig,
 		}
 	} else {
 		cook, sess, e := auth.CookieSession(db, w, r)
@@ -48,9 +48,9 @@ func Authorize(db *database.Database, w http.ResponseWriter,
 		}
 
 		authr = &Authorizer{
-			isProxy: false,
-			cook:    cook,
-			sess:    sess,
+			typ:  Admin,
+			cook: cook,
+			sess: sess,
 		}
 	}
 
@@ -81,8 +81,8 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 		}
 
 		authr = &Authorizer{
-			isProxy: true,
-			sig:     sig,
+			typ: Proxy,
+			sig: sig,
 		}
 		return
 	}
@@ -93,9 +93,9 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 	}
 
 	authr = &Authorizer{
-		isProxy: true,
-		cook:    cook,
-		sess:    sess,
+		typ:  Proxy,
+		cook: cook,
+		sess: sess,
 	}
 
 	return
@@ -125,8 +125,8 @@ func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 		}
 
 		authr = &Authorizer{
-			isProxy: true,
-			sig:     sig,
+			typ: User,
+			sig: sig,
 		}
 		return
 	}
@@ -137,9 +137,9 @@ func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 	}
 
 	authr = &Authorizer{
-		isProxy: true,
-		cook:    cook,
-		sess:    sess,
+		typ:  User,
+		cook: cook,
+		sess: sess,
 	}
 
 	return
@@ -147,7 +147,7 @@ func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 
 func New() (authr *Authorizer) {
 	authr = &Authorizer{
-		isProxy: false,
+		typ: Admin,
 	}
 
 	return
@@ -155,7 +155,7 @@ func New() (authr *Authorizer) {
 
 func NewProxy() (authr *Authorizer) {
 	authr = &Authorizer{
-		isProxy: true,
+		typ: Proxy,
 	}
 
 	return
@@ -163,7 +163,7 @@ func NewProxy() (authr *Authorizer) {
 
 func NewUser() (authr *Authorizer) {
 	authr = &Authorizer{
-		isProxy: true,
+		typ: User,
 	}
 
 	return
