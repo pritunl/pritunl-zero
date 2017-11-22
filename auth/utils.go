@@ -75,6 +75,30 @@ func CookieSessionProxy(db *database.Database, srvc *service.Service,
 	return
 }
 
+func CookieSessionUser(db *database.Database, w http.ResponseWriter,
+	r *http.Request) (cook *cookie.Cookie, sess *session.Session, err error) {
+
+	cook, err = cookie.GetUser(w, r)
+	if err != nil {
+		sess = nil
+		err = nil
+		return
+	}
+
+	sess, err = cook.GetSession(db, r)
+	if err != nil {
+		switch err.(type) {
+		case *errortypes.NotFoundError:
+			sess = nil
+			err = nil
+			break
+		}
+		return
+	}
+
+	return
+}
+
 func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
 	port := ""
 	if node.Self.Protocol == "http" {
