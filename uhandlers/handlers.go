@@ -7,12 +7,12 @@ import (
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
-	"path/filepath"
+	"net/http"
 )
 
 var (
-	index *static.File
-	logo  *static.File
+	store      *static.Store
+	fileServer http.Handler
 )
 
 func Register(engine *gin.Engine) {
@@ -45,6 +45,27 @@ func Register(engine *gin.Engine) {
 	authGroup.GET("/csrf", csrfGet)
 
 	engine.GET("/robots.txt", middlewear.RobotsGet)
+
+	if constants.Production {
+		sessGroup.GET("/", staticIndexGet)
+		engine.GET("/login", staticLoginGet)
+		engine.GET("/logo.png", staticLogoGet)
+		authGroup.GET("/static/*path", staticGet)
+	} else {
+		fs := gin.Dir(config.StaticTestingRoot, false)
+		fileServer = http.FileServer(fs)
+
+		sessGroup.GET("/", staticTestingGet)
+		engine.GET("/login", staticTestingGet)
+		engine.GET("/logo.png", staticTestingGet)
+		authGroup.GET("/config.js", staticTestingGet)
+		authGroup.GET("/build.js", staticTestingGet)
+		authGroup.GET("/uapp/*path", staticTestingGet)
+		authGroup.GET("/dist/*path", staticTestingGet)
+		authGroup.GET("/styles/*path", staticTestingGet)
+		authGroup.GET("/node_modules/*path", staticTestingGet)
+		authGroup.GET("/jspm_packages/*path", staticTestingGet)
+	}
 }
 
 func init() {
@@ -52,21 +73,11 @@ func init() {
 	module.After("settings")
 
 	module.Handler = func() (err error) {
-		root := ""
 		if constants.Production {
-			root = config.StaticRoot
-		} else {
-			root = config.StaticTestingRoot
-		}
-
-		index, err = static.NewFile(filepath.Join(root, "login.html"))
-		if err != nil {
-			return
-		}
-
-		logo, err = static.NewFile(filepath.Join(root, "logo.png"))
-		if err != nil {
-			return
+			store, err = static.NewStore(config.StaticRoot)
+			if err != nil {
+				return
+			}
 		}
 
 		return
