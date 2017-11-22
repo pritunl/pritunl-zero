@@ -25,7 +25,7 @@ func ValidateAdmin(db *database.Database, usr *user.User) (
 	return
 }
 
-func Validate(db *database.Database, usr *user.User,
+func ValidateProxy(db *database.Database, usr *user.User,
 	authr *authorizer.Authorizer, srvc *service.Service,
 	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
