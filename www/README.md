@@ -12,6 +12,7 @@ sed -i 's|lib/node/index.js|lib/client.js|g' jspm_packages/npm/superagent@*.js
 
 ```
 tslint -c tslint.json app/**/*.ts*
+tslint -c tslint.json uapp/**/*.ts*
 ```
 
 ### development
@@ -19,6 +20,7 @@ tslint -c tslint.json app/**/*.ts*
 ```
 tsc
 jspm depcache app/App.js
+jspm depcache uapp/App.js
 tsc --watch
 ```
 
@@ -26,7 +28,6 @@ tsc --watch
 
 ```
 tsc
-jspm bundle app/App.js
 rm -rf dist/static
 mkdir -p dist/static
 cp styles/global.css dist/static/
@@ -41,8 +42,13 @@ cp node_modules/@blueprintjs/core/resources/icons/icons-20.ttf dist/static/
 cp node_modules/@blueprintjs/core/resources/icons/icons-20.woff dist/static/
 cp jspm_packages/system.js dist/static/
 sed -i 's|../resources/icons/||g' dist/static/blueprint.css
+jspm bundle app/App.js
 mv build.js dist/static/app.js
 mv build.js.map dist/static/app.js.map
 cp index_dist.html dist/index.html
+jspm bundle uapp/App.js
+mv build.js dist/static/uapp.js
+mv build.js.map dist/static/uapp.js.map
+cp uindex_dist.html dist/uindex.html
 cp login.html dist/login.html
 ```
