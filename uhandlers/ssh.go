@@ -5,19 +5,26 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 )
 
-func sshValidateGet(c *gin.Context) {
+func sshGet(c *gin.Context) {
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
-	if !authr.IsValid() {
+	redirect := ""
+
+	if authr.IsValid() {
 		if c.Request.URL.RawQuery == "" {
-			c.Redirect(302, "/login")
+			redirect = "/"
 		} else {
 			query := c.Request.URL.Query()
-			query.Set("redirect", "ssh-validate")
-			c.Redirect(302, "/login?"+query.Encode())
+			redirect = "/?" + query.Encode()
 		}
-		return
+	} else {
+		if c.Request.URL.RawQuery == "" {
+			redirect = "/login"
+		} else {
+			query := c.Request.URL.Query()
+			redirect = "/login?" + query.Encode()
+		}
 	}
 
-	c.String(200, "validated")
+	c.Redirect(302, redirect)
 }

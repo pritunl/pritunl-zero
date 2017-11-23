@@ -2,7 +2,6 @@ package uhandlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/url"
 )
 
 type redirectData struct {
@@ -11,14 +10,10 @@ type redirectData struct {
 
 func redirectQuery(c *gin.Context, query string) {
 	if query != "" {
-		vals, _ := url.ParseQuery(query)
-		if vals.Get("redirect") == "ssh-validate" {
-			vals.Del("redirect")
-			c.Redirect(302, "/ssh/validate?"+vals.Encode())
-			return
-		}
+		c.Redirect(302, "/?"+query)
+	} else {
+		c.Redirect(302, "/"+query)
 	}
-	c.Redirect(302, "/")
 }
 
 func redirectQueryJson(c *gin.Context, query string) {
@@ -27,11 +22,7 @@ func redirectQueryJson(c *gin.Context, query string) {
 	}
 
 	if query != "" {
-		vals, _ := url.ParseQuery(query)
-		if vals.Get("redirect") == "ssh-validate" {
-			vals.Del("redirect")
-			data.Redirect = "/ssh/validate?" + vals.Encode()
-		}
+		data.Redirect += "?" + query
 	}
 
 	c.JSON(202, data)
