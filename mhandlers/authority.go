@@ -98,6 +98,11 @@ func authorityPost(c *gin.Context) {
 		Roles: data.Roles,
 	}
 
+	err = authr.GenerateRsaPrivateKey()
+	if err != nil {
+		return
+	}
+
 	errData, err := authr.Validate(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
