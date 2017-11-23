@@ -7,6 +7,7 @@ import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
 import ServicesStore from '../stores/ServicesStore';
 import PageInput from './PageInput';
+import PageSwitch from './PageSwitch';
 import PageInputSwitch from './PageInputSwitch';
 import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
@@ -106,6 +107,28 @@ export default class Node extends React.Component<Props, State> {
 			changed: true,
 			node: node,
 		});
+	}
+
+	toggleType(typ: string): void {
+		let node: NodeTypes.Node = this.state.node || this.props.node;
+
+		let vals = (node.type || '').split('_');
+
+		let i = vals.indexOf(typ);
+		if (i === -1) {
+			vals.push(typ);
+		} else {
+			vals.splice(i, 1);
+		}
+
+		vals.sort();
+
+		let val = vals.join('_');
+		if (val === '') {
+			val = 'management';
+		}
+
+		this.set('type', val);
 	}
 
 	onSave = (): void => {
@@ -230,8 +253,7 @@ export default class Node extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
-		let node: NodeTypes.Node = this.state.node ||
-			this.props.node;
+		let node: NodeTypes.Node = this.state.node || this.props.node;
 		let active = node.requests_min !== 0 || node.memory !== 0 ||
 				node.load1 !== 0 || node.load5 !== 0 || node.load15 !== 0;
 
@@ -308,20 +330,33 @@ export default class Node extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<PageSelect
-						label="Type"
-						help="Management nodes will only provide access to the Pritunl Zero admin console. Proxy nodes will only provide access to the services added to the node."
-						value={node.type}
-						onChange={(val): void => {
-							this.set('type', val);
+					<PageSwitch
+						label="Management"
+						help="Provides access to the admin console."
+						checked={node.type.indexOf('management') !== -1}
+						onToggle={(): void => {
+							this.toggleType('management');
 						}}
-					>
-						<option value="management">Management</option>
-						<option value="proxy">Proxy</option>
-						<option value="management_proxy">Management + Proxy</option>
-					</PageSelect>
+					/>
+					<PageSwitch
+						label="User"
+						help="Provides access to the user console for SSH certificates."
+						checked={node.type.indexOf('user') !== -1}
+						onToggle={(): void => {
+							this.toggleType('user');
+						}}
+					/>
+					<PageSwitch
+						label="Proxy"
+						help="Provides access to the services added to the node."
+						checked={node.type.indexOf('proxy') !== -1}
+						onToggle={(): void => {
+							this.toggleType('proxy');
+						}}
+					/>
 					<PageInput
-						hidden={node.type !== 'management_proxy'}
+						hidden={node.type.indexOf('_') === -1 ||
+							node.type.indexOf('management') === -1}
 						label="Management Domain"
 						help="Domain that will be used to access the management interface"
 						type="text"
@@ -329,6 +364,18 @@ export default class Node extends React.Component<Props, State> {
 						value={node.management_domain}
 						onChange={(val): void => {
 							this.set('management_domain', val);
+						}}
+					/>
+					<PageInput
+						hidden={node.type.indexOf('_') === -1 ||
+							node.type.indexOf('user') === -1}
+						label="User Domain"
+						help="Domain that will be used to access the user interface"
+						type="text"
+						placeholder="Enter user domain"
+						value={node.user_domain}
+						onChange={(val): void => {
+							this.set('user_domain', val);
 						}}
 					/>
 					<label className="pt-label" style={css.label}>
