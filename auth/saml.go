@@ -18,7 +18,7 @@ const (
 	Okta     = "okta"
 )
 
-func SamlRequest(db *database.Database, location string,
+func SamlRequest(db *database.Database, location, query string,
 	provider *settings.Provider) (body []byte, err error) {
 
 	if provider.Type != OneLogin && provider.Type != Okta {
@@ -104,6 +104,7 @@ func SamlRequest(db *database.Database, location string,
 		Secret:    secret,
 		Timestamp: time.Now(),
 		Provider:  provider.Id,
+		Query:     query,
 	}
 
 	err = coll.Insert(tokn)

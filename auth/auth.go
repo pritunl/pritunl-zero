@@ -23,6 +23,7 @@ type Token struct {
 	Secret    string        `bson:"secret"`
 	Timestamp time.Time     `bson:"timestamp"`
 	Provider  bson.ObjectId `bson:"provider,omitempty"`
+	Query     string        `bson:"query"`
 }
 
 func (t *Token) Remove(db *database.Database) (err error) {

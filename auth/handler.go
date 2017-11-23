@@ -55,8 +55,13 @@ func Request(c *gin.Context) {
 	loc := utils.GetLocation(c.Request)
 
 	id := c.Query("id")
+
+	vals := c.Request.URL.Query()
+	vals.Del("id")
+	query := vals.Encode()
+
 	if id == Google {
-		redirect, err := GoogleRequest(db, loc)
+		redirect, err := GoogleRequest(db, loc, query)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -82,7 +87,7 @@ func Request(c *gin.Context) {
 
 		switch provider.Type {
 		case Azure:
-			redirect, err := AzureRequest(db, loc, provider)
+			redirect, err := AzureRequest(db, loc, query, provider)
 			if err != nil {
 				utils.AbortWithError(c, 500, err)
 				return
@@ -91,7 +96,7 @@ func Request(c *gin.Context) {
 			c.Redirect(302, redirect)
 			return
 		case OneLogin, Okta:
-			body, err := SamlRequest(db, loc, provider)
+			body, err := SamlRequest(db, loc, query, provider)
 			if err != nil {
 				utils.AbortWithError(c, 500, err)
 				return
@@ -106,7 +111,7 @@ func Request(c *gin.Context) {
 }
 
 func Callback(db *database.Database, sig, query string) (
-	usr *user.User, errData *errortypes.ErrorData, err error) {
+	usr *user.User, tokn *Token, errData *errortypes.ErrorData, err error) {
 
 	params, err := url.ParseQuery(query)
 	if err != nil {
@@ -118,7 +123,7 @@ func Callback(db *database.Database, sig, query string) (
 
 	state := params.Get("state")
 
-	tokn, err := Get(db, state)
+	tokn, err = Get(db, state)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:

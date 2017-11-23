@@ -16,7 +16,7 @@ const (
 	Azure = "azure"
 )
 
-func AzureRequest(db *database.Database, location string,
+func AzureRequest(db *database.Database, location, query string,
 	provider *settings.Provider) (redirect string, err error) {
 
 	coll := db.Tokens()
@@ -96,6 +96,7 @@ func AzureRequest(db *database.Database, location string,
 		Secret:    secret,
 		Timestamp: time.Now(),
 		Provider:  provider.Id,
+		Query:     query,
 	}
 
 	err = coll.Insert(tokn)

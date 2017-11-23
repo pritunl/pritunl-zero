@@ -19,7 +19,7 @@ const (
 	Google = "google"
 )
 
-func GoogleRequest(db *database.Database, location string) (
+func GoogleRequest(db *database.Database, location, query string) (
 	redirect string, err error) {
 
 	coll := db.Tokens()
@@ -92,6 +92,7 @@ func GoogleRequest(db *database.Database, location string) (
 		Type:      Google,
 		Secret:    secret,
 		Timestamp: time.Now(),
+		Query:     query,
 	}
 
 	err = coll.Insert(tokn)
