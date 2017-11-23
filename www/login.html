@@ -160,7 +160,17 @@
 
         state.providers.forEach(function(provider) {
           document.getElementById(provider.id).onclick = function() {
-            window.location = '/auth/request?id=' + provider.id;
+            var location = '/auth/request';
+
+            if (window.location.search !== '') {
+              location += window.location.search + '&';
+            } else {
+              location += '?';
+            }
+
+            location += 'id=' + provider.id;
+
+            window.location = location;
           };
         });
       };
@@ -223,6 +233,9 @@
             if (xmlhttp.status === 200) {
               setAlert();
               window.location = '/';
+            } else if (xmlhttp.status === 302) {
+              setAlert();
+              window.location = xmlhttp.getResponseHeader('Location');
             } else if (xmlhttp.status === 202) {
               setAlert();
               window.location = JSON.parse(xmlhttp.response)['redirect'];
@@ -240,7 +253,11 @@
           }
         };
 
-        xmlhttp.open('POST', '/auth/session', true);
+        xmlhttp.open(
+          'POST',
+          '/auth/session' + window.location.search,
+          true
+        );
         xmlhttp.setRequestHeader('Content-Type', 'application/json');
         xmlhttp.send(JSON.stringify({
           'username': username,
