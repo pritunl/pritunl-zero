@@ -142,7 +142,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	usr, errData, err := auth.Callback(db, sig, query)
+	usr, _, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
 		switch err.(type) {
 		case *auth.InvalidState:
