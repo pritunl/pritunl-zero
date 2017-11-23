@@ -111,6 +111,11 @@ func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
 			return
 		}
 		break
+	default:
+		err = &errortypes.ParseError{
+			errors.Newf("authority: Unknown key type '%s'", block.Type),
+		}
+		return
 	}
 
 	return
