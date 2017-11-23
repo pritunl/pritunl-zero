@@ -26,7 +26,6 @@ func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	e.Close()
 	b.WriteByte(' ')
 	b.Write([]byte(comment))
-	b.WriteByte('\n')
 	return b.Bytes()
 }
 
@@ -39,7 +38,6 @@ func MarshalAuthorizedKey(key ssh.PublicKey, comment string) []byte {
 	e.Close()
 	b.WriteByte(' ')
 	b.Write([]byte(comment))
-	b.WriteByte('\n')
 	return b.Bytes()
 }
 
