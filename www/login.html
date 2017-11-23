@@ -233,9 +233,6 @@
             if (xmlhttp.status === 200) {
               setAlert();
               window.location = '/';
-            } else if (xmlhttp.status === 302) {
-              setAlert();
-              window.location = xmlhttp.getResponseHeader('Location');
             } else if (xmlhttp.status === 202) {
               setAlert();
               window.location = JSON.parse(xmlhttp.response)['redirect'];
