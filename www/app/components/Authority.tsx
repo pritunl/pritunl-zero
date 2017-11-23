@@ -273,7 +273,7 @@ export default class Authority extends React.Component<Props, State> {
 						Roles
 						<Help
 							title="Roles"
-							content="Roles associated with this authority."
+							content="Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles."
 						/>
 						<div>
 							{roles}
