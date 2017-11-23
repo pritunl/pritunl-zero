@@ -102,7 +102,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	redirectQueryJson(c, c.Request.URL.RawQuery)
 }
 
 func logoutGet(c *gin.Context) {
@@ -129,7 +129,7 @@ func authCallbackGet(c *gin.Context) {
 	sig := c.Query("sig")
 	query := strings.Split(c.Request.URL.RawQuery, "&sig=")[0]
 
-	usr, errData, err := auth.Callback(db, sig, query)
+	usr, tokn, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
 		switch err.(type) {
 		case *auth.InvalidState:
@@ -179,5 +179,5 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/")
+	redirectQuery(c, tokn.Query)
 }
