@@ -1,6 +1,7 @@
 package sshcert
 
 const (
-	Approved = "approved"
-	Denied   = "denied"
+	Approved    = "approved"
+	Unavailable = "unavailable"
+	Denied      = "denied"
 )

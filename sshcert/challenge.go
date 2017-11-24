@@ -44,6 +44,10 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User) (
 	}
 
 	for _, authr := range authrs {
+		if !authr.UserHasAccess(usr) {
+			continue
+		}
+
 		certStr, e := authr.CreateCertificate(usr, c.PubKey)
 		if e != nil {
 			err = e
@@ -54,13 +58,18 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User) (
 		cert.Certificates = append(cert.Certificates, certStr)
 	}
 
-	err = cert.Insert(db)
-	if err != nil {
-		return
-	}
+	if len(cert.Certificates) == 0 {
+		c.State = Unavailable
+		c.CertificateId = ""
+	} else {
+		err = cert.Insert(db)
+		if err != nil {
+			return
+		}
 
-	c.State = Approved
-	c.CertificateId = cert.Id
+		c.State = Approved
+		c.CertificateId = cert.Id
+	}
 
 	coll := db.SshChallenges()
 
