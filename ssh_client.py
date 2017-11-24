@@ -111,7 +111,7 @@ req = urllib2.Request(
     data=json.dumps({
         'public_key': pub_key_data,
     }),
-    )
+)
 req.add_header('Content-Type', 'application/json')
 req.get_method = lambda: 'POST'
 try:
@@ -143,7 +143,7 @@ while True:
             'public_key': pub_key_data,
             'token': token,
         }),
-        )
+    )
     req.add_header('Content-Type', 'application/json')
     req.get_method = lambda: 'PUT'
 
