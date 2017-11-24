@@ -96,6 +96,34 @@ export default class Validate extends React.Component<Props, State> {
 					type="button"
 					disabled={this.state.disabled}
 					onClick={(): void => {
+						this.setState({
+							...this.state,
+							disabled: true,
+						});
+
+						SuperAgent
+							.delete('/ssh/validate/' + this.props.token)
+							.set('Accept', 'application/json')
+							.set('Csrf-Token', Csrf.token)
+							.end((err: any, res: SuperAgent.Response): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+
+								if (err) {
+									Alert.errorRes(res, 'Failed to deny SSH key', 0);
+									return;
+								}
+
+								Alert.error('Successfully denied SSH key. Report ' +
+									'this incident to an administrator.', 0);
+
+								this.setState({
+									...this.state,
+									answered: true,
+								});
+							});
 					}}
 				>
 					Deny
