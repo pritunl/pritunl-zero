@@ -193,8 +193,9 @@ func (r *Router) initWeb() (err error) {
 	r.webServer = &http.Server{
 		Addr:           fmt.Sprintf(":%d", r.port),
 		Handler:        r,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    1 * time.Minute,
+		WriteTimeout:   1 * time.Minute,
+		IdleTimeout:    1 * time.Minute,
 		MaxHeaderBytes: 4096,
 	}
 
