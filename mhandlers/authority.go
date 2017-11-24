@@ -12,10 +12,11 @@ import (
 )
 
 type authorityData struct {
-	Id    bson.ObjectId `json:"id"`
-	Name  string        `json:"name"`
-	Type  string        `json:"type"`
-	Roles []string      `json:"roles"`
+	Id         bson.ObjectId `json:"id"`
+	Name       string        `json:"name"`
+	Type       string        `json:"type"`
+	MatchRoles bool          `json:"match_roles"`
+	Roles      []string      `json:"roles"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -46,11 +47,13 @@ func authorityPut(c *gin.Context) {
 
 	authr.Name = data.Name
 	authr.Type = data.Type
+	authr.MatchRoles = data.MatchRoles
 	authr.Roles = data.Roles
 
 	fields := set.NewSet(
 		"name",
 		"type",
+		"match_roles",
 		"roles",
 	)
 
@@ -93,9 +96,10 @@ func authorityPost(c *gin.Context) {
 	}
 
 	authr := &authority.Authority{
-		Name:  data.Name,
-		Type:  data.Type,
-		Roles: data.Roles,
+		Name:       data.Name,
+		Type:       data.Type,
+		MatchRoles: data.MatchRoles,
+		Roles:      data.Roles,
 	}
 
 	err = authr.GenerateRsaPrivateKey()
