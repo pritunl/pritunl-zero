@@ -137,7 +137,7 @@ print 'OPEN: ' + token_url
 
 subprocess.Popen(['open', token_url])
 
-while True:
+for i in xrange(3):
     req = urllib2.Request(
         zero_server + '/ssh/challenge',
         data=json.dumps({
@@ -159,6 +159,10 @@ while True:
     if status_code == 205:
         continue
     break
+
+if status_code == 205:
+    print 'ERROR: SSH verification request timed out'
+    exit()
 
 if status_code == 401:
     print 'ERROR: SSH verification request was denied'
