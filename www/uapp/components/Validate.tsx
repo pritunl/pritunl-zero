@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as SuperAgent from 'superagent';
 import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
+import Session from './Session';
 
 interface Props {
 	token: string;
@@ -10,6 +11,7 @@ interface Props {
 
 interface State {
 	disabled: boolean;
+	answered: boolean;
 }
 
 const css = {
@@ -33,10 +35,15 @@ export default class Validate extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			disabled: false,
+			answered: false,
 		};
 	}
 
 	render(): JSX.Element {
+		if (this.state.answered) {
+			return <Session/>;
+		}
+
 		return <div>
 			<div className="pt-non-ideal-state" style={css.body}>
 				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
