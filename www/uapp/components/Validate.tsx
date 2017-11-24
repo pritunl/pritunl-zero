@@ -75,9 +75,16 @@ export default class Validate extends React.Component<Props, State> {
 								});
 
 								if (err) {
-									Alert.errorRes(res, 'Failed to validate SSH key');
+									Alert.errorRes(res, 'Failed to approve SSH key', 0);
 									return;
 								}
+
+								Alert.success('Successfully approved SSH key', 0);
+
+								this.setState({
+									...this.state,
+									answered: true,
+								});
 							});
 					}}
 				>
