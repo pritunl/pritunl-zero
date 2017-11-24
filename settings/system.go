@@ -20,6 +20,7 @@ type system struct {
 	ProxyCookieCryptoKey []byte `bson:"proxy_cookie_crypto_key"`
 	UserCookieAuthKey    []byte `bson:"user_cookie_auth_key"`
 	UserCookieCryptoKey  []byte `bson:"user_cookie_crypto_key"`
+	SshPubKeyLen         int    `bson:"ssh_pub_key_len" default:"5000"`
 }
 
 func newSystem() interface{} {

@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -120,7 +121,7 @@ func (c *Challenge) Insert(db *database.Database) (err error) {
 func NewChallenge(db *database.Database, pubKey string) (
 	chal *Challenge, err error) {
 
-	if len(pubKey) > 10000 {
+	if len(pubKey) > settings.System.SshPubKeyLen {
 		err = errortypes.ParseError{
 			errors.New("sshcert: Public key too long"),
 		}
