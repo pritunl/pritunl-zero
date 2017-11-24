@@ -159,9 +159,19 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 	}
 
-	csr, certKey, err := newCsr(cert.AcmeDomains)
-	if err != nil {
-		return
+	var csr *x509.CertificateRequest
+	var keyPem []byte
+
+	if settings.System.AcmeKeyAlgorithm == "ec" {
+		csr, keyPem, err = newEcCsr(cert.AcmeDomains)
+		if err != nil {
+			return
+		}
+	} else {
+		csr, keyPem, err = newRsaCsr(cert.AcmeDomains)
+		if err != nil {
+			return
+		}
 	}
 
 	certResp, err := cli.NewCertificate(acctKey, csr)
@@ -170,19 +180,6 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			errors.Wrap(err, "acme: Failed to get certificate"),
 		}
 		return
-	}
-
-	certKeyByte, err := x509.MarshalECPrivateKey(certKey)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "acme: Failed to parse private key"),
-		}
-		return
-	}
-
-	certKeyBlock := &pem.Block{
-		Type:  "EC PRIVATE KEY",
-		Bytes: certKeyByte,
 	}
 
 	certBlock := &pem.Block{
@@ -194,7 +191,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	certPem = strings.Trim(certPem, "\n")
 	certPem += AcmeChain
 
-	cert.Key = string(pem.EncodeToMemory(certKeyBlock))
+	cert.Key = string(keyPem)
 	cert.Certificate = certPem
 	cert.AcmeHash = cert.Hash()
 
