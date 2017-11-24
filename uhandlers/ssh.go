@@ -3,7 +3,22 @@ package uhandlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/authorizer"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/sshcert"
+	"github.com/pritunl/pritunl-zero/utils"
+	"time"
 )
+
+type sshValidateData struct {
+	Token     string `json:"token"`
+	PublicKey string `json:"public_key"`
+}
+
+type sshCertificateData struct {
+	Token        string   `json:"token"`
+	Certificates []string `json:"certificates"`
+}
 
 func sshGet(c *gin.Context) {
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
@@ -27,4 +42,122 @@ func sshGet(c *gin.Context) {
 	}
 
 	c.Redirect(302, redirect)
+}
+
+func sshChallengePut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &sshValidateData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	chal, err := sshcert.GetChallenge(db, data.Token)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+	token := chal.Id
+
+	sync := func() {
+		chal, err = sshcert.GetChallenge(db, data.Token)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+
+	update := func() bool {
+		switch chal.State {
+		case sshcert.Approved:
+			cert, err := sshcert.GetCertificate(db, chal.CertificateId)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return true
+			}
+
+			resp := &sshCertificateData{
+				Token:        token,
+				Certificates: cert.Certificates,
+			}
+
+			c.JSON(200, resp)
+
+			return true
+		case sshcert.Denied:
+			c.Status(401)
+			return true
+		}
+
+		return false
+	}
+
+	if update() {
+		return
+	}
+
+	start := time.Now()
+	ticker := time.NewTicker(3 * time.Second)
+	notify := make(chan bool, 3)
+
+	listenerId := sshcert.Register(token, func() {
+		defer func() {
+			recover()
+		}()
+		notify <- true
+	})
+	defer sshcert.Unregister(token, listenerId)
+
+	for {
+		select {
+		case <-ticker.C:
+			if time.Since(start) > 29*time.Second {
+				c.Status(205)
+				return
+			}
+
+			sync()
+			if update() {
+				return
+			}
+		case <-notify:
+			sync()
+			if update() {
+				return
+			}
+		}
+	}
+}
+
+func sshChallengePost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &sshValidateData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	chal, err := sshcert.NewChallenge(db, data.PublicKey)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	resp := &sshValidateData{
+		Token: chal.Id,
+	}
+
+	c.JSON(200, resp)
 }
