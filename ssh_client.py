@@ -1,3 +1,4 @@
+#!/usr/bin/env
 import os
 import json
 import urllib2
