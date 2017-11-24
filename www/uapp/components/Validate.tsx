@@ -85,6 +85,9 @@ export default class Validate extends React.Component<Props, State> {
 									...this.state,
 									answered: true,
 								});
+
+								window.history.replaceState(
+									null, null, window.location.pathname);
 							});
 					}}
 				>
@@ -123,6 +126,9 @@ export default class Validate extends React.Component<Props, State> {
 									...this.state,
 									answered: true,
 								});
+
+								window.history.replaceState(
+									null, null, window.location.pathname);
 							});
 					}}
 				>
