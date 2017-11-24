@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as AuthorityTypes from '../types/AuthorityTypes';
 import * as AuthorityActions from '../actions/AuthorityActions';
 import PageInput from './PageInput';
+import PageSwitch from './PageSwitch';
 import PageInputButton from './PageInputButton';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
@@ -90,6 +91,28 @@ export default class Authority extends React.Component<Props, State> {
 		}
 
 		authority[name] = val;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			authority: authority,
+		});
+	}
+
+	toggle(name: string): void {
+		let authority: any;
+
+		if (this.state.changed) {
+			authority = {
+				...this.state.authority,
+			};
+		} else {
+			authority = {
+				...this.props.authority,
+			};
+		}
+
+		authority[name] = !authority[name];
 
 		this.setState({
 			...this.state,
@@ -269,7 +292,15 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<label className="pt-label">
+					<PageSwitch
+						label="Match roles"
+						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
+						checked={authority.match_roles}
+						onToggle={(): void => {
+							this.toggle('match_roles');
+						}}
+					/>
+					<label className="pt-label" hidden={!authority.match_roles}>
 						Roles
 						<Help
 							title="Roles"
@@ -284,6 +315,7 @@ export default class Authority extends React.Component<Props, State> {
 						label="Add"
 						type="text"
 						placeholder="Add role"
+						hidden={!authority.match_roles}
 						value={this.state.addRole}
 						onChange={(val): void => {
 							this.setState({
