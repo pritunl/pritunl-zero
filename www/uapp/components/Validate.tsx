@@ -1,8 +1,15 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as SuperAgent from 'superagent';
+import * as Csrf from '../Csrf';
+import * as Alert from '../Alert';
 
 interface Props {
 	token: string;
+}
+
+interface State {
+	disabled: boolean;
 }
 
 const css = {
@@ -21,7 +28,14 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Validate extends React.Component<Props, {}> {
+export default class Validate extends React.Component<Props, State> {
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			disabled: false,
+		};
+	}
+
 	render(): JSX.Element {
 		return <div>
 			<div className="pt-non-ideal-state" style={css.body}>
@@ -36,7 +50,28 @@ export default class Validate extends React.Component<Props, {}> {
 					className="pt-button pt-large pt-intent-success pt-icon-add"
 					style={css.button}
 					type="button"
+					disabled={this.state.disabled}
 					onClick={(): void => {
+						this.setState({
+							...this.state,
+							disabled: true,
+						});
+
+						SuperAgent
+							.put('/ssh/validate/' + this.props.token)
+							.set('Accept', 'application/json')
+							.set('Csrf-Token', Csrf.token)
+							.end((err: any, res: SuperAgent.Response): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+
+								if (err) {
+									Alert.errorRes(res, 'Failed to validate SSH key');
+									return;
+								}
+							});
 					}}
 				>
 					Approve
@@ -45,6 +80,7 @@ export default class Validate extends React.Component<Props, {}> {
 					className="pt-button pt-large pt-intent-danger pt-icon-delete"
 					style={css.button}
 					type="button"
+					disabled={this.state.disabled}
 					onClick={(): void => {
 					}}
 				>
