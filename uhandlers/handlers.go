@@ -45,6 +45,8 @@ func Register(engine *gin.Engine) {
 	authGroup.GET("/csrf", csrfGet)
 
 	sessGroup.GET("/ssh", sshGet)
+	dbGroup.PUT("/ssh/challenge", sshChallengePut)
+	dbGroup.POST("/ssh/challenge", sshChallengePost)
 
 	engine.GET("/robots.txt", middlewear.RobotsGet)
 
