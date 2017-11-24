@@ -76,8 +76,24 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User) (
 }
 
 func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
+	if c.State != "" {
+		err = errortypes.WriteError{
+			errors.New("sshcert: Challenge has already been answered"),
+		}
+	}
+
 	c.State = Denied
 	c.CertificateId = ""
+
+	coll := db.SshChallenges()
+
+	err = coll.Update(&bson.M{
+		"_id":   c.Id,
+		"state": "",
+	}, c)
+	if err != nil {
+		return
+	}
 
 	return
 }
