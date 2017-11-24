@@ -78,6 +78,39 @@ func sshValidatePut(c *gin.Context) {
 	c.JSON(200, chal)
 }
 
+func sshValidateDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+
+	sshToken := c.Param("ssh_token")
+
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	chal, err := sshcert.GetChallenge(db, sshToken)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = chal.Deny(db, usr)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.Publish(db, "ssh_challenge", chal.Id)
+
+	c.JSON(200, chal)
+}
+
 func sshChallengePut(c *gin.Context) {
 	if demo.Blocked(c) {
 		return
