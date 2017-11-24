@@ -3,12 +3,10 @@ package event
 
 import (
 	"github.com/Sirupsen/logrus"
-	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/requires"
 	"gopkg.in/mgo.v2/bson"
-	"strings"
 	"time"
 )
 
@@ -213,16 +211,14 @@ func Subscribe(channels []string, duration time.Duration,
 	}
 }
 
-func Register(channel string, event string, callback func(*Event)) {
-	key := channel + ":" + event
-
-	callbacks := listeners[key]
+func Register(channel string, callback func(*Event)) {
+	callbacks := listeners[channel]
 
 	if callbacks == nil {
 		callbacks = []func(*Event){}
 	}
 
-	listeners[key] = append(callbacks, callback)
+	listeners[channel] = append(callbacks, callback)
 }
 
 func subscribe(channels []string) {
@@ -232,13 +228,7 @@ func subscribe(channels []string) {
 				return true
 			}
 
-			key := msg.Channel + ":all"
-			for _, listener := range listeners[key] {
-				listener(msg)
-			}
-
-			key = msg.Channel + ":" + msg.Data.(string)
-			for _, listener := range listeners[key] {
+			for _, listener := range listeners[msg.Channel] {
 				listener(msg)
 			}
 
@@ -252,16 +242,10 @@ func init() {
 
 	module.Handler = func() (err error) {
 		go func() {
-			channelsSet := set.NewSet()
-
-			for key := range listeners {
-				channelsSet.Add(strings.Split(key, ":")[0])
-			}
-
 			channels := []string{}
 
-			for channel := range channelsSet.Iter() {
-				channels = append(channels, channel.(string))
+			for channel := range listeners {
+				channels = append(channels, channel)
 			}
 
 			if len(channels) > 0 {
