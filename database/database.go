@@ -102,6 +102,16 @@ func (d *Database) Authorities() (coll *Collection) {
 	return
 }
 
+func (d *Database) SshChallenges() (coll *Collection) {
+	coll = d.getCollection("ssh_challenges")
+	return
+}
+
+func (d *Database) SshCertificates() (coll *Collection) {
+	coll = d.getCollection("ssh_certificates")
+	return
+}
+
 func (d *Database) AcmeChallenges() (coll *Collection) {
 	coll = d.getCollection("acme_challenges")
 	return
