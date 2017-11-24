@@ -18,6 +18,7 @@ type Authority struct {
 	Id         bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Type       string        `bson:"type" json:"type"`
+	MatchRoles bool          `bson:"match_roles" json:"match_roles"`
 	Roles      []string      `bson:"roles" json:"roles"`
 	Expire     int           `bson:"expire" json:"expire"`
 	PrivateKey string        `bson:"private_key" json:"private_key"`
@@ -43,6 +44,13 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	a.PrivateKey = strings.TrimSpace(string(keyBytes))
 
 	return
+}
+
+func (a *Authority) UserHasAccess(usr *user.User) bool {
+	if !a.MatchRoles {
+		return true
+	}
+	return usr.RolesMatch(a.Roles)
 }
 
 func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
