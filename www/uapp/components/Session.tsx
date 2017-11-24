@@ -25,7 +25,7 @@ export default class Session extends React.Component<{}, {}> {
 					Pritunl Zero User Console
 				</h4>
 				<span style={css.description}>
-					To validate an SSH key install the client and run "TODO"
+					To validate an SSH key install the client and run "pritunl-ssh"
 				</span>
 			</div>
 			<div
