@@ -29,23 +29,29 @@ func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	return b.Bytes()
 }
 
-func MarshalAuthorizedKey(key ssh.PublicKey, comment string) []byte {
+func MarshalAuthorizedKey(key ssh.PublicKey) []byte {
 	b := &bytes.Buffer{}
 	b.WriteString(key.Type())
 	b.WriteByte(' ')
 	e := base64.NewEncoder(base64.StdEncoding, b)
 	e.Write(key.Marshal())
 	e.Close()
-	b.WriteByte(' ')
-	b.Write([]byte(comment))
 	return b.Bytes()
 }
 
-func GenerateRsaKey() (pemKey []byte, err error) {
+func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "authority: Failed to generate rsa key"),
+		}
+		return
+	}
+
+	pubKey, err := ssh.NewPublicKey(privateKey.Public())
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse rsa key"),
 		}
 		return
 	}
@@ -55,16 +61,25 @@ func GenerateRsaKey() (pemKey []byte, err error) {
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
 	}
 
-	pemKey = pem.EncodeToMemory(block)
+	encodedPriv = pem.EncodeToMemory(block)
+	encodedPub = MarshalAuthorizedKey(pubKey)
 
 	return
 }
 
-func GenerateEcKey() (pemKey []byte, err error) {
+func GenerateEcKey() (encodedPriv, encodedPub []byte, err error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "authority: Failed to generate ec key"),
+		}
+		return
+	}
+
+	pubKey, err := ssh.NewPublicKey(privateKey.Public())
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ec key"),
 		}
 		return
 	}
@@ -82,7 +97,8 @@ func GenerateEcKey() (pemKey []byte, err error) {
 		Bytes: keyBytes,
 	}
 
-	pemKey = pem.EncodeToMemory(block)
+	encodedPriv = pem.EncodeToMemory(block)
+	encodedPub = MarshalAuthorizedKey(pubKey)
 
 	return
 }

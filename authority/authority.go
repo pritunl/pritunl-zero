@@ -21,27 +21,30 @@ type Authority struct {
 	MatchRoles bool          `bson:"match_roles" json:"match_roles"`
 	Roles      []string      `bson:"roles" json:"roles"`
 	Expire     int           `bson:"expire" json:"expire"`
-	PrivateKey string        `bson:"private_key" json:"private_key"`
+	PrivateKey string        `bson:"private_key" json:"-"`
+	PublicKey  string        `bson:"public_key" json:"public_key"`
 }
 
 func (a *Authority) GenerateRsaPrivateKey() (err error) {
-	keyBytes, err := GenerateRsaKey()
+	privKeyBytes, pubKeyBytes, err := GenerateRsaKey()
 	if err != nil {
 		return
 	}
 
-	a.PrivateKey = strings.TrimSpace(string(keyBytes))
+	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
+	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
 
 	return
 }
 
 func (a *Authority) GenerateEcPrivateKey() (err error) {
-	keyBytes, err := GenerateEcKey()
+	privKeyBytes, pubKeyBytes, err := GenerateEcKey()
 	if err != nil {
 		return
 	}
 
-	a.PrivateKey = strings.TrimSpace(string(keyBytes))
+	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
+	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
 
 	return
 }
