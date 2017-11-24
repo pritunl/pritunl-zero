@@ -6,6 +6,7 @@ export interface Authority {
 	id: string;
 	name?: string;
 	type?: string[];
+	match_roles?: boolean;
 	roles?: string[];
 }
 
