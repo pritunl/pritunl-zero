@@ -1,8 +1,10 @@
 package sshcert
 
 import (
+	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -10,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"time"
 )
 
@@ -21,8 +24,8 @@ type Challenge struct {
 	PubKey        string        `bson:"pub_key"`
 }
 
-func (c *Challenge) Approve(db *database.Database, usr *user.User) (
-	err error) {
+func (c *Challenge) Approve(db *database.Database, usr *user.User,
+	r *http.Request) (err error) {
 
 	if c.State != "" {
 		err = errortypes.WriteError{
@@ -31,12 +34,19 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User) (
 	}
 
 	cert := &Certificate{
-		Id:           bson.NewObjectId(),
-		UserId:       usr.Id,
-		AuthorityIds: []bson.ObjectId{},
-		Timestamp:    time.Now(),
-		Certificates: []string{},
+		Id:               bson.NewObjectId(),
+		UserId:           usr.Id,
+		AuthorityIds:     []bson.ObjectId{},
+		Timestamp:        time.Now(),
+		Certificates:     []string{},
+		CertificatesInfo: []*Info{},
 	}
+
+	agnt, err := agent.Parse(db, r)
+	if err != nil {
+		return
+	}
+	cert.Agent = agnt
 
 	authrs, err := authority.GetAll(db)
 	if err != nil {
@@ -48,14 +58,26 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User) (
 			continue
 		}
 
-		certStr, e := authr.CreateCertificate(usr, c.PubKey)
+		crt, certStr, e := authr.CreateCertificate(usr, c.PubKey)
 		if e != nil {
 			err = e
 			return
 		}
 
+		info := &Info{
+			Expires:    time.Unix(int64(crt.ValidBefore), 0),
+			Serial:     fmt.Sprintf("%d", crt.Serial),
+			Principals: crt.ValidPrincipals,
+			Extensions: []string{},
+		}
+
+		for permission := range crt.Permissions.Extensions {
+			info.Extensions = append(info.Extensions, permission)
+		}
+
 		cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)
 		cert.Certificates = append(cert.Certificates, certStr)
+		cert.CertificatesInfo = append(cert.CertificatesInfo, info)
 	}
 
 	if len(cert.Certificates) == 0 {
