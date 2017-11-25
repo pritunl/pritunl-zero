@@ -15,6 +15,7 @@ type authorityData struct {
 	Id         bson.ObjectId `json:"id"`
 	Name       string        `json:"name"`
 	Type       string        `json:"type"`
+	Expire     int           `json:"expire"`
 	MatchRoles bool          `json:"match_roles"`
 	Roles      []string      `json:"roles"`
 }
@@ -47,12 +48,14 @@ func authorityPut(c *gin.Context) {
 
 	authr.Name = data.Name
 	authr.Type = data.Type
+	authr.Expire = data.Expire
 	authr.MatchRoles = data.MatchRoles
 	authr.Roles = data.Roles
 
 	fields := set.NewSet(
 		"name",
 		"type",
+		"expire",
 		"match_roles",
 		"roles",
 	)
@@ -98,6 +101,7 @@ func authorityPost(c *gin.Context) {
 	authr := &authority.Authority{
 		Name:       data.Name,
 		Type:       data.Type,
+		Expire:     data.Expire,
 		MatchRoles: data.MatchRoles,
 		Roles:      data.Roles,
 	}
