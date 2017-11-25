@@ -74,12 +74,13 @@ export default class Validate extends React.Component<Props, State> {
 									disabled: false,
 								});
 
-								if (err) {
+								if (res.status === 404) {
+									Alert.error('SSH verification request has expired', 0);
+								} else if (err) {
 									Alert.errorRes(res, 'Failed to approve SSH key', 0);
-									return;
+								} else {
+									Alert.success('Successfully approved SSH key', 0);
 								}
-
-								Alert.success('Successfully approved SSH key', 0);
 
 								this.setState({
 									...this.state,
@@ -114,13 +115,15 @@ export default class Validate extends React.Component<Props, State> {
 									disabled: false,
 								});
 
-								if (err) {
+								if (res.status === 404) {
+									Alert.error('SSH verification request has expired', 0);
+								} else if (err) {
 									Alert.errorRes(res, 'Failed to deny SSH key', 0);
 									return;
+								} else {
+									Alert.error('Successfully denied SSH key. Report ' +
+										'this incident to an administrator.', 0);
 								}
-
-								Alert.error('Successfully denied SSH key. Report ' +
-									'this incident to an administrator.', 0);
 
 								this.setState({
 									...this.state,
