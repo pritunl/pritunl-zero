@@ -170,6 +170,21 @@ func (u *User) Upsert(db *database.Database) (err error) {
 	return
 }
 
+func (u *User) RolesMatch(roles []string) bool {
+	usrRoles := set.NewSet()
+	for _, role := range u.Roles {
+		usrRoles.Add(role)
+	}
+
+	for _, role := range roles {
+		if usrRoles.Contains(role) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (u *User) RolesMerge(roles []string) bool {
 	newRoles := set.NewSet()
 	curRoles := set.NewSet()
