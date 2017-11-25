@@ -5,6 +5,7 @@ import * as AuthorityActions from '../actions/AuthorityActions';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
 import PageInputButton from './PageInputButton';
+import PageTextArea from './PageTextArea';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
@@ -247,6 +248,7 @@ export default class Authority extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let authority: AuthorityTypes.Authority = this.state.authority ||
 			this.props.authority;
+		let info: AuthorityTypes.Info = authority.info || {};
 
 		let roles: JSX.Element[] = [];
 		for (let role of authority.roles) {
@@ -292,8 +294,43 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<PageTextArea
+						readOnly={true}
+						label="Public Key"
+						help="Certificate authority public key in SSH format"
+						placeholder="Public key"
+						rows={10}
+						value={authority.public_key}
+						onChange={(val: string): void => {
+							this.set('key', val);
+						}}
+					/>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						fields={[
+							{
+								label: 'ID',
+								value: authority.id || 'None',
+							},
+							{
+								label: 'Algorithm',
+								value: info.key_alg || 'None',
+							},
+						]}
+					/>
+					<PageInput
+						label="Certificate Expire Minutes"
+						help="Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440."
+						type="text"
+						placeholder="Certificate expire minutes"
+						value={authority.expire}
+						onChange={(val): void => {
+							this.set('expire', parseInt(val, 10));
+						}}
+					/>
 					<PageSwitch
-						label="Match roles"
+						label="Match Roles"
 						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
 						checked={authority.match_roles}
 						onToggle={(): void => {
@@ -324,16 +361,6 @@ export default class Authority extends React.Component<Props, State> {
 							});
 						}}
 						onSubmit={this.onAddRole}
-					/>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: authority.id || 'None',
-							},
-						]}
 					/>
 				</div>
 			</div>
