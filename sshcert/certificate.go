@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -69,6 +70,41 @@ func GetCertificate(db *database.Database, certId bson.ObjectId) (
 
 	err = coll.FindOneId(certId, cert)
 	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetCertificates(db *database.Database, userId bson.ObjectId,
+	page, pageCount int) (certs []*Certificate, count int, err error) {
+
+	coll := db.SshCertificates()
+	certs = []*Certificate{}
+
+	qury := coll.Find(&bson.M{
+		"user_id": userId,
+	})
+
+	count, err = qury.Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
+
+	cursor := qury.Sort("-$natural").Skip(skip).Limit(pageCount).Iter()
+
+	cert := &Certificate{}
+	for cursor.Next(cert) {
+		certs = append(certs, cert)
+		cert = &Certificate{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
