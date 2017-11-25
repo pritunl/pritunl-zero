@@ -14,10 +14,15 @@ import (
 	"time"
 )
 
+type Info struct {
+	KeyAlg string `bson:"key_alg" json:"key_alg"`
+}
+
 type Authority struct {
 	Id         bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Type       string        `bson:"type" json:"type"`
+	Info       *Info         `bson:"info" json:"info"`
 	MatchRoles bool          `bson:"match_roles" json:"match_roles"`
 	Roles      []string      `bson:"roles" json:"roles"`
 	Expire     int           `bson:"expire" json:"expire"`
@@ -31,6 +36,9 @@ func (a *Authority) GenerateRsaPrivateKey() (err error) {
 		return
 	}
 
+	a.Info = &Info{
+		KeyAlg: "RSA 4096",
+	}
 	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
 
@@ -43,6 +51,9 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 		return
 	}
 
+	a.Info = &Info{
+		KeyAlg: "EC P384",
+	}
 	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
 
