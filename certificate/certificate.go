@@ -126,7 +126,7 @@ func (c *Certificate) UpdateInfo() (err error) {
 		dnsNames = append(dnsNames, cert.Subject.CommonName)
 	}
 
-	info := &Info{
+	c.Info = &Info{
 		Hash:         hash,
 		SignatureAlg: cert.SignatureAlgorithm.String(),
 		PublicKeyAlg: publicKeyAlg,
@@ -135,7 +135,6 @@ func (c *Certificate) UpdateInfo() (err error) {
 		ExpiresOn:    cert.NotAfter,
 		DnsNames:     dnsNames,
 	}
-	c.Info = info
 
 	return
 }
@@ -185,10 +184,10 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 
 func (c *Certificate) Hash() string {
 	hash := md5.New()
-	io.WriteString(hash, c.Type)
-	io.WriteString(hash, c.Key)
-	io.WriteString(hash, c.Certificate)
-	io.WriteString(hash, c.AcmeAccount)
+	hash.Write([]byte(c.Type))
+	hash.Write([]byte(c.Key))
+	hash.Write([]byte(c.Certificate))
+	hash.Write([]byte(c.AcmeAccount))
 	if c.AcmeDomains != nil {
 		for _, domain := range c.AcmeDomains {
 			io.WriteString(hash, domain)
