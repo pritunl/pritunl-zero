@@ -6,6 +6,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 import UserStore from '../stores/UserStore';
 import Sessions from './Sessions';
 import Audits from './Audits';
+import Sshcertificates from './Sshcertificates';
 import Page from './Page';
 import PageHeader from './PageHeader';
 import PagePanel from './PagePanel';
@@ -421,6 +422,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 				onSave={this.onNew}
 			/>}
 			{this.state.locked ? null : <Sessions userId={userId}/>}
+			{this.state.locked ? null : <Sshcertificates userId={userId}/>}
 			{this.state.locked ? null : <Audits userId={userId}/>}
 		</Page>;
 	}
