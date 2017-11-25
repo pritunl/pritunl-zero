@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 )
 
 type authorityData struct {
@@ -56,6 +57,7 @@ func authorityPut(c *gin.Context) {
 		"name",
 		"type",
 		"expire",
+		"info",
 		"match_roles",
 		"roles",
 	)
@@ -185,4 +187,39 @@ func authoritysGet(c *gin.Context) {
 	}
 
 	c.JSON(200, authrs)
+}
+
+func authorityPublicKeyGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	authrIdsStr := strings.Split(c.Param("authr_ids"), ",")
+	authrIds := []bson.ObjectId{}
+
+	for _, authrIdStr := range authrIdsStr {
+		authrId, ok := utils.ParseObjectId(authrIdStr)
+		if !ok {
+			utils.AbortWithStatus(c, 400)
+			return
+		}
+
+		authrIds = append(authrIds, authrId)
+	}
+
+	if len(authrIds) == 0 {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	publicKeys := ""
+
+	authrs, err := authority.GetMulti(db, authrIds)
+	if err != nil {
+		return
+	}
+
+	for _, authr := range authrs {
+		publicKeys += strings.TrimSpace(authr.PublicKey) + "\n"
+	}
+
+	c.String(200, publicKeys)
 }
