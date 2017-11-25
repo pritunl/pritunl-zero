@@ -121,6 +121,10 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Type = Local
 	}
 
+	if !a.MatchRoles {
+		a.Roles = []string{}
+	}
+
 	if a.PrivateKey == "" {
 		err = a.GenerateRsaPrivateKey()
 		if err != nil {
