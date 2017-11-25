@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/log"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/sshcert"
 	"github.com/pritunl/pritunl-zero/subscription"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -49,7 +50,7 @@ var Agent = &agent.Agent{
 
 var Audits = []*audit.Audit{
 	&audit.Audit{
-		Id:        bson.NewObjectId(),
+		Id:        bson.ObjectIdHex("5a17f9bf051a45ffacf2b352"),
 		Timestamp: time.Unix(1498018860, 0),
 		Type:      "admin_login",
 		Fields: audit.Fields{
@@ -69,9 +70,36 @@ var Sessions = []*session.Session{
 	},
 }
 
+var Sshcerts = []*sshcert.Certificate{
+	&sshcert.Certificate{
+		Id: bson.ObjectIdHex("5a180207051a45ffacf3b846"),
+		AuthorityIds: []bson.ObjectId{
+			bson.ObjectIdHex("5a191ca03745632d533cf597"),
+		},
+		Timestamp: time.Unix(1498018860, 0),
+		CertificatesInfo: []*sshcert.Info{
+			&sshcert.Info{
+				Serial:  "2207385157562819502",
+				Expires: time.Unix(1498105260, 0),
+				Principals: []string{
+					"demo",
+				},
+				Extensions: []string{
+					"permit-X11-forwarding",
+					"permit-agent-forwarding",
+					"permit-port-forwarding",
+					"permit-pty",
+					"permit-user-rc",
+				},
+			},
+		},
+		Agent: Agent,
+	},
+}
+
 var Logs = []*log.Entry{
 	&log.Entry{
-		Id:        bson.NewObjectId(),
+		Id:        bson.ObjectIdHex("5a18e6ae051a45ffac0e5b67"),
 		Level:     log.Info,
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting redirect server",
@@ -83,7 +111,7 @@ var Logs = []*log.Entry{
 		},
 	},
 	&log.Entry{
-		Id:        bson.NewObjectId(),
+		Id:        bson.ObjectIdHex("5a190b42051a45ffac129bbc"),
 		Level:     log.Info,
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting web server",
