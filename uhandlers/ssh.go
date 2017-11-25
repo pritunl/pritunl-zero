@@ -73,7 +73,7 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	err = chal.Approve(db, usr)
+	err = chal.Approve(db, usr, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
