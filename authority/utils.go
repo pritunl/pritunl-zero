@@ -149,6 +149,31 @@ func Get(db *database.Database, authrId bson.ObjectId) (
 	return
 }
 
+func GetMulti(db *database.Database, authrIds []bson.ObjectId) (
+	authrs []*Authority, err error) {
+
+	coll := db.Authorities()
+	authrs = []*Authority{}
+
+	cursor := coll.Find(&bson.M{
+		"_id": &bson.M{"$in": authrIds},
+	}).Iter()
+
+	authr := &Authority{}
+	for cursor.Next(authr) {
+		authrs = append(authrs, authr)
+		authr = &Authority{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (authrs []*Authority, err error) {
 	coll := db.Authorities()
 	authrs = []*Authority{}
