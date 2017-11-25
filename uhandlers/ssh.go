@@ -63,7 +63,13 @@ func sshValidatePut(c *gin.Context) {
 
 	chal, err := sshcert.GetChallenge(db, sshToken)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
@@ -96,7 +102,13 @@ func sshValidateDelete(c *gin.Context) {
 
 	chal, err := sshcert.GetChallenge(db, sshToken)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
@@ -127,7 +139,13 @@ func sshChallengePut(c *gin.Context) {
 
 	chal, err := sshcert.GetChallenge(db, data.Token)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 	token := chal.Id
@@ -135,7 +153,13 @@ func sshChallengePut(c *gin.Context) {
 	sync := func() {
 		chal, err = sshcert.GetChallenge(db, data.Token)
 		if err != nil {
-			utils.AbortWithError(c, 500, err)
+			switch err.(type) {
+			case *database.NotFoundError:
+				utils.AbortWithStatus(c, 404)
+				break
+			default:
+				utils.AbortWithError(c, 500, err)
+			}
 			return
 		}
 	}
@@ -145,7 +169,13 @@ func sshChallengePut(c *gin.Context) {
 		case sshcert.Approved:
 			cert, err := sshcert.GetCertificate(db, chal.CertificateId)
 			if err != nil {
-				utils.AbortWithError(c, 500, err)
+				switch err.(type) {
+				case *database.NotFoundError:
+					utils.AbortWithStatus(c, 404)
+					break
+				default:
+					utils.AbortWithError(c, 500, err)
+				}
 				return true
 			}
 
@@ -156,6 +186,9 @@ func sshChallengePut(c *gin.Context) {
 
 			c.JSON(200, resp)
 
+			return true
+		case sshcert.Unavailable:
+			c.Status(412)
 			return true
 		case sshcert.Denied:
 			c.Status(401)
@@ -218,7 +251,13 @@ func sshChallengePost(c *gin.Context) {
 
 	chal, err := sshcert.NewChallenge(db, data.PublicKey)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
