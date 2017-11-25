@@ -68,7 +68,7 @@ func (a *Authority) UserHasAccess(usr *user.User) bool {
 }
 
 func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
-	certMarshaled string, err error) {
+	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
 	if err != nil {
@@ -91,7 +91,7 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	validBefore := time.Now().Add(
 		time.Duration(a.Expire) * time.Minute).Unix()
 
-	cert := &ssh.Certificate{
+	cert = &ssh.Certificate{
 		Key:             pubKey,
 		Serial:          serial,
 		CertType:        ssh.UserCert,
