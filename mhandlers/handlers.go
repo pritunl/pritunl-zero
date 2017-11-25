@@ -86,6 +86,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/settings", settingsGet)
 	csrfGroup.PUT("/settings", settingsPut)
 
+	csrfGroup.GET("/sshcertificate/:user_id", sshcertsGet)
+
 	csrfGroup.GET("/subscription", subscriptionGet)
 	csrfGroup.GET("/subscription/update", subscriptionUpdateGet)
 	csrfGroup.POST("/subscription", subscriptionPost)
