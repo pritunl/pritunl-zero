@@ -344,7 +344,7 @@ func addIndexes() (err error) {
 	coll = db.SshChallenges()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
-		ExpireAfter: 5 * time.Minute,
+		ExpireAfter: 6 * time.Minute,
 		Background:  true,
 	})
 	if err != nil {
