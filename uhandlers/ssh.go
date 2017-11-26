@@ -2,6 +2,7 @@ package uhandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
@@ -73,6 +74,20 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.SshAprove,
+		audit.Fields{
+			"ssh_key": chal.PubKey,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	err = chal.Approve(db, usr, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -109,6 +124,20 @@ func sshValidateDelete(c *gin.Context) {
 		default:
 			utils.AbortWithError(c, 500, err)
 		}
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.SshDeny,
+		audit.Fields{
+			"ssh_key": chal.PubKey,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
