@@ -21,6 +21,7 @@ type Certificate struct {
 	UserId           bson.ObjectId   `bson:"user_id" json:"user_id"`
 	AuthorityIds     []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
 	Timestamp        time.Time       `bson:"timestamp" json:"timestamp"`
+	PubKey           string          `bson:"pub_key"`
 	Certificates     []string        `bson:"certificates" json:"-"`
 	CertificatesInfo []*Info         `bson:"certificates_info" json:"certificates_info"`
 	Agent            *agent.Agent    `bson:"agent" json:"agent"`

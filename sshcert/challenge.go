@@ -38,6 +38,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		UserId:           usr.Id,
 		AuthorityIds:     []bson.ObjectId{},
 		Timestamp:        time.Now(),
+		PubKey:           c.PubKey,
 		Certificates:     []string{},
 		CertificatesInfo: []*Info{},
 	}
