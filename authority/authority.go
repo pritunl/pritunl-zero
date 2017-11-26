@@ -144,7 +144,7 @@ func (a *Authority) Validate(db *database.Database) (
 	}
 
 	if a.Expire < 1 {
-		a.Expire = 3
+		a.Expire = 480
 	} else if a.Expire > 1440 {
 		a.Expire = 1440
 	}
