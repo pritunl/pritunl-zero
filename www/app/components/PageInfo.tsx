@@ -25,6 +25,9 @@ const css = {
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
+	value: {
+		wordWrap: 'break-word',
+	} as React.CSSProperties,
 	item: {
 		marginBottom: '5px',
 	} as React.CSSProperties,
@@ -50,7 +53,10 @@ export default class PageInfo extends React.Component<Props, {}> {
 			fields.push(
 				<div key={field.label} style={css.item}>
 					{field.label}
-					<div className={field.valueClass || 'pt-text-muted'}>
+					<div
+						className={field.valueClass || 'pt-text-muted'}
+						style={css.value}
+					>
 						{value}
 					</div>
 				</div>,
