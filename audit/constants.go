@@ -5,4 +5,6 @@ const (
 	AdminLoginFailed = "admin_login_failed"
 	Login            = "login"
 	LoginFailed      = "login_failed"
+	SshAprove        = "ssh_aprove"
+	SshDeny          = "ssh_deny"
 )
