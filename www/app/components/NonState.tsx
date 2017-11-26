@@ -20,6 +20,8 @@ const css = {
 };
 
 export default class NonState extends React.Component<Props, State> {
+	timeout: number;
+
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
@@ -28,12 +30,18 @@ export default class NonState extends React.Component<Props, State> {
 	}
 
 	componentDidMount(): void {
-		setTimeout((): void => {
+		this.timeout = window.setTimeout((): void => {
 			this.setState({
 				...this.state,
 				initialized: true,
 			});
 		}, Constants.loadDelay);
+	}
+
+	componentWillUnmount(): void {
+		if (this.timeout) {
+			window.clearTimeout(this.timeout);
+		}
 	}
 
 	render(): JSX.Element {
