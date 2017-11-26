@@ -32,7 +32,7 @@
 
       .pt-card {
         padding: 50px;
-        min-width: 200px;
+        min-width: 260px;
         max-width: 300px;
         margin: 0 auto;
         position: relative;
@@ -160,7 +160,17 @@
 
         state.providers.forEach(function(provider) {
           document.getElementById(provider.id).onclick = function() {
-            window.location = '/auth/request?id=' + provider.id;
+            var location = '/auth/request';
+
+            if (window.location.search !== '') {
+              location += window.location.search + '&';
+            } else {
+              location += '?';
+            }
+
+            location += 'id=' + provider.id;
+
+            window.location = location;
           };
         });
       };
@@ -240,7 +250,11 @@
           }
         };
 
-        xmlhttp.open('POST', '/auth/session', true);
+        xmlhttp.open(
+          'POST',
+          '/auth/session' + window.location.search,
+          true
+        );
         xmlhttp.setRequestHeader('Content-Type', 'application/json');
         xmlhttp.send(JSON.stringify({
           'username': username,
