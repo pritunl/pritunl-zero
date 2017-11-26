@@ -249,6 +249,8 @@ export default class Authority extends React.Component<Props, State> {
 		let authority: AuthorityTypes.Authority = this.state.authority ||
 			this.props.authority;
 		let info: AuthorityTypes.Info = authority.info || {};
+		let url: string = window.location.protocol + '//' +
+			window.location.host + '/ssh_public_key/' + authority.id;
 
 		let roles: JSX.Element[] = [];
 		for (let role of authority.roles) {
@@ -318,6 +320,15 @@ export default class Authority extends React.Component<Props, State> {
 								value: info.key_alg || 'None',
 							},
 						]}
+					/>
+					<PageInput
+						label="Download URL"
+						help="Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma."
+						type="text"
+						placeholder="Enter download URL"
+						readOnly={true}
+						autoSelect={true}
+						value={url}
 					/>
 					<PageInput
 						label="Certificate Expire Minutes"
