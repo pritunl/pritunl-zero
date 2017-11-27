@@ -370,7 +370,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('_') === -1 ||
 							node.type.indexOf('user') === -1}
 						label="User Domain"
-						help="Domain that will be used to access the user interface"
+						help="Domain that will be used to access the user interface."
 						type="text"
 						placeholder="Enter user domain"
 						value={node.user_domain}
