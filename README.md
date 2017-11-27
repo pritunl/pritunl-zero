@@ -13,7 +13,7 @@ information can be found at
 
 ## Run from Source
 
-```
+```bash
 # Install Go
 sudo yum -y install git
 wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
@@ -49,7 +49,7 @@ sudo ~/go/bin/pritunl-zero start
 
 ### archlinux
 
-```
+```bash
 sudo tee -a /etc/pacman.conf << EOF
 [pritunl]
 Server = https://repo.pritunl.com/stable/pacman
@@ -65,7 +65,7 @@ sudo systemctl enable mongodb pritunl-zero
 
 ### amazon linux
 
-```
+```bash
 sudo tee -a /etc/yum.repos.d/mongodb-org-3.4.repo << EOF
 [mongodb-org-3.4]
 name=MongoDB Repository
@@ -92,7 +92,7 @@ sudo start pritunl-zero
 
 ### centos 7
 
-```
+```bash
 # SELinux must be disabled
 
 sudo tee -a /etc/yum.repos.d/mongodb-org-3.4.repo << EOF
@@ -122,7 +122,7 @@ sudo systemctl enable mongod pritunl-zero
 
 ### debian jessie
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.4.list << EOF
 deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main
 EOF
@@ -141,7 +141,7 @@ sudo systemctl enable mongod pritunl-zero
 
 ### fedora 25
 
-```
+```bash
 # SELinux must be disabled
 # Firewalld must be configured or disabled
 
@@ -163,7 +163,7 @@ sudo systemctl enable mongod pritunl-zero
 
 ### fedora 26
 
-```
+```bash
 # SELinux must be disabled
 # Firewalld must be configured or disabled
 
@@ -185,7 +185,7 @@ sudo systemctl enable mongod pritunl-zero
 
 ### ubuntu precise
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.4.list << EOF
 deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.4 multiverse
 EOF
@@ -203,7 +203,7 @@ sudo service pritunl-zero start
 
 ### ubuntu trusty
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.4.list << EOF
 deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse
 EOF
@@ -221,7 +221,7 @@ sudo service pritunl-zero start
 
 ### ubuntu xenial
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.4.list << EOF
 deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
 EOF
@@ -240,7 +240,7 @@ sudo systemctl enable pritunl-zero mongod
 
 ### ubuntu yakkety
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
 deb http://repo.pritunl.com/stable/apt yakkety main
 EOF
@@ -254,7 +254,7 @@ sudo systemctl enable pritunl-zero mongodb
 
 ### ubuntu zesty
 
-```
+```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
 deb http://repo.pritunl.com/stable/apt zesty main
 EOF
