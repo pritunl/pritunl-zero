@@ -49,7 +49,10 @@ cmd = sys.argv[1]
 with open(CONSTANTS_PATH, 'r') as constants_file:
     cur_version = re.findall('= "(.*?)"', constants_file.read())[0]
 
-if cmd == 'set-version':
+if cmd == 'version':
+    print get_ver(sys.argv[2])
+
+elif cmd == 'set-version':
     new_version = get_ver(sys.argv[2])
 
     with open(CONSTANTS_PATH, 'r') as constants_file:
