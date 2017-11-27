@@ -358,7 +358,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('_') === -1 ||
 							node.type.indexOf('management') === -1}
 						label="Management Domain"
-						help="Domain that will be used to access the management interface"
+						help="Domain that will be used to access the management interface."
 						type="text"
 						placeholder="Enter management domain"
 						value={node.management_domain}
