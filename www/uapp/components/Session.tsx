@@ -35,7 +35,7 @@ export default class Session extends React.Component<{}, {}> {
 				<a
 					className="pt-button pt-large pt-intent-primary pt-icon-download"
 					style={css.button}
-					href="https://docs.pritunl.com"
+					href="https://docs.pritunl.com/v1/docs/ssh-client"
 				>
 					Install Client
 				</a>
