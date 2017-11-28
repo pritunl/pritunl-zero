@@ -96,6 +96,7 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 		typ:  Proxy,
 		cook: cook,
 		sess: sess,
+		srvc: srvc,
 	}
 
 	return

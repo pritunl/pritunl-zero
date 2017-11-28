@@ -3,9 +3,11 @@ package authorizer
 import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/signature"
 	"github.com/pritunl/pritunl-zero/user"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
 
@@ -14,6 +16,7 @@ type Authorizer struct {
 	cook *cookie.Cookie
 	sess *session.Session
 	sig  *signature.Signature
+	srvc *service.Service
 }
 
 func (a *Authorizer) IsApi() bool {
@@ -98,6 +101,13 @@ func (a *Authorizer) GetUser(db *database.Database) (
 	}
 
 	return
+}
+
+func (a *Authorizer) ServiceId() bson.ObjectId {
+	if a.srvc != nil {
+		return a.srvc.Id
+	}
+	return ""
 }
 
 func (a *Authorizer) SessionId() string {
