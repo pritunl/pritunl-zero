@@ -68,6 +68,9 @@ func (w *webSocketConn) Run(db *database.Database) {
 }
 
 func (w *webSocketConn) Close() {
+	defer func() {
+		recover()
+	}()
 	if w.back != nil {
 		w.back.Close()
 	}
