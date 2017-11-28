@@ -40,11 +40,18 @@ export default class Session extends React.Component<{}, {}> {
 					Install SSH Client
 				</a>
 				<a
-					className="pt-button pt-large pt-intent-danger pt-icon-delete"
+					className="pt-button pt-large pt-intent-warning pt-icon-delete"
 					style={css.button}
 					href="/logout"
 				>
 					Logout
+				</a>
+				<a
+					className="pt-button pt-large pt-intent-danger pt-icon-trash"
+					style={css.button}
+					href="/logout_all"
+				>
+					End All Sessions
 				</a>
 			</div>
 		</div>;
