@@ -13,7 +13,7 @@ const css = {
 	} as React.CSSProperties,
 	button: {
 		margin: '5px',
-		width: '160px',
+		width: '182px',
 	} as React.CSSProperties,
 };
 
