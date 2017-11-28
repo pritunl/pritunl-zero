@@ -103,7 +103,7 @@ func (w *webSocket) Director(req *http.Request) (
 }
 
 func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
-	authr *authorizer.Authorizer) {
+	db *database.Database, authr *authorizer.Authorizer) {
 
 	u, header := w.Director(r)
 
@@ -163,9 +163,11 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	conn := &webSocketConn{
 		front: frontConn,
 		back:  backConn,
+		authr: authr,
+		r:     r,
 	}
 
-	conn.Run()
+	conn.Run(db)
 }
 
 func getUpgradeHeaders(resp *http.Response) (header http.Header) {
