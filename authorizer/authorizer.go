@@ -110,6 +110,10 @@ func (a *Authorizer) ServiceId() bson.ObjectId {
 	return ""
 }
 
+func (a *Authorizer) GetSession() *session.Session {
+	return a.sess
+}
+
 func (a *Authorizer) SessionId() string {
 	if a.sess != nil {
 		return a.sess.Id
