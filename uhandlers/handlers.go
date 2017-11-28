@@ -39,6 +39,7 @@ func Register(engine *gin.Engine) {
 	dbGroup.GET("/auth/request", authRequestGet)
 	dbGroup.GET("/auth/callback", authCallbackGet)
 	sessGroup.GET("/logout", logoutGet)
+	sessGroup.GET("/logout_all", logoutAllGet)
 
 	engine.GET("/check", checkGet)
 

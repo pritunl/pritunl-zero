@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"strings"
@@ -108,6 +109,41 @@ func authSessionPost(c *gin.Context) {
 func logoutGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+
+	if authr.IsValid() {
+		err := authr.Remove(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+
+	c.Redirect(302, "/")
+}
+
+func logoutAllGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	sessions, err := session.GetAll(db, usr.Id, false)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	for _, sess := range sessions {
+		println(sess.Id)
+		err = sess.Remove(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
 
 	if authr.IsValid() {
 		err := authr.Remove(db)
