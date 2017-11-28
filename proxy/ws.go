@@ -7,12 +7,14 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
 	"github.com/pritunl/pritunl-zero/authorizer"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/search"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/validator"
 	"io"
 	"net/http"
 	"net/url"
@@ -36,11 +38,13 @@ type webSocket struct {
 }
 
 type webSocketConn struct {
+	authr *authorizer.Authorizer
+	r     *http.Request
 	back  *websocket.Conn
 	front *websocket.Conn
 }
 
-func (w *webSocketConn) Run() {
+func (w *webSocketConn) Run(db *database.Database) {
 	webSocketConnsLock.Lock()
 	webSocketConns.Add(w)
 	webSocketConnsLock.Unlock()

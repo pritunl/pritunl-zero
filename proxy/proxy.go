@@ -62,6 +62,9 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
+	db := database.GetDatabase()
+	defer db.Close()
+
 	clientIp := net.ParseIP(node.Self.GetRemoteAddr(r))
 	if clientIp != nil {
 		for _, network := range host.WhitelistNetworks {
@@ -69,18 +72,17 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 				if wsProxies != nil &&
 					r.Header.Get("Upgrade") == "websocket" {
 
-					wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, nil)
+					wsProxies[rand.Intn(wsLen)].ServeHTTP(
+						w, r, db, authorizer.NewProxy())
 					return true
 				}
 
-				wProxies[rand.Intn(wLen)].ServeHTTP(w, r, nil)
+				wProxies[rand.Intn(wLen)].ServeHTTP(
+					w, r, authorizer.NewProxy())
 				return true
 			}
 		}
 	}
-
-	db := database.GetDatabase()
-	defer db.Close()
 
 	authr, err := authorizer.AuthorizeProxy(db, host.Service, w, r)
 	if err != nil {
@@ -154,7 +156,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
-		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, authr)
+		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, db, authr)
 		return true
 	}
 
