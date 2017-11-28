@@ -44,6 +44,17 @@ func (s *Session) Active() bool {
 	return true
 }
 
+func (s *Session) Update(db *database.Database) (err error) {
+	coll := db.Sessions()
+
+	err = coll.FindOneId(s.Id, s)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *Session) Remove(db *database.Database) (err error) {
 	err = Remove(db, s.Id)
 	if err != nil {
