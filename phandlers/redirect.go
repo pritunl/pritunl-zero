@@ -5,5 +5,9 @@ import (
 )
 
 func redirect(c *gin.Context) {
-	c.Redirect(302, "/")
+	if c.Request.Header.Get("Upgrade") == "websocket" {
+		c.AbortWithStatus(404)
+	} else {
+		c.Redirect(302, "/")
+	}
 }
