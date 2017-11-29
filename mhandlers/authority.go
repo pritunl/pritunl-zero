@@ -196,6 +196,10 @@ func authorityPublicKeyGet(c *gin.Context) {
 	authrIds := []bson.ObjectId{}
 
 	for _, authrIdStr := range authrIdsStr {
+		if authrIdStr == "" {
+			continue
+		}
+
 		authrId, ok := utils.ParseObjectId(authrIdStr)
 		if !ok {
 			utils.AbortWithStatus(c, 400)
