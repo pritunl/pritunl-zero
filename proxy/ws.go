@@ -55,6 +55,104 @@ func (w *webSocketConn) Run(db *database.Database) {
 		webSocketConnsLock.Unlock()
 	}()
 
+	ticker := time.NewTicker(30 * time.Second)
+	closer := make(chan bool, 1)
+	waiter := sync.WaitGroup{}
+	waiter.Add(1)
+
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": errors.New(fmt.Sprintf("%s", r)),
+				}).Error("proxy: WebSocket update panic")
+				w.Close()
+			}
+		}()
+		defer func() {
+			waiter.Done()
+		}()
+
+		for {
+			select {
+			case <-ticker.C:
+				if w.authr.IsValid() {
+					usr, err := w.authr.GetUser(db)
+					if err != nil {
+						switch err.(type) {
+						case *database.NotFoundError:
+							break
+						default:
+							logrus.WithFields(logrus.Fields{
+								"error": err,
+							}).Error("proxy: WebSocket user error")
+						}
+						w.Close()
+						return
+					}
+
+					sess := w.authr.GetSession()
+					if sess != nil {
+						err = sess.Update(db)
+						if err != nil {
+							switch err.(type) {
+							case *database.NotFoundError:
+								break
+							default:
+								logrus.WithFields(logrus.Fields{
+									"error": err,
+								}).Error("proxy: WebSocket session error")
+							}
+							w.Close()
+							return
+						}
+
+						if !sess.Active() {
+							w.Close()
+							return
+						}
+					}
+
+					srvcId := w.authr.ServiceId()
+					if srvcId != "" {
+						srvc, err := service.Get(db, srvcId)
+						if err != nil {
+							switch err.(type) {
+							case *database.NotFoundError:
+								break
+							default:
+								logrus.WithFields(logrus.Fields{
+									"error": err,
+								}).Error("proxy: WebSocket service error")
+							}
+							w.Close()
+							return
+						}
+
+						errData, err := validator.ValidateProxy(
+							db, usr, w.authr.IsApi(), srvc, w.r)
+						if err != nil {
+							logrus.WithFields(logrus.Fields{
+								"error": err,
+							}).Error("proxy: WebSocket validate error")
+							w.Close()
+							return
+						}
+
+						if errData != nil {
+							w.Close()
+							return
+						}
+					}
+				}
+
+				break
+			case <-closer:
+				return
+			}
+		}
+	}()
+
 	wait := make(chan bool, 2)
 	go func() {
 		io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
@@ -65,6 +163,11 @@ func (w *webSocketConn) Run(db *database.Database) {
 		wait <- true
 	}()
 	<-wait
+
+	ticker.Stop()
+	closer <- true
+	w.Close()
+	waiter.Wait()
 }
 
 func (w *webSocketConn) Close() {
