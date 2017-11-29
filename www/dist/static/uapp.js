@@ -37413,12 +37413,12 @@ System.registerDynamic("uapp/components/Session.js", ["npm:react@15.6.1.js"], tr
         },
         button: {
             margin: '5px',
-            width: '160px'
+            width: '182px'
         }
     };
     class Session extends React.Component {
         render() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Pritunl Zero User Console"), React.createElement("span", { style: css.description }, "To validate an SSH key install the client and run \"pritunl-ssh\"")), React.createElement("div", { className: "layout horizontal center-justified wrap", style: css.buttons }, React.createElement("a", { className: "pt-button pt-large pt-intent-primary pt-icon-download", style: css.button, href: "https://docs.pritunl.com" }, "Install Client"), React.createElement("a", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, href: "/logout" }, "Logout")));
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Pritunl Zero User Console"), React.createElement("span", { style: css.description }, "To validate an SSH key install the client and run \"pritunl-ssh\"")), React.createElement("div", { className: "layout horizontal center-justified wrap", style: css.buttons }, React.createElement("a", { className: "pt-button pt-large pt-intent-primary pt-icon-download", style: css.button, href: "https://docs.pritunl.com/v1/docs/ssh-client" }, "Install SSH Client"), React.createElement("a", { className: "pt-button pt-large pt-intent-warning pt-icon-delete", style: css.button, href: "/logout" }, "Logout"), React.createElement("a", { className: "pt-button pt-large pt-intent-danger pt-icon-trash", style: css.button, href: "/logout_all" }, "End All Sessions")));
         }
     }
     exports.default = Session;

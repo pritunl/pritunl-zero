@@ -25613,9 +25613,9 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                     this.toggleType('user');
                 } }), React.createElement(PageSwitch_1.default, { label: "Proxy", help: "Provides access to the services added to the node.", checked: node.type.indexOf('proxy') !== -1, onToggle: () => {
                     this.toggleType('proxy');
-                } }), React.createElement(PageInput_1.default, { hidden: node.type.indexOf('_') === -1 || node.type.indexOf('management') === -1, label: "Management Domain", help: "Domain that will be used to access the management interface", type: "text", placeholder: "Enter management domain", value: node.management_domain, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { hidden: node.type.indexOf('_') === -1 || node.type.indexOf('management') === -1, label: "Management Domain", help: "Domain that will be used to access the management interface.", type: "text", placeholder: "Enter management domain", value: node.management_domain, onChange: val => {
                     this.set('management_domain', val);
-                } }), React.createElement(PageInput_1.default, { hidden: node.type.indexOf('_') === -1 || node.type.indexOf('user') === -1, label: "User Domain", help: "Domain that will be used to access the user interface", type: "text", placeholder: "Enter user domain", value: node.user_domain, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { hidden: node.type.indexOf('_') === -1 || node.type.indexOf('user') === -1, label: "User Domain", help: "Domain that will be used to access the user interface.", type: "text", placeholder: "Enter user domain", value: node.user_domain, onChange: val => {
                     this.set('user_domain', val);
                 } }), React.createElement("label", { className: "pt-label", style: css.label }, "Protocol and Port", React.createElement("div", { className: "pt-control-group", style: css.inputGroup }, React.createElement("div", { className: "pt-select", style: css.protocol }, React.createElement("select", { value: node.protocol || 'https', onChange: evt => {
                     this.set('protocol', evt.target.value);
