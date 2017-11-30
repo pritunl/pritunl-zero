@@ -92,7 +92,7 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request) (
 	return
 }
 
-func GetAll(db *database.Database, userId bson.ObjectId, showRemoved bool) (
+func GetAll(db *database.Database, userId bson.ObjectId, includeRemoved bool) (
 	sessions []*Session, err error) {
 
 	coll := db.Sessions()
@@ -105,7 +105,7 @@ func GetAll(db *database.Database, userId bson.ObjectId, showRemoved bool) (
 	sess := &Session{}
 	for cursor.Next(sess) {
 		if !sess.Active() {
-			if !showRemoved {
+			if !includeRemoved {
 				continue
 			}
 			sess.Removed = true
