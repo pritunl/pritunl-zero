@@ -95,7 +95,7 @@ func GetCertificates(db *database.Database, userId bson.ObjectId,
 
 	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
 
-	cursor := qury.Sort("-$natural").Skip(skip).Limit(pageCount).Iter()
+	cursor := qury.Sort("-timestamp").Skip(skip).Limit(pageCount).Iter()
 
 	cert := &Certificate{}
 	for cursor.Next(cert) {
