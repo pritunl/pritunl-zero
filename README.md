@@ -139,6 +139,21 @@ sudo systemctl start mongod pritunl-zero
 sudo systemctl enable mongod pritunl-zero
 ```
 
+### debian strech
+
+```bash
+sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
+deb http://repo.pritunl.com/stable/apt stretch main
+EOF
+
+sudo apt-get install dirmngr
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+sudo apt-get update
+sudo apt-get --assume-yes install pritunl-zero mongodb-server
+sudo systemctl start mongodb pritunl-zero
+sudo systemctl enable mongodb pritunl-zero
+```
+
 ### fedora 25
 
 ```bash
@@ -257,6 +272,20 @@ sudo systemctl enable pritunl-zero mongodb
 ```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
 deb http://repo.pritunl.com/stable/apt zesty main
+EOF
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+sudo apt-get update
+sudo apt-get --assume-yes install pritunl-zero mongodb-server
+sudo systemctl start pritunl-zero mongodb
+sudo systemctl enable pritunl-zero mongodb
+```
+
+### ubuntu artful
+
+```bash
+sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
+deb http://repo.pritunl.com/stable/apt artful main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
