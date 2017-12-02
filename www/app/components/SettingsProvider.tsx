@@ -293,7 +293,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			/>
-			<label className="pt-label">
+			<label className="pt-label" hidden={!provider.auto_create}>
 				Default Roles
 				<Help
 					title="Default Roles"
@@ -308,6 +308,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				label="Add"
 				type="text"
 				placeholder="Add default role"
+				hidden={!provider.auto_create}
 				value={this.state.addRole}
 				onChange={(val: string): void => {
 					this.setState({
