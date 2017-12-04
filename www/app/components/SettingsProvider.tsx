@@ -348,6 +348,12 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				onToggle={(): void => {
 					let state = this.clone();
 					state.auto_create = !state.auto_create;
+
+					if (!state.auto_create &&
+							state.role_management === 'set_on_insert') {
+						state.role_management = 'merge';
+					}
+
 					this.props.onChange(state);
 				}}
 			/>
@@ -361,7 +367,10 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			>
-				<option value="set_on_insert">Set on insert</option>
+				<option
+					value="set_on_insert"
+					hidden={!provider.auto_create}
+				>Set on insert</option>
 				<option value="merge">Merge</option>
 				<option value="overwrite">Overwrite</option>
 			</PageSelect>
