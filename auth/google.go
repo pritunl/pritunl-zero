@@ -117,7 +117,7 @@ func GoogleRoles(provider *settings.Provider, username string) (
 
 	conf, err := google.JWTConfigFromJSON(
 		[]byte(provider.GoogleKey),
-		"https://www.googleapis.com/auth/admin.directory.group",
+		"https://www.googleapis.com/auth/admin.directory.group.readonly",
 	)
 	if err != nil {
 		err = &errortypes.ParseError{
