@@ -24,7 +24,6 @@ export default class Main extends React.Component<{}, {}> {
 		let vals = query.split('&');
 		for (let val of vals) {
 			let keyval = val.split('=');
-			console.log(val);
 			if (keyval[0] === 'ssh-token') {
 				sshToken = keyval[1];
 				break;
