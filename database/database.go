@@ -112,6 +112,11 @@ func (d *Database) SshCertificates() (coll *Collection) {
 	return
 }
 
+func (d *Database) KeybaseChallenges() (coll *Collection) {
+	coll = d.getCollection("keybase_challenges")
+	return
+}
+
 func (d *Database) AcmeChallenges() (coll *Collection) {
 	coll = d.getCollection("acme_challenges")
 	return
