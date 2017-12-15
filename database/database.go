@@ -272,6 +272,15 @@ func addIndexes() (err error) {
 		}
 	}
 	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"keybase"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"type"},
 		Background: true,
 	})
