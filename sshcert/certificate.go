@@ -1,9 +1,12 @@
 package sshcert
 
 import (
+	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/agent"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -107,6 +110,55 @@ func GetCertificates(db *database.Database, userId bson.ObjectId,
 	if err != nil {
 		err = database.ParseError(err)
 		return
+	}
+
+	return
+}
+
+func NewCertificate(db *database.Database, usr *user.User,
+	agnt *agent.Agent, pubKey string) (cert *Certificate, err error) {
+
+	cert = &Certificate{
+		Id:               bson.NewObjectId(),
+		UserId:           usr.Id,
+		AuthorityIds:     []bson.ObjectId{},
+		Timestamp:        time.Now(),
+		PubKey:           pubKey,
+		Certificates:     []string{},
+		CertificatesInfo: []*Info{},
+		Agent:            agnt,
+	}
+
+	authrs, err := authority.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	for _, authr := range authrs {
+		if !authr.UserHasAccess(usr) {
+			continue
+		}
+
+		crt, certStr, e := authr.CreateCertificate(usr, pubKey)
+		if e != nil {
+			err = e
+			return
+		}
+
+		info := &Info{
+			Expires:    time.Unix(int64(crt.ValidBefore), 0),
+			Serial:     fmt.Sprintf("%d", crt.Serial),
+			Principals: crt.ValidPrincipals,
+			Extensions: []string{},
+		}
+
+		for permission := range crt.Permissions.Extensions {
+			info.Extensions = append(info.Extensions, permission)
+		}
+
+		cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)
+		cert.Certificates = append(cert.Certificates, certStr)
+		cert.CertificatesInfo = append(cert.CertificatesInfo, info)
 	}
 
 	return
