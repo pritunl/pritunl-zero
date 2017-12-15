@@ -17,6 +17,10 @@ const css = {
 		width: '200px',
 		margin: '5px',
 	} as React.CSSProperties,
+	keybase: {
+		width: '160px',
+		margin: '5px',
+	} as React.CSSProperties,
 	role: {
 		width: '150px',
 		margin: '5px',
@@ -56,6 +60,24 @@ export default class UsersFilter extends React.Component<Props, {}> {
 						filter.username = val;
 					} else {
 						delete filter.username;
+					}
+
+					this.props.onFilter(filter);
+				}}
+			/>
+			<SearchInput
+				style={css.keybase}
+				placeholder="Keybase"
+				value={this.props.filter.keybase}
+				onChange={(val: string): void => {
+					let filter = {
+						...this.props.filter,
+					};
+
+					if (val) {
+						filter.keybase = val;
+					} else {
+						delete filter.keybase;
 					}
 
 					this.props.onFilter(filter);
