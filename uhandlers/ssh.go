@@ -14,7 +14,7 @@ import (
 
 type sshValidateData struct {
 	Token     string `json:"token"`
-	PublicKey string `json:"public_key"`
+	PublicKey string `json:"public_key,omitempty"`
 }
 
 type sshCertificateData struct {
