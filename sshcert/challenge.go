@@ -11,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -130,6 +131,8 @@ func (c *Challenge) Insert(db *database.Database) (err error) {
 
 func NewChallenge(db *database.Database, pubKey string) (
 	chal *Challenge, err error) {
+
+	pubKey = strings.TrimSpace(pubKey)
 
 	if len(pubKey) > settings.System.SshPubKeyLen {
 		err = errortypes.ParseError{
