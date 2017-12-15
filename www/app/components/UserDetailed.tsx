@@ -282,6 +282,17 @@ export default class UserDetailed extends React.Component<Props, State> {
 						}}
 					/>
 					<PageInput
+						disabled={this.state.locked}
+						label="Keybase Username"
+						help="Keybase username if user has associated Keybase account. Clear the value to allow user to associate a different Keybase account."
+						type="text"
+						placeholder="Enter Keybase username"
+						value={user.keybase}
+						onChange={(val): void => {
+							this.set('keybase', val);
+						}}
+					/>
+					<PageInput
 						hidden={user.type !== 'api'}
 						disabled={this.state.locked}
 						readOnly={true}
