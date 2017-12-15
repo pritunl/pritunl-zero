@@ -248,6 +248,14 @@ func usersGet(c *gin.Context) {
 		}
 	}
 
+	keybase := strings.TrimSpace(c.Query("keybase"))
+	if keybase != "" {
+		query["keybase"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", keybase),
+			"$options": "i",
+		}
+	}
+
 	role := strings.TrimSpace(c.Query("role"))
 	if role != "" {
 		query["roles"] = role
