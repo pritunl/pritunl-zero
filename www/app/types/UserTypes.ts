@@ -25,6 +25,7 @@ export interface User {
 
 export interface Filter {
 	username?: string;
+	keybase?: string;
 	type?: string;
 	administrator?: boolean;
 	disabled?: boolean;
