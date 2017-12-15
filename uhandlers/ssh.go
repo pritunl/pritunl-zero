@@ -96,7 +96,7 @@ func sshValidatePut(c *gin.Context) {
 
 	event.Publish(db, "ssh_challenge", chal.Id)
 
-	c.JSON(200, chal)
+	c.Status(200)
 }
 
 func sshValidateDelete(c *gin.Context) {
@@ -149,7 +149,7 @@ func sshValidateDelete(c *gin.Context) {
 
 	event.Publish(db, "ssh_challenge", chal.Id)
 
-	c.JSON(200, chal)
+	c.Status(200)
 }
 
 func sshChallengePut(c *gin.Context) {
