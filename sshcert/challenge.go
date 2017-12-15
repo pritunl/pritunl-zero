@@ -61,6 +61,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		"state": "",
 	}, c)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
@@ -84,6 +85,7 @@ func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
 		"state": "",
 	}, c)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
