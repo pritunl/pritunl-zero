@@ -11,6 +11,7 @@ export interface User {
 	type?: string;
 	username?: string;
 	password?: string;
+	keybase?: string;
 	token?: string;
 	secret?: string;
 	last_active?: string;
