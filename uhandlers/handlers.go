@@ -45,6 +45,16 @@ func Register(engine *gin.Engine) {
 
 	authGroup.GET("/csrf", csrfGet)
 
+	sessGroup.GET("/keybase", sshGet)
+	csrfGroup.PUT("/keybase/validate", keybaseValidatePut)
+	csrfGroup.DELETE("/keybase/validate", keybaseValidateDelete)
+	dbGroup.PUT("/keybase/check", keybaseCheckPut)
+	dbGroup.POST("/keybase/challenge", keybaseChallengePost)
+	dbGroup.PUT("/keybase/challenge", keybaseChallengePut)
+
+	dbGroup.POST("/keybase/associate", keybaseAssociatePost)
+	dbGroup.GET("/keybase/associate/:token", keybaseAssociateGet)
+
 	sessGroup.GET("/ssh", sshGet)
 	csrfGroup.PUT("/ssh/validate/:ssh_token", sshValidatePut)
 	csrfGroup.DELETE("/ssh/validate/:ssh_token", sshValidateDelete)
