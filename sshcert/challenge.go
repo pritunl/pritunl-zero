@@ -1,11 +1,9 @@
 package sshcert
 
 import (
-	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/agent"
-	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -33,52 +31,14 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		}
 	}
 
-	cert := &Certificate{
-		Id:               bson.NewObjectId(),
-		UserId:           usr.Id,
-		AuthorityIds:     []bson.ObjectId{},
-		Timestamp:        time.Now(),
-		PubKey:           c.PubKey,
-		Certificates:     []string{},
-		CertificatesInfo: []*Info{},
-	}
-
 	agnt, err := agent.Parse(db, r)
 	if err != nil {
 		return
 	}
-	cert.Agent = agnt
 
-	authrs, err := authority.GetAll(db)
+	cert, err := NewCertificate(db, usr, agnt, c.PubKey)
 	if err != nil {
 		return
-	}
-
-	for _, authr := range authrs {
-		if !authr.UserHasAccess(usr) {
-			continue
-		}
-
-		crt, certStr, e := authr.CreateCertificate(usr, c.PubKey)
-		if e != nil {
-			err = e
-			return
-		}
-
-		info := &Info{
-			Expires:    time.Unix(int64(crt.ValidBefore), 0),
-			Serial:     fmt.Sprintf("%d", crt.Serial),
-			Principals: crt.ValidPrincipals,
-			Extensions: []string{},
-		}
-
-		for permission := range crt.Permissions.Extensions {
-			info.Extensions = append(info.Extensions, permission)
-		}
-
-		cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)
-		cert.Certificates = append(cert.Certificates, certStr)
-		cert.CertificatesInfo = append(cert.CertificatesInfo, info)
 	}
 
 	if len(cert.Certificates) == 0 {
