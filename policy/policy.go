@@ -30,6 +30,19 @@ type Policy struct {
 func (p *Policy) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	switch p.KeybaseMode {
+	case Optional, Required, Disabled:
+		break
+	case "":
+		p.KeybaseMode = Optional
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "keybase_mode_invalid",
+			Message: "Keybase mode is invalid",
+		}
+	}
+
 	return
 }
 
