@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/sshcert"
 	"github.com/pritunl/pritunl-zero/user"
@@ -44,6 +45,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		err = errortypes.WriteError{
 			errors.New("keybase: Challenge has already been answered"),
 		}
+		return
 	}
 
 	valid, err := VerifySig(c.Message(), signature, c.Username)
@@ -61,6 +63,19 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 
 	usr, err := user.GetKeybase(db, c.Username)
 	if err != nil {
+		return
+	}
+
+	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	if err != nil {
+		return
+	}
+
+	if keybaseMode == policy.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "keybase_disabled",
+			Message: "Keybase cannot be used with this user",
+		}
 		return
 	}
 
