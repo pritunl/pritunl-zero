@@ -88,13 +88,18 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	err = chal.Approve(db, usr, c.Request)
+	err, errData := chal.Approve(db, usr, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
 	event.Publish(db, "ssh_challenge", chal.Id)
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
 
 	c.Status(200)
 }
