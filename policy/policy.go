@@ -19,11 +19,12 @@ type Rule struct {
 }
 
 type Policy struct {
-	Id       bson.ObjectId    `bson:"_id,omitempty" json:"id"`
-	Name     string           `bson:"name" json:"name"`
-	Services []bson.ObjectId  `bson:"services" json:"services"`
-	Roles    []string         `bson:"roles" json:"roles"`
-	Rules    map[string]*Rule `bson:"rules" json:"rules"`
+	Id          bson.ObjectId    `bson:"_id,omitempty" json:"id"`
+	Name        string           `bson:"name" json:"name"`
+	Services    []bson.ObjectId  `bson:"services" json:"services"`
+	Roles       []string         `bson:"roles" json:"roles"`
+	Rules       map[string]*Rule `bson:"rules" json:"rules"`
+	KeybaseMode string           `bson:"keybase_mode" json:"keybase_mode"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
