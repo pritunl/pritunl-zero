@@ -14,6 +14,7 @@ export interface Policy {
 	services?: string[];
 	roles?: string[];
 	rules?: {[key: string]: Rule};
+	keybase_mode?: string;
 }
 
 export type Policies = Policy[];
