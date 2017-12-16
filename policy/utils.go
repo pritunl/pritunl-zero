@@ -2,6 +2,7 @@ package policy
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -101,6 +102,32 @@ func Remove(db *database.Database, policyId bson.ObjectId) (err error) {
 	if err != nil {
 		err = database.ParseError(err)
 		return
+	}
+
+	return
+}
+
+func UserKeybaseMode(db *database.Database, usr *user.User) (
+	mode string, err error) {
+
+	policies, err := GetRoles(db, usr.Roles)
+	if err != nil {
+		return
+	}
+
+	mode = Optional
+
+	for _, polcy := range policies {
+		switch polcy.KeybaseMode {
+		case Disabled:
+			if mode == Optional {
+				mode = Disabled
+			}
+			break
+		case Required:
+			mode = Required
+			break
+		}
 	}
 
 	return
