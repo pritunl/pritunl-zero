@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -24,12 +25,26 @@ type Challenge struct {
 }
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
-	r *http.Request) (err error) {
+	r *http.Request) (err error, errData *errortypes.ErrorData) {
+
+	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	if err != nil {
+		return
+	}
+
+	if keybaseMode == policy.Required {
+		errData = &errortypes.ErrorData{
+			Error:   "keybase_required",
+			Message: "Keybase is required for this user",
+		}
+		return
+	}
 
 	if c.State != "" {
 		err = errortypes.WriteError{
 			errors.New("sshcert: Challenge has already been answered"),
 		}
+		return
 	}
 
 	agnt, err := agent.Parse(db, r)
@@ -74,6 +89,7 @@ func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
 		err = errortypes.WriteError{
 			errors.New("sshcert: Challenge has already been answered"),
 		}
+		return
 	}
 
 	c.State = Denied
