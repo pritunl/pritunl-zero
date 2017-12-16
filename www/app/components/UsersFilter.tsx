@@ -18,7 +18,7 @@ const css = {
 		margin: '5px',
 	} as React.CSSProperties,
 	keybase: {
-		width: '160px',
+		width: '175px',
 		margin: '5px',
 	} as React.CSSProperties,
 	role: {
