@@ -12,11 +12,12 @@ import (
 )
 
 type policyData struct {
-	Id       bson.ObjectId           `json:"id"`
-	Name     string                  `json:"name"`
-	Services []bson.ObjectId         `json:"services"`
-	Roles    []string                `json:"roles"`
-	Rules    map[string]*policy.Rule `json:"rules"`
+	Id          bson.ObjectId           `json:"id"`
+	Name        string                  `json:"name"`
+	Services    []bson.ObjectId         `json:"services"`
+	Roles       []string                `json:"roles"`
+	Rules       map[string]*policy.Rule `json:"rules"`
+	KeybaseMode string                  `json:"keybase_mode"`
 }
 
 func policyPut(c *gin.Context) {
@@ -49,12 +50,14 @@ func policyPut(c *gin.Context) {
 	cert.Services = data.Services
 	cert.Roles = data.Roles
 	cert.Rules = data.Rules
+	cert.KeybaseMode = data.KeybaseMode
 
 	fields := set.NewSet(
 		"name",
 		"services",
 		"roles",
 		"rules",
+		"keybase_mode",
 	)
 
 	errData, err := cert.Validate(db)
@@ -96,10 +99,11 @@ func policyPost(c *gin.Context) {
 	}
 
 	cert := &policy.Policy{
-		Name:     data.Name,
-		Services: data.Services,
-		Roles:    data.Roles,
-		Rules:    data.Rules,
+		Name:        data.Name,
+		Services:    data.Services,
+		Roles:       data.Roles,
+		Rules:       data.Rules,
+		KeybaseMode: data.KeybaseMode,
 	}
 
 	errData, err := cert.Validate(db)
