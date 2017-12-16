@@ -137,7 +137,7 @@ func keybaseValidateDelete(c *gin.Context) {
 	}
 
 	if errData != nil {
-		c.JSON(406, errData)
+		c.JSON(400, errData)
 		return
 	}
 
@@ -199,7 +199,7 @@ func keybaseCheckPut(c *gin.Context) {
 	}
 
 	if errData != nil {
-		c.JSON(406, errData)
+		c.JSON(400, errData)
 		return
 	}
 
