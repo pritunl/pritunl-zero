@@ -6,6 +6,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -51,10 +52,24 @@ func (a *Association) Validate(signature string) (
 func (a *Association) Approve(db *database.Database,
 	usr *user.User) (err error, errData *errortypes.ErrorData) {
 
+	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	if err != nil {
+		return
+	}
+
+	if keybaseMode == policy.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "keybase_disabled",
+			Message: "Keybase cannot be used with this user",
+		}
+		return
+	}
+
 	if a.State != "" {
 		err = errortypes.WriteError{
 			errors.New("keybase: Association has already been answered"),
 		}
+		return
 	}
 
 	if usr.Keybase != "" {
@@ -112,6 +127,7 @@ func (a *Association) Deny(db *database.Database, usr *user.User) (err error) {
 		err = errortypes.WriteError{
 			errors.New("keybase: Association has already been answered"),
 		}
+		return
 	}
 
 	a.State = Denied
