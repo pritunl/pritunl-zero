@@ -6,6 +6,7 @@ import * as PolicyActions from '../actions/PolicyActions';
 import ServicesStore from '../stores/ServicesStore';
 import PolicyRule from './PolicyRule';
 import PageInput from './PageInput';
+import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
 import PageInputButton from './PageInputButton';
 import PageInfo from './PageInfo';
@@ -452,6 +453,19 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{servicesSelect}
 					</PageSelectButton>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="Keybase Mode"
+						help="Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled."
+						value={policy.keybase_mode}
+						onChange={(val): void => {
+							this.set('keybase_mode', val);
+						}}
+					>
+						<option value="optional">Optional</option>
+						<option value="required">Required</option>
+						<option value="disabled">Disabled</option>
+					</PageSelect>
 					<label className="pt-label">
 						Roles
 						<Help
