@@ -7,7 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
-	"github.com/pritunl/pritunl-zero/sshcert"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
 	"time"
 )
@@ -62,7 +62,7 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	chal, err := sshcert.GetChallenge(db, sshToken)
+	chal, err := ssh.GetChallenge(db, sshToken)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -120,7 +120,7 @@ func sshValidateDelete(c *gin.Context) {
 		return
 	}
 
-	chal, err := sshcert.GetChallenge(db, sshToken)
+	chal, err := ssh.GetChallenge(db, sshToken)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -171,7 +171,7 @@ func sshChallengePut(c *gin.Context) {
 		return
 	}
 
-	chal, err := sshcert.GetChallenge(db, data.Token)
+	chal, err := ssh.GetChallenge(db, data.Token)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -185,7 +185,7 @@ func sshChallengePut(c *gin.Context) {
 	token := chal.Id
 
 	sync := func() {
-		chal, err = sshcert.GetChallenge(db, data.Token)
+		chal, err = ssh.GetChallenge(db, data.Token)
 		if err != nil {
 			switch err.(type) {
 			case *database.NotFoundError:
@@ -200,8 +200,8 @@ func sshChallengePut(c *gin.Context) {
 
 	update := func() bool {
 		switch chal.State {
-		case sshcert.Approved:
-			cert, err := sshcert.GetCertificate(db, chal.CertificateId)
+		case ssh.Approved:
+			cert, err := ssh.GetCertificate(db, chal.CertificateId)
 			if err != nil {
 				switch err.(type) {
 				case *database.NotFoundError:
@@ -221,10 +221,10 @@ func sshChallengePut(c *gin.Context) {
 			c.JSON(200, resp)
 
 			return true
-		case sshcert.Unavailable:
+		case ssh.Unavailable:
 			c.Status(412)
 			return true
-		case sshcert.Denied:
+		case ssh.Denied:
 			c.Status(401)
 			return true
 		}
@@ -240,13 +240,13 @@ func sshChallengePut(c *gin.Context) {
 	ticker := time.NewTicker(3 * time.Second)
 	notify := make(chan bool, 3)
 
-	listenerId := sshcert.Register(token, func() {
+	listenerId := ssh.Register(token, func() {
 		defer func() {
 			recover()
 		}()
 		notify <- true
 	})
-	defer sshcert.Unregister(token, listenerId)
+	defer ssh.Unregister(token, listenerId)
 
 	for {
 		select {
@@ -283,7 +283,7 @@ func sshChallengePost(c *gin.Context) {
 		return
 	}
 
-	chal, err := sshcert.NewChallenge(db, data.PublicKey)
+	chal, err := ssh.NewChallenge(db, data.PublicKey)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:

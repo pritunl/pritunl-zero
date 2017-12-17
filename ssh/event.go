@@ -1,4 +1,4 @@
-package sshcert
+package ssh
 
 import (
 	"github.com/pritunl/pritunl-zero/event"

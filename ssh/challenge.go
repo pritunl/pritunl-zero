@@ -1,4 +1,4 @@
-package sshcert
+package ssh
 
 import (
 	"github.com/dropbox/godropbox/container/set"

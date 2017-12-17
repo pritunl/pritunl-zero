@@ -9,7 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/sshcert"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -38,7 +38,7 @@ func (c *Challenge) Message() string {
 }
 
 func (c *Challenge) Validate(db *database.Database, r *http.Request,
-	signature string) (certf *sshcert.Certificate, err error,
+	signature string) (certf *ssh.Certificate, err error,
 	errData *errortypes.ErrorData) {
 
 	if c.State != "" {
@@ -91,7 +91,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	cert, err := sshcert.NewCertificate(db, usr, agnt, c.PubKey)
+	cert, err := ssh.NewCertificate(db, usr, agnt, c.PubKey)
 	if err != nil {
 		return
 	}

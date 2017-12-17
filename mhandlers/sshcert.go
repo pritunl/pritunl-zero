@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
-	"github.com/pritunl/pritunl-zero/sshcert"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
 	"strconv"
 )
 
 type sshcertsData struct {
-	Certificates []*sshcert.Certificate `json:"certificates"`
-	Count        int                    `json:"count"`
+	Certificates []*ssh.Certificate `json:"certificates"`
+	Count        int                `json:"count"`
 }
 
 func sshcertsGet(c *gin.Context) {
@@ -36,7 +36,7 @@ func sshcertsGet(c *gin.Context) {
 		return
 	}
 
-	certs, count, err := sshcert.GetCertificates(db, userId, page, pageCount)
+	certs, count, err := ssh.GetCertificates(db, userId, page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

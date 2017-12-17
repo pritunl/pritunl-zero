@@ -1,4 +1,4 @@
-package sshcert
+package ssh
 
 const (
 	Approved    = "approved"
