@@ -2,6 +2,8 @@ package authority
 
 import (
 	"crypto/rand"
+	"crypto/x509"
+	"encoding/pem"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
@@ -121,6 +123,30 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	}
 
 	certMarshaled = string(MarshalCertificate(cert, comment))
+
+	return
+}
+
+func (a *Authority) Export(passphrase string) (encKey string, err error) {
+	block, _ := pem.Decode([]byte(a.PrivateKey))
+
+	encBlock, err := x509.EncryptPEMBlock(
+		rand.Reader,
+		block.Type,
+		block.Bytes,
+		[]byte(passphrase),
+		x509.PEMCipherAES256,
+	)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to encrypt private key"),
+		}
+		return
+	}
+
+	encodedBlock := pem.EncodeToMemory(encBlock)
+
+	encKey = string(encodedBlock)
 
 	return
 }
