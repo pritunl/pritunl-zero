@@ -179,6 +179,7 @@ func NewChallenge(db *database.Database, username, pubKey string) (
 
 	chal = &Challenge{
 		Id:        token,
+		Type:      CertificateChallenge,
 		Timestamp: time.Now(),
 		Username:  username,
 		PubKey:    pubKey,
