@@ -87,12 +87,12 @@ func keybaseValidatePut(c *gin.Context) {
 		return
 	}
 
+	event.Publish(db, "keybase_association", asc.Id)
+
 	if errData != nil {
 		c.JSON(400, errData)
 		return
 	}
-
-	event.Publish(db, "keybase_association", asc.Id)
 
 	c.Status(200)
 }
