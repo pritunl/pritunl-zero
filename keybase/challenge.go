@@ -63,6 +63,13 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 
 	usr, err := user.GetKeybase(db, c.Username)
 	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			err = nil
+			errData = &errortypes.ErrorData{
+				Error:   "invalid_keybase",
+				Message: "Keybase username is invalid",
+			}
+		}
 		return
 	}
 
