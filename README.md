@@ -37,6 +37,11 @@ EOF
 sudo yum -y install mongodb-org
 sudo service mongod start
 
+# Install Keybase
+go get -u github.com/keybase/client/go/keybase
+go install -tags production github.com/keybase/client/go/keybase
+sudo cp -f --preserve=mode ~/go/bin/keybase /usr/bin/pritunl-keybase
+
 # Install Pritunl Zero
 go get -u github.com/pritunl/pritunl-zero
 
