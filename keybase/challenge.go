@@ -119,6 +119,15 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
+	if len(cert.Certificates) == 0 {
+		errData = &errortypes.ErrorData{
+			Error: "certificate_unavailable",
+			Message: "Cerification was approved but no " +
+				"certificates are available",
+		}
+		return
+	}
+
 	certf = cert
 
 	return
