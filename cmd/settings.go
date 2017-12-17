@@ -77,3 +77,17 @@ func SettingsSet() (err error) {
 
 	return
 }
+
+func SettingsUnset() (err error) {
+	group := flag.Arg(1)
+	key := flag.Arg(2)
+	db := database.GetDatabase()
+	defer db.Close()
+
+	err = settings.Unset(db, group, key)
+	if err != nil {
+		return
+	}
+
+	return
+}
