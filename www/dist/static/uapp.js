@@ -11256,6 +11256,79 @@ System.registerDynamic("npm:react-dom@15.6.1.js", ["npm:react-dom@15.6.1/index.j
       GLOBAL = global;
   module.exports = $__require("npm:react-dom@15.6.1/index.js");
 });
+System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "npm:superagent@3.8.1.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@15.6.1.js");
+    const SuperAgent = $__require("npm:superagent@3.8.1.js");
+    const Csrf = $__require("uapp/Csrf.js");
+    const Alert = $__require("uapp/Alert.js");
+    const Session_1 = $__require("uapp/components/Session.js");
+    const css = {
+        body: {
+            padding: '0 10px'
+        },
+        description: {
+            opacity: 0.7
+        },
+        buttons: {
+            marginTop: '15px'
+        },
+        button: {
+            margin: '5px',
+            width: '116px'
+        }
+    };
+    class Validate extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                disabled: false,
+                answered: false
+            };
+        }
+        render() {
+            if (this.state.answered) {
+                return React.createElement(Session_1.default, null);
+            }
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        if (res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
+                        } else if (err) {
+                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                        } else {
+                            Alert.success('Successfully approved SSH key', 0);
+                        }
+                        this.setState(Object.assign({}, this.state, { answered: true }));
+                        window.history.replaceState(null, null, window.location.pathname);
+                    });
+                } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        if (res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
+                        } else if (err) {
+                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
+                            return;
+                        } else {
+                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
+                        }
+                        this.setState(Object.assign({}, this.state, { answered: true }));
+                        window.history.replaceState(null, null, window.location.pathname);
+                    });
+                } }, "Deny")));
+        }
+    }
+    exports.default = Validate;
+    
+});
 System.registerDynamic("npm:@blueprintjs/core@1.33.0/dist/common/interactionMode.js", [], true, function ($__require, exports, module) {
     /*
      * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
@@ -37424,7 +37497,7 @@ System.registerDynamic("uapp/components/Session.js", ["npm:react@15.6.1.js"], tr
     exports.default = Session;
     
 });
-System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "npm:superagent@3.8.1.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Keybase.js", ["npm:react@15.6.1.js", "npm:superagent@3.8.1.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -37462,31 +37535,37 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "n
             if (this.state.answered) {
                 return React.createElement(Session_1.default, null);
             }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Associate Keybase Account"), React.createElement("span", { style: css.description }, "If you did not initiate this association deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    SuperAgent.put('/keybase/validate').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).send({
+                        token: this.props.token,
+                        signature: this.props.signature
+                    }).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                         if (res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
+                            Alert.error('Keybase association request has expired', 0);
                         } else if (err) {
-                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                            Alert.errorRes(res, 'Failed to associate keybase', 0);
                         } else {
-                            Alert.success('Successfully approved SSH key', 0);
+                            Alert.success('Successfully associated keybase', 0);
                         }
                         this.setState(Object.assign({}, this.state, { answered: true }));
                         window.history.replaceState(null, null, window.location.pathname);
                     });
                 } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    SuperAgent.delete('/keybase/validate').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).send({
+                        token: this.props.token,
+                        signature: this.props.signature
+                    }).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                         if (res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
+                            Alert.error('Keybase association request has expired', 0);
                         } else if (err) {
-                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
+                            Alert.errorRes(res, 'Failed to deny keybase association', 0);
                             return;
                         } else {
-                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
+                            Alert.error('Successfully denied keybase association. ' + 'Report this incident to an administrator.', 0);
                         }
                         this.setState(Object.assign({}, this.state, { answered: true }));
                         window.history.replaceState(null, null, window.location.pathname);
@@ -37497,7 +37576,7 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "n
     exports.default = Validate;
     
 });
-System.registerDynamic("uapp/components/Main.js", ["npm:react@15.6.1.js", "uapp/components/Session.js", "uapp/components/Validate.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Main.js", ["npm:react@15.6.1.js", "uapp/components/Session.js", "uapp/components/Validate.js", "uapp/components/Keybase.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -37506,6 +37585,7 @@ System.registerDynamic("uapp/components/Main.js", ["npm:react@15.6.1.js", "uapp/
     const React = $__require("npm:react@15.6.1.js");
     const Session_1 = $__require("uapp/components/Session.js");
     const Validate_1 = $__require("uapp/components/Validate.js");
+    const Keybase_1 = $__require("uapp/components/Keybase.js");
     const css = {
         card: {
             padding: '20px 10px',
@@ -37522,17 +37602,29 @@ System.registerDynamic("uapp/components/Main.js", ["npm:react@15.6.1.js", "uapp/
     class Main extends React.Component {
         render() {
             let sshToken = '';
+            let keybaseToken = '';
+            let keybaseSig = '';
             let query = window.location.search.substring(1);
             let vals = query.split('&');
             for (let val of vals) {
                 let keyval = val.split('=');
-                console.log(val);
                 if (keyval[0] === 'ssh-token') {
                     sshToken = keyval[1];
-                    break;
+                } else if (keyval[0] === 'keybase-token') {
+                    keybaseToken = keyval[1];
+                } else if (keyval[0] === 'keybase-sig') {
+                    keybaseSig = decodeURIComponent(keyval[1]).replace(/\+/g, ' ');
                 }
             }
-            return React.createElement("div", { className: "pt-card pt-elevation-2", style: css.card }, sshToken ? React.createElement(Validate_1.default, { token: sshToken }) : React.createElement(Session_1.default, null));
+            let bodyElm;
+            if (sshToken) {
+                bodyElm = React.createElement(Validate_1.default, { token: sshToken });
+            } else if (keybaseToken && keybaseSig) {
+                bodyElm = React.createElement(Keybase_1.default, { token: keybaseToken, signature: keybaseSig });
+            } else {
+                bodyElm = React.createElement(Session_1.default, null);
+            }
+            return React.createElement("div", { className: "pt-card pt-elevation-2", style: css.card }, bodyElm);
         }
     }
     exports.default = Main;

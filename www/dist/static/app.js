@@ -16329,6 +16329,10 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@15.6.1.js", 
             width: '200px',
             margin: '5px'
         },
+        keybase: {
+            width: '175px',
+            margin: '5px'
+        },
         role: {
             width: '150px',
             margin: '5px'
@@ -16357,6 +16361,14 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@15.6.1.js", 
                         filter.username = val;
                     } else {
                         delete filter.username;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.keybase, placeholder: "Keybase", value: this.props.filter.keybase, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.keybase = val;
+                    } else {
+                        delete filter.keybase;
                     }
                     this.props.onFilter(filter);
                 } }), React.createElement(SearchInput_1.default, { style: css.role, placeholder: "Role", value: this.props.filter.role, onChange: val => {
@@ -25293,6 +25305,8 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@15.6.1.js",
                     this.set('username', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", help: "Password, leave blank to keep current password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
+                } }), React.createElement(PageInput_1.default, { disabled: this.state.locked, label: "Keybase Username", help: "Keybase username if user has associated Keybase account. Clear the value to allow user to associate a different Keybase account.", type: "text", placeholder: "Enter Keybase username", value: user.keybase, onChange: val => {
+                    this.set('keybase', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api', disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Token", help: "API token", type: "text", placeholder: "Save to generate token", value: user.token }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api' || !user.token || !user.secret, disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Secret", help: "API secret, will only be shown once", type: "text", placeholder: "", value: user.secret }), React.createElement(PageSwitch_1.default, { hidden: user.type !== 'api' || !user.token || !!user.secret, label: "Generate new token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", disabled: this.state.locked, checked: user.generate_secret, onToggle: () => {
                     this.set('generate_secret', !this.state.user.generate_secret);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
@@ -25898,7 +25912,7 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
     exports.default = PolicyRule;
     
 });
-System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/actions/PolicyActions.js", "app/stores/ServicesStore.js", "app/components/PolicyRule.js", "app/components/PageInput.js", "app/components/PageSelectButton.js", "app/components/PageInputButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/actions/PolicyActions.js", "app/stores/ServicesStore.js", "app/components/PolicyRule.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageSelectButton.js", "app/components/PageInputButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -25909,6 +25923,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const PolicyRule_1 = $__require("app/components/PolicyRule.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
+    const PageSelect_1 = $__require("app/components/PageSelect.js");
     const PageSelectButton_1 = $__require("app/components/PageSelectButton.js");
     const PageInputButton_1 = $__require("app/components/PageInputButton.js");
     const PageInfo_1 = $__require("app/components/PageInfo.js");
@@ -26124,7 +26139,9 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
                     this.set('name', val);
                 } }), React.createElement("label", { className: "pt-label", style: css.label }, "Services", React.createElement(Help_1.default, { title: "Services", content: "Services associated with this policy. All requests to the associated services must pass this policy check." }), React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { addService: val }));
-                }, onSubmit: this.onAddService }, servicesSelect), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this policy. All requests from users with associated roles must pass this policy check." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                }, onSubmit: this.onAddService }, servicesSelect), React.createElement(PageSelect_1.default, { disabled: this.state.disabled, label: "Keybase Mode", help: "Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled.", value: policy.keybase_mode, onChange: val => {
+                    this.set('keybase_mode', val);
+                } }, React.createElement("option", { value: "optional" }, "Optional"), React.createElement("option", { value: "required" }, "Required"), React.createElement("option", { value: "disabled" }, "Disabled")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this policy. All requests from users with associated roles must pass this policy check." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement(PolicyRule_1.default, { rule: location, onChange: val => {
                     this.setRule('location', val);
@@ -32447,7 +32464,7 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
                     let state = this.clone();
                     state.label = val;
                     this.props.onChange(state);
-                } }), React.createElement("label", { className: "pt-label" }, "Default Roles", React.createElement(Help_1.default, { title: "Default Roles", content: "When the user has authenticated for the first time these roles will be given to the user. These roles may also be used to update the users roles depending on the role management option." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add default role", value: this.state.addRole, onChange: val => {
+                } }), React.createElement("label", { className: "pt-label", hidden: !provider.auto_create }, "Default Roles", React.createElement(Help_1.default, { title: "Default Roles", content: "When the user has authenticated for the first time these roles will be given to the user. These roles may also be used to update the users roles depending on the role management option." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add default role", hidden: !provider.auto_create, value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: () => {
                     let rls = [...this.props.provider.default_roles];
@@ -32465,12 +32482,15 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@15.6.1.
                 } }), React.createElement(PageSwitch_1.default, { label: "Create user on authentication", help: "Create the user on first authentication. If this is disabled all users must be manually created before they are able to authenticate.", checked: provider.auto_create, onToggle: () => {
                     let state = this.clone();
                     state.auto_create = !state.auto_create;
+                    if (!state.auto_create && state.role_management === 'set_on_insert') {
+                        state.role_management = 'merge';
+                    }
                     this.props.onChange(state);
                 } }), React.createElement(PageSelect_1.default, { label: "Role Management", help: "When the user authenticates for the first time a user will be created and the users roles will be set to the roles configured above. This is referenced as set on insert. It may be desired to update the roles on subsequent authentications. For this the merge mode can be used which will take the users current roles and merge them with the roles configured above using all the roles from both sets. Overwrite mode will replace the users roles on every authentication with the roles configured above. It is important to consider that if a users roles are modified those modifications will be lost when the overwrite mode is used.", value: provider.role_management, onChange: val => {
                     let state = this.clone();
                     state.role_management = val;
                     this.props.onChange(state);
-                } }, React.createElement("option", { value: "set_on_insert" }, "Set on insert"), React.createElement("option", { value: "merge" }, "Merge"), React.createElement("option", { value: "overwrite" }, "Overwrite")), options, React.createElement("button", { className: "pt-button pt-intent-danger", onClick: () => {
+                } }, React.createElement("option", { value: "set_on_insert", hidden: !provider.auto_create }, "Set on insert"), React.createElement("option", { value: "merge" }, "Merge"), React.createElement("option", { value: "overwrite" }, "Overwrite")), options, React.createElement("button", { className: "pt-button pt-intent-danger", onClick: () => {
                     this.props.onRemove();
                 } }, "Remove"));
         }
