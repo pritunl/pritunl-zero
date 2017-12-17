@@ -21,6 +21,7 @@ Commands:
   unset       Unset a setting
   node        Start node
   clear-logs  Clear logs
+  export-ssh  Export SSH authorities for emergency client
 `
 
 func Init() {
@@ -73,6 +74,13 @@ func main() {
 	case "unset":
 		Init()
 		err := cmd.SettingsUnset()
+		if err != nil {
+			panic(err)
+		}
+		return
+	case "export-ssh":
+		Init()
+		err := cmd.ExportSsh()
 		if err != nil {
 			panic(err)
 		}
