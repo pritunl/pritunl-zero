@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/challenge"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -223,7 +224,12 @@ func sshChallengePut(c *gin.Context) {
 
 			return true
 		case ssh.Unavailable:
-			c.Status(412)
+			errData := &errortypes.ErrorData{
+				Error: "certificate_unavailable",
+				Message: "Cerification was approved but no " +
+					"certificates are available",
+			}
+			c.JSON(412, errData)
 			return true
 		case ssh.Denied:
 			c.Status(401)
