@@ -85,6 +85,24 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 	return
 }
 
+func Unset(db *database.Database, group string, key string) (
+	err error) {
+
+	coll := db.Settings()
+
+	_, err = coll.Upsert(bson.M{
+		"_id": group,
+	}, bson.M{"$unset": bson.M{
+		key: "",
+	}})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func setDefaults(obj interface{}) {
 	val := reflect.ValueOf(obj)
 	elm := val.Elem()
