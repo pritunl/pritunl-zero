@@ -18,6 +18,7 @@ Commands:
   version     Show version
   mongo       Set MongoDB URI
   set         Set a setting
+  unset       Unset a setting
   node        Start node
   clear-logs  Clear logs
 `
@@ -65,6 +66,13 @@ func main() {
 	case "set":
 		Init()
 		err := cmd.SettingsSet()
+		if err != nil {
+			panic(err)
+		}
+		return
+	case "unset":
+		Init()
+		err := cmd.SettingsUnset()
 		if err != nil {
 			panic(err)
 		}
