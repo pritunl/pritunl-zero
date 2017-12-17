@@ -58,6 +58,11 @@ func (a *Association) Approve(db *database.Database,
 	}
 
 	if keybaseMode == policy.Disabled {
+		err = a.Deny(db, usr)
+		if err != nil {
+			return
+		}
+
 		errData = &errortypes.ErrorData{
 			Error:   "keybase_disabled",
 			Message: "Keybase cannot be used with this user",
@@ -73,6 +78,11 @@ func (a *Association) Approve(db *database.Database,
 	}
 
 	if usr.Keybase != "" {
+		err = a.Deny(db, usr)
+		if err != nil {
+			return
+		}
+
 		errData = &errortypes.ErrorData{
 			Error:   "keybase_associated",
 			Message: "Keybase already associated with this user",
