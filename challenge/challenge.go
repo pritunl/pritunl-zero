@@ -1,4 +1,4 @@
-package ssh
+package challenge
 
 import (
 	"github.com/dropbox/godropbox/container/set"
@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -57,13 +58,13 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		return
 	}
 
-	cert, err := NewCertificate(db, usr, agnt, c.PubKey)
+	cert, err := ssh.NewCertificate(db, usr, agnt, c.PubKey)
 	if err != nil {
 		return
 	}
 
 	if len(cert.Certificates) == 0 {
-		c.State = Unavailable
+		c.State = ssh.Unavailable
 		c.CertificateId = ""
 	} else {
 		err = cert.Insert(db)
@@ -71,7 +72,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 			return
 		}
 
-		c.State = Approved
+		c.State = ssh.Approved
 		c.CertificateId = cert.Id
 	}
 
@@ -97,7 +98,7 @@ func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
 		return
 	}
 
-	c.State = Denied
+	c.State = ssh.Denied
 	c.CertificateId = ""
 
 	coll := db.SshChallenges()

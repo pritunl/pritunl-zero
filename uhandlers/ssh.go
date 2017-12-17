@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
+	"github.com/pritunl/pritunl-zero/challenge"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
@@ -62,7 +63,7 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	chal, err := ssh.GetChallenge(db, sshToken)
+	chal, err := challenge.GetChallenge(db, sshToken)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -120,7 +121,7 @@ func sshValidateDelete(c *gin.Context) {
 		return
 	}
 
-	chal, err := ssh.GetChallenge(db, sshToken)
+	chal, err := challenge.GetChallenge(db, sshToken)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -171,7 +172,7 @@ func sshChallengePut(c *gin.Context) {
 		return
 	}
 
-	chal, err := ssh.GetChallenge(db, data.Token)
+	chal, err := challenge.GetChallenge(db, data.Token)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -185,7 +186,7 @@ func sshChallengePut(c *gin.Context) {
 	token := chal.Id
 
 	sync := func() {
-		chal, err = ssh.GetChallenge(db, data.Token)
+		chal, err = challenge.GetChallenge(db, data.Token)
 		if err != nil {
 			switch err.(type) {
 			case *database.NotFoundError:
@@ -240,13 +241,13 @@ func sshChallengePut(c *gin.Context) {
 	ticker := time.NewTicker(3 * time.Second)
 	notify := make(chan bool, 3)
 
-	listenerId := ssh.Register(token, func() {
+	listenerId := challenge.Register(token, func() {
 		defer func() {
 			recover()
 		}()
 		notify <- true
 	})
-	defer ssh.Unregister(token, listenerId)
+	defer challenge.Unregister(token, listenerId)
 
 	for {
 		select {
@@ -283,7 +284,7 @@ func sshChallengePost(c *gin.Context) {
 		return
 	}
 
-	chal, err := ssh.NewChallenge(db, data.PublicKey)
+	chal, err := challenge.NewChallenge(db, data.PublicKey)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:

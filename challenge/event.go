@@ -1,4 +1,4 @@
-package ssh
+package challenge
 
 import (
 	"github.com/pritunl/pritunl-zero/event"
