@@ -39,7 +39,7 @@ const css = {
 		maxWidth: '140px',
 		borderRadius: '50%',
 	} as React.CSSProperties,
-	info: {
+	item: {
 		margin: 0,
 		textAlign: 'center',
 	} as React.CSSProperties,
@@ -88,15 +88,15 @@ export default class Validate extends React.Component<Props, State> {
 					<span className="pt-icon pt-icon-endorsed"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">Associate Keybase Account</h4>
-				<div>
+				<div hidden={!info.username}>
 					<img hidden={!info.picture} style={css.picture} src={info.picture}/>
-					<div hidden={!info.username} style={css.info}>
+					<div hidden={!info.username} style={css.item}>
 						Keybase: <span style={css.value}>{info.username}</span>
 					</div>
-					<div hidden={!info.twitter} style={css.info}>
+					<div hidden={!info.twitter} style={css.item}>
 						Twitter: <span style={css.value}>{info.twitter}</span>
 					</div>
-					<div hidden={!info.github} style={css.info}>
+					<div hidden={!info.github} style={css.item}>
 						Github: <span style={css.value}>{info.github}</span>
 					</div>
 				</div>
