@@ -290,10 +290,10 @@ func keybaseAssociateGet(c *gin.Context) {
 
 	update := func() bool {
 		switch asc.State {
-		case keybase.Approved:
+		case ssh.Approved:
 			c.Status(200)
 			return true
-		case keybase.Denied:
+		case ssh.Denied:
 			c.Status(401)
 			return true
 		}

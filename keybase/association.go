@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -116,7 +117,7 @@ func (a *Association) Approve(db *database.Database,
 
 	usr.Keybase = a.Username
 
-	a.State = Approved
+	a.State = ssh.Approved
 
 	coll = db.KeybaseChallenges()
 
@@ -140,7 +141,7 @@ func (a *Association) Deny(db *database.Database, usr *user.User) (err error) {
 		return
 	}
 
-	a.State = Denied
+	a.State = ssh.Denied
 
 	coll := db.KeybaseChallenges()
 

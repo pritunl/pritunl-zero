@@ -97,7 +97,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 	}
 
 	if len(cert.Certificates) == 0 {
-		c.State = Unavailable
+		c.State = ssh.Unavailable
 	} else {
 		err = cert.Insert(db)
 		if err != nil {
@@ -105,7 +105,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 			return
 		}
 
-		c.State = Approved
+		c.State = ssh.Approved
 	}
 
 	coll := db.SshChallenges()
