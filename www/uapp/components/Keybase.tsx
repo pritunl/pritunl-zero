@@ -4,6 +4,9 @@ import * as SuperAgent from 'superagent';
 import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
 import Session from './Session';
+import KeybaseStore from "../stores/KeybaseStore";
+import * as KeybaseTypes from "../types/KeybaseTypes";
+import * as KeybaseActions from "../actions/KeybaseActions";
 
 interface Props {
 	token: string;
@@ -13,14 +16,16 @@ interface Props {
 interface State {
 	disabled: boolean;
 	answered: boolean;
+	info: KeybaseTypes.InfoRo;
 }
 
 const css = {
 	body: {
-		padding: '0 10px',
+		padding: 0,
 	} as React.CSSProperties,
 	description: {
 		opacity: 0.7,
+		padding: '0 10px',
 	} as React.CSSProperties,
 	buttons: {
 		marginTop: '15px',
@@ -28,6 +33,18 @@ const css = {
 	button: {
 		margin: '5px',
 		width: '116px',
+	} as React.CSSProperties,
+	picture: {
+		width: '100%',
+		maxWidth: '140px',
+		borderRadius: '50%',
+	} as React.CSSProperties,
+	info: {
+		margin: 0,
+		textAlign: 'center',
+	} as React.CSSProperties,
+	value: {
+		opacity: 0.7,
 	} as React.CSSProperties,
 };
 
@@ -37,10 +54,30 @@ export default class Validate extends React.Component<Props, State> {
 		this.state = {
 			disabled: false,
 			answered: false,
+			info: KeybaseStore.info,
 		};
 	}
 
+	componentDidMount(): void {
+		KeybaseStore.addChangeListener(this.onChange);
+		KeybaseActions.load(this.props.token);
+	}
+
+	componentWillUnmount(): void {
+		KeybaseStore.removeChangeListener(this.onChange);
+		KeybaseActions.unload();
+	}
+
+	onChange = (): void => {
+		this.setState({
+			...this.state,
+			info: KeybaseStore.info,
+		});
+	}
+
 	render(): JSX.Element {
+		let info = this.state.info || {};
+
 		if (this.state.answered) {
 			return <Session/>;
 		}
@@ -51,7 +88,22 @@ export default class Validate extends React.Component<Props, State> {
 					<span className="pt-icon pt-icon-endorsed"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">Associate Keybase Account</h4>
-				<span style={css.description}>If you did not initiate this association deny the request and report the incident to an administrator</span>
+				<div>
+					<img hidden={!info.picture} style={css.picture} src={info.picture}/>
+					<div hidden={!info.username} style={css.info}>
+						Keybase: <span style={css.value}>{info.username}</span>
+					</div>
+					<div hidden={!info.twitter} style={css.info}>
+						Twitter: <span style={css.value}>{info.twitter}</span>
+					</div>
+					<div hidden={!info.github} style={css.info}>
+						Github: <span style={css.value}>{info.github}</span>
+					</div>
+				</div>
+				<span style={css.description}>
+					If you did not initiate this association deny the request and
+					report the incident to an administrator
+				</span>
 			</div>
 			<div className="layout horizontal center-justified" style={css.buttons}>
 				<button
