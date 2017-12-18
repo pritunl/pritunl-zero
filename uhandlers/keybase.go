@@ -24,6 +24,37 @@ type keybaseValidateData struct {
 	Signature string `json:"signature,omitempty"`
 }
 
+func keybaseInfoGet(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	token := c.Param("token")
+
+	asc, err := keybase.GetAssociation(db, token)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	info, err := asc.GetInfo()
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.JSON(200, info)
+
+	return
+}
+
 func keybaseValidatePut(c *gin.Context) {
 	if demo.Blocked(c) {
 		return
