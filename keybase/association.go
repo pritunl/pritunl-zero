@@ -22,6 +22,13 @@ type Association struct {
 	State     string    `bson:"state"`
 }
 
+type Info struct {
+	Username string `json:"username"`
+	Picture  string `json:"picture"`
+	Twitter  string `json:"twitter"`
+	Github   string `json:"github"`
+}
+
 func (a *Association) Message() string {
 	return fmt.Sprintf(
 		"%s&%s&%s",
@@ -152,6 +159,28 @@ func (a *Association) Deny(db *database.Database, usr *user.User) (err error) {
 	if err != nil {
 		err = database.ParseError(err)
 		return
+	}
+
+	return
+}
+
+func (a *Association) GetInfo() (info *Info, err error) {
+	data, err := getInfo(a.Username)
+	if err != nil {
+		return
+	}
+
+	info = &Info{
+		Username: data.Them.Basics.Username,
+		Picture:  data.Them.Pictures.Primary.Url,
+	}
+
+	if len(data.Them.Proofs.ByProofType.Twitter) > 0 {
+		info.Twitter = data.Them.Proofs.ByProofType.Twitter[0].Name
+	}
+
+	if len(data.Them.Proofs.ByProofType.Github) > 0 {
+		info.Github = data.Them.Proofs.ByProofType.Github[0].Name
 	}
 
 	return
