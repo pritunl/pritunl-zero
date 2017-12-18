@@ -16,10 +16,11 @@ interface State {
 
 const css = {
 	body: {
-		padding: '0 10px',
+		padding: 0,
 	} as React.CSSProperties,
 	description: {
 		opacity: 0.7,
+		padding: '0 10px',
 	} as React.CSSProperties,
 	buttons: {
 		marginTop: '15px',
