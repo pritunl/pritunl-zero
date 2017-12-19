@@ -73,6 +73,20 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
+	data, err := getInfo(c.Username)
+	if err != nil {
+		return
+	}
+
+	if data.Them.PublicKeys.Primary.UkbId != usr.KeybaseId {
+		errData = &errortypes.ErrorData{
+			Error: "keybase_id_changed",
+			Message: "Keybase identity has changed, " +
+				"contact administrator to reset",
+		}
+		return
+	}
+
 	keybaseMode, err := policy.UserKeybaseMode(db, usr)
 	if err != nil {
 		return
