@@ -22,13 +22,6 @@ type Association struct {
 	State     string    `bson:"state"`
 }
 
-type Info struct {
-	Username string `json:"username"`
-	Picture  string `json:"picture"`
-	Twitter  string `json:"twitter"`
-	Github   string `json:"github"`
-}
-
 func (a *Association) Message() string {
 	return fmt.Sprintf(
 		"%s&%s&%s",

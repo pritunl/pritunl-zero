@@ -15,6 +15,13 @@ var (
 	}
 )
 
+type Info struct {
+	Username string `json:"username"`
+	Picture  string `json:"picture"`
+	Twitter  string `json:"twitter"`
+	Github   string `json:"github"`
+}
+
 type infoStatus struct {
 	Code int    `json:"code"`
 	Name string `json:"name"`
