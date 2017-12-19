@@ -91,6 +91,12 @@ func (a *Association) Approve(db *database.Database,
 		return
 	}
 
+	data, err := getInfo(a.Username)
+	if err != nil {
+		return
+	}
+	keybaseId := data.Them.PublicKeys.Primary.UkbId
+
 	coll := db.Users()
 
 	err = coll.Update(&bson.M{
@@ -107,7 +113,8 @@ func (a *Association) Approve(db *database.Database,
 		},
 	}, &bson.M{
 		"$set": &bson.M{
-			"keybase": a.Username,
+			"keybase":    a.Username,
+			"keybase_id": keybaseId,
 		},
 	})
 	if err != nil {
@@ -116,6 +123,7 @@ func (a *Association) Approve(db *database.Database,
 	}
 
 	usr.Keybase = a.Username
+	usr.KeybaseId = a.Username
 
 	a.State = ssh.Approved
 
