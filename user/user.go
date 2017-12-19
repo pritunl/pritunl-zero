@@ -21,6 +21,7 @@ type User struct {
 	Username      string        `bson:"username" json:"username"`
 	Password      string        `bson:"password" json:"-"`
 	Keybase       string        `bson:"keybase" json:"keybase"`
+	KeybaseId     string        `bson:"keybase_id" json:"keybase_id"`
 	Token         string        `bson:"token" json:"token"`
 	Secret        string        `bson:"secret" json:"secret"`
 	Theme         string        `bson:"theme" json:"-"`
