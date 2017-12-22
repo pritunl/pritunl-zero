@@ -8,11 +8,16 @@ import (
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 )
 
 var (
 	store      *static.Store
 	fileServer http.Handler
+	pushFiles  []string
 )
 
 func Register(engine *gin.Engine) {
@@ -110,6 +115,29 @@ func Register(engine *gin.Engine) {
 	} else {
 		fs := gin.Dir(config.StaticTestingRoot, false)
 		fileServer = http.FileServer(fs)
+
+		pushFiles = []string{}
+		walk := path.Join(config.StaticTestingRoot, "app")
+		err := filepath.Walk(walk, func(
+			pth string, _ os.FileInfo, e error) (err error) {
+
+			if e != nil {
+				err = e
+				return
+			}
+
+			if strings.HasSuffix(pth, ".js") ||
+				strings.HasSuffix(pth, ".js.map") {
+
+				pth = strings.Replace(pth, walk, "/app", 1)
+				pushFiles = append(pushFiles, pth)
+			}
+
+			return
+		})
+		if err != nil {
+			panic(err)
+		}
 
 		sessGroup.GET("/", staticTestingGet)
 		engine.GET("/login", staticTestingGet)
