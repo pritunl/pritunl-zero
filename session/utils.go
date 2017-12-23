@@ -11,6 +11,28 @@ import (
 	"time"
 )
 
+func GetExpire(typ string) time.Duration {
+	switch typ {
+	case Proxy:
+		return time.Duration(settings.Auth.ProxyExpire) * time.Minute
+	case User:
+		return time.Duration(settings.Auth.UserExpire) * time.Minute
+	default:
+		return time.Duration(settings.Auth.AdminExpire) * time.Minute
+	}
+}
+
+func GetMaxDuration(typ string) time.Duration {
+	switch typ {
+	case Proxy:
+		return time.Duration(settings.Auth.ProxyMaxDuration) * time.Minute
+	case User:
+		return time.Duration(settings.Auth.UserMaxDuration) * time.Minute
+	default:
+		return time.Duration(settings.Auth.AdminMaxDuration) * time.Minute
+	}
+}
+
 func Get(db *database.Database, sessId string) (
 	sess *Session, err error) {
 
