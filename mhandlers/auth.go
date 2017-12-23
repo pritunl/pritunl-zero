@@ -11,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"strings"
+	"github.com/pritunl/pritunl-zero/session"
 )
 
 func authStateGet(c *gin.Context) {
@@ -96,7 +97,7 @@ func authSessionPost(c *gin.Context) {
 
 	cook := cookie.NewAdmin(c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, c.Request, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Admin)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -188,7 +189,7 @@ func authCallbackGet(c *gin.Context) {
 
 	cook := cookie.NewAdmin(c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, c.Request, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Admin)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

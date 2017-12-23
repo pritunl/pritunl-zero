@@ -97,7 +97,7 @@ func authSessionPost(c *gin.Context) {
 
 	cook := cookie.NewUser(c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, c.Request, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.User)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -209,7 +209,7 @@ func authCallbackGet(c *gin.Context) {
 
 	cook := cookie.NewUser(c.Writer, c.Request)
 
-	_, err = cook.NewSession(db, c.Request, usr.Id, true)
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.User)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

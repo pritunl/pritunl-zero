@@ -38,8 +38,8 @@ func (c *Cookie) Set(key string, val string) {
 	c.store.Values[key] = val
 }
 
-func (c *Cookie) GetSession(db *database.Database, r *http.Request) (
-	sess *session.Session, err error) {
+func (c *Cookie) GetSession(db *database.Database, r *http.Request,
+	typ string) (sess *session.Session, err error) {
 
 	sessId := c.Get("id")
 	if sessId == "" {
@@ -49,7 +49,7 @@ func (c *Cookie) GetSession(db *database.Database, r *http.Request) (
 		return
 	}
 
-	sess, err = session.GetUpdate(db, sessId, r)
+	sess, err = session.GetUpdate(db, sessId, r, typ)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -68,9 +68,10 @@ func (c *Cookie) GetSession(db *database.Database, r *http.Request) (
 }
 
 func (c *Cookie) NewSession(db *database.Database, r *http.Request,
-	id bson.ObjectId, remember bool) (sess *session.Session, err error) {
+	id bson.ObjectId, remember bool, typ string) (
+	sess *session.Session, err error) {
 
-	sess, err = session.New(db, r, id)
+	sess, err = session.New(db, r, id, typ)
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "cookie: Unknown session error"),

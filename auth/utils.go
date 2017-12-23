@@ -36,7 +36,7 @@ func CookieSessionAdmin(db *database.Database,
 		return
 	}
 
-	sess, err = cook.GetSession(db, r)
+	sess, err = cook.GetSession(db, r, session.Admin)
 	if err != nil {
 		switch err.(type) {
 		case *errortypes.NotFoundError:
@@ -61,7 +61,7 @@ func CookieSessionProxy(db *database.Database, srvc *service.Service,
 		return
 	}
 
-	sess, err = cook.GetSession(db, r)
+	sess, err = cook.GetSession(db, r, session.Proxy)
 	if err != nil {
 		switch err.(type) {
 		case *errortypes.NotFoundError:
@@ -85,7 +85,7 @@ func CookieSessionUser(db *database.Database, w http.ResponseWriter,
 		return
 	}
 
-	sess, err = cook.GetSession(db, r)
+	sess, err = cook.GetSession(db, r, session.User)
 	if err != nil {
 		switch err.(type) {
 		case *errortypes.NotFoundError:
