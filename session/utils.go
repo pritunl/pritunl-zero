@@ -47,8 +47,8 @@ func Get(db *database.Database, sessId string) (
 	return
 }
 
-func GetUpdate(db *database.Database, sessId string, r *http.Request) (
-	sess *Session, err error) {
+func GetUpdate(db *database.Database, sessId string, r *http.Request,
+	typ string) (sess *Session, err error) {
 
 	query := bson.M{
 		"_id": sessId,
@@ -57,19 +57,18 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request) (
 		},
 	}
 
-	if settings.Auth.Expire != 0 {
-		expire := time.Now().Add(-time.Duration(
-			settings.Auth.Expire) * time.Hour)
+	expire := GetExpire(typ)
+	maxDuration := GetMaxDuration(typ)
+
+	if expire != 0 {
 		query["last_active"] = &bson.M{
-			"$gte": expire,
+			"$gte": time.Now().Add(-expire),
 		}
 	}
 
-	if settings.Auth.MaxDuration != 0 {
-		expire := time.Now().Add(-time.Duration(
-			settings.Auth.MaxDuration) * time.Hour)
+	if maxDuration != 0 {
 		query["timestamp"] = &bson.M{
-			"$gte": expire,
+			"$gte": time.Now().Add(-maxDuration),
 		}
 	}
 
@@ -145,8 +144,8 @@ func GetAll(db *database.Database, userId bson.ObjectId, includeRemoved bool) (
 	return
 }
 
-func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
-	sess *Session, err error) {
+func New(db *database.Database, r *http.Request, userId bson.ObjectId,
+	typ string) (sess *Session, err error) {
 
 	id, err := utils.RandStr(32)
 	if err != nil {
@@ -161,6 +160,7 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId) (
 	coll := db.Sessions()
 	sess = &Session{
 		Id:         id,
+		Type:       typ,
 		User:       userId,
 		Timestamp:  time.Now(),
 		LastActive: time.Now(),

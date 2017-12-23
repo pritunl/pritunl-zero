@@ -4,7 +4,6 @@ package session
 import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -26,18 +25,17 @@ func (s *Session) Active() bool {
 		return false
 	}
 
-	if settings.Auth.Expire != 0 {
-		if time.Since(s.LastActive) > time.Duration(
-			settings.Auth.Expire)*time.Hour {
+	expire := GetExpire(s.Type)
+	maxDuration := GetMaxDuration(s.Type)
 
+	if expire != 0 {
+		if time.Since(s.LastActive) > expire {
 			return false
 		}
 	}
 
-	if settings.Auth.MaxDuration != 0 {
-		if time.Since(s.Timestamp) > time.Duration(
-			settings.Auth.MaxDuration)*time.Hour {
-
+	if maxDuration != 0 {
+		if time.Since(s.Timestamp) > maxDuration {
 			return false
 		}
 	}
