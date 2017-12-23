@@ -7,6 +7,12 @@ export const mobile = !!md.mobile();
 
 export const loadDelay = 500;
 
+export const sessionTypes: {[key: string]: string} = {
+	admin: 'Admin',
+	proxy: 'Service',
+	user: 'User',
+};
+
 export const operatingSystems: {[key: string]: string} = {
 	linux: 'Linux',
 	macos_1010: 'macOS 10.10',
