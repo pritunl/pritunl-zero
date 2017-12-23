@@ -25,13 +25,17 @@ type Provider struct {
 }
 
 type auth struct {
-	Id          string      `bson:"_id"`
-	Server      string      `bson:"server" default:"https://auth.pritunl.com"`
-	Expire      int         `bson:"expire" json:"expire" default:"72"`
-	Window      int         `bson:"window" json:"window" default:"60"`
-	Sync        int         `bson:"sync" json:"sync" default:"1800"`
-	MaxDuration int         `bson:"max_duration" json:"max_duration" default:"24"`
-	Providers   []*Provider `bson:"providers"`
+	Id               string      `bson:"_id"`
+	Server           string      `bson:"server" default:"https://auth.pritunl.com"`
+	Sync             int         `bson:"sync" json:"sync" default:"1800"`
+	Providers        []*Provider `bson:"providers"`
+	Window           int         `bson:"window" json:"window" default:"60"`
+	AdminExpire      int         `bson:"admin_expire" json:"admin_expire" default:"1440"`
+	AdminMaxDuration int         `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
+	ProxyExpire      int         `bson:"proxy_expire" json:"proxy_expire" default:"1440"`
+	ProxyMaxDuration int         `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
+	UserExpire       int         `bson:"user_expire" json:"user_expire" default:"1440"`
+	UserMaxDuration  int         `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
 }
 
 func (a *auth) GetProvider(id bson.ObjectId) *Provider {
