@@ -12,6 +12,7 @@ import (
 
 type Session struct {
 	Id         string        `bson:"_id" json:"id"`
+	Type       string        `bson:"type" json:"type"`
 	User       bson.ObjectId `bson:"user" json:"user"`
 	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
 	LastActive time.Time     `bson:"last_active" json:"last_active"`
