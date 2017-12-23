@@ -9,7 +9,7 @@ export function load(): Promise<void> {
 			.get('/csrf')
 			.set('Accept', 'application/json')
 			.end((err: any, res: SuperAgent.Response): void => {
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;

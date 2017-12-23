@@ -41,7 +41,7 @@ export function load(userId: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -94,7 +94,7 @@ export function sync(): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -158,7 +158,7 @@ export function commit(user: UserTypes.User): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -194,7 +194,7 @@ export function create(user: UserTypes.User): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -223,7 +223,7 @@ export function remove(userIds: string[]): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return

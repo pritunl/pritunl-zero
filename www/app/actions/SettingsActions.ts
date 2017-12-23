@@ -24,7 +24,7 @@ export function sync(): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -64,7 +64,7 @@ export function commit(
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;

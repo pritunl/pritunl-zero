@@ -24,7 +24,7 @@ export function sync(): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -65,7 +65,7 @@ export function commit(cert: CertificateTypes.Certificate): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -94,7 +94,7 @@ export function create(cert: CertificateTypes.Certificate): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
@@ -122,7 +122,7 @@ export function remove(certId: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				if (res.status === 401) {
+				if (res && res.status === 401) {
 					window.location.href = '/login';
 					resolve();
 					return;
