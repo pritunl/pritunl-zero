@@ -165,23 +165,63 @@ export default class Settings extends React.Component<{}, State> {
 				</PagePanel>
 				<PagePanel>
 					<PageInput
-						label="Session Expire Hours"
-						help="Number of inactive hours before a session expires"
+						label="Admin Session Expire Minutes"
+						help="Number of inactive minutes before a admin session expires"
 						type="text"
 						placeholder="Session expire"
-						value={this.state.settings.auth_expire}
+						value={this.state.settings.auth_admin_expire}
 						onChange={(val): void => {
-							this.set('auth_expire', parseInt(val, 10));
+							this.set('auth_admin_expire', parseInt(val, 10));
 						}}
 					/>
 					<PageInput
-						label="Session Max Duration Hours"
-						help="Number of hours from start of session until expiration"
+						label="Admin Session Max Duration Minutes"
+						help="Number of minutes from start of a admin session until expiration"
 						type="text"
 						placeholder="Session max duration"
-						value={this.state.settings.auth_max_duration}
+						value={this.state.settings.auth_admin_max_duration}
 						onChange={(val): void => {
-							this.set('auth_max_duration', parseInt(val, 10));
+							this.set('auth_admin_max_duration', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="Service Session Expire Minutes"
+						help="Number of inactive minutes before a service session expires"
+						type="text"
+						placeholder="Session expire"
+						value={this.state.settings.auth_proxy_expire}
+						onChange={(val): void => {
+							this.set('auth_proxy_expire', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="Service Session Max Duration Minutes"
+						help="Number of minutes from start of a service session until expiration"
+						type="text"
+						placeholder="Session max duration"
+						value={this.state.settings.auth_proxy_max_duration}
+						onChange={(val): void => {
+							this.set('auth_proxy_max_duration', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="User Session Expire Minutes"
+						help="Number of inactive minutes before a user session expires"
+						type="text"
+						placeholder="Session expire"
+						value={this.state.settings.auth_user_expire}
+						onChange={(val): void => {
+							this.set('auth_user_expire', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="User Session Max Duration Minutes"
+						help="Number of minutes from start of a user session until expiration"
+						type="text"
+						placeholder="Session max duration"
+						value={this.state.settings.auth_user_max_duration}
+						onChange={(val): void => {
+							this.set('auth_user_max_duration', parseInt(val, 10));
 						}}
 					/>
 					<PageInput
