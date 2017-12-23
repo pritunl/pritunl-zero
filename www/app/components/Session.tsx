@@ -110,13 +110,14 @@ export default class Session extends React.Component<Props, State> {
 						style={css.info}
 						fields={[
 							{
-								label: 'Operating System',
-								value: Constants.operatingSystems[agent.operating_system] ||
-								'Unknown',
+								label: 'Session Type',
+								value: Constants.sessionTypes[session.type] || 'Unknown',
 							},
 							{
 								label: 'Browser',
-								value: Constants.browsers[agent.browser] || 'Unknown',
+								value: (Constants.operatingSystems[agent.operating_system] ||
+									'Unknown') + ' ' + (Constants.browsers[agent.browser] ||
+									'Unknown'),
 							},
 							{
 								label: 'ISP',
