@@ -63,6 +63,7 @@ var Audits = []*audit.Audit{
 var Sessions = []*session.Session{
 	&session.Session{
 		Id:         "jhgRu4n3oY0iXRYmLb77Ql5jNs2o7uWM",
+		Type:       session.User,
 		Timestamp:  time.Unix(1498018860, 0),
 		LastActive: time.Unix(1498018860, 0),
 		Removed:    false,
