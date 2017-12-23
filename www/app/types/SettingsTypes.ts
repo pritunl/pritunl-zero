@@ -35,8 +35,12 @@ export type Providers = ProviderAny[];
 
 export interface Settings {
 	auth_providers: Providers;
-	auth_expire: number;
-	auth_max_duration: number;
+	auth_admin_expire: number;
+	auth_admin_max_duration: number;
+	auth_proxy_expire: number;
+	auth_proxy_max_duration: number;
+	auth_user_expire: number;
+	auth_user_max_duration: number;
 	elastic_address: string;
 	elastic_proxy_requests: boolean;
 }
