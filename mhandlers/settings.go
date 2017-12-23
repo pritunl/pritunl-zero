@@ -13,8 +13,12 @@ import (
 
 type settingsData struct {
 	AuthProviders        []*settings.Provider `json:"auth_providers"`
-	AuthExpire           int                  `json:"auth_expire"`
-	AuthMaxDuration      int                  `json:"auth_max_duration"`
+	AuthAdminExpire      int                  `json:"auth_admin_expire"`
+	AuthAdminMaxDuration int                  `json:"auth_admin_max_duration"`
+	AuthProxyExpire      int                  `json:"auth_proxy_expire"`
+	AuthProxyMaxDuration int                  `json:"auth_proxy_max_duration"`
+	AuthUserExpire       int                  `json:"auth_user_expire"`
+	AuthUserMaxDuration  int                  `json:"auth_user_max_duration"`
 	ElasticAddress       string               `json:"elastic_address"`
 	ElasticProxyRequests bool                 `json:"elastic_proxy_requests"`
 }
@@ -22,8 +26,12 @@ type settingsData struct {
 func getSettingsData() *settingsData {
 	data := &settingsData{
 		AuthProviders:        settings.Auth.Providers,
-		AuthExpire:           settings.Auth.Expire,
-		AuthMaxDuration:      settings.Auth.MaxDuration,
+		AuthAdminExpire:      settings.Auth.AdminExpire,
+		AuthAdminMaxDuration: settings.Auth.AdminMaxDuration,
+		AuthProxyExpire:      settings.Auth.ProxyExpire,
+		AuthProxyMaxDuration: settings.Auth.ProxyMaxDuration,
+		AuthUserExpire:       settings.Auth.UserExpire,
+		AuthUserMaxDuration:  settings.Auth.UserMaxDuration,
 		ElasticProxyRequests: settings.Elastic.ProxyRequests,
 	}
 
@@ -88,14 +96,29 @@ func settingsPut(c *gin.Context) {
 		"providers",
 	)
 
-	if settings.Auth.Expire != data.AuthExpire {
-		settings.Auth.Expire = data.AuthExpire
-		fields.Add("expire")
+	if settings.Auth.AdminExpire != data.AuthAdminExpire {
+		settings.Auth.AdminExpire = data.AuthAdminExpire
+		fields.Add("admin_expire")
 	}
-
-	if settings.Auth.MaxDuration != data.AuthMaxDuration {
-		settings.Auth.MaxDuration = data.AuthMaxDuration
-		fields.Add("max_duration")
+	if settings.Auth.AdminMaxDuration != data.AuthAdminMaxDuration {
+		settings.Auth.AdminMaxDuration = data.AuthAdminMaxDuration
+		fields.Add("admin_max_duration")
+	}
+	if settings.Auth.ProxyExpire != data.AuthProxyExpire {
+		settings.Auth.ProxyExpire = data.AuthProxyExpire
+		fields.Add("proxy_expire")
+	}
+	if settings.Auth.ProxyMaxDuration != data.AuthProxyMaxDuration {
+		settings.Auth.ProxyMaxDuration = data.AuthProxyMaxDuration
+		fields.Add("proxy_max_duration")
+	}
+	if settings.Auth.UserExpire != data.AuthUserExpire {
+		settings.Auth.UserExpire = data.AuthUserExpire
+		fields.Add("user_expire")
+	}
+	if settings.Auth.UserMaxDuration != data.AuthUserMaxDuration {
+		settings.Auth.UserMaxDuration = data.AuthUserMaxDuration
+		fields.Add("user_max_duration")
 	}
 
 	for _, provider := range data.AuthProviders {
