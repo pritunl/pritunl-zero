@@ -1,6 +1,7 @@
 package mhandlers
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/config"
@@ -87,6 +88,10 @@ func staticTestingGet(c *gin.Context) {
 		if pusher, ok := c.Writer.(http.Pusher); ok {
 			for _, pushPth := range pushFiles {
 				if err := pusher.Push(pushPth, nil); err != nil {
+					logrus.WithFields(logrus.Fields{
+						"path":  pushPth,
+						"error": err,
+					}).Error("static: Failed to push file")
 					break
 				}
 			}
