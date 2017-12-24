@@ -381,8 +381,9 @@ type keybaseChallengeRespData struct {
 }
 
 type keybaseCertificateData struct {
-	Token        string   `json:"token"`
-	Certificates []string `json:"certificates"`
+	Token                  string   `json:"token"`
+	Certificates           []string `json:"certificates"`
+	CertificateAuthorities []string `json:"certificate_authorities"`
 }
 
 func keybaseChallengePost(c *gin.Context) {
@@ -457,8 +458,9 @@ func keybaseChallengePut(c *gin.Context) {
 	}
 
 	resp := &keybaseCertificateData{
-		Token:        chal.Id,
-		Certificates: cert.Certificates,
+		Token:                  chal.Id,
+		Certificates:           cert.Certificates,
+		CertificateAuthorities: cert.CertificateAuthorities,
 	}
 
 	c.JSON(200, resp)
