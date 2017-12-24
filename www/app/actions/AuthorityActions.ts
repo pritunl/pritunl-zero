@@ -53,13 +53,13 @@ export function sync(): Promise<void> {
 	});
 }
 
-export function commit(cert: AuthorityTypes.Authority): Promise<void> {
+export function commit(authority: AuthorityTypes.Authority): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.put('/authority/' + cert.id)
-			.send(cert)
+			.put('/authority/' + authority.id)
+			.send(authority)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -82,13 +82,13 @@ export function commit(cert: AuthorityTypes.Authority): Promise<void> {
 	});
 }
 
-export function create(cert: AuthorityTypes.Authority): Promise<void> {
+export function create(authority: AuthorityTypes.Authority): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.post('/authority')
-			.send(cert)
+			.send(authority)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -111,12 +111,12 @@ export function create(cert: AuthorityTypes.Authority): Promise<void> {
 	});
 }
 
-export function remove(certId: string): Promise<void> {
+export function remove(authorityId: string): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.delete('/authority/' + certId)
+			.delete('/authority/' + authorityId)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
