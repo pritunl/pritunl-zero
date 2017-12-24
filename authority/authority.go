@@ -4,14 +4,19 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
 	"hash/fnv"
+	"net"
+	"sort"
 	"strings"
 	"time"
 )
@@ -30,6 +35,12 @@ type Authority struct {
 	Expire     int           `bson:"expire" json:"expire"`
 	PrivateKey string        `bson:"private_key" json:"-"`
 	PublicKey  string        `bson:"public_key" json:"public_key"`
+	HostDomain string        `bson:"host_domain" json:"host_domain"`
+	HostTokens []string      `bson:"host_tokens" json:"host_tokens"`
+}
+
+func (a *Authority) GetDomain(hostname string) string {
+	return hostname + "." + a.HostDomain
 }
 
 func (a *Authority) GenerateRsaPrivateKey() (err error) {
