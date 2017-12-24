@@ -20,14 +20,15 @@ type Info struct {
 }
 
 type Certificate struct {
-	Id               bson.ObjectId   `bson:"_id,omitempty" json:"id"`
-	UserId           bson.ObjectId   `bson:"user_id" json:"user_id"`
-	AuthorityIds     []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
-	Timestamp        time.Time       `bson:"timestamp" json:"timestamp"`
-	PubKey           string          `bson:"pub_key"`
-	Certificates     []string        `bson:"certificates" json:"-"`
-	CertificatesInfo []*Info         `bson:"certificates_info" json:"certificates_info"`
-	Agent            *agent.Agent    `bson:"agent" json:"agent"`
+	Id                     bson.ObjectId   `bson:"_id,omitempty" json:"id"`
+	UserId                 bson.ObjectId   `bson:"user_id,omitempty" json:"user_id"`
+	AuthorityIds           []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
+	Timestamp              time.Time       `bson:"timestamp" json:"timestamp"`
+	PubKey                 string          `bson:"pub_key"`
+	CertificateAuthorities []string        `bson:"certificate_authorities" json:"-"`
+	Certificates           []string        `bson:"certificates" json:"-"`
+	CertificatesInfo       []*Info         `bson:"certificates_info" json:"certificates_info"`
+	Agent                  *agent.Agent    `bson:"agent" json:"agent"`
 }
 
 func (c *Certificate) Commit(db *database.Database) (err error) {
@@ -119,14 +120,15 @@ func NewCertificate(db *database.Database, usr *user.User,
 	agnt *agent.Agent, pubKey string) (cert *Certificate, err error) {
 
 	cert = &Certificate{
-		Id:               bson.NewObjectId(),
-		UserId:           usr.Id,
-		AuthorityIds:     []bson.ObjectId{},
-		Timestamp:        time.Now(),
-		PubKey:           pubKey,
-		Certificates:     []string{},
-		CertificatesInfo: []*Info{},
-		Agent:            agnt,
+		Id:                     bson.NewObjectId(),
+		UserId:                 usr.Id,
+		AuthorityIds:           []bson.ObjectId{},
+		Timestamp:              time.Now(),
+		PubKey:                 pubKey,
+		CertificateAuthorities: []string{},
+		Certificates:           []string{},
+		CertificatesInfo:       []*Info{},
+		Agent:                  agnt,
 	}
 
 	authrs, err := authority.GetAll(db)
@@ -154,6 +156,14 @@ func NewCertificate(db *database.Database, usr *user.User,
 
 		for permission := range crt.Permissions.Extensions {
 			info.Extensions = append(info.Extensions, permission)
+		}
+
+		certAuthr := authr.GetCertAuthority()
+		if certAuthr != "" {
+			cert.CertificateAuthorities = append(
+				cert.CertificateAuthorities,
+				certAuthr,
+			)
 		}
 
 		cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)
