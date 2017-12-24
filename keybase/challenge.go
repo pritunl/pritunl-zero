@@ -87,11 +87,12 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	policies, err := policy.GetRoles(db, usr.Roles)
 	if err != nil {
 		return
 	}
 
+	keybaseMode := policy.KeybaseMode(policies)
 	if keybaseMode == policy.Disabled {
 		errData = &errortypes.ErrorData{
 			Error:   "keybase_disabled",

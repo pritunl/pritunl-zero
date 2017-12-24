@@ -53,11 +53,12 @@ func (a *Association) Validate(signature string) (
 func (a *Association) Approve(db *database.Database,
 	usr *user.User) (err error, errData *errortypes.ErrorData) {
 
-	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	policies, err := policy.GetRoles(db, usr.Roles)
 	if err != nil {
 		return
 	}
 
+	keybaseMode := policy.KeybaseMode(policies)
 	if keybaseMode == policy.Disabled {
 		err = a.Deny(db, usr)
 		if err != nil {

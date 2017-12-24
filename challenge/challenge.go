@@ -28,11 +28,12 @@ type Challenge struct {
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	r *http.Request) (err error, errData *errortypes.ErrorData) {
 
-	keybaseMode, err := policy.UserKeybaseMode(db, usr)
+	policies, err := policy.GetRoles(db, usr.Roles)
 	if err != nil {
 		return
 	}
 
+	keybaseMode := policy.KeybaseMode(policies)
 	if keybaseMode == policy.Required {
 		err = c.Deny(db, usr)
 		if err != nil {

@@ -107,14 +107,7 @@ func Remove(db *database.Database, policyId bson.ObjectId) (err error) {
 	return
 }
 
-func UserKeybaseMode(db *database.Database, usr *user.User) (
-	mode string, err error) {
-
-	policies, err := GetRoles(db, usr.Roles)
-	if err != nil {
-		return
-	}
-
+func KeybaseMode(policies []*Policy) (mode string) {
 	mode = Optional
 
 	for _, polcy := range policies {
