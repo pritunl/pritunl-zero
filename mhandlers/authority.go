@@ -19,6 +19,7 @@ type authorityData struct {
 	Expire     int           `json:"expire"`
 	MatchRoles bool          `json:"match_roles"`
 	Roles      []string      `json:"roles"`
+	HostDomain string        `json:"host_domain"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -53,6 +54,15 @@ func authorityPut(c *gin.Context) {
 	authr.MatchRoles = data.MatchRoles
 	authr.Roles = data.Roles
 
+	if authr.HostDomain == "" && data.HostDomain != "" {
+		err = authr.TokenNew()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+	authr.HostDomain = data.HostDomain
+
 	fields := set.NewSet(
 		"name",
 		"type",
@@ -60,6 +70,8 @@ func authorityPut(c *gin.Context) {
 		"info",
 		"match_roles",
 		"roles",
+		"host_domain",
+		"host_tokens",
 	)
 
 	errData, err := authr.Validate(db)
@@ -106,6 +118,7 @@ func authorityPost(c *gin.Context) {
 		Expire:     data.Expire,
 		MatchRoles: data.MatchRoles,
 		Roles:      data.Roles,
+		HostDomain: data.HostDomain,
 	}
 
 	err = authr.GenerateRsaPrivateKey()
