@@ -21,6 +21,7 @@ interface State {
 	message: string;
 	authority: AuthorityTypes.Authority;
 	addRole: string;
+	hostCertChecked: boolean;
 }
 
 const css = {
@@ -75,6 +76,7 @@ export default class Authority extends React.Component<Props, State> {
 			message: '',
 			authority: null,
 			addRole: null,
+			hostCertChecked: false,
 		};
 	}
 
@@ -271,6 +273,37 @@ export default class Authority extends React.Component<Props, State> {
 			);
 		}
 
+		let tokens: JSX.Element[] = [];
+		for (let token of this.props.authority.host_tokens || []) {
+			tokens.push(
+				<PageInputButton
+					key={token}
+					buttonClass="pt-minimal pt-intent-danger pt-icon-remove"
+					type="text"
+					hidden={!authority.host_domain && !this.state.hostCertChecked}
+					readOnly={true}
+					autoSelect={true}
+					listStyle={true}
+					buttonDisabled={this.state.changed}
+					value={token}
+					onSubmit={(): void => {
+						AuthorityActions.deleteToken(
+								this.props.authority.id, token).then((): void => {
+							this.setState({
+								...this.state,
+								disabled: false,
+							});
+						}).catch((): void => {
+							this.setState({
+								...this.state,
+								disabled: false,
+							});
+						});
+					}}
+				/>,
+			);
+		}
+
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -373,6 +406,103 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
+					<PageSwitch
+						label="Host Certificates"
+						help="Allow servers to validate and sign SSH host keys."
+						checked={!!authority.host_domain || this.state.hostCertChecked}
+						onToggle={(): void => {
+							let state: boolean;
+							let authr: AuthorityTypes.Authority;
+
+							if (this.state.changed) {
+								authr = {
+									...this.state.authority,
+								};
+							} else {
+								authr = {
+									...this.props.authority,
+								};
+							}
+
+							state = !(!!authority.host_domain ||
+								this.state.hostCertChecked);
+
+							if (!state) {
+								authr.host_domain = '';
+								authr.host_tokens = [];
+							}
+
+							this.setState({
+								...this.state,
+								changed: true,
+								hostCertChecked: state,
+								authority: authr,
+							});
+						}}
+					/>
+					<PageInput
+						label="Host Domain"
+						help="Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain."
+						type="text"
+						placeholder="Host domain"
+						value={authority.host_domain}
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						onChange={(val): void => {
+							let authr: AuthorityTypes.Authority;
+
+							if (this.state.changed) {
+								authr = {
+									...this.state.authority,
+								};
+							} else {
+								authr = {
+									...this.props.authority,
+								};
+							}
+
+							authr.host_domain = val;
+
+							this.setState({
+								...this.state,
+								changed: true,
+								hostCertChecked: true,
+								authority: authr,
+							});
+						}}
+					/>
+					<label
+						style={css.itemsLabel}
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
+					>
+						Host Tokens
+						<Help
+							title="Host Tokens"
+							content="Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens."
+						/>
+					</label>
+					{tokens}
+					<button
+						className="pt-button pt-intent-success pt-icon-add"
+						style={css.itemsAdd}
+						type="button"
+						disabled={this.state.changed}
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						onClick={(): void => {
+							AuthorityActions.createToken(
+									this.props.authority.id).then((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							}).catch((): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+							});
+						}}>
+						Add Token
+					</button>
 				</div>
 			</div>
 			<PageSave
