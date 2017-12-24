@@ -29,7 +29,7 @@ func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	return b.Bytes()
 }
 
-func MarshalAuthorizedKey(key ssh.PublicKey) []byte {
+func MarshalPublicKey(key ssh.PublicKey) []byte {
 	b := &bytes.Buffer{}
 	b.WriteString(key.Type())
 	b.WriteByte(' ')
@@ -62,7 +62,7 @@ func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
-	encodedPub = MarshalAuthorizedKey(pubKey)
+	encodedPub = MarshalPublicKey(pubKey)
 
 	return
 }
@@ -98,7 +98,7 @@ func GenerateEcKey() (encodedPriv, encodedPub []byte, err error) {
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
-	encodedPub = MarshalAuthorizedKey(pubKey)
+	encodedPub = MarshalPublicKey(pubKey)
 
 	return
 }
