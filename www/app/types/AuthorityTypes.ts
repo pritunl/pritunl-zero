@@ -15,6 +15,8 @@ export interface Authority {
 	match_roles?: boolean;
 	roles?: string[];
 	public_key?: string;
+	host_domain?: string;
+	host_tokens?: string[];
 }
 
 export type Authorities = Authority[];
