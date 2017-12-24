@@ -73,6 +73,13 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	return
 }
 
+func (a *Authority) GetCertAuthority() string {
+	if a.HostDomain == "" {
+		return ""
+	}
+	return fmt.Sprintf("@cert-authority *.%s %s", a.HostDomain, a.PublicKey)
+}
+
 func (a *Authority) UserHasAccess(usr *user.User) bool {
 	if !a.MatchRoles {
 		return true
