@@ -10,6 +10,7 @@ interface Props {
 	autoSelect?: boolean;
 	label?: string;
 	labelTop?: boolean;
+	listStyle?: boolean;
 	help?: string;
 	type: string;
 	placeholder?: string;
@@ -21,6 +22,11 @@ interface Props {
 const css = {
 	group: {
 		marginBottom: '15px',
+		width: '100%',
+		maxWidth: '280px',
+	} as React.CSSProperties,
+	groupList: {
+		marginTop: '5px',
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
@@ -107,7 +113,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 		} else {
 			return <div
 				className="pt-control-group"
-				style={css.group}
+				style={this.props.listStyle ? css.groupList : css.group}
 				hidden={this.props.hidden}
 			>
 				<div style={css.inputBox}>
