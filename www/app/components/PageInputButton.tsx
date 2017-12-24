@@ -8,11 +8,11 @@ interface Props {
 	disabled?: boolean;
 	readOnly?: boolean;
 	autoSelect?: boolean;
-	label: string;
+	label?: string;
 	labelTop?: boolean;
 	help?: string;
 	type: string;
-	placeholder: string;
+	placeholder?: string;
 	value: string;
 	onChange?: (val: string) => void;
 	onSubmit: () => void;
@@ -119,7 +119,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 						readOnly={this.props.readOnly}
 						autoCapitalize="off"
 						spellCheck={false}
-						placeholder={this.props.placeholder}
+						placeholder={this.props.placeholder || ''}
 						value={this.props.value || ''}
 						onChange={(evt): void => {
 							if (this.props.onChange) {
@@ -138,7 +138,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 						className={buttonClass}
 						disabled={this.props.disabled}
 						onClick={this.props.onSubmit}
-					>{this.props.label}</button>
+					>{this.props.label || ''}</button>
 				</div>
 			</div>;
 		}
