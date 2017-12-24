@@ -186,7 +186,32 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Expire = 1440
 	}
 
+	if a.HostTokens == nil || a.HostDomain == "" {
+		a.HostTokens = []string{}
+	}
+
+	a.Format()
+
 	return
+}
+
+func (a *Authority) Format() {
+	roles := []string{}
+	rolesSet := set.NewSet()
+
+	for _, role := range a.Roles {
+		rolesSet.Add(role)
+	}
+
+	for role := range rolesSet.Iter() {
+		roles = append(roles, role.(string))
+	}
+
+	sort.Strings(roles)
+
+	a.Roles = roles
+
+	sort.Strings(a.HostTokens)
 }
 
 func (a *Authority) Commit(db *database.Database) (err error) {
