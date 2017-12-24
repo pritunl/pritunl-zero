@@ -6,6 +6,7 @@ interface Props {
 	buttonClass?: string;
 	hidden?: boolean;
 	disabled?: boolean;
+	buttonDisabled?: boolean;
 	readOnly?: boolean;
 	autoSelect?: boolean;
 	label?: string;
@@ -104,7 +105,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 						<button
 							className={buttonClass}
 							style={css.buttonTop}
-							disabled={this.props.disabled}
+							disabled={this.props.disabled || this.props.buttonDisabled}
 							onClick={this.props.onSubmit}
 						/>
 					</div>
@@ -142,7 +143,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 				<div>
 					<button
 						className={buttonClass}
-						disabled={this.props.disabled}
+						disabled={this.props.disabled || this.props.buttonDisabled}
 						onClick={this.props.onSubmit}
 					>{this.props.label || ''}</button>
 				</div>
