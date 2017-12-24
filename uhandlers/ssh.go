@@ -308,3 +308,53 @@ func sshChallengePost(c *gin.Context) {
 
 	c.JSON(200, resp)
 }
+
+type sshHostData struct {
+	Hostname  string   `json:"hostname"`
+	Port      int      `json:"port"`
+	Tokens    []string `json:"tokens"`
+	PublicKey string   `json:"public_key"`
+}
+
+type sshHostCertificateData struct {
+	Certificates []string `json:"certificates"`
+}
+
+func sshHostPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &sshHostData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	cert, errData, err := ssh.NewHostCertificate(db, data.Hostname,
+		data.Port, data.Tokens, c.Request, data.PublicKey)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	resp := &sshHostCertificateData{
+		Certificates: cert.Certificates,
+	}
+
+	c.JSON(200, resp)
+}
