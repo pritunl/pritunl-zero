@@ -22,6 +22,7 @@ type system struct {
 	UserCookieCryptoKey  []byte `bson:"user_cookie_crypto_key"`
 	AcmeKeyAlgorithm     string `bson:"acme_key_algorithm" default:"rsa"`
 	SshPubKeyLen         int    `bson:"ssh_pub_key_len" default:"5000"`
+	SshHostTokenLen      int    `bson:"ssh_host_token_len" default:"10"`
 }
 
 func newSystem() interface{} {
