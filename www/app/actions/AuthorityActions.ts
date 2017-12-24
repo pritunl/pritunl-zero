@@ -139,6 +139,61 @@ export function remove(authorityId: string): Promise<void> {
 	});
 }
 
+export function createToken(authorityId: string): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.post('/authority/' + authorityId + '/token')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to create authority token');
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
+	});
+}
+
+export function deleteToken(authorityId: string,
+		token: string): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.delete('/authority/' + authorityId + '/token/' + token)
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to delete authority token');
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
+	});
+}
+
 EventDispatcher.register((action: AuthorityTypes.AuthorityDispatch) => {
 	switch (action.type) {
 		case AuthorityTypes.CHANGE:
