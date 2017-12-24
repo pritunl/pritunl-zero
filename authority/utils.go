@@ -195,6 +195,33 @@ func GetAll(db *database.Database) (authrs []*Authority, err error) {
 	return
 }
 
+func GetTokens(db *database.Database, tokens []string) (
+	authrs []*Authority, err error) {
+
+	coll := db.Authorities()
+	authrs = []*Authority{}
+
+	cursor := coll.Find(&bson.M{
+		"host_tokens": &bson.M{
+			"$in": tokens,
+		},
+	}).Iter()
+
+	authr := &Authority{}
+	for cursor.Next(authr) {
+		authrs = append(authrs, authr)
+		authr = &Authority{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func Remove(db *database.Database, authrId bson.ObjectId) (err error) {
 	coll := db.Authorities()
 
