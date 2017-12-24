@@ -52,6 +52,9 @@ func Register(engine *gin.Engine) {
 	csrfGroup.PUT("/authority/:authr_id", authorityPut)
 	csrfGroup.POST("/authority", authorityPost)
 	csrfGroup.DELETE("/authority/:authr_id", authorityDelete)
+	csrfGroup.POST("/authority/:authr_id/token", authorityTokenPost)
+	csrfGroup.DELETE("/authority/:authr_id/token/:token",
+		authorityTokenDelete)
 	dbGroup.GET("/ssh_public_key/:authr_ids", authorityPublicKeyGet)
 
 	csrfGroup.GET("/certificate", certificatesGet)

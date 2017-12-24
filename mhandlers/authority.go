@@ -240,3 +240,81 @@ func authorityPublicKeyGet(c *gin.Context) {
 
 	c.String(200, publicKeys)
 }
+
+func authorityTokenPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+
+	authrId, ok := utils.ParseObjectId(c.Param("authr_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	authr, err := authority.Get(db, authrId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = authr.TokenNew()
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = authr.CommitFields(db, set.NewSet("host_tokens"))
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "authority.change")
+
+	c.Status(200)
+}
+
+func authorityTokenDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+
+	authrId, ok := utils.ParseObjectId(c.Param("authr_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	token := c.Param("token")
+	if token == "" {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	authr, err := authority.Get(db, authrId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = authr.TokenDelete(token)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = authr.CommitFields(db, set.NewSet("host_tokens"))
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "authority.change")
+
+	c.Status(200)
+}
