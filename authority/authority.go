@@ -80,6 +80,30 @@ func (a *Authority) UserHasAccess(usr *user.User) bool {
 	return usr.RolesMatch(a.Roles)
 }
 
+func (a *Authority) HostnameValidate(hostname string, port int,
+	pubKey string) bool {
+
+	ips, err := net.LookupIP(a.GetDomain(hostname))
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "authority: Failed to lookup host"),
+		}
+
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("authority: Failed to lookup host")
+
+		return false
+	}
+
+	for _, ip := range ips {
+		// TODO
+		println(ip.String())
+	}
+
+	return true
+}
+
 func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
@@ -134,6 +158,86 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	}
 
 	certMarshaled = string(MarshalCertificate(cert, comment))
+
+	return
+}
+
+func (a *Authority) CreateHostCertificate(hostname string, sshPubKey string) (
+	cert *ssh.Certificate, certMarshaled string, err error) {
+
+	privateKey, err := ParsePemKey(a.PrivateKey)
+	if err != nil {
+		return
+	}
+
+	pubKey, comment, _, _, err := ssh.ParseAuthorizedKey([]byte(sshPubKey))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ssh public key"),
+		}
+		return
+	}
+
+	serialHash := fnv.New64a()
+	serialHash.Write([]byte(bson.NewObjectId().Hex()))
+	serial := serialHash.Sum64()
+
+	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validBefore := time.Now().Add(
+		time.Duration(a.Expire) * time.Minute).Unix()
+
+	cert = &ssh.Certificate{
+		Key:             pubKey,
+		Serial:          serial,
+		CertType:        ssh.HostCert,
+		KeyId:           hostname,
+		ValidPrincipals: []string{a.GetDomain(hostname)},
+		ValidAfter:      uint64(validAfter),
+		ValidBefore:     uint64(validBefore),
+	}
+
+	signer, err := ssh.NewSignerFromKey(privateKey)
+	if err != nil {
+		return
+	}
+
+	err = cert.SignCert(rand.Reader, signer)
+	if err != nil {
+		return
+	}
+
+	certMarshaled = string(MarshalCertificate(cert, comment))
+
+	return
+}
+
+func (a *Authority) TokenNew() (err error) {
+	if a.HostTokens == nil {
+		a.HostTokens = []string{}
+	}
+
+	token, err := utils.RandStr(32)
+	if err != nil {
+		return
+	}
+
+	a.HostTokens = append(a.HostTokens, token)
+
+	return
+}
+
+func (a *Authority) TokenDelete(token string) (err error) {
+	if a.HostTokens == nil {
+		a.HostTokens = []string{}
+	}
+
+	for i, tokn := range a.HostTokens {
+		if tokn == token {
+			a.HostTokens = append(
+				a.HostTokens[:i], a.HostTokens[i+1:]...)
+			break
+		}
+	}
 
 	return
 }
