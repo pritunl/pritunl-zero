@@ -2,7 +2,6 @@ package policy
 
 import (
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 )
 
