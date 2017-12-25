@@ -374,7 +374,7 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSwitch
-						label="Match Roles"
+						label="Match roles"
 						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
 						checked={authority.match_roles}
 						onToggle={(): void => {
@@ -407,7 +407,7 @@ export default class Authority extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<PageSwitch
-						label="Host Certificates"
+						label="Host certificates"
 						help="Allow servers to validate and sign SSH host keys."
 						checked={!!authority.host_domain || this.state.hostCertChecked}
 						onToggle={(): void => {

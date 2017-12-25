@@ -87,17 +87,17 @@ export default class PolicyRule extends React.Component<Props, State> {
 		switch (this.props.rule.type) {
 			case 'operating_system':
 				label = 'Permitted Operating Systems';
-				selectLabel = 'Operating System Policies';
+				selectLabel = 'Operating system policies';
 				options = Constants.operatingSystems;
 				break;
 			case 'browser':
 				label = 'Permitted Browsers';
-				selectLabel = 'Browser Policies';
+				selectLabel = 'Browser policies';
 				options = Constants.browsers;
 				break;
 			case 'location':
 				label = 'Permitted Locations';
-				selectLabel = 'Location Policies';
+				selectLabel = 'Location policies';
 				options = Constants.locations;
 				break;
 		}
