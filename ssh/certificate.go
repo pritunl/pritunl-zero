@@ -25,6 +25,7 @@ type Certificate struct {
 	AuthorityIds           []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
 	Timestamp              time.Time       `bson:"timestamp" json:"timestamp"`
 	PubKey                 string          `bson:"pub_key"`
+	StrictHostChecking     []string        `bson:"strict_host_checking" json:"strict_host_checking"`
 	CertificateAuthorities []string        `bson:"certificate_authorities" json:"-"`
 	Certificates           []string        `bson:"certificates" json:"-"`
 	CertificatesInfo       []*Info         `bson:"certificates_info" json:"certificates_info"`
@@ -125,6 +126,7 @@ func NewCertificate(db *database.Database, usr *user.User,
 		AuthorityIds:           []bson.ObjectId{},
 		Timestamp:              time.Now(),
 		PubKey:                 pubKey,
+		StrictHostChecking:     []string{},
 		CertificateAuthorities: []string{},
 		Certificates:           []string{},
 		CertificatesInfo:       []*Info{},
@@ -163,6 +165,14 @@ func NewCertificate(db *database.Database, usr *user.User,
 			cert.CertificateAuthorities = append(
 				cert.CertificateAuthorities,
 				certAuthr,
+			)
+		}
+
+		checkDomain := authr.GetStrictHostDomain()
+		if checkDomain != "" {
+			cert.StrictHostChecking = append(
+				cert.StrictHostChecking,
+				checkDomain,
 			)
 		}
 
