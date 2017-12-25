@@ -20,6 +20,7 @@ type authorityData struct {
 	MatchRoles         bool          `json:"match_roles"`
 	Roles              []string      `json:"roles"`
 	HostDomain         string        `json:"host_domain"`
+	HostProxy          string        `json:"host_proxy"`
 	StrictHostChecking bool          `json:"strict_host_checking"`
 }
 
@@ -63,6 +64,7 @@ func authorityPut(c *gin.Context) {
 		}
 	}
 	authr.HostDomain = data.HostDomain
+	authr.HostProxy = data.HostProxy
 	authr.StrictHostChecking = data.StrictHostChecking
 
 	fields := set.NewSet(
@@ -74,6 +76,7 @@ func authorityPut(c *gin.Context) {
 		"roles",
 		"host_domain",
 		"host_tokens",
+		"host_proxy",
 		"strict_host_checking",
 	)
 
