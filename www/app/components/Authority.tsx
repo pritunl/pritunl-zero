@@ -440,6 +440,14 @@ export default class Authority extends React.Component<Props, State> {
 							});
 						}}
 					/>
+					<PageSwitch
+						label="Strict host checking"
+						help="Enable strict host checking for SSH clients connecting to servers in this domain."
+						checked={authority.strict_host_checking}
+						onToggle={(): void => {
+							this.toggle('strict_host_checking');
+						}}
+					/>
 					<PageInput
 						label="Host Domain"
 						help="Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain."

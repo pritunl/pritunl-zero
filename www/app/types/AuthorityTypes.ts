@@ -16,6 +16,7 @@ export interface Authority {
 	roles?: string[];
 	public_key?: string;
 	host_domain?: string;
+	strict_host_checking?: boolean;
 	host_tokens?: string[];
 }
 
