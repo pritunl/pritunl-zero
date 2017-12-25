@@ -37,6 +37,7 @@ type Authority struct {
 	PrivateKey         string        `bson:"private_key" json:"-"`
 	PublicKey          string        `bson:"public_key" json:"public_key"`
 	HostDomain         string        `bson:"host_domain" json:"host_domain"`
+	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
 	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
 	HostTokens         []string      `bson:"host_tokens" json:"host_tokens"`
 }
@@ -75,11 +76,19 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	return
 }
 
-func (a *Authority) GetStrictHostDomain() string {
-	if a.HostDomain == "" || !a.StrictHostChecking {
+func (a *Authority) GetHostDomain() string {
+	if a.HostDomain == "" {
 		return ""
 	}
-	return "*." + a.HostDomain
+
+	domain := "*." + a.HostDomain
+
+	if a.HostProxy != "" {
+		hostProxy := strings.SplitN(a.HostProxy, "@", 2)
+		domain += " !" + hostProxy[len(hostProxy)-1]
+	}
+
+	return domain
 }
 
 func (a *Authority) GetCertAuthority() string {
@@ -308,6 +317,7 @@ func (a *Authority) Validate(db *database.Database) (
 
 	if a.HostTokens == nil || a.HostDomain == "" {
 		a.StrictHostChecking = false
+		a.HostProxy = ""
 		a.HostTokens = []string{}
 	}
 
