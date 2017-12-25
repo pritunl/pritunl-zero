@@ -24,8 +24,10 @@ func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	e := base64.NewEncoder(base64.StdEncoding, b)
 	e.Write(cert.Marshal())
 	e.Close()
-	b.WriteByte(' ')
-	b.Write([]byte(comment))
+	if comment != "" {
+		b.WriteByte(' ')
+		b.Write([]byte(comment))
+	}
 	return b.Bytes()
 }
 
