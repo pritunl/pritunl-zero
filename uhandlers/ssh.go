@@ -11,7 +11,12 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
+	"regexp"
 	"time"
+)
+
+var (
+	domainRe = regexp.MustCompile(`[^a-zA-Z0-9-_.]+`)
 )
 
 type sshValidateData struct {
@@ -338,7 +343,9 @@ func sshHostPost(c *gin.Context) {
 		return
 	}
 
-	cert, errData, err := ssh.NewHostCertificate(db, data.Hostname,
+	hostname := domainRe.ReplaceAllString(data.Hostname, "")
+
+	cert, errData, err := ssh.NewHostCertificate(db, hostname,
 		data.Port, data.Tokens, c.Request, data.PublicKey)
 	if err != nil {
 		switch err.(type) {
