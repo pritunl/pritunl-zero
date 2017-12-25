@@ -19,13 +19,19 @@ type Info struct {
 	Extensions []string  `bson:"extensions" json:"extensions"`
 }
 
+type Host struct {
+	Domain             string `bson:"domain" json:"domain"`
+	ProxyHost          string `bson:"proxy_host" json:"proxy_host"`
+	StrictHostChecking bool   `bson:"strict_host_checking" json:"strict_host_checking"`
+}
+
 type Certificate struct {
 	Id                     bson.ObjectId   `bson:"_id,omitempty" json:"id"`
 	UserId                 bson.ObjectId   `bson:"user_id,omitempty" json:"user_id"`
 	AuthorityIds           []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
 	Timestamp              time.Time       `bson:"timestamp" json:"timestamp"`
 	PubKey                 string          `bson:"pub_key"`
-	StrictHostChecking     []string        `bson:"strict_host_checking" json:"strict_host_checking"`
+	Hosts                  []*Host         `bson:"hosts" json:"hosts"`
 	CertificateAuthorities []string        `bson:"certificate_authorities" json:"-"`
 	Certificates           []string        `bson:"certificates" json:"-"`
 	CertificatesInfo       []*Info         `bson:"certificates_info" json:"certificates_info"`
@@ -121,12 +127,12 @@ func NewCertificate(db *database.Database, usr *user.User,
 	agnt *agent.Agent, pubKey string) (cert *Certificate, err error) {
 
 	cert = &Certificate{
-		Id:                     bson.NewObjectId(),
-		UserId:                 usr.Id,
-		AuthorityIds:           []bson.ObjectId{},
-		Timestamp:              time.Now(),
-		PubKey:                 pubKey,
-		StrictHostChecking:     []string{},
+		Id:           bson.NewObjectId(),
+		UserId:       usr.Id,
+		AuthorityIds: []bson.ObjectId{},
+		Timestamp:    time.Now(),
+		PubKey:       pubKey,
+		Hosts:        []*Host{},
 		CertificateAuthorities: []string{},
 		Certificates:           []string{},
 		CertificatesInfo:       []*Info{},
@@ -168,12 +174,13 @@ func NewCertificate(db *database.Database, usr *user.User,
 			)
 		}
 
-		checkDomain := authr.GetStrictHostDomain()
-		if checkDomain != "" {
-			cert.StrictHostChecking = append(
-				cert.StrictHostChecking,
-				checkDomain,
-			)
+		if authr.StrictHostChecking || authr.HostProxy != "" {
+			hst := &Host{
+				Domain:             authr.GetHostDomain(),
+				ProxyHost:          authr.HostProxy,
+				StrictHostChecking: authr.StrictHostChecking,
+			}
+			cert.Hosts = append(cert.Hosts, hst)
 		}
 
 		cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)

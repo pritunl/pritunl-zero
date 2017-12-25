@@ -381,10 +381,10 @@ type keybaseChallengeRespData struct {
 }
 
 type keybaseCertificateData struct {
-	Token                  string   `json:"token"`
-	Certificates           []string `json:"certificates"`
-	CertificateAuthorities []string `json:"certificate_authorities"`
-	StrictHostChecking     []string `json:"strict_host_checking"`
+	Token                  string      `json:"token"`
+	Certificates           []string    `json:"certificates"`
+	CertificateAuthorities []string    `json:"certificate_authorities"`
+	Hosts                  []*ssh.Host `json:"hosts"`
 }
 
 func keybaseChallengePost(c *gin.Context) {
@@ -460,9 +460,9 @@ func keybaseChallengePut(c *gin.Context) {
 
 	resp := &keybaseCertificateData{
 		Token:                  chal.Id,
+		Hosts:                  cert.Hosts,
 		Certificates:           cert.Certificates,
 		CertificateAuthorities: cert.CertificateAuthorities,
-		StrictHostChecking:     cert.StrictHostChecking,
 	}
 
 	c.JSON(200, resp)

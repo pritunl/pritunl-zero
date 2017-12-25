@@ -20,10 +20,10 @@ type sshValidateData struct {
 }
 
 type sshCertificateData struct {
-	Token                  string   `json:"token"`
-	Certificates           []string `json:"certificates"`
-	CertificateAuthorities []string `json:"certificate_authorities"`
-	StrictHostChecking     []string `json:"strict_host_checking"`
+	Token                  string      `json:"token"`
+	Certificates           []string    `json:"certificates"`
+	CertificateAuthorities []string    `json:"certificate_authorities"`
+	Hosts                  []*ssh.Host `json:"hosts"`
 }
 
 func sshGet(c *gin.Context) {
@@ -219,9 +219,9 @@ func sshChallengePut(c *gin.Context) {
 
 			resp := &sshCertificateData{
 				Token:                  token,
+				Hosts:                  cert.Hosts,
 				Certificates:           cert.Certificates,
 				CertificateAuthorities: cert.CertificateAuthorities,
-				StrictHostChecking:     cert.StrictHostChecking,
 			}
 
 			c.JSON(200, resp)
