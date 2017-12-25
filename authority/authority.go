@@ -26,17 +26,19 @@ type Info struct {
 }
 
 type Authority struct {
-	Id         bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name       string        `bson:"name" json:"name"`
-	Type       string        `bson:"type" json:"type"`
-	Info       *Info         `bson:"info" json:"info"`
-	MatchRoles bool          `bson:"match_roles" json:"match_roles"`
-	Roles      []string      `bson:"roles" json:"roles"`
-	Expire     int           `bson:"expire" json:"expire"`
-	PrivateKey string        `bson:"private_key" json:"-"`
-	PublicKey  string        `bson:"public_key" json:"public_key"`
-	HostDomain string        `bson:"host_domain" json:"host_domain"`
-	HostTokens []string      `bson:"host_tokens" json:"host_tokens"`
+	Id                 bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name               string        `bson:"name" json:"name"`
+	Type               string        `bson:"type" json:"type"`
+	Info               *Info         `bson:"info" json:"info"`
+	MatchRoles         bool          `bson:"match_roles" json:"match_roles"`
+	Roles              []string      `bson:"roles" json:"roles"`
+	Expire             int           `bson:"expire" json:"expire"`
+	HostExpire         int           `bson:"host_expire" json:"host_expire"`
+	PrivateKey         string        `bson:"private_key" json:"-"`
+	PublicKey          string        `bson:"public_key" json:"public_key"`
+	HostDomain         string        `bson:"host_domain" json:"host_domain"`
+	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
+	HostTokens         []string      `bson:"host_tokens" json:"host_tokens"`
 }
 
 func (a *Authority) GetDomain(hostname string) string {
@@ -298,6 +300,7 @@ func (a *Authority) Validate(db *database.Database) (
 	}
 
 	if a.HostTokens == nil || a.HostDomain == "" {
+		a.StrictHostChecking = false
 		a.HostTokens = []string{}
 	}
 
