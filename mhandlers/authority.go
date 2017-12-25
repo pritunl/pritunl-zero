@@ -13,13 +13,14 @@ import (
 )
 
 type authorityData struct {
-	Id         bson.ObjectId `json:"id"`
-	Name       string        `json:"name"`
-	Type       string        `json:"type"`
-	Expire     int           `json:"expire"`
-	MatchRoles bool          `json:"match_roles"`
-	Roles      []string      `json:"roles"`
-	HostDomain string        `json:"host_domain"`
+	Id                 bson.ObjectId `json:"id"`
+	Name               string        `json:"name"`
+	Type               string        `json:"type"`
+	Expire             int           `json:"expire"`
+	MatchRoles         bool          `json:"match_roles"`
+	Roles              []string      `json:"roles"`
+	HostDomain         string        `json:"host_domain"`
+	StrictHostChecking bool          `json:"strict_host_checking"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -62,6 +63,7 @@ func authorityPut(c *gin.Context) {
 		}
 	}
 	authr.HostDomain = data.HostDomain
+	authr.StrictHostChecking = data.StrictHostChecking
 
 	fields := set.NewSet(
 		"name",
@@ -72,6 +74,7 @@ func authorityPut(c *gin.Context) {
 		"roles",
 		"host_domain",
 		"host_tokens",
+		"strict_host_checking",
 	)
 
 	errData, err := authr.Validate(db)
@@ -113,12 +116,13 @@ func authorityPost(c *gin.Context) {
 	}
 
 	authr := &authority.Authority{
-		Name:       data.Name,
-		Type:       data.Type,
-		Expire:     data.Expire,
-		MatchRoles: data.MatchRoles,
-		Roles:      data.Roles,
-		HostDomain: data.HostDomain,
+		Name:               data.Name,
+		Type:               data.Type,
+		Expire:             data.Expire,
+		MatchRoles:         data.MatchRoles,
+		Roles:              data.Roles,
+		HostDomain:         data.HostDomain,
+		StrictHostChecking: data.StrictHostChecking,
 	}
 
 	err = authr.GenerateRsaPrivateKey()
