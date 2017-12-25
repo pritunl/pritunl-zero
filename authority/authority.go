@@ -75,6 +75,13 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	return
 }
 
+func (a *Authority) GetStrictHostDomain() string {
+	if a.HostDomain == "" || !a.StrictHostChecking {
+		return ""
+	}
+	return "*." + a.HostDomain
+}
+
 func (a *Authority) GetCertAuthority() string {
 	if a.HostDomain == "" {
 		return ""
