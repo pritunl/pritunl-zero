@@ -340,83 +340,6 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('key', val);
 						}}
 					/>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: authority.id || 'None',
-							},
-							{
-								label: 'Algorithm',
-								value: info.key_alg || 'None',
-							},
-						]}
-					/>
-					<PageInput
-						label="Download URL"
-						help="Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma."
-						type="text"
-						placeholder="Enter download URL"
-						readOnly={true}
-						autoSelect={true}
-						value={url}
-					/>
-					<PageInput
-						label="Certificate Expire Minutes"
-						help="Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440."
-						type="text"
-						placeholder="Certificate expire minutes"
-						value={authority.expire}
-						onChange={(val): void => {
-							this.set('expire', parseInt(val, 10));
-						}}
-					/>
-					<PageInput
-						label="Host Certificate Expire Minutes"
-						help="Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440."
-						type="text"
-						placeholder="Host certificate expire minutes"
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
-						value={authority.host_expire}
-						onChange={(val): void => {
-							this.set('host_expire', parseInt(val, 10));
-						}}
-					/>
-					<PageSwitch
-						label="Match roles"
-						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
-						checked={authority.match_roles}
-						onToggle={(): void => {
-							this.toggle('match_roles');
-						}}
-					/>
-					<label className="pt-label" hidden={!authority.match_roles}>
-						Roles
-						<Help
-							title="Roles"
-							content="Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles."
-						/>
-						<div>
-							{roles}
-						</div>
-					</label>
-					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
-						label="Add"
-						type="text"
-						placeholder="Add role"
-						hidden={!authority.match_roles}
-						value={this.state.addRole}
-						onChange={(val): void => {
-							this.setState({
-								...this.state,
-								addRole: val,
-							});
-						}}
-						onSubmit={this.onAddRole}
-					/>
 					<PageSwitch
 						label="Host certificates"
 						help="Allow servers to validate and sign SSH host keys."
@@ -499,6 +422,83 @@ export default class Authority extends React.Component<Props, State> {
 						onChange={(val): void => {
 							this.set('host_proxy', val);
 						}}
+					/>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						fields={[
+							{
+								label: 'ID',
+								value: authority.id || 'None',
+							},
+							{
+								label: 'Algorithm',
+								value: info.key_alg || 'None',
+							},
+						]}
+					/>
+					<PageInput
+						label="Download URL"
+						help="Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma."
+						type="text"
+						placeholder="Enter download URL"
+						readOnly={true}
+						autoSelect={true}
+						value={url}
+					/>
+					<PageInput
+						label="Certificate Expire Minutes"
+						help="Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440."
+						type="text"
+						placeholder="Certificate expire minutes"
+						value={authority.expire}
+						onChange={(val): void => {
+							this.set('expire', parseInt(val, 10));
+						}}
+					/>
+					<PageInput
+						label="Host Certificate Expire Minutes"
+						help="Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440."
+						type="text"
+						placeholder="Host certificate expire minutes"
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						value={authority.host_expire}
+						onChange={(val): void => {
+							this.set('host_expire', parseInt(val, 10));
+						}}
+					/>
+					<PageSwitch
+						label="Match roles"
+						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
+						checked={authority.match_roles}
+						onToggle={(): void => {
+							this.toggle('match_roles');
+						}}
+					/>
+					<label className="pt-label" hidden={!authority.match_roles}>
+						Roles
+						<Help
+							title="Roles"
+							content="Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles."
+						/>
+						<div>
+							{roles}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success pt-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add role"
+						hidden={!authority.match_roles}
+						value={this.state.addRole}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addRole: val,
+							});
+						}}
+						onSubmit={this.onAddRole}
 					/>
 					<label
 						style={css.itemsLabel}
