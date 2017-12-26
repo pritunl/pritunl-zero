@@ -251,9 +251,13 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	serialHash.Write([]byte(bson.NewObjectId().Hex()))
 	serial := serialHash.Sum64()
 
+	expire := a.Expire
+	if expire == 0 {
+		expire = 600
+	}
 	validAfter := time.Now().Add(-5 * time.Minute).Unix()
 	validBefore := time.Now().Add(
-		time.Duration(a.Expire) * time.Minute).Unix()
+		time.Duration(expire) * time.Minute).Unix()
 
 	cert = &ssh.Certificate{
 		Key:             pubKey,
