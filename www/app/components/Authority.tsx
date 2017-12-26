@@ -373,6 +373,16 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('expire', parseInt(val, 10));
 						}}
 					/>
+					<PageInput
+						label="Host Certificate Expire Minutes"
+						help="Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440."
+						type="text"
+						placeholder="Hopst certificate expire minutes"
+						value={authority.host_expire}
+						onChange={(val): void => {
+							this.set('host_expire', parseInt(val, 10));
+						}}
+					/>
 					<PageSwitch
 						label="Match roles"
 						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
