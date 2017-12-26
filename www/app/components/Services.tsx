@@ -69,12 +69,27 @@ export default class Services extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-add"
 							style={css.button}
+							disabled={this.state.disabled}
 							type="button"
 							onClick={(): void => {
+								this.setState({
+									...this.state,
+									disabled: true,
+								});
 								ServiceActions.create({
 									id: null,
 									share_session: true,
 									websockets: true,
+								}).then((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}).catch((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
 								});
 							}}
 						>New</button>

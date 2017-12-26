@@ -73,9 +73,24 @@ export default class Certificates extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-add"
 							style={css.button}
+							disabled={this.state.disabled}
 							type="button"
 							onClick={(): void => {
-								CertificateActions.create(null);
+								this.setState({
+									...this.state,
+									disabled: true,
+								});
+								CertificateActions.create(null).then((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}).catch((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								});
 							}}
 						>New</button>
 					</div>

@@ -72,9 +72,24 @@ export default class Authorities extends React.Component<{}, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-add"
 							style={css.button}
+							disabled={this.state.disabled}
 							type="button"
 							onClick={(): void => {
-								AuthorityActions.create(null);
+								this.setState({
+									...this.state,
+									disabled: true,
+								});
+								AuthorityActions.create(null).then((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								}).catch((): void => {
+									this.setState({
+										...this.state,
+										disabled: false,
+									});
+								});
 							}}
 						>New</button>
 					</div>
