@@ -72,7 +72,7 @@ elif cmd == 'set-version':
     subprocess.check_call(['git', 'push'])
 
 elif cmd == 'build' or cmd == 'build-test':
-    if cmd == 'build':
+    if cmd == 'build' or cmd == 'build-upload':
         pacur_path = STABLE_PACUR_PATH
     else:
         pacur_path = TEST_PACUR_PATH
@@ -85,6 +85,7 @@ elif cmd == 'build' or cmd == 'build-test':
                 'pkgver="(.*)"',
                 'pkgver="%s"' % cur_version,
                 pkgbuild_file.read(),
+                count=1,
             )
 
         with open(pkgbuild_path, 'w') as pkgbuild_file:
@@ -97,7 +98,7 @@ elif cmd == 'build' or cmd == 'build-test':
         )
 
 elif cmd == 'upload' or cmd == 'upload-test':
-    if cmd == 'upload':
+    if cmd == 'upload' or cmd == 'build-upload':
         mirror_urls = mirror_url
         pacur_path = STABLE_PACUR_PATH
     else:
