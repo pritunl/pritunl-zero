@@ -17,6 +17,7 @@ type authorityData struct {
 	Name               string        `json:"name"`
 	Type               string        `json:"type"`
 	Expire             int           `json:"expire"`
+	HostExpire         int           `json:"host_expire"`
 	MatchRoles         bool          `json:"match_roles"`
 	Roles              []string      `json:"roles"`
 	HostDomain         string        `json:"host_domain"`
@@ -53,6 +54,7 @@ func authorityPut(c *gin.Context) {
 	authr.Name = data.Name
 	authr.Type = data.Type
 	authr.Expire = data.Expire
+	authr.HostExpire = data.HostExpire
 	authr.MatchRoles = data.MatchRoles
 	authr.Roles = data.Roles
 
@@ -71,6 +73,7 @@ func authorityPut(c *gin.Context) {
 		"name",
 		"type",
 		"expire",
+		"host_expire",
 		"info",
 		"match_roles",
 		"roles",
@@ -122,6 +125,7 @@ func authorityPost(c *gin.Context) {
 		Name:               data.Name,
 		Type:               data.Type,
 		Expire:             data.Expire,
+		HostExpire:         data.HostExpire,
 		MatchRoles:         data.MatchRoles,
 		Roles:              data.Roles,
 		HostDomain:         data.HostDomain,
