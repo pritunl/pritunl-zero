@@ -12,6 +12,7 @@ export interface Authority {
 	type?: string[];
 	info?: Info;
 	expire?: number;
+	host_expire?: number;
 	match_roles?: boolean;
 	roles?: string[];
 	public_key?: string;
