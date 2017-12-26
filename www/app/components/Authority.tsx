@@ -377,7 +377,8 @@ export default class Authority extends React.Component<Props, State> {
 						label="Host Certificate Expire Minutes"
 						help="Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440."
 						type="text"
-						placeholder="Hopst certificate expire minutes"
+						placeholder="Host certificate expire minutes"
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
 						value={authority.host_expire}
 						onChange={(val): void => {
 							this.set('host_expire', parseInt(val, 10));
@@ -493,6 +494,7 @@ export default class Authority extends React.Component<Props, State> {
 						help="Optional username and hostname of bastion host to proxy client connections for this domain. If bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
 						type="text"
 						placeholder="Bastion host"
+						hidden={!authority.host_domain && !this.state.hostCertChecked}
 						value={authority.host_proxy}
 						onChange={(val): void => {
 							this.set('host_proxy', val);
