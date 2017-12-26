@@ -490,7 +490,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<PageInput
 						label="Bastion Host"
-						help="Optional username and hostname of bastion host to proxy client connections for this domain. If bastion station requires a specific username it must be included such as 'user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
+						help="Optional username and hostname of bastion host to proxy client connections for this domain. If bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
 						type="text"
 						placeholder="Bastion host"
 						value={authority.host_proxy}
