@@ -2,7 +2,9 @@ package authority
 
 import (
 	"crypto/rand"
+	"crypto/subtle"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"github.com/Sirupsen/logrus"
@@ -10,16 +12,28 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
 	"hash/fnv"
 	"net"
+	"net/http"
 	"sort"
 	"strings"
 	"time"
 )
+
+var (
+	client = &http.Client{
+		Timeout: 10 * time.Second,
+	}
+)
+
+type validateData struct {
+	PublicKey string `bson:"public_key" json:"public_key"`
+}
 
 type Info struct {
 	KeyAlg string `bson:"key_alg" json:"key_alg"`
@@ -108,7 +122,9 @@ func (a *Authority) UserHasAccess(usr *user.User) bool {
 func (a *Authority) HostnameValidate(hostname string, port int,
 	pubKey string) bool {
 
-	ips, err := net.LookupIP(a.GetDomain(hostname))
+	domain := a.GetDomain(hostname)
+
+	ipsNet, err := net.LookupIP(domain)
 	if err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "authority: Failed to lookup host"),
@@ -121,9 +137,95 @@ func (a *Authority) HostnameValidate(hostname string, port int,
 		return false
 	}
 
+	ips := []net.IP{}
+	for _, ip := range ipsNet {
+		if ip.To4() != nil {
+			ips = append(ips, ip)
+		}
+	}
+
+	if len(ips) == 0 {
+		logrus.WithFields(logrus.Fields{
+			"host": domain,
+		}).Error("authority: No IPv4 addresses found for host")
+		return false
+	}
+
+	valid := false
+	url := ""
+	if port == 0 {
+		port = 9748
+	}
+
 	for _, ip := range ips {
-		// TODO
-		println(ip.String())
+		url = fmt.Sprintf("http://%s:%d/challenge", ip, port)
+		req, e := http.NewRequest(
+			"GET",
+			url,
+			nil,
+		)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "authority: Validation request failed"),
+			}
+			continue
+		}
+
+		resp, e := client.Do(req)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "authority: Validation request failed"),
+			}
+			continue
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			err = &errortypes.RequestError{
+				errors.Newf("authority: Validation request bad status %d",
+					resp.StatusCode),
+			}
+			continue
+		}
+
+		data := &validateData{}
+		e = json.NewDecoder(resp.Body).Decode(data)
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "authority: Failed to parse response"),
+			}
+			break
+		}
+
+		hostPubKey := strings.TrimSpace(data.PublicKey)
+		if len(hostPubKey) > settings.System.SshPubKeyLen {
+			err = errortypes.ParseError{
+				errors.New("authority: Public key too long"),
+			}
+			break
+		}
+
+		if subtle.ConstantTimeCompare([]byte(pubKey),
+			[]byte(hostPubKey)) != 1 {
+
+			err = errortypes.AuthenticationError{
+				errors.New("authority: Public key does not match"),
+			}
+			break
+		}
+
+		valid = true
+		err = nil
+		break
+	}
+
+	if err != nil || !valid {
+		logrus.WithFields(logrus.Fields{
+			"host":  domain,
+			"url":   url,
+			"error": err,
+		}).Error("authority: Host validation failed")
+		return false
 	}
 
 	return true
