@@ -425,6 +425,14 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Expire = 1440
 	}
 
+	if a.HostExpire < 1 {
+		a.HostExpire = 600
+	} else if a.HostExpire > 1440 {
+		a.HostExpire = 1440
+	} else if a.HostExpire < 15 {
+		a.HostExpire = 15
+	}
+
 	if a.HostTokens == nil || a.HostDomain == "" {
 		a.StrictHostChecking = false
 		a.HostProxy = ""
