@@ -259,6 +259,13 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	validBefore := time.Now().Add(
 		time.Duration(expire) * time.Minute).Unix()
 
+	if len(usr.Roles) == 0 {
+		err = &errortypes.AuthenticationError{
+			errors.Wrap(err, "authority: User has no roles"),
+		}
+		return
+	}
+
 	cert = &ssh.Certificate{
 		Key:             pubKey,
 		Serial:          serial,
