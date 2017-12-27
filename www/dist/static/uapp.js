@@ -41189,7 +41189,7 @@ System.registerDynamic("uapp/Csrf.js", ["npm:superagent@3.8.1.js"], true, functi
     function load() {
         return new Promise((resolve, reject) => {
             SuperAgent.get('/csrf').set('Accept', 'application/json').end((err, res) => {
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;

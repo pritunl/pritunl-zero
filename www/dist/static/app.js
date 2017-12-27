@@ -16282,6 +16282,9 @@ System.registerDynamic("app/components/User.js", ["npm:react@15.6.1.js", "npm:re
                 case 'okta':
                     userType = 'Okta';
                     break;
+                case 'api':
+                    userType = 'API';
+                    break;
                 default:
                     userType = user.type;
             }
@@ -16704,11 +16707,11 @@ System.registerDynamic("app/components/Session.js", ["npm:react@15.6.1.js", "app
                     label: 'Last Active',
                     value: MiscUtils.formatDate(session.last_active) || 'Unknown'
                 }] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
-                    label: 'Operating System',
-                    value: Constants.operatingSystems[agent.operating_system] || 'Unknown'
+                    label: 'Session Type',
+                    value: Constants.sessionTypes[session.type] || 'Unknown'
                 }, {
                     label: 'Browser',
-                    value: Constants.browsers[agent.browser] || 'Unknown'
+                    value: (Constants.operatingSystems[agent.operating_system] || 'Unknown') + ' ' + (Constants.browsers[agent.browser] || 'Unknown')
                 }, {
                     label: 'ISP',
                     value: agent.isp || 'Unknown'
@@ -25864,17 +25867,17 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
             switch (this.props.rule.type) {
                 case 'operating_system':
                     label = 'Permitted Operating Systems';
-                    selectLabel = 'Operating System Policies';
+                    selectLabel = 'Operating system policies';
                     options = Constants.operatingSystems;
                     break;
                 case 'browser':
                     label = 'Permitted Browsers';
-                    selectLabel = 'Browser Policies';
+                    selectLabel = 'Browser policies';
                     options = Constants.browsers;
                     break;
                 case 'location':
                     label = 'Permitted Locations';
-                    selectLabel = 'Location Policies';
+                    selectLabel = 'Location policies';
                     options = Constants.locations;
                     break;
             }
@@ -26213,8 +26216,13 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@15.6.1.js", "ap
             this.state.policies.forEach(policy => {
                 policiesDom.push(React.createElement(Policy_1.default, { key: policy.id, policy: policy, services: this.state.services }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Policies"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
-                    PolicyActions.create(null);
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Policies"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    PolicyActions.create(null).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    });
                 } }, "New")))), React.createElement("div", null, policiesDom), React.createElement(NonState_1.default, { hidden: !!policiesDom.length, iconClass: "pt-icon-filter", title: "No policies", description: "Add a new policy to get started." }));
         }
     }
@@ -26389,7 +26397,8 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                 changed: false,
                 message: '',
                 authority: null,
-                addRole: null
+                addRole: null,
+                hostCertChecked: false
             };
         }
         set(name, val) {
@@ -26438,10 +26447,47 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                         this.onRemoveRole(role);
                     } })));
             }
+            let tokens = [];
+            for (let token of this.props.authority.host_tokens || []) {
+                tokens.push(React.createElement(PageInputButton_1.default, { key: token, buttonClass: "pt-minimal pt-intent-danger pt-icon-remove", type: "text", hidden: !authority.host_domain && !this.state.hostCertChecked, readOnly: true, autoSelect: true, listStyle: true, buttonDisabled: this.state.changed, value: token, onSubmit: () => {
+                        AuthorityActions.deleteToken(this.props.authority.id, token).then(() => {
+                            this.setState(Object.assign({}, this.state, { disabled: false }));
+                        }).catch(() => {
+                            this.setState(Object.assign({}, this.state, { disabled: false }));
+                        });
+                    } }));
+            }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm authority remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of authority", type: "text", placeholder: "Enter name", value: authority.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: authority.public_key, onChange: val => {
                     this.set('key', val);
+                } }), React.createElement(PageSwitch_1.default, { label: "Host certificates", help: "Allow servers to validate and sign SSH host keys.", checked: !!authority.host_domain || this.state.hostCertChecked, onToggle: () => {
+                    let state;
+                    let authr;
+                    if (this.state.changed) {
+                        authr = Object.assign({}, this.state.authority);
+                    } else {
+                        authr = Object.assign({}, this.props.authority);
+                    }
+                    state = !(!!authority.host_domain || this.state.hostCertChecked);
+                    if (!state) {
+                        authr.host_domain = '';
+                        authr.host_tokens = [];
+                    }
+                    this.setState(Object.assign({}, this.state, { changed: true, hostCertChecked: state, authority: authr }));
+                } }), React.createElement(PageSwitch_1.default, { label: "Strict host checking", help: "Enable strict host checking for SSH clients connecting to servers in this domain.", checked: authority.strict_host_checking, onToggle: () => {
+                    this.toggle('strict_host_checking');
+                } }), React.createElement(PageInput_1.default, { label: "Host Domain", help: "Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain.", type: "text", placeholder: "Host domain", value: authority.host_domain, hidden: !authority.host_domain && !this.state.hostCertChecked, onChange: val => {
+                    let authr;
+                    if (this.state.changed) {
+                        authr = Object.assign({}, this.state.authority);
+                    } else {
+                        authr = Object.assign({}, this.props.authority);
+                    }
+                    authr.host_domain = val;
+                    this.setState(Object.assign({}, this.state, { changed: true, hostCertChecked: true, authority: authr }));
+                } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", hidden: !authority.host_domain && !this.state.hostCertChecked, value: authority.host_proxy, onChange: val => {
+                    this.set('host_proxy', val);
                 } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: authority.id || 'None'
@@ -26450,11 +26496,19 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                     value: info.key_alg || 'None'
                 }] }), React.createElement(PageInput_1.default, { label: "Download URL", help: "Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma.", type: "text", placeholder: "Enter download URL", readOnly: true, autoSelect: true, value: url }), React.createElement(PageInput_1.default, { label: "Certificate Expire Minutes", help: "Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440.", type: "text", placeholder: "Certificate expire minutes", value: authority.expire, onChange: val => {
                     this.set('expire', parseInt(val, 10));
-                } }), React.createElement(PageSwitch_1.default, { label: "Match Roles", help: "Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles.", checked: authority.match_roles, onToggle: () => {
+                } }), React.createElement(PageInput_1.default, { label: "Host Certificate Expire Minutes", help: "Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440.", type: "text", placeholder: "Host certificate expire minutes", hidden: !authority.host_domain && !this.state.hostCertChecked, value: authority.host_expire, onChange: val => {
+                    this.set('host_expire', parseInt(val, 10));
+                } }), React.createElement(PageSwitch_1.default, { label: "Match roles", help: "Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles.", checked: authority.match_roles, onToggle: () => {
                     this.toggle('match_roles');
                 } }), React.createElement("label", { className: "pt-label", hidden: !authority.match_roles }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", hidden: !authority.match_roles, value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.authority, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { style: css.itemsLabel, hidden: !authority.host_domain && !this.state.hostCertChecked }, "Host Tokens", React.createElement(Help_1.default, { title: "Host Tokens", content: "Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens." })), tokens, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", disabled: this.state.changed, hidden: !authority.host_domain && !this.state.hostCertChecked, onClick: () => {
+                    AuthorityActions.createToken(this.props.authority.id).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    });
+                } }, "Add Token"))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.authority, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, authority: null }));
                 }, onSave: this.onSave }));
         }
@@ -26511,8 +26565,13 @@ System.registerDynamic("app/components/Authorities.js", ["npm:react@15.6.1.js", 
             this.state.authorities.forEach(authority => {
                 authoritiesDom.push(React.createElement(Authority_1.default, { key: authority.id, authority: authority }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Authorities"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
-                    AuthorityActions.create(null);
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Authorities"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    AuthorityActions.create(null).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    });
                 } }, "New")))), React.createElement("div", null, authoritiesDom), React.createElement(NonState_1.default, { hidden: !!authoritiesDom.length, iconClass: "pt-icon-office", title: "No authorities", description: "Add a new authority to get started." }));
         }
     }
@@ -26844,8 +26903,13 @@ System.registerDynamic("app/components/Certificates.js", ["npm:react@15.6.1.js",
             this.state.certificates.forEach(cert => {
                 certsDom.push(React.createElement(Certificate_1.default, { key: cert.id, certificate: cert }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Certificates"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
-                    CertificateActions.create(null);
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Certificates"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    CertificateActions.create(null).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    });
                 } }, "New")))), React.createElement("div", null, certsDom), React.createElement(NonState_1.default, { hidden: !!certsDom.length, iconClass: "pt-icon-endorsed", title: "No certificates", description: "Add a new certificate to get started." }));
         }
     }
@@ -28377,6 +28441,11 @@ System.registerDynamic("app/Constants.js", ["npm:mobile-detect@1.3.7.js"], true,
     let md = new MobileDetect(window.navigator.userAgent);
     exports.mobile = !!md.mobile();
     exports.loadDelay = 500;
+    exports.sessionTypes = {
+        admin: 'Admin',
+        proxy: 'Service',
+        user: 'User'
+    };
     exports.operatingSystems = {
         linux: 'Linux',
         macos_1010: 'macOS 10.10',
@@ -29167,11 +29236,16 @@ System.registerDynamic("app/components/Services.js", ["npm:react@15.6.1.js", "ap
             this.state.services.forEach(service => {
                 servicesDom.push(React.createElement(Service_1.default, { key: service.id, service: service }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Services"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, type: "button", onClick: () => {
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Services"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
                     ServiceActions.create({
                         id: null,
                         share_session: true,
                         websockets: true
+                    }).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
                     });
                 } }, "New")))), React.createElement("div", null, servicesDom), React.createElement(NonState_1.default, { hidden: !!servicesDom.length, iconClass: "pt-icon-cloud", title: "No services", description: "Add a new service to get started." }));
         }
@@ -29440,6 +29514,11 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
             width: '100%',
             maxWidth: '280px'
         },
+        groupList: {
+            marginTop: '5px',
+            width: '100%',
+            maxWidth: '280px'
+        },
         groupTop: {
             width: '100%',
             maxWidth: '280px'
@@ -29479,9 +29558,9 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
                         if (evt.key === 'Enter') {
                             this.props.onSubmit();
                         }
-                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, style: css.buttonTop, disabled: this.props.disabled, onClick: this.props.onSubmit }))));
+                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, style: css.buttonTop, disabled: this.props.disabled || this.props.buttonDisabled, onClick: this.props.onSubmit }))));
             } else {
-                return React.createElement("div", { className: "pt-control-group", style: css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+                return React.createElement("div", { className: "pt-control-group", style: this.props.listStyle ? css.groupList : css.group, hidden: this.props.hidden }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: this.props.type, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder || '', value: this.props.value || '', onChange: evt => {
                         if (this.props.onChange) {
                             this.props.onChange(evt.target.value);
                         }
@@ -29489,7 +29568,7 @@ System.registerDynamic("app/components/PageInputButton.js", ["npm:react@15.6.1.j
                         if (evt.key === 'Enter') {
                             this.props.onSubmit();
                         }
-                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, disabled: this.props.disabled, onClick: this.props.onSubmit }, this.props.label)));
+                    } })), React.createElement("div", null, React.createElement("button", { className: buttonClass, disabled: this.props.disabled || this.props.buttonDisabled, onClick: this.props.onSubmit }, this.props.label || '')));
             }
         }
     }
@@ -32587,13 +32666,21 @@ System.registerDynamic("app/components/Settings.js", ["npm:react@15.6.1.js", "ap
                         role_management: 'set_on_insert'
                     }];
                     this.set('auth_providers', authProviders);
-                } }, React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement(PageInput_1.default, { label: "Session Expire Hours", help: "Number of inactive hours before a session expires", type: "text", placeholder: "Session expire", value: this.state.settings.auth_expire, onChange: val => {
-                    this.set('auth_expire', parseInt(val, 10));
-                } }), React.createElement(PageInput_1.default, { label: "Session Max Duration Hours", help: "Number of hours from start of session until expiration", type: "text", placeholder: "Session max duration", value: this.state.settings.auth_max_duration, onChange: val => {
-                    this.set('auth_max_duration', parseInt(val, 10));
+                } }, React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement(PageInput_1.default, { label: "Admin Session Expire Minutes", help: "Number of inactive minutes before a admin session expires", type: "text", placeholder: "Session expire", value: this.state.settings.auth_admin_expire, onChange: val => {
+                    this.set('auth_admin_expire', parseInt(val, 10));
+                } }), React.createElement(PageInput_1.default, { label: "Admin Session Max Duration Minutes", help: "Number of minutes from start of a admin session until expiration", type: "text", placeholder: "Session max duration", value: this.state.settings.auth_admin_max_duration, onChange: val => {
+                    this.set('auth_admin_max_duration', parseInt(val, 10));
+                } }), React.createElement(PageInput_1.default, { label: "Service Session Expire Minutes", help: "Number of inactive minutes before a service session expires", type: "text", placeholder: "Session expire", value: this.state.settings.auth_proxy_expire, onChange: val => {
+                    this.set('auth_proxy_expire', parseInt(val, 10));
+                } }), React.createElement(PageInput_1.default, { label: "Service Session Max Duration Minutes", help: "Number of minutes from start of a service session until expiration", type: "text", placeholder: "Session max duration", value: this.state.settings.auth_proxy_max_duration, onChange: val => {
+                    this.set('auth_proxy_max_duration', parseInt(val, 10));
+                } }), React.createElement(PageInput_1.default, { label: "User Session Expire Minutes", help: "Number of inactive minutes before a user session expires", type: "text", placeholder: "Session expire", value: this.state.settings.auth_user_expire, onChange: val => {
+                    this.set('auth_user_expire', parseInt(val, 10));
+                } }), React.createElement(PageInput_1.default, { label: "User Session Max Duration Minutes", help: "Number of minutes from start of a user session until expiration", type: "text", placeholder: "Session max duration", value: this.state.settings.auth_user_max_duration, onChange: val => {
+                    this.set('auth_user_max_duration', parseInt(val, 10));
                 } }), React.createElement(PageInput_1.default, { label: "Elasticsearch Address", help: "Address of Elasticsearch server", type: "text", placeholder: "Elasticsearch address", value: this.state.settings.elastic_address, onChange: val => {
                     this.set('elastic_address', val);
-                } }), React.createElement(PageSwitch_1.default, { label: "Elasticsearch Log Proxy Requests", help: "Send all user requests to the Elasticsearch server. The request header, URL query values and user information such as user ID, IP address and location will be included. If the request body contains form fields, json or xml this data will also be included.", checked: this.state.settings.elastic_proxy_requests, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Elasticsearch log proxy requests", help: "Send all user requests to the Elasticsearch server. The request header, URL query values and user information such as user ID, IP address and location will be included. If the request body contains form fields, json or xml this data will also be included.", checked: this.state.settings.elastic_proxy_requests, onToggle: () => {
                     this.set('elastic_proxy_requests', !this.state.settings.elastic_proxy_requests);
                 } }))), React.createElement(PageSave_1.default, { message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, message: 'Your changes have been discarded', settings: SettingsStore_1.default.settingsM }));
@@ -32796,7 +32883,7 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.get('/user/' + userId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -32834,7 +32921,7 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.get('/user').query(Object.assign({}, UsersStore_1.default.filter, { page: UsersStore_1.default.page, page_count: UsersStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -32885,7 +32972,7 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.put('/user/' + user.id).send(user).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -32911,7 +32998,7 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.post('/user').send(user).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -32931,7 +33018,7 @@ System.registerDynamic("app/actions/UserActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.delete('/user').send(userIds).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33061,7 +33148,7 @@ System.registerDynamic("app/actions/SessionActions.js", ["npm:superagent@3.8.1.j
                 show_removed: SessionsStore_1.default.showRemoved
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33116,7 +33203,7 @@ System.registerDynamic("app/actions/SessionActions.js", ["npm:superagent@3.8.1.j
         return new Promise((resolve, reject) => {
             SuperAgent.delete('/session/' + sessionId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33257,7 +33344,7 @@ System.registerDynamic("app/actions/AuditActions.js", ["npm:superagent@3.8.1.js"
                 page_count: AuditsStore_1.default.pageCount
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33424,7 +33511,7 @@ System.registerDynamic("app/actions/SshcertificateActions.js", ["npm:superagent@
                 page_count: SshcertificatesStore_1.default.pageCount
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33506,7 +33593,7 @@ System.registerDynamic("app/actions/NodeActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.get('/node').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33536,7 +33623,7 @@ System.registerDynamic("app/actions/NodeActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.put('/node/' + node.id).send(node).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33556,7 +33643,7 @@ System.registerDynamic("app/actions/NodeActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.post('/node').send(node).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33576,7 +33663,7 @@ System.registerDynamic("app/actions/NodeActions.js", ["npm:superagent@3.8.1.js",
         return new Promise((resolve, reject) => {
             SuperAgent.delete('/node/' + nodeId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33632,7 +33719,7 @@ System.registerDynamic("app/actions/PolicyActions.js", ["npm:superagent@3.8.1.js
         return new Promise((resolve, reject) => {
             SuperAgent.get('/policy').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33662,7 +33749,7 @@ System.registerDynamic("app/actions/PolicyActions.js", ["npm:superagent@3.8.1.js
         return new Promise((resolve, reject) => {
             SuperAgent.put('/policy/' + cert.id).send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33682,7 +33769,7 @@ System.registerDynamic("app/actions/PolicyActions.js", ["npm:superagent@3.8.1.js
         return new Promise((resolve, reject) => {
             SuperAgent.post('/policy').send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33702,7 +33789,7 @@ System.registerDynamic("app/actions/PolicyActions.js", ["npm:superagent@3.8.1.js
         return new Promise((resolve, reject) => {
             SuperAgent.delete('/policy/' + certId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33758,7 +33845,7 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.1
         return new Promise((resolve, reject) => {
             SuperAgent.get('/authority').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33783,12 +33870,12 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.1
         });
     }
     exports.sync = sync;
-    function commit(cert) {
+    function commit(authority) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.put('/authority/' + cert.id).send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.put('/authority/' + authority.id).send(authority).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33803,12 +33890,12 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.1
         });
     }
     exports.commit = commit;
-    function create(cert) {
+    function create(authority) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.post('/authority').send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.post('/authority').send(authority).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33823,12 +33910,12 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.1
         });
     }
     exports.create = create;
-    function remove(certId) {
+    function remove(authorityId) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.delete('/authority/' + certId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.delete('/authority/' + authorityId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33843,6 +33930,46 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.1
         });
     }
     exports.remove = remove;
+    function createToken(authorityId) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.post('/authority/' + authorityId + '/token').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to create authority token');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.createToken = createToken;
+    function deleteToken(authorityId, token) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.delete('/authority/' + authorityId + '/token/' + token).set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to delete authority token');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.deleteToken = deleteToken;
     EventDispatcher_1.default.register(action => {
         switch (action.type) {
             case AuthorityTypes.CHANGE:
@@ -33884,7 +34011,7 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@3.8
         return new Promise((resolve, reject) => {
             SuperAgent.get('/certificate').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33914,7 +34041,7 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@3.8
         return new Promise((resolve, reject) => {
             SuperAgent.put('/certificate/' + cert.id).send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33934,7 +34061,7 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@3.8
         return new Promise((resolve, reject) => {
             SuperAgent.post('/certificate').send(cert).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -33954,7 +34081,7 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@3.8
         return new Promise((resolve, reject) => {
             SuperAgent.delete('/certificate/' + certId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34400,7 +34527,7 @@ System.registerDynamic("app/actions/LogActions.js", ["npm:superagent@3.8.1.js", 
         return new Promise((resolve, reject) => {
             SuperAgent.get('/log').query(Object.assign({}, LogsStore_1.default.filter, { page: LogsStore_1.default.page, page_count: LogsStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34487,7 +34614,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@3.8.1.j
         return new Promise((resolve, reject) => {
             SuperAgent.get('/service').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34517,7 +34644,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@3.8.1.j
         return new Promise((resolve, reject) => {
             SuperAgent.put('/service/' + service.id).send(service).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34537,7 +34664,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@3.8.1.j
         return new Promise((resolve, reject) => {
             SuperAgent.post('/service').send(service).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34608,7 +34735,7 @@ System.registerDynamic("app/actions/SettingsActions.js", ["npm:superagent@3.8.1.
         return new Promise((resolve, reject) => {
             SuperAgent.get('/settings').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34636,7 +34763,7 @@ System.registerDynamic("app/actions/SettingsActions.js", ["npm:superagent@3.8.1.
         return new Promise((resolve, reject) => {
             SuperAgent.put('/settings').send(settings).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -34987,7 +35114,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
         return new Promise((resolve, reject) => {
             SuperAgent.get('/subscription' + (update ? '/update' : '')).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -35021,7 +35148,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
                 license: license
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -35049,7 +35176,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
                 email: email
             }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -35075,7 +35202,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
                 email: email
             }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -35098,7 +35225,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@3.
                 key: key
             }).set('Accept', 'application/json').end((err, res) => {
                 loader.done();
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -61967,7 +62094,7 @@ System.registerDynamic("app/Theme.js", ["npm:superagent@3.8.1.js", "app/Alert.js
             SuperAgent.put('/theme').send({
                 theme: exports.theme
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
@@ -62014,7 +62141,7 @@ System.registerDynamic("app/Csrf.js", ["npm:superagent@3.8.1.js", "app/Theme.js"
     function load() {
         return new Promise((resolve, reject) => {
             SuperAgent.get('/csrf').set('Accept', 'application/json').end((err, res) => {
-                if (res.status === 401) {
+                if (res && res.status === 401) {
                     window.location.href = '/login';
                     resolve();
                     return;
