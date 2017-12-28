@@ -235,7 +235,7 @@ export default class Settings extends React.Component<{}, State> {
 						}}
 					/>
 					<PageSwitch
-						label="Elasticsearch Log Proxy Requests"
+						label="Elasticsearch log proxy requests"
 						help="Send all user requests to the Elasticsearch server. The request header, URL query values and user information such as user ID, IP address and location will be included. If the request body contains form fields, json or xml this data will also be included."
 						checked={this.state.settings.elastic_proxy_requests}
 						onToggle={(): void => {
