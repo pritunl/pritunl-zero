@@ -425,6 +425,30 @@ export default class Policy extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<label className="pt-label">
+						Roles
+						<Help
+							title="Roles"
+							content="Roles associated with this policy. All requests from users with associated roles must pass this policy check."
+						/>
+						<div>
+							{roles}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success pt-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add role"
+						value={this.state.addRole}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addRole: val,
+							});
+						}}
+						onSubmit={this.onAddRole}
+					/>
 					<label
 						className="pt-label"
 						style={css.label}
@@ -453,30 +477,6 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{servicesSelect}
 					</PageSelectButton>
-					<label className="pt-label">
-						Roles
-						<Help
-							title="Roles"
-							content="Roles associated with this policy. All requests from users with associated roles must pass this policy check."
-						/>
-						<div>
-							{roles}
-						</div>
-					</label>
-					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
-						label="Add"
-						type="text"
-						placeholder="Add role"
-						value={this.state.addRole}
-						onChange={(val): void => {
-							this.setState({
-								...this.state,
-								addRole: val,
-							});
-						}}
-						onSubmit={this.onAddRole}
-					/>
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Keybase Mode"
