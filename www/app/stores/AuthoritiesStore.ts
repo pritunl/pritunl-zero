@@ -24,7 +24,7 @@ class AuthoritiesStore extends EventEmitter {
 		return authorities;
 	}
 
-	policy(id: string): AuthorityTypes.AuthorityRo {
+	authority(id: string): AuthorityTypes.AuthorityRo {
 		let i = this._map[id];
 		if (i === undefined) {
 			return null;
