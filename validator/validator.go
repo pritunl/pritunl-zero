@@ -7,11 +7,13 @@ import (
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/user"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
 
 func ValidateAdmin(db *database.Database, usr *user.User,
-	isApi bool, r *http.Request) (errData *errortypes.ErrorData, err error) {
+	isApi bool, r *http.Request) (secProvider bson.ObjectId,
+	errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled || usr.Administrator != "super" {
 		errData = &errortypes.ErrorData{
@@ -19,6 +21,21 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 			Message: "Not authorized",
 		}
 		return
+	}
+
+	if !isApi {
+		policies, e := policy.GetRoles(db, usr.Roles)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for _, polcy := range policies {
+			if polcy.AdminSecondary != "" {
+				secProvider = polcy.AdminSecondary
+				break
+			}
+		}
 	}
 
 	return
