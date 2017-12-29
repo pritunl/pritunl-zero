@@ -71,6 +71,42 @@ func GetRoles(db *database.Database, roles []string) (
 	return
 }
 
+func GetAuthoritiesRoles(db *database.Database, authrIds []bson.ObjectId,
+	roles []string) (policies []*Policy, err error) {
+
+	coll := db.Policies()
+	policies = []*Policy{}
+
+	cursor := coll.Find(bson.M{
+		"$or": []*bson.M{
+			&bson.M{
+				"roles": &bson.M{
+					"$in": roles,
+				},
+			},
+			&bson.M{
+				"authorities": &bson.M{
+					"$in": authrIds,
+				},
+			},
+		},
+	}).Iter()
+
+	polcy := &Policy{}
+	for cursor.Next(polcy) {
+		policies = append(policies, polcy)
+		polcy = &Policy{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (policies []*Policy, err error) {
 	coll := db.Policies()
 	policies = []*Policy{}
