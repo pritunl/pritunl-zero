@@ -10,8 +10,8 @@ import (
 	"net/http"
 )
 
-func ValidateAdmin(db *database.Database, usr *user.User) (
-	errData *errortypes.ErrorData, err error) {
+func ValidateAdmin(db *database.Database, usr *user.User,
+	isApi bool, r *http.Request) (errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled || usr.Administrator != "super" {
 		errData = &errortypes.ErrorData{
