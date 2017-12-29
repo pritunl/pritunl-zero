@@ -269,12 +269,12 @@ func (u *User) CheckPassword(password string) bool {
 }
 
 func (u *User) GenerateToken() (err error) {
-	u.Token, err = utils.RandStr(32)
+	u.Token, err = utils.RandStr(48)
 	if err != nil {
 		return
 	}
 
-	u.Secret, err = utils.RandStr(32)
+	u.Secret, err = utils.RandStr(48)
 	if err != nil {
 		return
 	}

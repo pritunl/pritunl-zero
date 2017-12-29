@@ -227,7 +227,7 @@ func (a *Association) Insert(db *database.Database) (err error) {
 func NewAssociation(db *database.Database, username string) (
 	asc *Association, err error) {
 
-	token, err := utils.RandStr(32)
+	token, err := utils.RandStr(48)
 	if err != nil {
 		return
 	}

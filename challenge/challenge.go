@@ -190,7 +190,7 @@ func NewChallenge(db *database.Database, pubKey string) (
 		return
 	}
 
-	token, err := utils.RandStr(32)
+	token, err := utils.RandStr(48)
 	if err != nil {
 		return
 	}

@@ -211,7 +211,7 @@ func NewChallenge(db *database.Database, username, pubKey string) (
 		return
 	}
 
-	token, err := utils.RandStr(32)
+	token, err := utils.RandStr(48)
 	if err != nil {
 		return
 	}

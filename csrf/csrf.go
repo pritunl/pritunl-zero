@@ -17,7 +17,7 @@ func NewToken(db *database.Database, sessionId string) (
 
 	coll := db.CsrfTokens()
 
-	tkn, err := utils.RandStr(32)
+	tkn, err := utils.RandStr(48)
 	if err != nil {
 		return
 	}

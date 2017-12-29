@@ -358,7 +358,7 @@ func (a *Authority) TokenNew() (err error) {
 		a.HostTokens = []string{}
 	}
 
-	token, err := utils.RandStr(32)
+	token, err := utils.RandStr(48)
 	if err != nil {
 		return
 	}
