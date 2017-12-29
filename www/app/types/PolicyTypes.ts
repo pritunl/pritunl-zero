@@ -12,6 +12,7 @@ export interface Policy {
 	id: string;
 	name?: string;
 	services?: string[];
+	authorities?: string[];
 	roles?: string[];
 	rules?: {[key: string]: Rule};
 	keybase_mode?: string;
