@@ -36,13 +36,13 @@ func ValidateUser(db *database.Database, usr *user.User,
 	}
 
 	if !isApi {
-		polices, e := policy.GetRoles(db, usr.Roles)
+		policies, e := policy.GetRoles(db, usr.Roles)
 		if e != nil {
 			err = e
 			return
 		}
 
-		for _, polcy := range polices {
+		for _, polcy := range policies {
 			errData, err = polcy.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
@@ -87,25 +87,25 @@ func ValidateProxy(db *database.Database, usr *user.User,
 	}
 
 	if !isApi {
-		polices, e := policy.GetService(db, srvc.Id)
+		policies, e := policy.GetService(db, srvc.Id)
 		if e != nil {
 			err = e
 			return
 		}
 
-		for _, polcy := range polices {
+		for _, polcy := range policies {
 			errData, err = polcy.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
 			}
 		}
 
-		polices, err = policy.GetRoles(db, usr.Roles)
+		policies, err = policy.GetRoles(db, usr.Roles)
 		if err != nil {
 			return
 		}
 
-		for _, polcy := range polices {
+		for _, polcy := range policies {
 			errData, err = polcy.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
