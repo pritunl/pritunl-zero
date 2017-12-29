@@ -50,18 +50,21 @@
       }
 
       .pt-card .pt-button.auth-cancel,
-      #auth-buttons .pt-button:last-child {
+      #auth-buttons .pt-button:last-child,
+      #auth-secondary .pt-button:last-child {
         margin-bottom: 0;
       }
 
-      #alert {
+      #alert,
+      #secondary-alert {
         display: none;
         margin-bottom: 15px;
         transition: background-color ease-in-out 0.1s,
           background-color ease-in-out 0.1s;
       }
 
-      #alert.flash {
+      #alert.flash,
+      #secondary-alert.flash {
         background-color: rgba(255, 255, 255, 0.50);
       }
 
@@ -72,10 +75,29 @@
       #auth-local {
         display: none;
       }
+
+
+      #auth-secondary {
+        display: none;
+      }
+
+      #secondary-passcode {
+        margin-bottom: 7px;
+      }
     </style>
   </head>
   <body class="pt-dark pt-focus-disabled">
     <div id="auth-buttons" class="pt-card pt-elevation-2">
+    </div>
+    <div id="auth-secondary" class="pt-card pt-elevation-2">
+      <div id="secondary-alert" class="pt-callout"></div>
+      <button id="secondary-push" class="pt-button auth-button">Push</button>
+      <button id="secondary-phone" class="pt-button auth-button">Call Me</button>
+      <button id="secondary-sms" class="pt-button auth-button">Text Me</button>
+      <input id="secondary-passcode" class="pt-input"
+        autocapitalize="off" spellcheck="false"
+        type="text" placeholder="Passcode"/>
+      <button id="secondary-submit" class="pt-button auth-button">Submit</button>
     </div>
     <div id="auth-local" class="pt-card pt-elevation-2">
       <div id="alert" class="pt-callout"></div>
@@ -94,6 +116,7 @@
       <button class="pt-button auth-cancel">Cancel</button>
     </div>
     <script type="text/javascript">
+      var i;
       var state;
       var authButtons = document.getElementById('auth-buttons');
       var authLocal = document.getElementById('auth-local');
@@ -102,7 +125,45 @@
       var passwordElm = document.getElementById('password');
       var submitElm = document.getElementById('submit');
 
-      var loadState = function () {
+      var secondaryToken = null;
+      var secondaryFactors = {
+        push: false,
+        phone: false,
+        sms: false,
+        passcode: false
+      };
+      var secondaryAuth = document.getElementById('auth-secondary');
+      var secondaryAlert = document.getElementById('secondary-alert');
+      var secondaryPush = document.getElementById('secondary-push');
+      var secondaryPhone = document.getElementById('secondary-phone');
+      var secondarySms = document.getElementById('secondary-sms');
+      var secondaryPasscode = document.getElementById('secondary-passcode');
+      var secondarySubmit = document.getElementById('secondary-submit');
+
+      var queryVals = window.location.search.substring(1).split('&');
+      for (i = 0; i < queryVals.length; i++) {
+        var queryKeyVal = queryVals[i].split('=');
+        if (queryKeyVal[0] === 'secondary') {
+          secondaryToken = queryKeyVal[1];
+        } else if (queryKeyVal[0] === 'factors') {
+          if (queryKeyVal[1].indexOf('push') !== -1) {
+            secondaryFactors.push = true;
+          } else if (queryKeyVal[1].indexOf('phone') !== -1) {
+            secondaryFactors.phone = true;
+          } else if (queryKeyVal[1].indexOf('sms') !== -1) {
+            secondaryFactors.sms = true;
+          } else if (queryKeyVal[1].indexOf('passcode') !== -1) {
+            secondaryFactors.passcode = true;
+          }
+        }
+      }
+
+      if (secondaryToken) {
+        authButtons.style.display = 'none';
+        secondaryAuth.style.display = 'block';
+      }
+
+      var loadState = function() {
         var xmlhttp = new XMLHttpRequest();
 
         xmlhttp.onreadystatechange = function() {
@@ -115,7 +176,7 @@
                 'class="pt-button auth-button">Username/Password</button>';
 
               var provider;
-              for (var i = 0; i < state.providers.length; i++) {
+              for (i = 0; i < state.providers.length; i++) {
                 provider = state.providers[i];
 
                 if (provider.id === 'demo') {
@@ -213,7 +274,7 @@
         evt.preventDefault();
 
         submitElm.disabled = true;
-        for (var i = 0; i < authCancels.length; i++) {
+        for (i = 0; i < authCancels.length; i++) {
           authCancels[i].disabled = true;
         }
 
@@ -225,7 +286,7 @@
           if (xmlhttp.readyState === 4) {
             setTimeout(function() {
               submitElm.disabled = false;
-              for (var i = 0; i < authCancels.length; i++) {
+              for (i = 0; i < authCancels.length; i++) {
                 authCancels[i].disabled = false;
               }
             }, 500);
@@ -233,6 +294,18 @@
             if (xmlhttp.status === 200) {
               setAlert();
               window.location = '/';
+            } else if (xmlhttp.status === 201) {
+              setAlert();
+
+              var data = JSON.parse(xmlhttp.response);
+              secondaryToken = data['token'];
+              secondaryFactors.push = data['push'];
+              secondaryFactors.phone = data['phone'];
+              secondaryFactors.sms = data['sms'];
+              secondaryFactors.passcode = data['passcode'];
+
+              authLocal.style.display = 'none';
+              secondaryAuth.style.display = 'block';
             } else if (xmlhttp.status === 202) {
               setAlert();
               window.location = JSON.parse(xmlhttp.response)['redirect'];
@@ -265,12 +338,128 @@
       };
 
       var authCancels = document.getElementsByClassName('auth-cancel');
-      for (var i = 0; i < authCancels.length; i++) {
+      for (i = 0; i < authCancels.length; i++) {
         authCancels[i].onclick = function() {
           authLocal.style.display = 'none';
           authButtons.style.display = 'block';
         };
       }
+
+      var flashSecondaryAlert = function() {
+        var alertClass = secondaryAlert.className;
+        var alertClassFlash = alertClass + ' flash';
+
+        secondaryAlert.className = alertClassFlash;
+        setTimeout(function() {
+          secondaryAlert.className = alertClass;
+          setTimeout(function() {
+            secondaryAlert.className = alertClassFlash;
+            setTimeout(function() {
+              secondaryAlert.className = alertClass;
+            }.bind(this), 150);
+          }.bind(this), 150);
+        }.bind(this), 150);
+      };
+
+      var setSecondaryAlert = function(alert, intent) {
+        intent = intent || 'default';
+
+        if (alert) {
+          secondaryAlert.className = 'pt-callout pt-intent-' + intent;
+          secondaryAlert.innerHTML = alert;
+          if (secondaryAlert.style.display === 'block') {
+            flashAlert(secondaryAlert);
+          } else {
+            secondaryAlert.style.display = 'block';
+          }
+        } else {
+          secondaryAlert.style.display = 'none';
+        }
+      };
+
+      var secondaryChallenge = function(factor, passcode, callback) {
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              setSecondaryAlert();
+              callback(true);
+              window.location = '/';
+            } else if (xmlhttp.status === 201 && factor === 'sms') {
+              setSecondaryAlert('Text message sent', 'info');
+              callback(true);
+            } else if (xmlhttp.status === 202) {
+              setSecondaryAlert();
+              callback(true);
+              window.location = JSON.parse(xmlhttp.response)['redirect'];
+            } else {
+              var errorMsg;
+
+              try {
+                errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+              } catch(error) {
+                errorMsg = 'Server error occurred';
+              }
+
+              setSecondaryAlert(errorMsg, 'danger');
+              callback(false);
+            }
+          }
+        };
+
+        xmlhttp.open(
+          'POST',
+          '/auth/secondary' + window.location.search,
+          true
+        );
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send(JSON.stringify({
+          'token': secondaryToken,
+          'factor': factor,
+          'passcode': passcode
+        }));
+      };
+
+      secondaryPush.onclick = function() {
+        secondaryPush.disabled = true;
+        secondaryChallenge('push', null, function(success) {
+          if (!success) {
+            secondaryPush.disabled = false;
+          }
+        });
+      };
+      secondaryPhone.onclick = function() {
+        secondaryPhone.disabled = true;
+        secondaryChallenge('phone', null, function(success) {
+          if (!success) {
+            secondaryPhone.disabled = false;
+          }
+        });
+      };
+      secondarySms.onclick = function() {
+        secondarySms.disabled = true;
+        secondaryChallenge('sms', null, function(success) {
+          if (!success) {
+            secondarySms.disabled = false;
+          }
+        });
+      };
+      secondarySubmit.onclick = function() {
+        var val = secondaryPasscode.value;
+        if (!val) {
+          return;
+        }
+
+        secondaryPasscode.disabled = true;
+        secondarySubmit.disabled = true;
+        secondaryChallenge('passcode', val, function(success) {
+          if (!success) {
+            secondaryPasscode.disabled = false;
+            secondarySubmit.disabled = false;
+          }
+        });
+      };
     </script>
   </body>
 </html>
