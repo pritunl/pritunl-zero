@@ -28,7 +28,7 @@ func policyPut(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	data := &policyData{}
 
-	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
+	polcyId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
 		utils.AbortWithStatus(c, 400)
 		return
@@ -40,17 +40,17 @@ func policyPut(c *gin.Context) {
 		return
 	}
 
-	cert, err := policy.Get(db, certId)
+	polcy, err := policy.Get(db, polcyId)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	cert.Name = data.Name
-	cert.Services = data.Services
-	cert.Roles = data.Roles
-	cert.Rules = data.Rules
-	cert.KeybaseMode = data.KeybaseMode
+	polcy.Name = data.Name
+	polcy.Services = data.Services
+	polcy.Roles = data.Roles
+	polcy.Rules = data.Rules
+	polcy.KeybaseMode = data.KeybaseMode
 
 	fields := set.NewSet(
 		"name",
@@ -60,7 +60,7 @@ func policyPut(c *gin.Context) {
 		"keybase_mode",
 	)
 
-	errData, err := cert.Validate(db)
+	errData, err := polcy.Validate(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -71,7 +71,7 @@ func policyPut(c *gin.Context) {
 		return
 	}
 
-	err = cert.CommitFields(db, fields)
+	err = polcy.CommitFields(db, fields)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -79,7 +79,7 @@ func policyPut(c *gin.Context) {
 
 	event.PublishDispatch(db, "policy.change")
 
-	c.JSON(200, cert)
+	c.JSON(200, polcy)
 }
 
 func policyPost(c *gin.Context) {
@@ -98,7 +98,7 @@ func policyPost(c *gin.Context) {
 		return
 	}
 
-	cert := &policy.Policy{
+	polcy := &policy.Policy{
 		Name:        data.Name,
 		Services:    data.Services,
 		Roles:       data.Roles,
@@ -106,7 +106,7 @@ func policyPost(c *gin.Context) {
 		KeybaseMode: data.KeybaseMode,
 	}
 
-	errData, err := cert.Validate(db)
+	errData, err := polcy.Validate(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -117,7 +117,7 @@ func policyPost(c *gin.Context) {
 		return
 	}
 
-	err = cert.Insert(db)
+	err = polcy.Insert(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -125,7 +125,7 @@ func policyPost(c *gin.Context) {
 
 	event.PublishDispatch(db, "policy.change")
 
-	c.JSON(200, cert)
+	c.JSON(200, polcy)
 }
 
 func policyDelete(c *gin.Context) {
@@ -135,13 +135,13 @@ func policyDelete(c *gin.Context) {
 
 	db := c.MustGet("db").(*database.Database)
 
-	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
+	polcyId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
 		utils.AbortWithStatus(c, 400)
 		return
 	}
 
-	err := policy.Remove(db, certId)
+	err := policy.Remove(db, polcyId)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -155,29 +155,29 @@ func policyDelete(c *gin.Context) {
 func policyGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	certId, ok := utils.ParseObjectId(c.Param("policy_id"))
+	polcyId, ok := utils.ParseObjectId(c.Param("policy_id"))
 	if !ok {
 		utils.AbortWithStatus(c, 400)
 		return
 	}
 
-	cert, err := policy.Get(db, certId)
+	polcy, err := policy.Get(db, polcyId)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	c.JSON(200, cert)
+	c.JSON(200, polcy)
 }
 
 func policiesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	certs, err := policy.GetAll(db)
+	policies, err := policy.GetAll(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	c.JSON(200, certs)
+	c.JSON(200, policies)
 }
