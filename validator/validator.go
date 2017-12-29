@@ -42,7 +42,8 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 }
 
 func ValidateUser(db *database.Database, usr *user.User,
-	isApi bool, r *http.Request) (errData *errortypes.ErrorData, err error) {
+	isApi bool, r *http.Request) (secProvider bson.ObjectId,
+	errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
@@ -65,6 +66,13 @@ func ValidateUser(db *database.Database, usr *user.User,
 				return
 			}
 		}
+
+		for _, polcy := range policies {
+			if polcy.UserSecondary != "" {
+				secProvider = polcy.UserSecondary
+				break
+			}
+		}
 	}
 
 	return
@@ -72,7 +80,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 
 func ValidateProxy(db *database.Database, usr *user.User,
 	isApi bool, srvc *service.Service, r *http.Request) (
-	errData *errortypes.ErrorData, err error) {
+	secProvider bson.ObjectId, errData *errortypes.ErrorData, err error) {
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
@@ -126,6 +134,13 @@ func ValidateProxy(db *database.Database, usr *user.User,
 			errData, err = polcy.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
+			}
+		}
+
+		for _, polcy := range policies {
+			if polcy.UserSecondary != "" {
+				secProvider = polcy.UserSecondary
+				break
 			}
 		}
 	}
