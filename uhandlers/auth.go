@@ -189,6 +189,21 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.LoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
