@@ -12,27 +12,29 @@ import (
 )
 
 type settingsData struct {
-	AuthProviders        []*settings.Provider `json:"auth_providers"`
-	AuthAdminExpire      int                  `json:"auth_admin_expire"`
-	AuthAdminMaxDuration int                  `json:"auth_admin_max_duration"`
-	AuthProxyExpire      int                  `json:"auth_proxy_expire"`
-	AuthProxyMaxDuration int                  `json:"auth_proxy_max_duration"`
-	AuthUserExpire       int                  `json:"auth_user_expire"`
-	AuthUserMaxDuration  int                  `json:"auth_user_max_duration"`
-	ElasticAddress       string               `json:"elastic_address"`
-	ElasticProxyRequests bool                 `json:"elastic_proxy_requests"`
+	AuthProviders          []*settings.Provider          `json:"auth_providers"`
+	AuthSecondaryProviders []*settings.SecondaryProvider `json:"auth_secondary_providers"`
+	AuthAdminExpire        int                           `json:"auth_admin_expire"`
+	AuthAdminMaxDuration   int                           `json:"auth_admin_max_duration"`
+	AuthProxyExpire        int                           `json:"auth_proxy_expire"`
+	AuthProxyMaxDuration   int                           `json:"auth_proxy_max_duration"`
+	AuthUserExpire         int                           `json:"auth_user_expire"`
+	AuthUserMaxDuration    int                           `json:"auth_user_max_duration"`
+	ElasticAddress         string                        `json:"elastic_address"`
+	ElasticProxyRequests   bool                          `json:"elastic_proxy_requests"`
 }
 
 func getSettingsData() *settingsData {
 	data := &settingsData{
-		AuthProviders:        settings.Auth.Providers,
-		AuthAdminExpire:      settings.Auth.AdminExpire,
-		AuthAdminMaxDuration: settings.Auth.AdminMaxDuration,
-		AuthProxyExpire:      settings.Auth.ProxyExpire,
-		AuthProxyMaxDuration: settings.Auth.ProxyMaxDuration,
-		AuthUserExpire:       settings.Auth.UserExpire,
-		AuthUserMaxDuration:  settings.Auth.UserMaxDuration,
-		ElasticProxyRequests: settings.Elastic.ProxyRequests,
+		AuthProviders:          settings.Auth.Providers,
+		AuthSecondaryProviders: settings.Auth.SecondaryProviders,
+		AuthAdminExpire:        settings.Auth.AdminExpire,
+		AuthAdminMaxDuration:   settings.Auth.AdminMaxDuration,
+		AuthProxyExpire:        settings.Auth.ProxyExpire,
+		AuthProxyMaxDuration:   settings.Auth.ProxyMaxDuration,
+		AuthUserExpire:         settings.Auth.UserExpire,
+		AuthUserMaxDuration:    settings.Auth.UserMaxDuration,
+		ElasticProxyRequests:   settings.Elastic.ProxyRequests,
 	}
 
 	if len(settings.Elastic.Addresses) != 0 {
@@ -94,6 +96,7 @@ func settingsPut(c *gin.Context) {
 
 	fields = set.NewSet(
 		"providers",
+		"secondary_providers",
 	)
 
 	if settings.Auth.AdminExpire != data.AuthAdminExpire {
@@ -126,8 +129,15 @@ func settingsPut(c *gin.Context) {
 			provider.Id = bson.NewObjectId()
 		}
 	}
-
 	settings.Auth.Providers = data.AuthProviders
+
+	for _, provider := range data.AuthSecondaryProviders {
+		if provider.Id == "" {
+			provider.Id = bson.NewObjectId()
+		}
+	}
+	settings.Auth.SecondaryProviders = data.AuthSecondaryProviders
+
 	err = settings.Commit(db, settings.Auth, fields)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
