@@ -43,6 +43,10 @@ func (p *Policy) Validate(db *database.Database) (
 		}
 	}
 
+	if p.Services == nil {
+		p.Services = []bson.ObjectId{}
+	}
+
 	return
 }
 
