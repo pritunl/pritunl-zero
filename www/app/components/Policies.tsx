@@ -2,10 +2,13 @@
 import * as React from 'react';
 import * as PolicyTypes from '../types/PolicyTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from '../types/AuthorityTypes';
 import PoliciesStore from '../stores/PoliciesStore';
 import ServicesStore from '../stores/ServicesStore';
+import AuthoritiesStore from '../stores/AuthoritiesStore';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as ServiceActions from '../actions/ServiceActions';
+import * as AuthorityActions from '../actions/AuthorityActions';
 import NonState from './NonState';
 import Policy from './Policy';
 import Page from './Page';
@@ -14,6 +17,7 @@ import PageHeader from './PageHeader';
 interface State {
 	policies: PolicyTypes.PoliciesRo;
 	services: ServiceTypes.ServicesRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 	disabled: boolean;
 }
 
@@ -35,6 +39,7 @@ export default class Policies extends React.Component<{}, State> {
 		this.state = {
 			policies: PoliciesStore.policies,
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 			disabled: false,
 		};
 	}
@@ -42,13 +47,16 @@ export default class Policies extends React.Component<{}, State> {
 	componentDidMount(): void {
 		PoliciesStore.addChangeListener(this.onChange);
 		ServicesStore.addChangeListener(this.onChange);
+		AuthoritiesStore.addChangeListener(this.onChange);
 		PolicyActions.sync();
 		ServiceActions.sync();
+		AuthorityActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		PoliciesStore.removeChangeListener(this.onChange);
 		ServicesStore.removeChangeListener(this.onChange);
+		AuthoritiesStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
@@ -56,6 +64,7 @@ export default class Policies extends React.Component<{}, State> {
 			...this.state,
 			policies: PoliciesStore.policies,
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 		});
 	}
 
@@ -67,6 +76,7 @@ export default class Policies extends React.Component<{}, State> {
 				key={policy.id}
 				policy={policy}
 				services={this.state.services}
+				authorities={this.state.authorities}
 			/>);
 		});
 
