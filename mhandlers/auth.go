@@ -12,7 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
-	"gopkg.in/mgo.v2/bson"
 	"strings"
 )
 
