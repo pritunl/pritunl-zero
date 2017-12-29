@@ -48,6 +48,17 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		return
 	}
 
+	for _, polcy := range policies {
+		errData, err = polcy.ValidateUser(db, usr, r)
+		if err != nil || errData != nil {
+			err = c.Deny(db, usr)
+			if err != nil {
+				return
+			}
+			return
+		}
+	}
+
 	keybaseMode := policy.KeybaseMode(policies)
 	if keybaseMode == policy.Required {
 		err = c.Deny(db, usr)
