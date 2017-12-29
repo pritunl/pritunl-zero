@@ -47,6 +47,19 @@ func (p *Policy) Validate(db *database.Database) (
 		p.Services = []bson.ObjectId{}
 	}
 
+	services := []bson.ObjectId{}
+	coll := db.Services()
+	err = coll.Find(&bson.M{
+		"_id": &bson.M{
+			"$in": p.Services,
+		},
+	}).Distinct("_id", &services)
+	if err != nil {
+		database.ParseError(err)
+		return
+	}
+	p.Services = services
+
 	return
 }
 
