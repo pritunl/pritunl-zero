@@ -1,11 +1,13 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import Help from './Help';
+import ConfirmButton from './ConfirmButton';
 
 interface Props {
 	buttonClass?: string;
 	hidden?: boolean;
 	disabled?: boolean;
+	buttonConfirm?: boolean;
 	buttonDisabled?: boolean;
 	readOnly?: boolean;
 	autoSelect?: boolean;
@@ -61,6 +63,32 @@ export default class PageInputButton extends React.Component<Props, {}> {
 			buttonClass += ' ' + this.props.buttonClass;
 		}
 
+		let buttonLabel = '';
+		let buttonStyle: React.CSSProperties;
+		if (this.props.labelTop) {
+			buttonStyle = css.buttonTop;
+		} else {
+			buttonLabel = this.props.label || '';
+		}
+
+		let button: JSX.Element;
+		if (this.props.buttonConfirm) {
+			button = <ConfirmButton
+				className={buttonClass}
+				style={buttonStyle}
+				disabled={this.props.disabled || this.props.buttonDisabled}
+				onConfirm={this.props.onSubmit}
+				label={buttonLabel}
+			/>;
+		} else {
+			button = <button
+				className={buttonClass}
+				style={buttonStyle}
+				disabled={this.props.disabled || this.props.buttonDisabled}
+				onClick={this.props.onSubmit}
+			>{buttonLabel}</button>;
+		}
+
 		if (this.props.labelTop) {
 			return <label
 				className="pt-label"
@@ -102,12 +130,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 						/>
 					</div>
 					<div>
-						<button
-							className={buttonClass}
-							style={css.buttonTop}
-							disabled={this.props.disabled || this.props.buttonDisabled}
-							onClick={this.props.onSubmit}
-						/>
+						{button}
 					</div>
 				</div>
 			</label>;
@@ -141,11 +164,7 @@ export default class PageInputButton extends React.Component<Props, {}> {
 					/>
 				</div>
 				<div>
-					<button
-						className={buttonClass}
-						disabled={this.props.disabled || this.props.buttonDisabled}
-						onClick={this.props.onSubmit}
-					>{this.props.label || ''}</button>
+					{button}
 				</div>
 			</div>;
 		}
