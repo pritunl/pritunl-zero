@@ -24,18 +24,31 @@ type Provider struct {
 	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`         // saml
 }
 
+type SecondaryProvider struct {
+	Id             bson.ObjectId `bson:"id" json:"id"`
+	Type           string        `bson:"type" json:"type"`
+	Label          string        `bson:"label" json:"label"`
+	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`
+	DuoKey         string        `bson:"duo_key" json:"duo_key"`
+	DuoSecret      string        `bson:"duo_secret" json:"duo_secret"`
+	PushFactor     bool          `bson:"push_factor" json:"push_factor"`         // duo
+	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`       // duo
+	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"` // duo
+}
+
 type auth struct {
-	Id               string      `bson:"_id"`
-	Server           string      `bson:"server" default:"https://auth.pritunl.com"`
-	Sync             int         `bson:"sync" json:"sync" default:"1800"`
-	Providers        []*Provider `bson:"providers"`
-	Window           int         `bson:"window" json:"window" default:"60"`
-	AdminExpire      int         `bson:"admin_expire" json:"admin_expire" default:"1440"`
-	AdminMaxDuration int         `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
-	ProxyExpire      int         `bson:"proxy_expire" json:"proxy_expire" default:"1440"`
-	ProxyMaxDuration int         `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
-	UserExpire       int         `bson:"user_expire" json:"user_expire" default:"1440"`
-	UserMaxDuration  int         `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
+	Id                 string               `bson:"_id"`
+	Server             string               `bson:"server" default:"https://auth.pritunl.com"`
+	Sync               int                  `bson:"sync" json:"sync" default:"1800"`
+	Providers          []*Provider          `bson:"providers"`
+	SecondaryProviders []*SecondaryProvider `bson:"secondary_providers"`
+	Window             int                  `bson:"window" json:"window" default:"60"`
+	AdminExpire        int                  `bson:"admin_expire" json:"admin_expire" default:"1440"`
+	AdminMaxDuration   int                  `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
+	ProxyExpire        int                  `bson:"proxy_expire" json:"proxy_expire" default:"1440"`
+	ProxyMaxDuration   int                  `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
+	UserExpire         int                  `bson:"user_expire" json:"user_expire" default:"1440"`
+	UserMaxDuration    int                  `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
 }
 
 func (a *auth) GetProvider(id bson.ObjectId) *Provider {
@@ -48,10 +61,21 @@ func (a *auth) GetProvider(id bson.ObjectId) *Provider {
 	return nil
 }
 
+func (a *auth) GetSecondaryProvider(id bson.ObjectId) *SecondaryProvider {
+	for _, provider := range a.SecondaryProviders {
+		if provider.Id == id {
+			return provider
+		}
+	}
+
+	return nil
+}
+
 func newAuth() interface{} {
 	return &auth{
-		Id:        "auth",
-		Providers: []*Provider{},
+		Id:                 "auth",
+		Providers:          []*Provider{},
+		SecondaryProviders: []*SecondaryProvider{},
 	}
 }
 
