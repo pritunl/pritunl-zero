@@ -285,6 +285,7 @@ export default class Authority extends React.Component<Props, State> {
 					autoSelect={true}
 					listStyle={true}
 					buttonDisabled={this.state.changed}
+					buttonConfirm={true}
 					value={token}
 					onSubmit={(): void => {
 						AuthorityActions.deleteToken(
