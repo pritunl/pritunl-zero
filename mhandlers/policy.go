@@ -15,6 +15,7 @@ type policyData struct {
 	Id          bson.ObjectId           `json:"id"`
 	Name        string                  `json:"name"`
 	Services    []bson.ObjectId         `json:"services"`
+	Authorities []bson.ObjectId         `json:"authorities"`
 	Roles       []string                `json:"roles"`
 	Rules       map[string]*policy.Rule `json:"rules"`
 	KeybaseMode string                  `json:"keybase_mode"`
@@ -48,6 +49,7 @@ func policyPut(c *gin.Context) {
 
 	polcy.Name = data.Name
 	polcy.Services = data.Services
+	polcy.Authorities = data.Authorities
 	polcy.Roles = data.Roles
 	polcy.Rules = data.Rules
 	polcy.KeybaseMode = data.KeybaseMode
@@ -55,6 +57,7 @@ func policyPut(c *gin.Context) {
 	fields := set.NewSet(
 		"name",
 		"services",
+		"authorities",
 		"roles",
 		"rules",
 		"keybase_mode",
@@ -101,6 +104,7 @@ func policyPost(c *gin.Context) {
 	polcy := &policy.Policy{
 		Name:        data.Name,
 		Services:    data.Services,
+		Authorities: data.Authorities,
 		Roles:       data.Roles,
 		Rules:       data.Rules,
 		KeybaseMode: data.KeybaseMode,
