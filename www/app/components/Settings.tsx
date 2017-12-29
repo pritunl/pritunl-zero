@@ -12,12 +12,14 @@ import PageSwitch from './PageSwitch';
 import PageSelectButton from './PageSelectButton';
 import PageSave from './PageSave';
 import SettingsProvider from './SettingsProvider';
+import SettingsSecondaryProvider from './SettingsSecondaryProvider';
 
 interface State {
 	changed: boolean;
 	disabled: boolean;
 	message: string;
 	provider: string;
+	secondaryProvider: string;
 	settings: SettingsTypes.Settings;
 }
 
@@ -30,6 +32,12 @@ const css = {
 	providersLabel: {
 		margin: 0,
 	} as React.CSSProperties,
+	secondaryProviders: {
+		paddingBottom: '6px',
+		marginTop: '5px',
+		marginBottom: '5px',
+		borderBottomStyle: 'solid',
+	} as React.CSSProperties,
 };
 
 export default class Settings extends React.Component<{}, State> {
@@ -40,6 +48,7 @@ export default class Settings extends React.Component<{}, State> {
 			disabled: false,
 			message: '',
 			provider: 'google',
+			secondaryProvider: 'duo',
 			settings: SettingsStore.settingsM,
 		};
 	}
@@ -122,6 +131,28 @@ export default class Settings extends React.Component<{}, State> {
 					];
 					prvdrs.splice(i, 1);
 					this.set('auth_providers', prvdrs);
+				}}
+			/>);
+		}
+
+		let secondaryProviders: JSX.Element[] = [];
+		for (let i = 0; i < settings.auth_secondary_providers.length; i++) {
+			secondaryProviders.push(<SettingsSecondaryProvider
+				key={i}
+				provider={settings.auth_secondary_providers[i]}
+				onChange={(state): void => {
+					let prvdrs = [
+						...this.state.settings.auth_secondary_providers,
+					];
+					prvdrs[i] = state;
+					this.set('auth_secondary_providers', prvdrs);
+				}}
+				onRemove={(): void => {
+					let prvdrs = [
+						...this.state.settings.auth_secondary_providers,
+					];
+					prvdrs.splice(i, 1);
+					this.set('auth_secondary_providers', prvdrs);
 				}}
 			/>);
 		}
@@ -243,6 +274,32 @@ export default class Settings extends React.Component<{}, State> {
 								!this.state.settings.elastic_proxy_requests);
 						}}
 					/>
+					<div className="pt-border" style={css.secondaryProviders}>
+						<h5 style={css.providersLabel}>Two-Factor Providers</h5>
+					</div>
+					{secondaryProviders}
+					<PageSelectButton
+						label="Add Two-Factor Provider"
+						value={this.state.secondaryProvider}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								provider: val,
+							});
+						}}
+						onSubmit={(): void => {
+							let authProviders: SettingsTypes.SecondaryProviders = [
+								...settings.auth_secondary_providers,
+								{
+									type: this.state.secondaryProvider,
+								},
+							];
+							this.set('auth_secondary_providers', authProviders);
+						}}
+					>
+						<option value="duo">Duo</option>
+					</PageSelectButton>
 				</PagePanel>
 			</PageSplit>
 			<PageSave
