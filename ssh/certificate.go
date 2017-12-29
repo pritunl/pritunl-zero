@@ -123,8 +123,9 @@ func GetCertificates(db *database.Database, userId bson.ObjectId,
 	return
 }
 
-func NewCertificate(db *database.Database, usr *user.User,
-	agnt *agent.Agent, pubKey string) (cert *Certificate, err error) {
+func NewCertificate(db *database.Database, authrs []*authority.Authority,
+	usr *user.User, agnt *agent.Agent, pubKey string) (cert *Certificate,
+	err error) {
 
 	cert = &Certificate{
 		Id:           bson.NewObjectId(),
@@ -137,11 +138,6 @@ func NewCertificate(db *database.Database, usr *user.User,
 		Certificates:           []string{},
 		CertificatesInfo:       []*Info{},
 		Agent:                  agnt,
-	}
-
-	authrs, err := authority.GetAll(db)
-	if err != nil {
-		return
 	}
 
 	for _, authr := range authrs {

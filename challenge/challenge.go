@@ -4,6 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/agent"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
@@ -28,7 +29,21 @@ type Challenge struct {
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	r *http.Request) (err error, errData *errortypes.ErrorData) {
 
-	policies, err := policy.GetRoles(db, usr.Roles)
+	allAuthrs, err := authority.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	authrIds := []bson.ObjectId{}
+	authrs := []*authority.Authority{}
+	for _, authr := range allAuthrs {
+		if authr.UserHasAccess(usr) {
+			authrIds = append(authrIds, authr.Id)
+			authrs = append(authrs, authr)
+		}
+	}
+
+	policies, err := policy.GetAuthoritiesRoles(db, authrIds, usr.Roles)
 	if err != nil {
 		return
 	}
@@ -59,7 +74,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		return
 	}
 
-	cert, err := ssh.NewCertificate(db, usr, agnt, c.PubKey)
+	cert, err := ssh.NewCertificate(db, authrs, usr, agnt, c.PubKey)
 	if err != nil {
 		return
 	}

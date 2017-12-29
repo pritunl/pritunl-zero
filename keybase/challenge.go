@@ -5,6 +5,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/agent"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
@@ -87,7 +88,21 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	policies, err := policy.GetRoles(db, usr.Roles)
+	allAuthrs, err := authority.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	authrIds := []bson.ObjectId{}
+	authrs := []*authority.Authority{}
+	for _, authr := range allAuthrs {
+		if authr.UserHasAccess(usr) {
+			authrIds = append(authrIds, authr.Id)
+			authrs = append(authrs, authr)
+		}
+	}
+
+	policies, err := policy.GetAuthoritiesRoles(db, authrIds, usr.Roles)
 	if err != nil {
 		return
 	}
@@ -106,7 +121,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	cert, err := ssh.NewCertificate(db, usr, agnt, c.PubKey)
+	cert, err := ssh.NewCertificate(db, authrs, usr, agnt, c.PubKey)
 	if err != nil {
 		return
 	}
