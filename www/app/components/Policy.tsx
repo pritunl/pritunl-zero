@@ -636,12 +636,6 @@ export default class Policy extends React.Component<Props, State> {
 						<option value="required">Required</option>
 						<option value="disabled">Disabled</option>
 					</PageSelect>
-					<PolicyRule
-						rule={location}
-						onChange={(val): void => {
-							this.setRule('location', val);
-						}}
-					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
@@ -651,6 +645,12 @@ export default class Policy extends React.Component<Props, State> {
 								value: policy.id || 'None',
 							},
 						]}
+					/>
+					<PolicyRule
+						rule={location}
+						onChange={(val): void => {
+							this.setRule('location', val);
+						}}
 					/>
 					<PolicyRule
 						rule={operatingSystem}
