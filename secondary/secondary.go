@@ -1,6 +1,7 @@
 package secondary
 
 import (
+	"fmt"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
@@ -8,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 )
 
 type SecondaryData struct {
@@ -57,7 +59,7 @@ func (s *Secondary) Phone(db *database.Database) (
 
 	if !provider.PushFactor {
 		err = &errortypes.AuthenticationError{
-			errors.New("secondary: Push factor not available"),
+			errors.New("secondary: Phone factor not available"),
 		}
 		return
 	}
@@ -130,6 +132,35 @@ func (s *Secondary) GetData() (data *SecondaryData, err error) {
 		Passcode: provider.PasscodeFactor,
 		Sms:      provider.SmsFactor,
 	}
+	return
+}
+
+func (s *Secondary) GetQuery() (query string, err error) {
+	provider, err := s.GetProvider()
+	if err != nil {
+		return
+	}
+
+	factors := []string{}
+	if provider.PushFactor {
+		factors = append(factors, "push")
+	}
+	if provider.PhoneFactor {
+		factors = append(factors, "phone")
+	}
+	if provider.PasscodeFactor {
+		factors = append(factors, "passcode")
+	}
+	if provider.SmsFactor {
+		factors = append(factors, "sms")
+	}
+
+	query = fmt.Sprintf(
+		"secondary=%s&factors=%s",
+		s.Id,
+		strings.Join(factors, ","),
+	)
+
 	return
 }
 
