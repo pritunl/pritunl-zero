@@ -33,8 +33,27 @@ export type ProviderAny = Provider & AzureProvider & GoogleProvider &
 	SamlProvider;
 export type Providers = ProviderAny[];
 
+export interface SecondaryProvider {
+	id?: string;
+	type?: string;
+	label?: string;
+}
+
+export interface DuoProvider extends SecondaryProvider {
+	duo_hostname?: string;
+	duo_key?: string;
+	duo_secret?: string;
+	push_factor?: boolean;
+	phone_factor?: boolean;
+	passcode_factor?: boolean;
+}
+
+export type SecondaryProviderAny = SecondaryProvider & DuoProvider;
+export type SecondaryProviders = SecondaryProviderAny[];
+
 export interface Settings {
 	auth_providers: Providers;
+	auth_secondary_providers: SecondaryProviders;
 	auth_admin_expire: number;
 	auth_admin_max_duration: number;
 	auth_proxy_expire: number;
