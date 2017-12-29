@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
@@ -62,7 +63,120 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	errData, err = validator.ValidateProxy(db, usr, false, srvc, c.Request)
+	secProviderId, errData, err := validator.ValidateProxy(
+		db, usr, false, srvc, c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.LoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	if secProviderId != "" {
+		secd, err := secondary.New(db, usr.Id, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.Login,
+		audit.Fields{
+			"method": "local",
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	cook := cookie.NewProxy(srvc, c.Writer, c.Request)
+
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Proxy)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.Status(200)
+}
+
+type secondaryData struct {
+	Token    string `json:"token"`
+	Factor   string `json:"factor"`
+	Passcode string `json:"passcode"`
+}
+
+func authSecondaryPost(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	srvc := c.MustGet("service").(*service.Service)
+	data := &secondaryData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	errData, err := secd.Handle(db, data.Factor, data.Passcode)
+	if err != nil {
+		if _, ok := err.(*secondary.IncompleteError); ok {
+			c.Status(201)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	_, errData, err = validator.ValidateProxy(db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -160,7 +274,8 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	errData, err = validator.ValidateProxy(db, usr, false, srvc, c.Request)
+	secProviderId, errData, err := validator.ValidateProxy(
+		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -169,6 +284,22 @@ func authCallbackGet(c *gin.Context) {
 	if errData != nil {
 		c.JSON(401, errData)
 		return
+	}
+
+	if secProviderId != "" {
+		secd, err := secondary.New(db, usr.Id, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		urlQuery, err := secd.GetQuery()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.Redirect(302, "/login?"+urlQuery)
 	}
 
 	err = audit.New(
