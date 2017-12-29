@@ -138,8 +138,8 @@ func ValidateProxy(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
-			if polcy.UserSecondary != "" {
-				secProvider = polcy.UserSecondary
+			if polcy.ProxySecondary != "" {
+				secProvider = polcy.ProxySecondary
 				break
 			}
 		}

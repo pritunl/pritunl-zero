@@ -19,16 +19,16 @@ type Rule struct {
 }
 
 type Policy struct {
-	Id               bson.ObjectId    `bson:"_id,omitempty" json:"id"`
-	Name             string           `bson:"name" json:"name"`
-	Services         []bson.ObjectId  `bson:"services" json:"services"`
-	Authorities      []bson.ObjectId  `bson:"authorities" json:"authorities"`
-	Roles            []string         `bson:"roles" json:"roles"`
-	Rules            map[string]*Rule `bson:"rules" json:"rules"`
-	KeybaseMode      string           `bson:"keybase_mode" json:"keybase_mode"`
-	AdminSecondary   bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
-	UserSecondary    bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
-	ServiceSecondary bson.ObjectId    `bson:"service_secondary,omitempty" json:"service_secondary"`
+	Id             bson.ObjectId    `bson:"_id,omitempty" json:"id"`
+	Name           string           `bson:"name" json:"name"`
+	Services       []bson.ObjectId  `bson:"services" json:"services"`
+	Authorities    []bson.ObjectId  `bson:"authorities" json:"authorities"`
+	Roles          []string         `bson:"roles" json:"roles"`
+	Rules          map[string]*Rule `bson:"rules" json:"rules"`
+	KeybaseMode    string           `bson:"keybase_mode" json:"keybase_mode"`
+	AdminSecondary bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
+	UserSecondary  bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
+	ProxySecondary bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
