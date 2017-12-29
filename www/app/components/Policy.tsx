@@ -2,8 +2,10 @@
 import * as React from 'react';
 import * as PolicyTypes from '../types/PolicyTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from '../types/AuthorityTypes';
 import * as PolicyActions from '../actions/PolicyActions';
 import ServicesStore from '../stores/ServicesStore';
+import AuthoritiesStore from '../stores/AuthoritiesStore';
 import PolicyRule from './PolicyRule';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
@@ -17,6 +19,7 @@ import Help from './Help';
 interface Props {
 	policy: PolicyTypes.PolicyRo;
 	services: ServiceTypes.ServicesRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 }
 
 interface State {
@@ -25,6 +28,7 @@ interface State {
 	message: string;
 	policy: PolicyTypes.Policy;
 	addService: string;
+	addAuthority: string;
 	addRole: string;
 }
 
@@ -80,6 +84,7 @@ export default class Policy extends React.Component<Props, State> {
 			message: '',
 			policy: null,
 			addService: null,
+			addAuthority: null,
 			addRole: null,
 		};
 	}
@@ -259,6 +264,78 @@ export default class Policy extends React.Component<Props, State> {
 		});
 	}
 
+	onAddAuthority = (): void => {
+		let policy: PolicyTypes.Policy;
+
+		if (!this.state.addAuthority && !this.props.authorities.length) {
+			return;
+		}
+
+		let authorityId = this.state.addAuthority ||
+			this.props.authorities[0].id;
+
+		if (this.state.changed) {
+			policy = {
+				...this.state.policy,
+			};
+		} else {
+			policy = {
+				...this.props.policy,
+			};
+		}
+
+		let authorities = [
+			...policy.authorities,
+		];
+
+		if (authorities.indexOf(authorityId) === -1) {
+			authorities.push(authorityId);
+		}
+
+		authorities.sort();
+
+		policy.authorities = authorities;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			policy: policy,
+		});
+	}
+
+	onRemoveAuthority = (authority: string): void => {
+		let policy: PolicyTypes.Policy;
+
+		if (this.state.changed) {
+			policy = {
+				...this.state.policy,
+			};
+		} else {
+			policy = {
+				...this.props.policy,
+			};
+		}
+
+		let authorities = [
+			...policy.authorities,
+		];
+
+		let i = authorities.indexOf(authority);
+		if (i === -1) {
+			return;
+		}
+
+		authorities.splice(i, 1);
+
+		policy.authorities = authorities;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			policy: policy,
+		});
+	}
+
 	onAddRole = (): void => {
 		let policy: PolicyTypes.Policy;
 
@@ -337,7 +414,7 @@ export default class Policy extends React.Component<Props, State> {
 			this.props.policy;
 
 		let services: JSX.Element[] = [];
-		for (let serviceId of policy.services) {
+		for (let serviceId of policy.services || []) {
 			let service = ServicesStore.service(serviceId);
 			if (!service) {
 				continue;
@@ -364,11 +441,52 @@ export default class Policy extends React.Component<Props, State> {
 		if (this.props.services.length) {
 			for (let service of this.props.services) {
 				servicesSelect.push(
-					<option key={service.id} value={service.id}>{service.name}</option>,
+					<option
+						key={service.id}
+						value={service.id}
+					>{service.name}</option>,
 				);
 			}
 		} else {
 			servicesSelect.push(<option key="null" value="">None</option>);
+		}
+
+		let authorities: JSX.Element[] = [];
+		for (let authorityId of policy.authorities || []) {
+			let authority = AuthoritiesStore.authority(authorityId);
+			if (!authority) {
+				continue;
+			}
+
+			authorities.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={authority.id}
+				>
+					{authority.name}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveAuthority(authority.id);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let authoritiesSelect: JSX.Element[] = [];
+		if (this.props.authorities.length) {
+			for (let authority of this.props.authorities) {
+				authoritiesSelect.push(
+					<option
+						key={authority.id}
+						value={authority.id}
+					>{authority.name}</option>,
+				);
+			}
+		} else {
+			authoritiesSelect.push(<option key="null" value="">None</option>);
 		}
 
 		let roles: JSX.Element[] = [];
@@ -476,6 +594,34 @@ export default class Policy extends React.Component<Props, State> {
 						onSubmit={this.onAddService}
 					>
 						{servicesSelect}
+					</PageSelectButton>
+					<label
+						className="pt-label"
+						style={css.label}
+					>
+						Authorities
+						<Help
+							title="Authorities"
+							content="Authorities associated with this policy. All certificate requests to the associated authority must pass this policy check."
+						/>
+						<div>
+							{authorities}
+						</div>
+					</label>
+					<PageSelectButton
+						label="Add Authority"
+						value={this.state.addAuthority}
+						disabled={!this.props.authorities.length}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								addAuthority: val,
+							});
+						}}
+						onSubmit={this.onAddAuthority}
+					>
+						{authoritiesSelect}
 					</PageSelectButton>
 					<PageSelect
 						disabled={this.state.disabled}
