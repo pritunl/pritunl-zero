@@ -28,7 +28,7 @@ type Policy struct {
 	KeybaseMode      string           `bson:"keybase_mode" json:"keybase_mode"`
 	AdminSecondary   bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
 	UserSecondary    bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
-	ServiceSecondary bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
+	ServiceSecondary bson.ObjectId    `bson:"service_secondary,omitempty" json:"service_secondary"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
