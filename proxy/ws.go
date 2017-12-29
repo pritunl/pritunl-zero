@@ -129,7 +129,7 @@ func (w *webSocketConn) Run(db *database.Database) {
 							return
 						}
 
-						errData, err := validator.ValidateProxy(
+						_, errData, err := validator.ValidateProxy(
 							db, usr, w.authr.IsApi(), srvc, w.r)
 						if err != nil {
 							logrus.WithFields(logrus.Fields{
