@@ -12,16 +12,17 @@ import (
 )
 
 type policyData struct {
-	Id             bson.ObjectId           `json:"id"`
-	Name           string                  `json:"name"`
-	Services       []bson.ObjectId         `json:"services"`
-	Authorities    []bson.ObjectId         `json:"authorities"`
-	Roles          []string                `json:"roles"`
-	Rules          map[string]*policy.Rule `json:"rules"`
-	KeybaseMode    string                  `json:"keybase_mode"`
-	AdminSecondary bson.ObjectId           `json:"admin_secondary"`
-	UserSecondary  bson.ObjectId           `json:"user_secondary"`
-	ProxySecondary bson.ObjectId           `json:"proxy_secondary"`
+	Id                 bson.ObjectId           `json:"id"`
+	Name               string                  `json:"name"`
+	Services           []bson.ObjectId         `json:"services"`
+	Authorities        []bson.ObjectId         `json:"authorities"`
+	Roles              []string                `json:"roles"`
+	Rules              map[string]*policy.Rule `json:"rules"`
+	KeybaseMode        string                  `json:"keybase_mode"`
+	AdminSecondary     bson.ObjectId           `json:"admin_secondary"`
+	UserSecondary      bson.ObjectId           `json:"user_secondary"`
+	ProxySecondary     bson.ObjectId           `json:"proxy_secondary"`
+	AuthoritySecondary bson.ObjectId           `json:"authority_secondary"`
 }
 
 func policyPut(c *gin.Context) {
@@ -59,6 +60,7 @@ func policyPut(c *gin.Context) {
 	polcy.AdminSecondary = data.AdminSecondary
 	polcy.UserSecondary = data.UserSecondary
 	polcy.ProxySecondary = data.ProxySecondary
+	polcy.AuthoritySecondary = data.AuthoritySecondary
 
 	fields := set.NewSet(
 		"name",
@@ -70,6 +72,7 @@ func policyPut(c *gin.Context) {
 		"admin_secondary",
 		"user_secondary",
 		"proxy_secondary",
+		"authority_secondary",
 	)
 
 	errData, err := polcy.Validate(db)
@@ -111,15 +114,16 @@ func policyPost(c *gin.Context) {
 	}
 
 	polcy := &policy.Policy{
-		Name:           data.Name,
-		Services:       data.Services,
-		Authorities:    data.Authorities,
-		Roles:          data.Roles,
-		Rules:          data.Rules,
-		KeybaseMode:    data.KeybaseMode,
-		AdminSecondary: data.AdminSecondary,
-		UserSecondary:  data.UserSecondary,
-		ProxySecondary: data.ProxySecondary,
+		Name:               data.Name,
+		Services:           data.Services,
+		Authorities:        data.Authorities,
+		Roles:              data.Roles,
+		Rules:              data.Rules,
+		KeybaseMode:        data.KeybaseMode,
+		AdminSecondary:     data.AdminSecondary,
+		UserSecondary:      data.UserSecondary,
+		ProxySecondary:     data.ProxySecondary,
+		AuthoritySecondary: data.AuthoritySecondary,
 	}
 
 	errData, err := polcy.Validate(db)
