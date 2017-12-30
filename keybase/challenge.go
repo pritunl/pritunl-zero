@@ -20,12 +20,15 @@ import (
 )
 
 type Challenge struct {
-	Id        string    `bson:"_id"`
-	Type      string    `bson:"type"`
-	Username  string    `bson:"username"`
-	Timestamp time.Time `bson:"timestamp"`
-	State     string    `bson:"state"`
-	PubKey    string    `bson:"pub_key"`
+	usr       *user.User             `bson:"-"`
+	authrs    []*authority.Authority `bson:"-"`
+	authrIds  []bson.ObjectId        `bson:"-"`
+	Id        string                 `bson:"_id"`
+	Type      string                 `bson:"type"`
+	Username  string                 `bson:"username"`
+	Timestamp time.Time              `bson:"timestamp"`
+	State     string                 `bson:"state"`
+	PubKey    string                 `bson:"pub_key"`
 }
 
 func (c *Challenge) Message() string {
@@ -38,9 +41,93 @@ func (c *Challenge) Message() string {
 	)
 }
 
+func (c *Challenge) GetUser(db *database.Database) (
+	usr *user.User, err error) {
+
+	if c.usr != nil {
+		usr = c.usr
+		return
+	}
+
+	usr, err = user.GetKeybase(db, c.Username)
+	if err != nil {
+		return
+	}
+
+	c.usr = usr
+
+	return
+}
+
+func (c *Challenge) GetAuthorities(db *database.Database) (
+	authrs []*authority.Authority, err error) {
+
+	if c.authrs != nil {
+		authrs = c.authrs
+		return
+	}
+
+	usr, err := c.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	allAuthrs, err := authority.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	authrs = []*authority.Authority{}
+	authrIds := []bson.ObjectId{}
+	for _, authr := range allAuthrs {
+		if authr.UserHasAccess(usr) {
+			authrIds = append(authrIds, authr.Id)
+			authrs = append(authrs, authr)
+		}
+	}
+
+	c.authrs = authrs
+	c.authrIds = authrIds
+
+	return
+}
+
+func (c *Challenge) GetAuthorityIds(db *database.Database) (
+	authrIds []bson.ObjectId, err error) {
+
+	if c.authrIds != nil {
+		authrIds = c.authrIds
+		return
+	}
+
+	usr, err := c.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	allAuthrs, err := authority.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	authrs := []*authority.Authority{}
+	authrIds = []bson.ObjectId{}
+	for _, authr := range allAuthrs {
+		if authr.UserHasAccess(usr) {
+			authrIds = append(authrIds, authr.Id)
+			authrs = append(authrs, authr)
+		}
+	}
+
+	c.authrs = authrs
+	c.authrIds = authrIds
+
+	return
+}
+
 func (c *Challenge) Validate(db *database.Database, r *http.Request,
-	signature string) (certf *ssh.Certificate, err error,
-	errData *errortypes.ErrorData) {
+	signature string) (secProvider bson.ObjectId,
+	errData *errortypes.ErrorData, err error) {
 
 	if c.State != "" {
 		err = errortypes.WriteError{
@@ -62,7 +149,7 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	usr, err := user.GetKeybase(db, c.Username)
+	usr, err := c.GetUser(db)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			err = nil
@@ -88,18 +175,9 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 		return
 	}
 
-	allAuthrs, err := authority.GetAll(db)
+	authrIds, err := c.GetAuthorityIds(db)
 	if err != nil {
 		return
-	}
-
-	authrIds := []bson.ObjectId{}
-	authrs := []*authority.Authority{}
-	for _, authr := range allAuthrs {
-		if authr.UserHasAccess(usr) {
-			authrIds = append(authrIds, authr.Id)
-			authrs = append(authrs, authr)
-		}
 	}
 
 	policies, err := policy.GetAuthoritiesRoles(db, authrIds, usr.Roles)
@@ -113,6 +191,29 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 			Error:   "keybase_disabled",
 			Message: "Keybase cannot be used with this user",
 		}
+		return
+	}
+
+	for _, polcy := range policies {
+		if polcy.UserSecondary != "" {
+			secProvider = polcy.UserSecondary
+			break
+		}
+	}
+
+	return
+}
+
+func (c *Challenge) NewCertificate(db *database.Database, r *http.Request) (
+	certf *ssh.Certificate, errData *errortypes.ErrorData, err error) {
+
+	usr, err := c.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	authrs, err := c.GetAuthorities(db)
+	if err != nil {
 		return
 	}
 
