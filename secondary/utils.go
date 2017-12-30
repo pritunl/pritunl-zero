@@ -4,6 +4,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 func New(db *database.Database, userId bson.ObjectId,
@@ -18,6 +19,32 @@ func New(db *database.Database, userId bson.ObjectId,
 		Id:         token,
 		UserId:     userId,
 		ProviderId: proivderId,
+		Timestamp:  time.Now(),
+	}
+
+	err = secd.Insert(db)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func NewChallenge(db *database.Database, userId bson.ObjectId,
+	chalId string, proivderId bson.ObjectId) (
+	secd *Secondary, err error) {
+
+	token, err := utils.RandStr(48)
+	if err != nil {
+		return
+	}
+
+	secd = &Secondary{
+		Id:          token,
+		UserId:      userId,
+		ChallengeId: chalId,
+		ProviderId:  proivderId,
+		Timestamp:   time.Now(),
 	}
 
 	err = secd.Insert(db)
