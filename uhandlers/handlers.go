@@ -53,6 +53,7 @@ func Register(engine *gin.Engine) {
 	dbGroup.PUT("/keybase/check", keybaseCheckPut)
 	dbGroup.POST("/keybase/challenge", keybaseChallengePost)
 	dbGroup.PUT("/keybase/challenge", keybaseChallengePut)
+	dbGroup.PUT("/keybase/secondary", keybaseSecondaryPut)
 
 	dbGroup.POST("/keybase/associate", keybaseAssociatePost)
 	dbGroup.GET("/keybase/associate/:token", keybaseAssociateGet)

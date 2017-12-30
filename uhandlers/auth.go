@@ -147,7 +147,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	errData, err := secd.Handle(db, data.Factor, data.Passcode)
+	errData, err := secd.Handle(db, c.Request, data.Factor, data.Passcode)
 	if err != nil {
 		if _, ok := err.(*secondary.IncompleteError); ok {
 			c.Status(201)

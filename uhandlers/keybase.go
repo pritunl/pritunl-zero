@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/keybase"
+	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -103,7 +104,7 @@ func keybaseValidatePut(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.KeybaseAssociationAprove,
+		audit.KeybaseAssociationApprove,
 		audit.Fields{
 			"keybase_username": asc.Username,
 		},
@@ -375,9 +376,12 @@ type keybaseChallengeData struct {
 }
 
 type keybaseChallengeRespData struct {
-	Token     string `json:"token"`
-	Message   string `json:"message"`
-	Signature string `json:"signature,omitempty"`
+	Token             string `json:"token"`
+	Message           string `json:"message"`
+	Signature         string `json:"signature,omitempty"`
+	SecondaryToken    string `json:"secondary_token"`
+	SecondaryFactor   string `json:"secondary_factor"`
+	SecondaryPasscode string `json:"secondary_passcode"`
 }
 
 type keybaseCertificateData struct {
@@ -447,7 +451,8 @@ func keybaseChallengePut(c *gin.Context) {
 		return
 	}
 
-	cert, err, errData := chal.Validate(db, c.Request, data.Signature)
+	secProviderId, errData, err := chal.Validate(
+		db, c.Request, data.Signature)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -455,6 +460,103 @@ func keybaseChallengePut(c *gin.Context) {
 
 	if errData != nil {
 		c.JSON(406, errData)
+		return
+	}
+
+	if secProviderId != "" {
+		usr, err := chal.GetUser(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		secd, err := secondary.NewChallenge(
+			db, usr.Id, chal.Id, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	}
+
+	cert, errData, err := chal.NewCertificate(db, c.Request)
+	if err != nil {
+		return
+	}
+
+	resp := &keybaseCertificateData{
+		Token:                  chal.Id,
+		Hosts:                  cert.Hosts,
+		Certificates:           cert.Certificates,
+		CertificateAuthorities: cert.CertificateAuthorities,
+	}
+
+	c.JSON(200, resp)
+}
+
+type keybaseSecondaryData struct {
+	Token    string `json:"token"`
+	Factor   string `json:"factor"`
+	Passcode string `json:"passcode"`
+}
+
+func keybaseSecondaryPut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &keybaseSecondaryData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	errData, err := secd.Handle(db, c.Request, data.Factor, data.Passcode)
+	if err != nil {
+		if _, ok := err.(*secondary.IncompleteError); ok {
+			c.Status(201)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	chal, err := keybase.GetChallenge(db, secd.ChallengeId)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	cert, errData, err := chal.NewCertificate(db, c.Request)
+	if err != nil {
 		return
 	}
 
