@@ -155,7 +155,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	errData, err := secd.Handle(db, data.Factor, data.Passcode)
+	errData, err := secd.Handle(db, c.Request, data.Factor, data.Passcode)
 	if err != nil {
 		if _, ok := err.(*secondary.IncompleteError); ok {
 			c.Status(201)
@@ -282,6 +282,21 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.LoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
