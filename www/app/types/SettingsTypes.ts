@@ -46,6 +46,7 @@ export interface DuoProvider extends SecondaryProvider {
 	push_factor?: boolean;
 	phone_factor?: boolean;
 	passcode_factor?: boolean;
+	sms_factor?: boolean;
 }
 
 export type SecondaryProviderAny = SecondaryProvider & DuoProvider;

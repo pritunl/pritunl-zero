@@ -16,6 +16,9 @@ export interface Policy {
 	roles?: string[];
 	rules?: {[key: string]: Rule};
 	keybase_mode?: string;
+	admin_secondary?: string;
+	user_secondary?: string;
+	proxy_secondary?: string;
 }
 
 export type Policies = Policy[];
