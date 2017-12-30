@@ -164,6 +164,17 @@
       }
 
       if (secondaryToken) {
+        secondaryLabel.innerText = secondaryLabl;
+        secondaryPush.style.display = secondaryFactors.push ?
+          'block' : 'none';
+        secondaryPhone.style.display = secondaryFactors.phone ?
+          'block' : 'none';
+        secondarySms.style.display = secondaryFactors.sms ?
+          'block' : 'none';
+        secondaryPasscode.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
+        secondarySubmit.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
         authButtons.style.display = 'none';
         secondaryAuth.style.display = 'block';
       }
@@ -304,11 +315,23 @@
 
               var data = JSON.parse(xmlhttp.response);
               secondaryToken = data['token'];
+              secondaryLabl = data['label'];
               secondaryFactors.push = data['push'];
               secondaryFactors.phone = data['phone'];
               secondaryFactors.sms = data['sms'];
               secondaryFactors.passcode = data['passcode'];
 
+              secondaryLabel.innerText = secondaryLabl;
+              secondaryPush.style.display = secondaryFactors.push ?
+                'block' : 'none';
+              secondaryPhone.style.display = secondaryFactors.phone ?
+                'block' : 'none';
+              secondarySms.style.display = secondaryFactors.sms ?
+                'block' : 'none';
+              secondaryPasscode.style.display = secondaryFactors.passcode ?
+                'block' : 'none';
+              secondarySubmit.style.display = secondaryFactors.passcode ?
+                'block' : 'none';
               authLocal.style.display = 'none';
               secondaryAuth.style.display = 'block';
             } else if (xmlhttp.status === 202) {
@@ -408,7 +431,7 @@
               }
 
               setSecondaryAlert(errorMsg, 'danger');
-              callback(false);
+              callback(xmlhttp.status === 401);
             }
           }
         };
@@ -450,7 +473,7 @@
           }
         });
       };
-      secondarySubmit.onclick = function() {
+      var secondarySub = function() {
         var val = secondaryPasscode.value;
         if (!val) {
           return;
@@ -458,13 +481,17 @@
 
         secondaryPasscode.disabled = true;
         secondarySubmit.disabled = true;
-        secondaryChallenge('passcode', val, function(success) {
-          if (!success) {
-            secondaryPasscode.disabled = false;
-            secondarySubmit.disabled = false;
-          }
+        secondaryChallenge('passcode', val, function() {
+          secondaryPasscode.disabled = false;
+          secondarySubmit.disabled = false;
         });
       };
+      secondaryPasscode.onkeypress = function(evt) {
+        if (evt.keyCode === 13) {
+          secondarySub();
+        }
+      };
+      secondarySubmit.onclick = secondarySub;
     </script>
   </body>
 </html>
