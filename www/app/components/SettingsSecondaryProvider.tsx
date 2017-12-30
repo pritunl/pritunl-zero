@@ -98,6 +98,16 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 					this.props.onChange(state);
 				}}
 			/>
+			<PageSwitch
+				label="SMS authentication"
+				help="Allow SMS authentication."
+				checked={provider.sms_factor}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.sms_factor = !state.sms_factor;
+					this.props.onChange(state);
+				}}
+			/>
 		</div>;
 	}
 
