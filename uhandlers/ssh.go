@@ -87,7 +87,7 @@ func sshValidatePut(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.SshAprove,
+		audit.SshApprove,
 		audit.Fields{
 			"ssh_key": chal.PubKey,
 		},
