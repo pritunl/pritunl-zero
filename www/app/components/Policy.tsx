@@ -795,6 +795,16 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authorityProviders}
 					</PageSelect>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						fields={[
+							{
+								label: 'ID',
+								value: policy.id || 'None',
+							},
+						]}
+					/>
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Keybase Mode"
@@ -808,16 +818,6 @@ export default class Policy extends React.Component<Props, State> {
 						<option value="required">Required</option>
 						<option value="disabled">Disabled</option>
 					</PageSelect>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: policy.id || 'None',
-							},
-						]}
-					/>
 					<PolicyRule
 						rule={location}
 						onChange={(val): void => {
