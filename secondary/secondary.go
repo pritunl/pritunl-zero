@@ -9,11 +9,14 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"strings"
+	"time"
 )
 
 type SecondaryData struct {
 	Token    string `json:"token"`
+	Label    string `json:"label"`
 	Push     bool   `json:"push"`
 	Phone    bool   `json:"phone"`
 	Passcode bool   `json:"passcode"`
@@ -21,16 +24,32 @@ type SecondaryData struct {
 }
 
 type Secondary struct {
-	usr        *user.User                  `bson:"-"`
-	provider   *settings.SecondaryProvider `bson:"-"`
-	Id         string                      `bson:"_id"`
-	ProviderId bson.ObjectId               `bson:"provider_id"`
-	UserId     bson.ObjectId               `bson:"user_id"`
-	SmsSent    bool                        `bson:"sms_sent"`
+	usr         *user.User                  `bson:"-"`
+	provider    *settings.SecondaryProvider `bson:"-"`
+	Id          string                      `bson:"_id"`
+	ProviderId  bson.ObjectId               `bson:"provider_id"`
+	UserId      bson.ObjectId               `bson:"user_id"`
+	ChallengeId string                      `bson:"challenge_id"`
+	Timestamp   time.Time                   `bson:"timestamp"` // TODO Expire
+	PushSent    bool                        `bson:"push_sent"`
+	PhoneSent   bool                        `bson:"phone_sent"`
+	SmsSent     bool                        `bson:"sms_sent"`
 }
 
-func (s *Secondary) Push(db *database.Database) (
+func (s *Secondary) Push(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
+
+	if s.PushSent {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Push already sent"),
+		}
+		return
+	}
+	s.PushSent = true
+	err = s.CommitFields(db, set.NewSet("push_sent"))
+	if err != nil {
+		return
+	}
 
 	provider, err := s.GetProvider()
 	if err != nil {
@@ -44,67 +63,142 @@ func (s *Secondary) Push(db *database.Database) (
 		return
 	}
 
-	// TODO
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	result, err := duo(db, provider, r, usr, Push, "")
+	if err != nil {
+		return
+	}
+
+	if !result {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_denied",
+			Message: "Secondary authentication was denied",
+		}
+		return
+	}
 
 	return
 }
 
-func (s *Secondary) Phone(db *database.Database) (
+func (s *Secondary) Phone(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
+
+	if s.PhoneSent {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Phone already sent"),
+		}
+		return
+	}
+	s.PhoneSent = true
+	err = s.CommitFields(db, set.NewSet("phone_sent"))
+	if err != nil {
+		return
+	}
 
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
 	}
 
-	if !provider.PushFactor {
+	if !provider.PhoneFactor {
 		err = &errortypes.AuthenticationError{
 			errors.New("secondary: Phone factor not available"),
 		}
 		return
 	}
 
-	// TODO
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	result, err := duo(db, provider, r, usr, Phone, "")
+	if err != nil {
+		return
+	}
+
+	if !result {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_denied",
+			Message: "Secondary authentication was denied",
+		}
+		return
+	}
 
 	return
 }
 
-func (s *Secondary) Passcode(db *database.Database, passcode string) (
-	errData *errortypes.ErrorData, err error) {
+func (s *Secondary) Passcode(db *database.Database, r *http.Request,
+	passcode string) (errData *errortypes.ErrorData, err error) {
 
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
 	}
 
-	if !provider.PushFactor {
+	if !provider.PasscodeFactor {
 		err = &errortypes.AuthenticationError{
 			errors.New("secondary: Passcode factor not available"),
 		}
 		return
 	}
 
-	// TODO
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	result, err := duo(db, provider, r, usr, Passcode, passcode)
+	if err != nil {
+		return
+	}
+
+	if !result {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_denied",
+			Message: "Secondary authentication was denied",
+		}
+		return
+	}
 
 	return
 }
 
-func (s *Secondary) Sms(db *database.Database) (
+func (s *Secondary) Sms(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
+
+	if s.SmsSent {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Sms already sent"),
+		}
+		return
+	}
 
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
 	}
 
-	if !provider.PushFactor {
+	if !provider.SmsFactor {
 		err = &errortypes.AuthenticationError{
 			errors.New("secondary: Sms factor not available"),
 		}
 		return
 	}
 
-	// TODO
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	_, err = duo(db, provider, r, usr, Sms, "")
+	if err != nil {
+		return
+	}
 
 	s.SmsSent = true
 	err = s.CommitFields(db, set.NewSet("sms_sent"))
@@ -127,9 +221,10 @@ func (s *Secondary) GetData() (data *SecondaryData, err error) {
 
 	data = &SecondaryData{
 		Token:    s.Id,
+		Label:    provider.Label,
 		Push:     provider.PushFactor,
 		Phone:    provider.PhoneFactor,
-		Passcode: provider.PasscodeFactor,
+		Passcode: provider.PasscodeFactor || provider.SmsFactor,
 		Sms:      provider.SmsFactor,
 	}
 	return
@@ -156,29 +251,30 @@ func (s *Secondary) GetQuery() (query string, err error) {
 	}
 
 	query = fmt.Sprintf(
-		"secondary=%s&factors=%s",
+		"secondary=%s&label=%s&factors=%s",
 		s.Id,
+		provider.Label,
 		strings.Join(factors, ","),
 	)
 
 	return
 }
 
-func (s *Secondary) Handle(db *database.Database, factor, passcode string) (
-	errData *errortypes.ErrorData, err error) {
+func (s *Secondary) Handle(db *database.Database, r *http.Request,
+	factor, passcode string) (errData *errortypes.ErrorData, err error) {
 
 	switch factor {
 	case Push:
-		errData, err = s.Push(db)
+		errData, err = s.Push(db, r)
 		break
 	case Phone:
-		errData, err = s.Phone(db)
+		errData, err = s.Phone(db, r)
 		break
 	case Passcode:
-		errData, err = s.Passcode(db, passcode)
+		errData, err = s.Passcode(db, r, passcode)
 		break
 	case Sms:
-		errData, err = s.Sms(db)
+		errData, err = s.Sms(db, r)
 		break
 	default:
 		err = &errortypes.UnknownError{
