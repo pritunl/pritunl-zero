@@ -3,11 +3,13 @@ import * as React from 'react';
 import * as PolicyTypes from '../types/PolicyTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as AuthorityTypes from '../types/AuthorityTypes';
+import * as SettingsTypes from '../types/SettingsTypes';
 import * as PolicyActions from '../actions/PolicyActions';
 import ServicesStore from '../stores/ServicesStore';
 import AuthoritiesStore from '../stores/AuthoritiesStore';
 import PolicyRule from './PolicyRule';
 import PageInput from './PageInput';
+import PageSwitch from './PageSwitch';
 import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
 import PageInputButton from './PageInputButton';
@@ -15,11 +17,13 @@ import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 import Help from './Help';
+import * as Alert from '../Alert';
 
 interface Props {
 	policy: PolicyTypes.PolicyRo;
 	services: ServiceTypes.ServicesRo;
 	authorities: AuthorityTypes.AuthoritiesRo;
+	providers: SettingsTypes.SecondaryProviders;
 }
 
 interface State {
@@ -518,6 +522,47 @@ export default class Policy extends React.Component<Props, State> {
 			type: 'location',
 		};
 
+		let providerIds: string[] = [];
+		let adminProviders: JSX.Element[] = [];
+		let userProviders: JSX.Element[] = [];
+		let serviceProviders: JSX.Element[] = [];
+		if (this.props.providers.length) {
+			for (let provider of this.props.providers) {
+				providerIds.push(provider.id);
+				adminProviders.push(<option
+					key={provider.id}
+					value={provider.id}
+				>{provider.label}</option>);
+				userProviders.push(<option
+					key={provider.id}
+					value={provider.id}
+				>{provider.label}</option>);
+				serviceProviders.push(<option
+					key={provider.id}
+					value={provider.id}
+				>{provider.label}</option>);
+			}
+		} else {
+			adminProviders.push(<option
+				key="null"
+				value=""
+			>None</option>);
+			userProviders.push(<option
+				key="null"
+				value=""
+			>None</option>);
+			serviceProviders.push(<option
+				key="null"
+				value=""
+			>None</option>);
+		}
+		let adminProvider = policy.admin_secondary &&
+			providerIds.indexOf(policy.admin_secondary) !== -1;
+		let userProvider = policy.user_secondary &&
+			providerIds.indexOf(policy.user_secondary) !== -1;
+		let serviceProvider = policy.proxy_secondary &&
+			providerIds.indexOf(policy.proxy_secondary) !== -1;
+
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -623,6 +668,93 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authoritiesSelect}
 					</PageSelectButton>
+					<PageSwitch
+						label="Admin two-factor authentication"
+						help="Require admins to use two-factor authentication."
+						checked={adminProvider}
+						onToggle={(): void => {
+							if (adminProvider) {
+								this.set('admin_secondary', null);
+							} else {
+								if (this.props.providers.length === 0) {
+									Alert.warning(
+										'No two-factor authentication providers exist');
+									return;
+								}
+								this.set('admin_secondary', this.props.providers[0].id);
+							}
+						}}
+					/>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="Admin Two-Factor Provider"
+						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						hidden={!adminProvider}
+						value={policy.admin_secondary}
+						onChange={(val): void => {
+							this.set('admin_secondary', val);
+						}}
+					>
+						{adminProviders}
+					</PageSelect>
+					<PageSwitch
+						label="User two-factor authentication"
+						help="Require users to use two-factor authentication."
+						checked={userProvider}
+						onToggle={(): void => {
+							if (userProvider) {
+								this.set('user_secondary', null);
+							} else {
+								if (this.props.providers.length === 0) {
+									Alert.warning(
+										'No two-factor authentication providers exist');
+									return;
+								}
+								this.set('user_secondary', this.props.providers[0].id);
+							}
+						}}
+					/>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="User Two-Factor Provider"
+						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						hidden={!userProvider}
+						value={policy.user_secondary}
+						onChange={(val): void => {
+							this.set('user_secondary', val);
+						}}
+					>
+						{userProviders}
+					</PageSelect>
+					<PageSwitch
+						label="Service two-factor authentication"
+						help="Require service users to use two-factor authentication."
+						checked={serviceProvider}
+						onToggle={(): void => {
+							if (serviceProvider) {
+								this.set('proxy_secondary', null);
+							} else {
+								if (this.props.providers.length === 0) {
+									Alert.warning(
+										'No two-factor authentication providers exist');
+									return;
+								}
+								this.set('proxy_secondary', this.props.providers[0].id);
+							}
+						}}
+					/>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="Service Two-Factor Provider"
+						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						hidden={!serviceProvider}
+						value={policy.proxy_secondary}
+						onChange={(val): void => {
+							this.set('proxy_secondary', val);
+						}}
+					>
+						{serviceProviders}
+					</PageSelect>
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Keybase Mode"
