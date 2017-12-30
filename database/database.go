@@ -72,6 +72,11 @@ func (d *Database) CsrfTokens() (coll *Collection) {
 	return
 }
 
+func (d *Database) SecondaryTokens() (coll *Collection) {
+	coll = d.getCollection("secondary_tokens")
+	return
+}
+
 func (d *Database) Nonces() (coll *Collection) {
 	coll = d.getCollection("nonces")
 	return
