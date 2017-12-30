@@ -3,12 +3,15 @@ import * as React from 'react';
 import * as PolicyTypes from '../types/PolicyTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as AuthorityTypes from '../types/AuthorityTypes';
+import * as SettingsTypes from '../types/SettingsTypes';
 import PoliciesStore from '../stores/PoliciesStore';
 import ServicesStore from '../stores/ServicesStore';
 import AuthoritiesStore from '../stores/AuthoritiesStore';
+import SettingsStore from '../stores/SettingsStore';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as AuthorityActions from '../actions/AuthorityActions';
+import * as SettingsActions from '../actions/SettingsActions';
 import NonState from './NonState';
 import Policy from './Policy';
 import Page from './Page';
@@ -18,6 +21,7 @@ interface State {
 	policies: PolicyTypes.PoliciesRo;
 	services: ServiceTypes.ServicesRo;
 	authorities: AuthorityTypes.AuthoritiesRo;
+	providers: SettingsTypes.SecondaryProviders;
 	disabled: boolean;
 }
 
@@ -40,6 +44,8 @@ export default class Policies extends React.Component<{}, State> {
 			policies: PoliciesStore.policies,
 			services: ServicesStore.services,
 			authorities: AuthoritiesStore.authorities,
+			providers: SettingsStore.settings ?
+				SettingsStore.settings.auth_secondary_providers : [],
 			disabled: false,
 		};
 	}
@@ -48,15 +54,18 @@ export default class Policies extends React.Component<{}, State> {
 		PoliciesStore.addChangeListener(this.onChange);
 		ServicesStore.addChangeListener(this.onChange);
 		AuthoritiesStore.addChangeListener(this.onChange);
+		SettingsStore.addChangeListener(this.onChange);
 		PolicyActions.sync();
 		ServiceActions.sync();
 		AuthorityActions.sync();
+		SettingsActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		PoliciesStore.removeChangeListener(this.onChange);
 		ServicesStore.removeChangeListener(this.onChange);
 		AuthoritiesStore.removeChangeListener(this.onChange);
+		SettingsStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
@@ -65,6 +74,8 @@ export default class Policies extends React.Component<{}, State> {
 			policies: PoliciesStore.policies,
 			services: ServicesStore.services,
 			authorities: AuthoritiesStore.authorities,
+			providers: SettingsStore.settings ?
+				SettingsStore.settings.auth_secondary_providers : [],
 		});
 	}
 
@@ -77,6 +88,7 @@ export default class Policies extends React.Component<{}, State> {
 				policy={policy}
 				services={this.state.services}
 				authorities={this.state.authorities}
+				providers={this.state.providers}
 			/>);
 		});
 
