@@ -525,7 +525,8 @@ export default class Policy extends React.Component<Props, State> {
 		let providerIds: string[] = [];
 		let adminProviders: JSX.Element[] = [];
 		let userProviders: JSX.Element[] = [];
-		let serviceProviders: JSX.Element[] = [];
+		let proxyProviders: JSX.Element[] = [];
+		let authorityProviders: JSX.Element[] = [];
 		if (this.props.providers.length) {
 			for (let provider of this.props.providers) {
 				providerIds.push(provider.id);
@@ -537,7 +538,11 @@ export default class Policy extends React.Component<Props, State> {
 					key={provider.id}
 					value={provider.id}
 				>{provider.label}</option>);
-				serviceProviders.push(<option
+				proxyProviders.push(<option
+					key={provider.id}
+					value={provider.id}
+				>{provider.label}</option>);
+				authorityProviders.push(<option
 					key={provider.id}
 					value={provider.id}
 				>{provider.label}</option>);
@@ -551,7 +556,11 @@ export default class Policy extends React.Component<Props, State> {
 				key="null"
 				value=""
 			>None</option>);
-			serviceProviders.push(<option
+			proxyProviders.push(<option
+				key="null"
+				value=""
+			>None</option>);
+			authorityProviders.push(<option
 				key="null"
 				value=""
 			>None</option>);
@@ -560,8 +569,10 @@ export default class Policy extends React.Component<Props, State> {
 			providerIds.indexOf(policy.admin_secondary) !== -1;
 		let userProvider = policy.user_secondary &&
 			providerIds.indexOf(policy.user_secondary) !== -1;
-		let serviceProvider = policy.proxy_secondary &&
+		let proxyProvider = policy.proxy_secondary &&
 			providerIds.indexOf(policy.proxy_secondary) !== -1;
+		let authorityProvider = policy.authority_secondary &&
+			providerIds.indexOf(policy.authority_secondary) !== -1;
 
 		return <div
 			className="pt-card"
@@ -729,9 +740,9 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSwitch
 						label="Service two-factor authentication"
 						help="Require service users to use two-factor authentication."
-						checked={serviceProvider}
+						checked={proxyProvider}
 						onToggle={(): void => {
-							if (serviceProvider) {
+							if (proxyProvider) {
 								this.set('proxy_secondary', null);
 							} else {
 								if (this.props.providers.length === 0) {
@@ -747,13 +758,42 @@ export default class Policy extends React.Component<Props, State> {
 						disabled={this.state.disabled}
 						label="Service Two-Factor Provider"
 						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
-						hidden={!serviceProvider}
+						hidden={!proxyProvider}
 						value={policy.proxy_secondary}
 						onChange={(val): void => {
 							this.set('proxy_secondary', val);
 						}}
 					>
-						{serviceProviders}
+						{proxyProviders}
+					</PageSelect>
+					<PageSwitch
+						label="Authority two-factor authentication"
+						help="Require users retrieving SSH certificates from an authority to use two-factor authentication."
+						checked={authorityProvider}
+						onToggle={(): void => {
+							if (authorityProvider) {
+								this.set('authority_secondary', null);
+							} else {
+								if (this.props.providers.length === 0) {
+									Alert.warning(
+										'No two-factor authentication providers exist');
+									return;
+								}
+								this.set('authority_secondary', this.props.providers[0].id);
+							}
+						}}
+					/>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="Authority Two-Factor Provider"
+						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						hidden={!authorityProvider}
+						value={policy.authority_secondary}
+						onChange={(val): void => {
+							this.set('authority_secondary', val);
+						}}
+					>
+						{authorityProviders}
 					</PageSelect>
 					<PageSelect
 						disabled={this.state.disabled}
