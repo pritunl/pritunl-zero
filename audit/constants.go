@@ -1,12 +1,14 @@
 package audit
 
 const (
-	AdminLogin               = "admin_login"
-	AdminLoginFailed         = "admin_login_failed"
-	Login                    = "login"
-	LoginFailed              = "login_failed"
-	SshAprove                = "ssh_aprove"
-	SshDeny                  = "ssh_deny"
-	KeybaseAssociationAprove = "keybase_association_aprove"
-	KeybaseAssociationDeny   = "keybase_association_deny"
+	AdminLogin                = "admin_login"
+	AdminLoginFailed          = "admin_login_failed"
+	Login                     = "login"
+	LoginFailed               = "login_failed"
+	DuoApprove                = "duo_approve"
+	DuoDeny                   = "duo_deny"
+	SshApprove                = "ssh_approve"
+	SshDeny                   = "ssh_deny"
+	KeybaseAssociationApprove = "keybase_association_approve"
+	KeybaseAssociationDeny    = "keybase_association_deny"
 )
