@@ -34,6 +34,7 @@ type SecondaryProvider struct {
 	PushFactor     bool          `bson:"push_factor" json:"push_factor"`         // duo
 	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`       // duo
 	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"` // duo
+	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`           // duo
 }
 
 type auth struct {
