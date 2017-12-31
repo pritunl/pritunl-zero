@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -134,6 +135,12 @@ func settingsPut(c *gin.Context) {
 	for _, provider := range data.AuthSecondaryProviders {
 		if provider.Id == "" {
 			provider.Id = bson.NewObjectId()
+		}
+
+		if provider.Type == secondary.OneLogin &&
+			provider.OneLoginRegion == "" {
+
+			provider.OneLoginRegion = "us"
 		}
 	}
 	settings.Auth.SecondaryProviders = data.AuthSecondaryProviders
