@@ -38,6 +38,7 @@ type oneloginAuth struct {
 type oneloginUsersData struct {
 	Id       int    `json:"id"`
 	Username string `json:"username"`
+	Email    string `json:"email"`
 	Status   int    `json:"status"`
 }
 
@@ -194,7 +195,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 
 	reqVals := url.Values{}
 	reqVals.Set("username", usr.Username)
-	reqVals.Set("fields", "id,username,status")
+	reqVals.Set("fields", "id,username,email,status")
 	reqUrl, _ = url.Parse(apiUrl + "/api/1/users")
 	reqUrl.RawQuery = reqVals.Encode()
 
@@ -250,6 +251,95 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 	}
 
 	if users.Data == nil || len(users.Data) == 0 {
+		reqVals := url.Values{}
+		reqVals.Set("email", usr.Username)
+		reqVals.Set("fields", "id,username,email,status")
+		reqUrl, _ = url.Parse(apiUrl + "/api/1/users")
+		reqUrl.RawQuery = reqVals.Encode()
+
+		req, err = http.NewRequest(
+			"GET",
+			reqUrl.String(),
+			nil,
+		)
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(
+					err, "secondary: OneLogin users request failed"),
+			}
+			return
+		}
+
+		req.Header.Set("Authorization", apiHeader)
+
+		resp, err = oneloginClient.Do(req)
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(
+					err, "secondary: OneLogin users request failed"),
+			}
+			return
+		}
+		defer resp.Body.Close()
+
+		users = &oneloginUsers{}
+		err = json.NewDecoder(resp.Body).Decode(users)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "secondary: OneLogin users parse failed"),
+			}
+			return
+		}
+	}
+
+	shortUsername := ""
+	if (users.Data == nil || len(users.Data) == 0) &&
+		strings.Contains(usr.Username, "@") {
+
+		shortUsername = strings.SplitN(usr.Username, "@", 2)[0]
+
+		reqVals := url.Values{}
+		reqVals.Set("username", shortUsername)
+		reqVals.Set("fields", "id,username,email,status")
+		reqUrl, _ = url.Parse(apiUrl + "/api/1/users")
+		reqUrl.RawQuery = reqVals.Encode()
+
+		req, err = http.NewRequest(
+			"GET",
+			reqUrl.String(),
+			nil,
+		)
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(
+					err, "secondary: OneLogin users request failed"),
+			}
+			return
+		}
+
+		req.Header.Set("Authorization", apiHeader)
+
+		resp, err = oneloginClient.Do(req)
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(
+					err, "secondary: OneLogin users request failed"),
+			}
+			return
+		}
+		defer resp.Body.Close()
+
+		users = &oneloginUsers{}
+		err = json.NewDecoder(resp.Body).Decode(users)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "secondary: OneLogin users parse failed"),
+			}
+			return
+		}
+	}
+
+	if users.Data == nil || len(users.Data) == 0 {
 		err = &errortypes.NotFoundError{
 			errors.New("secondary: OneLogin user not found"),
 		}
@@ -263,7 +353,10 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
-	if usr.Username != users.Data[0].Username {
+	if usr.Username != users.Data[0].Username &&
+		usr.Username != users.Data[0].Email &&
+		(shortUsername != "" && shortUsername != users.Data[0].Username) {
+
 		err = &errortypes.AuthenticationError{
 			errors.New("secondary: OneLogin username mismatch"),
 		}
