@@ -348,6 +348,19 @@ func addIndexes() (err error) {
 		return
 	}
 
+	coll = db.SecondaryTokens()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:         []string{"timestamp"},
+		ExpireAfter: 3 * time.Minute,
+		Background:  true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+		return
+	}
+
 	coll = db.Nonces()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
