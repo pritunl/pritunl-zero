@@ -37,6 +37,7 @@ export interface SecondaryProvider {
 	id?: string;
 	type?: string;
 	label?: string;
+	name?: string;
 }
 
 export interface DuoProvider extends SecondaryProvider {

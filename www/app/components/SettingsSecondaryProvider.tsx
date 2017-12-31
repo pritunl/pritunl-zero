@@ -203,6 +203,18 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 				]}
 			/>
 			<PageInput
+				label="Name"
+				help="Two-factor provider name."
+				type="text"
+				placeholder="Two-factor provider name"
+				value={provider.name}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.name = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
 				label="Label"
 				help="Two-factor provider label that will be shown to users on the login page."
 				type="text"

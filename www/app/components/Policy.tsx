@@ -533,19 +533,19 @@ export default class Policy extends React.Component<Props, State> {
 				adminProviders.push(<option
 					key={provider.id}
 					value={provider.id}
-				>{provider.label}</option>);
+				>{provider.name}</option>);
 				userProviders.push(<option
 					key={provider.id}
 					value={provider.id}
-				>{provider.label}</option>);
+				>{provider.name}</option>);
 				proxyProviders.push(<option
 					key={provider.id}
 					value={provider.id}
-				>{provider.label}</option>);
+				>{provider.name}</option>);
 				authorityProviders.push(<option
 					key={provider.id}
 					value={provider.id}
-				>{provider.label}</option>);
+				>{provider.name}</option>);
 			}
 		} else {
 			adminProviders.push(<option
