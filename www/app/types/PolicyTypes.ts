@@ -19,6 +19,7 @@ export interface Policy {
 	admin_secondary?: string;
 	user_secondary?: string;
 	proxy_secondary?: string;
+	authority_secondary?: string;
 }
 
 export type Policies = Policy[];
