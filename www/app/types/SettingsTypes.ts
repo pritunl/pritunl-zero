@@ -49,7 +49,17 @@ export interface DuoProvider extends SecondaryProvider {
 	sms_factor?: boolean;
 }
 
-export type SecondaryProviderAny = SecondaryProvider & DuoProvider;
+export interface OneLoginProvider extends SecondaryProvider {
+	one_login_region?: string;
+	one_login_id?: string;
+	one_login_secret?: string;
+	push_factor?: boolean;
+	phone_factor?: boolean;
+	passcode_factor?: boolean;
+	sms_factor?: boolean;
+}
+
+export type SecondaryProviderAny = SecondaryProvider & DuoProvider & OneLoginProvider;
 export type SecondaryProviders = SecondaryProviderAny[];
 
 export interface Settings {
