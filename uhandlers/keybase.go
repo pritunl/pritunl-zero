@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/keybase"
 	"github.com/pritunl/pritunl-zero/secondary"
@@ -524,7 +525,15 @@ func keybaseSecondaryPut(c *gin.Context) {
 
 	secd, err := secondary.Get(db, data.Token)
 	if err != nil {
-		utils.AbortWithError(c, 500, err)
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Two-factor authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
 		return
 	}
 
