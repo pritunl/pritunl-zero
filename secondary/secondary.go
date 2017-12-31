@@ -68,8 +68,24 @@ func (s *Secondary) Push(db *database.Database, r *http.Request) (
 		return
 	}
 
-	result, err := duo(db, provider, r, usr, Push, "")
-	if err != nil {
+	result := false
+	switch provider.Type {
+	case Duo:
+		result, err = duo(db, provider, r, usr, Push, "")
+		if err != nil {
+			return
+		}
+		break
+	case OneLogin:
+		result, err = onelogin(db, provider, r, usr, Push, "")
+		if err != nil {
+			return
+		}
+		break
+	default:
+		err = &errortypes.UnknownError{
+			errors.New("secondary: Unknown secondary provider type"),
+		}
 		return
 	}
 
@@ -116,8 +132,18 @@ func (s *Secondary) Phone(db *database.Database, r *http.Request) (
 		return
 	}
 
-	result, err := duo(db, provider, r, usr, Phone, "")
-	if err != nil {
+	result := false
+	switch provider.Type {
+	case Duo:
+		result, err = duo(db, provider, r, usr, Phone, "")
+		if err != nil {
+			return
+		}
+		break
+	default:
+		err = &errortypes.UnknownError{
+			errors.New("secondary: Unknown secondary provider type"),
+		}
 		return
 	}
 
@@ -152,8 +178,24 @@ func (s *Secondary) Passcode(db *database.Database, r *http.Request,
 		return
 	}
 
-	result, err := duo(db, provider, r, usr, Passcode, passcode)
-	if err != nil {
+	result := false
+	switch provider.Type {
+	case Duo:
+		result, err = duo(db, provider, r, usr, Passcode, passcode)
+		if err != nil {
+			return
+		}
+		break
+	case OneLogin:
+		result, err = onelogin(db, provider, r, usr, Passcode, passcode)
+		if err != nil {
+			return
+		}
+		break
+	default:
+		err = &errortypes.UnknownError{
+			errors.New("secondary: Unknown secondary provider type"),
+		}
 		return
 	}
 
@@ -195,8 +237,17 @@ func (s *Secondary) Sms(db *database.Database, r *http.Request) (
 		return
 	}
 
-	_, err = duo(db, provider, r, usr, Sms, "")
-	if err != nil {
+	switch provider.Type {
+	case Duo:
+		_, err = duo(db, provider, r, usr, Sms, "")
+		if err != nil {
+			return
+		}
+		break
+	default:
+		err = &errortypes.UnknownError{
+			errors.New("secondary: Unknown secondary provider type"),
+		}
 		return
 	}
 
@@ -243,7 +294,7 @@ func (s *Secondary) GetQuery() (query string, err error) {
 	if provider.PhoneFactor {
 		factors = append(factors, "phone")
 	}
-	if provider.PasscodeFactor {
+	if provider.PasscodeFactor || provider.SmsFactor {
 		factors = append(factors, "passcode")
 	}
 	if provider.SmsFactor {
