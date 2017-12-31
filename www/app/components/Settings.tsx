@@ -285,7 +285,7 @@ export default class Settings extends React.Component<{}, State> {
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
-								provider: val,
+								secondaryProvider: val,
 							});
 						}}
 						onSubmit={(): void => {
@@ -299,6 +299,7 @@ export default class Settings extends React.Component<{}, State> {
 						}}
 					>
 						<option value="duo">Duo</option>
+						<option value="one_login">OneLogin</option>
 					</PageSelectButton>
 				</PagePanel>
 			</PageSplit>
