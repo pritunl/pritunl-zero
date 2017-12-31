@@ -195,8 +195,8 @@ func (c *Challenge) Validate(db *database.Database, r *http.Request,
 	}
 
 	for _, polcy := range policies {
-		if polcy.UserSecondary != "" {
-			secProvider = polcy.UserSecondary
+		if polcy.AuthoritySecondary != "" {
+			secProvider = polcy.AuthoritySecondary
 			break
 		}
 	}
