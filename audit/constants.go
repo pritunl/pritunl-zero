@@ -7,6 +7,8 @@ const (
 	LoginFailed               = "login_failed"
 	DuoApprove                = "duo_approve"
 	DuoDeny                   = "duo_deny"
+	OneLoginApprove           = "one_login_approve"
+	OneLoginDeny              = "one_login_deny"
 	SshApprove                = "ssh_approve"
 	SshDeny                   = "ssh_deny"
 	KeybaseAssociationApprove = "keybase_association_approve"
