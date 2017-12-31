@@ -32,6 +32,13 @@ func duo(db *database.Database, provider *settings.SecondaryProvider,
 	r *http.Request, usr *user.User, factor, passcode string) (
 	result bool, err error) {
 
+	if factor == Passcode && passcode == "" {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Duo passcode empty"),
+		}
+		return
+	}
+
 	api := duoapi.NewDuoApi(
 		provider.DuoKey,
 		provider.DuoSecret,

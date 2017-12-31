@@ -104,6 +104,13 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
+	if factor == Passcode && passcode == "" {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: OneLogin passcode empty"),
+		}
+		return
+	}
+
 	apiUrl := fmt.Sprintf(
 		"https://api.%s.onelogin.com",
 		provider.OneLoginRegion,
