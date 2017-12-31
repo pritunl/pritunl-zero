@@ -28,13 +28,16 @@ type SecondaryProvider struct {
 	Id             bson.ObjectId `bson:"id" json:"id"`
 	Type           string        `bson:"type" json:"type"`
 	Label          string        `bson:"label" json:"label"`
-	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`
-	DuoKey         string        `bson:"duo_key" json:"duo_key"`
-	DuoSecret      string        `bson:"duo_secret" json:"duo_secret"`
-	PushFactor     bool          `bson:"push_factor" json:"push_factor"`         // duo
-	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`       // duo
-	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"` // duo
-	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`           // duo
+	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`         // duo
+	DuoKey         string        `bson:"duo_key" json:"duo_key"`                   // duo
+	DuoSecret      string        `bson:"duo_secret" json:"duo_secret"`             // duo
+	OneLoginRegion string        `bson:"one_login_region" json:"one_login_region"` // onelogin
+	OneLoginId     string        `bson:"one_login_id" json:"one_login_id"`         // onelogin
+	OneLoginSecret string        `bson:"one_login_secret" json:"one_login_secret"` // onelogin
+	PushFactor     bool          `bson:"push_factor" json:"push_factor"`           // duo + onelogin
+	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin
+	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin
+	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin
 }
 
 type auth struct {
