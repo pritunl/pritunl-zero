@@ -147,17 +147,20 @@
       for (i = 0; i < queryVals.length; i++) {
         var queryKeyVal = queryVals[i].split('=');
         if (queryKeyVal[0] === 'secondary') {
-          secondaryLabl = queryKeyVal[1];
-        } else if (queryKeyVal[0] === 'label') {
           secondaryToken = queryKeyVal[1];
+        } else if (queryKeyVal[0] === 'label') {
+          secondaryLabl = queryKeyVal[1];
         } else if (queryKeyVal[0] === 'factors') {
           if (queryKeyVal[1].indexOf('push') !== -1) {
             secondaryFactors.push = true;
-          } else if (queryKeyVal[1].indexOf('phone') !== -1) {
+          }
+          if (queryKeyVal[1].indexOf('phone') !== -1) {
             secondaryFactors.phone = true;
-          } else if (queryKeyVal[1].indexOf('sms') !== -1) {
+          }
+          if (queryKeyVal[1].indexOf('sms') !== -1) {
             secondaryFactors.sms = true;
-          } else if (queryKeyVal[1].indexOf('passcode') !== -1) {
+          }
+          if (queryKeyVal[1].indexOf('passcode') !== -1) {
             secondaryFactors.passcode = true;
           }
         }
