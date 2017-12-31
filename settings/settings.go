@@ -278,6 +278,21 @@ func init() {
 			}
 		}
 
+		if Auth.Providers == nil {
+			Auth.Providers = []*Provider{}
+			err = Commit(db, Auth, set.NewSet("providers"))
+			if err != nil {
+				return
+			}
+		}
+		if Auth.SecondaryProviders == nil {
+			Auth.SecondaryProviders = []*SecondaryProvider{}
+			err = Commit(db, Auth, set.NewSet("secondary_providers"))
+			if err != nil {
+				return
+			}
+		}
+
 		go update()
 
 		return
