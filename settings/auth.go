@@ -27,6 +27,7 @@ type Provider struct {
 type SecondaryProvider struct {
 	Id             bson.ObjectId `bson:"id" json:"id"`
 	Type           string        `bson:"type" json:"type"`
+	Name           string        `bson:"name" json:"name"`
 	Label          string        `bson:"label" json:"label"`
 	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`         // duo
 	DuoKey         string        `bson:"duo_key" json:"duo_key"`                   // duo
