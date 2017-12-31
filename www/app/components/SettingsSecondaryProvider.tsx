@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as SettingsTypes from '../types/SettingsTypes';
 import PageInput from './PageInput';
+import PageSelect from './PageSelect';
 import PageSwitch from './PageSwitch';
 import PageInfo from './PageInfo';
 
@@ -111,6 +112,70 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 		</div>;
 	}
 
+	onelogin(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="OneLogin API Client ID"
+				help="OneLogin API client ID found in OneLogin admin console."
+				type="text"
+				placeholder="OneLogin API client ID"
+				value={provider.one_login_id}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.one_login_id = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="OneLogin API Client Secret"
+				help="OneLogin API client secret found in OneLogin admin console."
+				type="text"
+				placeholder="OneLogin API client secret"
+				value={provider.one_login_secret}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.one_login_secret = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageSelect
+				label="OneLogin API Region"
+				help="OneLogin region for API requests."
+				value={provider.one_login_region}
+				onChange={(val): void => {
+					let state = this.clone();
+					state.one_login_region = val;
+					this.props.onChange(state);
+				}}
+			>
+				<option value="us">United States</option>
+				<option value="eu">Europe</option>
+			</PageSelect>
+			<PageSwitch
+				label="Push authentication"
+				help="Allow push authentication."
+				checked={provider.push_factor}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.push_factor = !state.push_factor;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageSwitch
+				label="Passcode authentication"
+				help="Allow passcode authentication."
+				checked={provider.passcode_factor}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.passcode_factor = !state.passcode_factor;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	render(): JSX.Element {
 		let provider = this.props.provider;
 		let label = '';
@@ -120,6 +185,10 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 			case 'duo':
 				label = 'Duo';
 				options = this.duo();
+				break;
+			case 'one_login':
+				label = 'OneLogin';
+				options = this.onelogin();
 				break;
 		}
 
