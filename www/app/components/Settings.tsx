@@ -195,6 +195,33 @@ export default class Settings extends React.Component<{}, State> {
 					</PageSelectButton>
 				</PagePanel>
 				<PagePanel>
+					<div className="pt-border" style={css.secondaryProviders}>
+						<h5 style={css.providersLabel}>Two-Factor Providers</h5>
+					</div>
+					{secondaryProviders}
+					<PageSelectButton
+						label="Add Two-Factor Provider"
+						value={this.state.secondaryProvider}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								secondaryProvider: val,
+							});
+						}}
+						onSubmit={(): void => {
+							let authProviders: SettingsTypes.SecondaryProviders = [
+								...settings.auth_secondary_providers,
+								{
+									type: this.state.secondaryProvider,
+								},
+							];
+							this.set('auth_secondary_providers', authProviders);
+						}}
+					>
+						<option value="duo">Duo</option>
+						<option value="one_login">OneLogin</option>
+					</PageSelectButton>
 					<PageInput
 						label="Admin Session Expire Minutes"
 						help="Number of inactive minutes before a admin session expires"
@@ -274,33 +301,6 @@ export default class Settings extends React.Component<{}, State> {
 								!this.state.settings.elastic_proxy_requests);
 						}}
 					/>
-					<div className="pt-border" style={css.secondaryProviders}>
-						<h5 style={css.providersLabel}>Two-Factor Providers</h5>
-					</div>
-					{secondaryProviders}
-					<PageSelectButton
-						label="Add Two-Factor Provider"
-						value={this.state.secondaryProvider}
-						buttonClass="pt-intent-success"
-						onChange={(val: string): void => {
-							this.setState({
-								...this.state,
-								secondaryProvider: val,
-							});
-						}}
-						onSubmit={(): void => {
-							let authProviders: SettingsTypes.SecondaryProviders = [
-								...settings.auth_secondary_providers,
-								{
-									type: this.state.secondaryProvider,
-								},
-							];
-							this.set('auth_secondary_providers', authProviders);
-						}}
-					>
-						<option value="duo">Duo</option>
-						<option value="one_login">OneLogin</option>
-					</PageSelectButton>
 				</PagePanel>
 			</PageSplit>
 			<PageSave
