@@ -502,6 +502,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", apiHeader)
+		req.Header.Set("User-Agent", r.UserAgent())
+		req.Header.Set("X-Forwarded-For", node.Self.GetRemoteAddr(r))
 
 		resp, err = oneloginClient.Do(req)
 		if err != nil {
@@ -627,6 +629,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", apiHeader)
+		req.Header.Set("User-Agent", r.UserAgent())
+		req.Header.Set("X-Forwarded-For", node.Self.GetRemoteAddr(r))
 
 		resp, err = oneloginClient.Do(req)
 		if err != nil {
