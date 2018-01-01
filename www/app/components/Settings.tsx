@@ -221,6 +221,7 @@ export default class Settings extends React.Component<{}, State> {
 					>
 						<option value="duo">Duo</option>
 						<option value="one_login">OneLogin</option>
+						<option value="okta">Okta</option>
 					</PageSelectButton>
 					<PageInput
 						label="Admin Session Expire Minutes"
