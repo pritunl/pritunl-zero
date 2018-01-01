@@ -11,10 +11,10 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"strings"
-	"github.com/pritunl/pritunl-zero/session"
 )
 
 func authStateGet(c *gin.Context) {
