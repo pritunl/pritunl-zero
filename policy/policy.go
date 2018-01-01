@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
@@ -81,6 +82,27 @@ func (p *Policy) Validate(db *database.Database) (
 		return
 	}
 	p.Authorities = authorities
+
+	if p.AdminSecondary != "" &&
+		settings.Auth.GetSecondaryProvider(p.AdminSecondary) == nil {
+
+		p.AdminSecondary = ""
+	}
+	if p.UserSecondary != "" &&
+		settings.Auth.GetSecondaryProvider(p.UserSecondary) == nil {
+
+		p.UserSecondary = ""
+	}
+	if p.ProxySecondary != "" &&
+		settings.Auth.GetSecondaryProvider(p.ProxySecondary) == nil {
+
+		p.ProxySecondary = ""
+	}
+	if p.AuthoritySecondary != "" &&
+		settings.Auth.GetSecondaryProvider(p.AuthoritySecondary) == nil {
+
+		p.AuthoritySecondary = ""
+	}
 
 	return
 }
