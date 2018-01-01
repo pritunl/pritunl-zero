@@ -699,7 +699,7 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Admin Two-Factor Provider"
-						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						help="Two-factor authentication provider that will be used. For users matching multiple policies the first provider will be used."
 						hidden={!adminProvider}
 						value={policy.admin_secondary}
 						onChange={(val): void => {
@@ -728,7 +728,7 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSelect
 						disabled={this.state.disabled}
 						label="User Two-Factor Provider"
-						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						help="Two-factor authentication provider that will be used. For users matching multiple policies the first provider will be used."
 						hidden={!userProvider}
 						value={policy.user_secondary}
 						onChange={(val): void => {
@@ -757,7 +757,7 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Service Two-Factor Provider"
-						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						help="Two-factor authentication provider that will be used. For users matching multiple policies the first provider will be used."
 						hidden={!proxyProvider}
 						value={policy.proxy_secondary}
 						onChange={(val): void => {
@@ -786,7 +786,7 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSelect
 						disabled={this.state.disabled}
 						label="Authority Two-Factor Provider"
-						help="Two-factor authentication provider that will be used. For policies matching multiple users first provider will be used."
+						help="Two-factor authentication provider that will be used. For users matching multiple policies the first provider will be used."
 						hidden={!authorityProvider}
 						value={policy.authority_secondary}
 						onChange={(val): void => {
