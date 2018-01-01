@@ -34,10 +34,19 @@ type Secondary struct {
 	PushSent    bool                        `bson:"push_sent"`
 	PhoneSent   bool                        `bson:"phone_sent"`
 	SmsSent     bool                        `bson:"sms_sent"`
+	Disabled    bool                        `bson:"disabled"`
 }
 
 func (s *Secondary) Push(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
 
 	if s.PushSent {
 		err = &errortypes.AuthenticationError{
@@ -109,6 +118,14 @@ func (s *Secondary) Push(db *database.Database, r *http.Request) (
 func (s *Secondary) Phone(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
 
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
+
 	if s.PhoneSent {
 		err = &errortypes.AuthenticationError{
 			errors.New("secondary: Phone already sent"),
@@ -167,6 +184,14 @@ func (s *Secondary) Phone(db *database.Database, r *http.Request) (
 func (s *Secondary) Passcode(db *database.Database, r *http.Request,
 	passcode string) (errData *errortypes.ErrorData, err error) {
 
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
+
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
@@ -224,6 +249,14 @@ func (s *Secondary) Passcode(db *database.Database, r *http.Request,
 
 func (s *Secondary) Sms(db *database.Database, r *http.Request) (
 	errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
 
 	if s.SmsSent {
 		err = &errortypes.AuthenticationError{
@@ -323,6 +356,26 @@ func (s *Secondary) GetQuery() (query string, err error) {
 	return
 }
 
+func (s *Secondary) Complete(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication is already completed",
+		}
+		return
+	}
+
+	s.Disabled = true
+	err = s.CommitFields(db, set.NewSet("disabled"))
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *Secondary) Handle(db *database.Database, r *http.Request,
 	factor, passcode string) (errData *errortypes.ErrorData, err error) {
 
@@ -342,6 +395,13 @@ func (s *Secondary) Handle(db *database.Database, r *http.Request,
 	default:
 		err = &errortypes.UnknownError{
 			errors.New("secondary: Unknown secondary factor"),
+		}
+	}
+
+	if err == nil && errData == nil && factor != Sms {
+		errData, err = s.Complete(db)
+		if err != nil || errData != nil {
+			return
 		}
 	}
 
