@@ -9,6 +9,8 @@ const (
 	DuoDeny                   = "duo_deny"
 	OneLoginApprove           = "one_login_approve"
 	OneLoginDeny              = "one_login_deny"
+	OktaApprove               = "okta_approve"
+	OktaDeny                  = "okta_deny"
 	SshApprove                = "ssh_approve"
 	SshDeny                   = "ssh_deny"
 	KeybaseAssociationApprove = "keybase_association_approve"
