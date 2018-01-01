@@ -35,10 +35,12 @@ type SecondaryProvider struct {
 	OneLoginRegion string        `bson:"one_login_region" json:"one_login_region"` // onelogin
 	OneLoginId     string        `bson:"one_login_id" json:"one_login_id"`         // onelogin
 	OneLoginSecret string        `bson:"one_login_secret" json:"one_login_secret"` // onelogin
-	PushFactor     bool          `bson:"push_factor" json:"push_factor"`           // duo + onelogin
-	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin
-	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin
-	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin
+	OktaDomain     string        `bson:"okta_domain" json:"okta_domain"`           // okta
+	OktaToken      string        `bson:"okta_token" json:"okta_token"`             // okta
+	PushFactor     bool          `bson:"push_factor" json:"push_factor"`           // duo + onelogin + okta
+	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
+	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
+	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
 }
 
 type auth struct {
