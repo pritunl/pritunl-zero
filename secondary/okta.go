@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"io/ioutil"
@@ -344,6 +345,8 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", apiHeader)
+	req.Header.Set("User-Agent", r.UserAgent())
+	req.Header.Set("X-Forwarded-For", node.Self.GetRemoteAddr(r))
 
 	resp, err = oktaClient.Do(req)
 	if err != nil {
@@ -424,6 +427,8 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 
 			req.Header.Set("Accept", "application/json")
 			req.Header.Set("Authorization", apiHeader)
+			req.Header.Set("User-Agent", r.UserAgent())
+			req.Header.Set("X-Forwarded-For", node.Self.GetRemoteAddr(r))
 
 			resp, err = oktaClient.Do(req)
 			if err != nil {
