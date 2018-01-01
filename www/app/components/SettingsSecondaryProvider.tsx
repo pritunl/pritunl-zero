@@ -176,6 +176,57 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 		</div>;
 	}
 
+	okta(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Okta Domain"
+				help="Okta domain used to login to Okta such as 'pritunl.okta.com'."
+				type="text"
+				placeholder="OneLogin domain"
+				value={provider.okta_domain}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.okta_domain = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Okta API Token"
+				help="Okta API token found in Okta admin console."
+				type="text"
+				placeholder="OneLogin API token"
+				value={provider.okta_token}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.okta_token = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageSwitch
+				label="Push authentication"
+				help="Allow push authentication."
+				checked={provider.push_factor}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.push_factor = !state.push_factor;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageSwitch
+				label="Passcode authentication"
+				help="Allow passcode authentication."
+				checked={provider.passcode_factor}
+				onToggle={(): void => {
+					let state = this.clone();
+					state.passcode_factor = !state.passcode_factor;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	render(): JSX.Element {
 		let provider = this.props.provider;
 		let label = '';
@@ -189,6 +240,10 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 			case 'one_login':
 				label = 'OneLogin';
 				options = this.onelogin();
+				break;
+			case 'okta':
+				label = 'Okta';
+				options = this.okta();
 				break;
 		}
 
