@@ -55,12 +55,18 @@ export interface OneLoginProvider extends SecondaryProvider {
 	one_login_id?: string;
 	one_login_secret?: string;
 	push_factor?: boolean;
-	phone_factor?: boolean;
 	passcode_factor?: boolean;
-	sms_factor?: boolean;
 }
 
-export type SecondaryProviderAny = SecondaryProvider & DuoProvider & OneLoginProvider;
+export interface OktaProvider extends SecondaryProvider {
+	okta_domain?: string;
+	okta_token?: string;
+	push_factor?: boolean;
+	passcode_factor?: boolean;
+}
+
+export type SecondaryProviderAny = SecondaryProvider & DuoProvider &
+	OneLoginProvider & OktaProvider;
 export type SecondaryProviders = SecondaryProviderAny[];
 
 export interface Settings {
