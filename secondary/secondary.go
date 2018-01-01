@@ -82,6 +82,12 @@ func (s *Secondary) Push(db *database.Database, r *http.Request) (
 			return
 		}
 		break
+	case Okta:
+		result, err = okta(db, provider, r, usr, Push, "")
+		if err != nil {
+			return
+		}
+		break
 	default:
 		err = &errortypes.UnknownError{
 			errors.New("secondary: Unknown secondary provider type"),
@@ -188,6 +194,12 @@ func (s *Secondary) Passcode(db *database.Database, r *http.Request,
 		break
 	case OneLogin:
 		result, err = onelogin(db, provider, r, usr, Passcode, passcode)
+		if err != nil {
+			return
+		}
+		break
+	case Okta:
+		result, err = okta(db, provider, r, usr, Passcode, passcode)
 		if err != nil {
 			return
 		}
