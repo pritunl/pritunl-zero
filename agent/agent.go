@@ -83,7 +83,7 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 
 	ip := node.Self.GetRemoteAddr(r)
 
-	ge, err := geo.Get(db, node.Self.GetRemoteAddr(r))
+	ge, err := geo.Get(db, ip)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
