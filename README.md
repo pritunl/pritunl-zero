@@ -3,7 +3,7 @@
 [![github](https://img.shields.io/badge/github-pritunl-11bdc2.svg?style=flat)](https://github.com/pritunl)
 [![twitter](https://img.shields.io/badge/twitter-pritunl-55acee.svg?style=flat)](https://twitter.com/pritunl)
 
-[Pritunl-Zero](https://github.com/pritunl/pritunl-zero) is a zero trust system
+[Pritunl-Zero](https://zero.pritunl.com) is a zero trust system
 that provides secure authenticated access to internal services from untrusted
 networks without the use of a VPN. Documentation and more
 information can be found at
