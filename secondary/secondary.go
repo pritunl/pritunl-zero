@@ -30,7 +30,7 @@ type Secondary struct {
 	ProviderId  bson.ObjectId               `bson:"provider_id"`
 	UserId      bson.ObjectId               `bson:"user_id"`
 	ChallengeId string                      `bson:"challenge_id"`
-	Timestamp   time.Time                   `bson:"timestamp"` // TODO Expire
+	Timestamp   time.Time                   `bson:"timestamp"`
 	PushSent    bool                        `bson:"push_sent"`
 	PhoneSent   bool                        `bson:"phone_sent"`
 	SmsSent     bool                        `bson:"sms_sent"`
