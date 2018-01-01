@@ -90,6 +90,9 @@ export default class User extends React.Component<Props, {}> {
 			case 'okta':
 				userType = 'Okta';
 				break;
+			case 'azure':
+				userType = 'Azure';
+				break;
 			case 'api':
 				userType = 'API';
 				break;
