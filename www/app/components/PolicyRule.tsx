@@ -138,7 +138,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 		return <div>
 			<PageSwitch
 				label={selectLabel}
-				help="Turn on to enable policy"
+				help="Turn on to enable policy."
 				checked={rule.values != null}
 				onToggle={(): void => {
 					let state = this.clone();
@@ -164,7 +164,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 				{label}
 				<Help
 					title={label}
-					content="One of the values must match for the check to pass"
+					content="One of the values must match for the check to pass."
 				/>
 				<div>
 					{values}
