@@ -244,6 +244,10 @@ func logoutGet(c *gin.Context) {
 }
 
 func logoutAllGet(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
