@@ -6,7 +6,6 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/challenge"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/ssh"
@@ -56,10 +55,6 @@ func sshGet(c *gin.Context) {
 }
 
 func sshValidatePut(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
@@ -114,10 +109,6 @@ func sshValidatePut(c *gin.Context) {
 }
 
 func sshValidateDelete(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 
@@ -167,10 +158,6 @@ func sshValidateDelete(c *gin.Context) {
 }
 
 func sshChallengePut(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
 	db := c.MustGet("db").(*database.Database)
 	data := &sshValidateData{}
 
@@ -286,10 +273,6 @@ func sshChallengePut(c *gin.Context) {
 }
 
 func sshChallengePost(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
 	db := c.MustGet("db").(*database.Database)
 	data := &sshValidateData{}
 
@@ -330,10 +313,6 @@ type sshHostCertificateData struct {
 }
 
 func sshHostPost(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
 	db := c.MustGet("db").(*database.Database)
 	data := &sshHostData{}
 
