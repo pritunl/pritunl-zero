@@ -198,6 +198,12 @@ func authorityGet(c *gin.Context) {
 		return
 	}
 
+	if demo.IsDemo() {
+		for i := range authr.HostTokens {
+			authr.HostTokens[i] = "demo"
+		}
+	}
+
 	c.JSON(200, authr)
 }
 
@@ -208,6 +214,14 @@ func authoritysGet(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
+	}
+
+	if demo.IsDemo() {
+		for _, authr := range authrs {
+			for i := range authr.HostTokens {
+				authr.HostTokens[i] = "demo"
+			}
+		}
 	}
 
 	c.JSON(200, authrs)
