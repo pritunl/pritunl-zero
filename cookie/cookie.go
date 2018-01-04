@@ -147,7 +147,7 @@ func init() {
 
 		if len(cookieAuthKey) == 0 || len(cookieCryptoKey) == 0 {
 			cookieAuthKey = securecookie.GenerateRandomKey(64)
-			cookieCryptoKey = securecookie.GenerateRandomKey(48)
+			cookieCryptoKey = securecookie.GenerateRandomKey(32)
 			settings.System.CookieAuthKey = cookieAuthKey
 			settings.System.CookieCryptoKey = cookieCryptoKey
 
@@ -164,7 +164,7 @@ func init() {
 
 		if len(proxyCookieAuthKey) == 0 || len(proxyCookieCryptoKey) == 0 {
 			proxyCookieAuthKey = securecookie.GenerateRandomKey(64)
-			proxyCookieCryptoKey = securecookie.GenerateRandomKey(48)
+			proxyCookieCryptoKey = securecookie.GenerateRandomKey(32)
 			settings.System.ProxyCookieAuthKey = proxyCookieAuthKey
 			settings.System.ProxyCookieCryptoKey = proxyCookieCryptoKey
 
@@ -181,7 +181,7 @@ func init() {
 
 		if len(userCookieAuthKey) == 0 || len(userCookieCryptoKey) == 0 {
 			userCookieAuthKey = securecookie.GenerateRandomKey(64)
-			userCookieCryptoKey = securecookie.GenerateRandomKey(48)
+			userCookieCryptoKey = securecookie.GenerateRandomKey(32)
 			settings.System.UserCookieAuthKey = userCookieAuthKey
 			settings.System.UserCookieCryptoKey = userCookieCryptoKey
 
