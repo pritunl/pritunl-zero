@@ -35695,6 +35695,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:re
                         } else if (pathname === '/policies') {
                             ServiceActions.sync();
                             AuthorityActions.sync();
+                            SettingsActions.sync();
                             PolicyActions.sync().then(() => {
                                 this.setState(Object.assign({}, this.state, { disabled: false }));
                             }).catch(() => {
