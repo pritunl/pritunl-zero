@@ -19,7 +19,7 @@ Commands:
   mongo       Set MongoDB URI
   set         Set a setting
   unset       Unset a setting
-  node        Start node
+  start       Start node
   clear-logs  Clear logs
   export-ssh  Export SSH authorities for emergency client
 `
