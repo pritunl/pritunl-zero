@@ -38,7 +38,7 @@ func Node() (err error) {
 	}()
 
 	<-sig
-	logrus.Info("cmd.node: Shutting down...")
+	logrus.Info("cmd.node: Shutting down")
 	go routr.Shutdown()
 	if constants.Production {
 		time.Sleep(10 * time.Second)
