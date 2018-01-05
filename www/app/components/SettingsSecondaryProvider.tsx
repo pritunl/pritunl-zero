@@ -184,7 +184,7 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 				label="Okta Domain"
 				help="Okta domain used to login to Okta such as 'pritunl.okta.com'."
 				type="text"
-				placeholder="OneLogin domain"
+				placeholder="Okta domain"
 				value={provider.okta_domain}
 				onChange={(val: string): void => {
 					let state = this.clone();
@@ -196,7 +196,7 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 				label="Okta API Token"
 				help="Okta API token found in Okta admin console."
 				type="text"
-				placeholder="OneLogin API token"
+				placeholder="Okta API token"
 				value={provider.okta_token}
 				onChange={(val: string): void => {
 					let state = this.clone();
