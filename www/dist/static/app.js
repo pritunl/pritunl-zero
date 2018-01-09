@@ -32818,11 +32818,11 @@ System.registerDynamic("app/components/SettingsSecondaryProvider.js", ["npm:reac
         }
         okta() {
             let provider = this.props.provider;
-            return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Okta Domain", help: "Okta domain used to login to Okta such as 'pritunl.okta.com'.", type: "text", placeholder: "OneLogin domain", value: provider.okta_domain, onChange: val => {
+            return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Okta Domain", help: "Okta domain used to login to Okta such as 'pritunl.okta.com'.", type: "text", placeholder: "Okta domain", value: provider.okta_domain, onChange: val => {
                     let state = this.clone();
                     state.okta_domain = val;
                     this.props.onChange(state);
-                } }), React.createElement(PageInput_1.default, { label: "Okta API Token", help: "Okta API token found in Okta admin console.", type: "text", placeholder: "OneLogin API token", value: provider.okta_token, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { label: "Okta API Token", help: "Okta API token found in Okta admin console.", type: "text", placeholder: "Okta API token", value: provider.okta_token, onChange: val => {
                     let state = this.clone();
                     state.okta_token = val;
                     this.props.onChange(state);
