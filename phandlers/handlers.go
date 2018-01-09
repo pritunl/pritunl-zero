@@ -50,6 +50,7 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 	engine.GET("/check", checkGet)
 
 	engine.GET("/", staticIndexGet)
+	engine.GET("/login", staticIndexGet)
 	engine.GET("/logo.png", staticLogoGet)
 	engine.GET("/robots.txt", middlewear.RobotsGet)
 }
