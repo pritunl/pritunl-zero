@@ -253,6 +253,7 @@ export default class Main extends React.Component<{}, State> {
 									} else if (pathname === '/policies') {
 										ServiceActions.sync();
 										AuthorityActions.sync();
+										SettingsActions.sync();
 										PolicyActions.sync().then((): void => {
 											this.setState({
 												...this.state,
