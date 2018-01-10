@@ -17220,7 +17220,7 @@ System.registerDynamic("app/components/Sshcertificates.js", ["npm:react@15.6.1.j
             this.state.sshcertificates.forEach(sshcertificate => {
                 sshcertificates.push(React.createElement(Sshcertificate_1.default, { key: sshcertificate.id, sshcertificate: sshcertificate }));
             });
-            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User SSH Certificates"), React.createElement("div", { className: "flex" }))), React.createElement("div", null, sshcertificates), React.createElement(NonState_1.default, { hidden: !!sshcertificates.length, iconClass: "pt-icon-endorsed", title: "User has no SSH certificates" }), React.createElement(SshcertificatesPage_1.default, null));
+            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User SSH Certificates"), React.createElement("div", { className: "flex" }))), React.createElement("div", null, sshcertificates), React.createElement(NonState_1.default, { hidden: !!sshcertificates.length, iconClass: "pt-icon-endorsed", title: "No SSH certificates" }), React.createElement(SshcertificatesPage_1.default, null));
         }
     }
     exports.default = Sshcertificates;
