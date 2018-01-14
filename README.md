@@ -99,7 +99,7 @@ sudo start pritunl-zero
 ### amazonlinux 2
 
 ```bash
-sudo tee -a /etc/yum.repos.d/mongodb-org-3.4.repo << EOF
+sudo tee -a /etc/yum.repos.d/mongodb-org-3.6.repo << EOF
 [mongodb-org-3.6]
 name=MongoDB Repository
 baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/mongodb-org/3.6/x86_64/
