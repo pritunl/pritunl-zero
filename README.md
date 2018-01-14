@@ -192,11 +192,11 @@ sudo systemctl enable mongodb pritunl-zero
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.6.list << EOF
-deb https://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.6 multiverse
+deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.6 multiverse
 EOF
 
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt trusty main
+deb http://repo.pritunl.com/stable/apt trusty main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 0C49F3730359A14518585931BC711F9BA15703C6
@@ -210,11 +210,11 @@ sudo service pritunl-zero start
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/mongodb-org-3.6.list << EOF
-deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse
+deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse
 EOF
 
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt xenial main
+deb http://repo.pritunl.com/stable/apt xenial main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 0C49F3730359A14518585931BC711F9BA15703C6
@@ -229,7 +229,7 @@ sudo systemctl enable pritunl-zero mongod
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt yakkety main
+deb http://repo.pritunl.com/stable/apt yakkety main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
@@ -243,7 +243,7 @@ sudo systemctl enable pritunl-zero mongodb
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt zesty main
+deb http://repo.pritunl.com/stable/apt zesty main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
@@ -257,7 +257,7 @@ sudo systemctl enable pritunl-zero mongodb
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt artful main
+deb http://repo.pritunl.com/stable/apt artful main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
@@ -271,7 +271,7 @@ sudo systemctl enable pritunl-zero mongodb
 
 ```bash
 sudo tee -a /etc/apt/sources.list.d/pritunl.list << EOF
-deb https://repo.pritunl.com/stable/apt bionic main
+deb http://repo.pritunl.com/stable/apt bionic main
 EOF
 
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
