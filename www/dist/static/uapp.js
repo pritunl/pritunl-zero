@@ -11281,6 +11281,15 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "n
         button: {
             margin: '5px',
             width: '116px'
+        },
+        secondaryButton: {
+            margin: '5px auto',
+            padding: '8px 15px',
+            width: '75%'
+        },
+        secondaryInput: {
+            margin: '5px auto',
+            width: '75%'
         }
     };
     class Validate extends React.Component {
@@ -11288,25 +11297,82 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "n
             super(props, context);
             this.state = {
                 disabled: false,
-                answered: false
+                answered: false,
+                passcode: '',
+                secondary: null,
+                secondaryState: null
             };
+        }
+        secondarySubmit(factor) {
+            let passcode = '';
+            if (factor === 'passcode') {
+                passcode = this.state.passcode;
+            }
+            SuperAgent.put('/ssh/secondary').send({
+                token: this.state.secondary.token,
+                factor: factor,
+                passcode: passcode
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
+                if (res && res.status === 404) {
+                    Alert.error('SSH verification request has expired', 0);
+                } else if (err) {
+                    Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                    return;
+                } else if (res.status === 201 && factor === 'sms') {
+                    Alert.info('Text message sent', 0);
+                    return;
+                } else {
+                    Alert.success('Successfully approved SSH key', 0);
+                }
+                this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
+                window.history.replaceState(null, null, window.location.pathname);
+            });
+        }
+        secondary() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Secondary authentication required")), React.createElement("div", { className: "layout vertical center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.push, disabled: !this.state.secondaryState.push, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { push: false }) }));
+                    this.secondarySubmit('push');
+                } }, "Push"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.phone, disabled: !this.state.secondaryState.phone, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { phone: false }) }));
+                    this.secondarySubmit('phone');
+                } }, "Call Me"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.sms, disabled: !this.state.secondaryState.sms, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { sms: false }) }));
+                    this.secondarySubmit('sms');
+                } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
+                } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                    this.secondarySubmit('passcode');
+                } }, "Submit")));
         }
         render() {
             if (this.state.answered) {
                 return React.createElement(Session_1.default, null);
             }
+            if (this.state.secondary) {
+                return this.secondary();
+            }
             return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
                     SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res.status === 404) {
+                        if (res && res.status === 404) {
                             Alert.error('SSH verification request has expired', 0);
                         } else if (err) {
                             Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                        } else if (res.status === 201) {
+                            this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                    push: true,
+                                    phone: true,
+                                    passcode: true,
+                                    sms: true
+                                }, disabled: false }));
+                            return;
                         } else {
                             Alert.success('Successfully approved SSH key', 0);
                         }
-                        this.setState(Object.assign({}, this.state, { answered: true }));
+                        this.setState(Object.assign({}, this.state, { answered: true, disabled: false }));
                         window.history.replaceState(null, null, window.location.pathname);
                     });
                 } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {

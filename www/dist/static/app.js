@@ -26542,8 +26542,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                 changed: false,
                 message: '',
                 authority: null,
-                addRole: null,
-                hostCertChecked: false
+                addRole: null
             };
         }
         set(name, val) {
@@ -26594,7 +26593,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
             }
             let tokens = [];
             for (let token of this.props.authority.host_tokens || []) {
-                tokens.push(React.createElement(PageInputButton_1.default, { key: token, buttonClass: "pt-minimal pt-intent-danger pt-icon-remove", type: "text", hidden: !authority.host_domain && !this.state.hostCertChecked, readOnly: true, autoSelect: true, listStyle: true, buttonDisabled: this.state.changed, buttonConfirm: true, value: token, onSubmit: () => {
+                tokens.push(React.createElement(PageInputButton_1.default, { key: token, buttonClass: "pt-minimal pt-intent-danger pt-icon-remove", type: "text", hidden: !authority.host_certificates, readOnly: true, autoSelect: true, listStyle: true, buttonDisabled: this.state.changed, buttonConfirm: true, value: token, onSubmit: () => {
                         AuthorityActions.deleteToken(this.props.authority.id, token).then(() => {
                             this.setState(Object.assign({}, this.state, { disabled: false }));
                         }).catch(() => {
@@ -26606,23 +26605,11 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                     this.set('name', val);
                 } }), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: authority.public_key, onChange: val => {
                     this.set('key', val);
-                } }), React.createElement(PageSwitch_1.default, { label: "Host certificates", help: "Allow servers to validate and sign SSH host keys.", checked: !!authority.host_domain || this.state.hostCertChecked, onToggle: () => {
-                    let state;
-                    let authr;
-                    if (this.state.changed) {
-                        authr = Object.assign({}, this.state.authority);
-                    } else {
-                        authr = Object.assign({}, this.props.authority);
-                    }
-                    state = !(!!authority.host_domain || this.state.hostCertChecked);
-                    if (!state) {
-                        authr.host_domain = '';
-                        authr.host_tokens = [];
-                    }
-                    this.setState(Object.assign({}, this.state, { changed: true, hostCertChecked: state, authority: authr }));
-                } }), React.createElement(PageSwitch_1.default, { label: "Strict host checking", help: "Enable strict host checking for SSH clients connecting to servers in this domain.", checked: authority.strict_host_checking, onToggle: () => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Host certificates", help: "Allow servers to validate and sign SSH host keys.", checked: authority.host_certificates, onToggle: () => {
+                    this.toggle('host_certificates');
+                } }), React.createElement(PageSwitch_1.default, { label: "Strict host checking", help: "Enable strict host checking for SSH clients connecting to servers in this domain.", hidden: !authority.host_certificates, checked: authority.strict_host_checking, onToggle: () => {
                     this.toggle('strict_host_checking');
-                } }), React.createElement(PageInput_1.default, { label: "Host Domain", help: "Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain.", type: "text", placeholder: "Host domain", value: authority.host_domain, hidden: !authority.host_domain && !this.state.hostCertChecked, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { label: "Host Domain", help: "Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain.", type: "text", placeholder: "Host domain", value: authority.host_domain, onChange: val => {
                     let authr;
                     if (this.state.changed) {
                         authr = Object.assign({}, this.state.authority);
@@ -26630,8 +26617,8 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                         authr = Object.assign({}, this.props.authority);
                     }
                     authr.host_domain = val;
-                    this.setState(Object.assign({}, this.state, { changed: true, hostCertChecked: true, authority: authr }));
-                } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", hidden: !authority.host_domain && !this.state.hostCertChecked, value: authority.host_proxy, onChange: val => {
+                    this.setState(Object.assign({}, this.state, { changed: true, authority: authr }));
+                } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
                     this.set('host_proxy', val);
                 } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
@@ -26641,13 +26628,13 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@15.6.1.js", "a
                     value: info.key_alg || 'None'
                 }] }), React.createElement(PageInput_1.default, { label: "Download URL", help: "Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma.", type: "text", placeholder: "Enter download URL", readOnly: true, autoSelect: true, value: url }), React.createElement(PageInput_1.default, { label: "Certificate Expire Minutes", help: "Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440.", type: "text", placeholder: "Certificate expire minutes", value: authority.expire, onChange: val => {
                     this.set('expire', parseInt(val, 10));
-                } }), React.createElement(PageInput_1.default, { label: "Host Certificate Expire Minutes", help: "Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440.", type: "text", placeholder: "Host certificate expire minutes", hidden: !authority.host_domain && !this.state.hostCertChecked, value: authority.host_expire, onChange: val => {
+                } }), React.createElement(PageInput_1.default, { label: "Host Certificate Expire Minutes", help: "Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440.", type: "text", placeholder: "Host certificate expire minutes", hidden: !authority.host_certificates, value: authority.host_expire, onChange: val => {
                     this.set('host_expire', parseInt(val, 10));
                 } }), React.createElement(PageSwitch_1.default, { label: "Match roles", help: "Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles.", checked: authority.match_roles, onToggle: () => {
                     this.toggle('match_roles');
                 } }), React.createElement("label", { className: "pt-label", hidden: !authority.match_roles }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", hidden: !authority.match_roles, value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { style: css.itemsLabel, hidden: !authority.host_domain && !this.state.hostCertChecked }, "Host Tokens", React.createElement(Help_1.default, { title: "Host Tokens", content: "Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens." })), tokens, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", disabled: this.state.changed, hidden: !authority.host_domain && !this.state.hostCertChecked, onClick: () => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { style: css.itemsLabel, hidden: !authority.host_certificates }, "Host Tokens", React.createElement(Help_1.default, { title: "Host Tokens", content: "Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens." })), tokens, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", disabled: this.state.changed, hidden: !authority.host_certificates, onClick: () => {
                     AuthorityActions.createToken(this.props.authority.id).then(() => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                     }).catch(() => {
