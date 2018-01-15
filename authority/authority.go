@@ -52,6 +52,7 @@ type Authority struct {
 	PublicKey          string        `bson:"public_key" json:"public_key"`
 	HostDomain         string        `bson:"host_domain" json:"host_domain"`
 	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
+	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
 	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
 	HostTokens         []string      `bson:"host_tokens" json:"host_tokens"`
 }
@@ -440,9 +441,13 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostExpire = 15
 	}
 
-	if a.HostTokens == nil || a.HostDomain == "" {
+	if a.HostDomain == "" {
+		a.HostCertificates = false
 		a.StrictHostChecking = false
 		a.HostProxy = ""
+	}
+
+	if a.HostTokens == nil || !a.HostCertificates {
 		a.HostTokens = []string{}
 	}
 
