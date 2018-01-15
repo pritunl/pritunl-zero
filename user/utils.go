@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -83,6 +84,13 @@ func GetUsername(db *database.Database, typ, username string) (
 	coll := db.Users()
 	usr = &User{}
 
+	if username == "" {
+		err = &errortypes.NotFoundError{
+			errors.New("user: Username empty"),
+		}
+		return
+	}
+
 	err = coll.FindOne(&bson.M{
 		"type":     typ,
 		"username": username,
@@ -99,6 +107,13 @@ func GetKeybase(db *database.Database, keybase string) (
 
 	coll := db.Users()
 	usr = &User{}
+
+	if keybase == "" {
+		err = &errortypes.NotFoundError{
+			errors.New("user: Keybase empty"),
+		}
+		return
+	}
 
 	err = coll.FindOne(&bson.M{
 		"keybase": keybase,
