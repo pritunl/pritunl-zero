@@ -566,6 +566,7 @@ func keybaseSecondaryPut(c *gin.Context) {
 
 	cert, errData, err := chal.NewCertificate(db, c.Request)
 	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
