@@ -22,6 +22,7 @@ type authorityData struct {
 	Roles              []string      `json:"roles"`
 	HostDomain         string        `json:"host_domain"`
 	HostProxy          string        `json:"host_proxy"`
+	HostCertificates   bool          `json:"host_certificates"`
 	StrictHostChecking bool          `json:"strict_host_checking"`
 }
 
@@ -58,7 +59,7 @@ func authorityPut(c *gin.Context) {
 	authr.MatchRoles = data.MatchRoles
 	authr.Roles = data.Roles
 
-	if authr.HostDomain == "" && data.HostDomain != "" {
+	if !authr.HostCertificates && data.HostCertificates {
 		err = authr.TokenNew()
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -67,6 +68,7 @@ func authorityPut(c *gin.Context) {
 	}
 	authr.HostDomain = data.HostDomain
 	authr.HostProxy = data.HostProxy
+	authr.HostCertificates = data.HostCertificates
 	authr.StrictHostChecking = data.StrictHostChecking
 
 	fields := set.NewSet(
@@ -80,6 +82,7 @@ func authorityPut(c *gin.Context) {
 		"host_domain",
 		"host_tokens",
 		"host_proxy",
+		"host_certificates",
 		"strict_host_checking",
 	)
 
