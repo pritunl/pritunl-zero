@@ -206,6 +206,18 @@ export default class Validate extends React.Component<Props, State> {
 							passcode: evt.target.value,
 						});
 					}}
+					onKeyPress={(evt): void => {
+						if (evt.key === 'Enter') {
+							this.setState({
+								...this.state,
+								secondaryState: {
+									...this.state.secondaryState,
+									passcode: false,
+								},
+							});
+							this.secondarySubmit('passcode');
+						}
+					}}
 				/>
 				<button
 					className="pt-button"
