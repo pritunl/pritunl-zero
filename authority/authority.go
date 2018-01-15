@@ -12,6 +12,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -516,4 +517,33 @@ func (a *Authority) Insert(db *database.Database) (err error) {
 	}
 
 	return
+}
+
+func init() {
+	module := requires.New("authority")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		authrs, err := GetAll(db)
+		if err != nil {
+			return
+		}
+
+		for _, authr := range authrs {
+			if !authr.HostCertificates && authr.HostDomain != "" &&
+				authr.HostTokens != nil && len(authr.HostTokens) > 0 {
+
+				authr.HostCertificates = true
+				err = authr.CommitFields(db, set.NewSet("host_certificates"))
+				if err != nil {
+					return
+				}
+			}
+		}
+
+		return
+	}
 }
