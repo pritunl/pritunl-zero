@@ -27,7 +27,8 @@ type Challenge struct {
 }
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
-	r *http.Request) (err error, errData *errortypes.ErrorData) {
+	r *http.Request, secondary bool) (secProvider bson.ObjectId, err error,
+	errData *errortypes.ErrorData) {
 
 	allAuthrs, err := authority.GetAll(db)
 	if err != nil {
@@ -71,6 +72,17 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 			Message: "Keybase is required for this user",
 		}
 		return
+	}
+
+	for _, polcy := range policies {
+		if polcy.AuthoritySecondary != "" {
+			secProvider = polcy.AuthoritySecondary
+			if !secondary {
+				return
+			} else {
+				break
+			}
+		}
 	}
 
 	if c.State != "" {
