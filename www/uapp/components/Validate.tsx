@@ -5,6 +5,22 @@ import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
 import Session from './Session';
 
+interface Secondary {
+	token: string;
+	label: string;
+	push: boolean;
+	phone: boolean;
+	passcode: boolean;
+	sms: boolean;
+}
+
+interface SecondaryState {
+	push: boolean;
+	phone: boolean;
+	passcode: boolean;
+	sms: boolean;
+}
+
 interface Props {
 	token: string;
 }
@@ -12,6 +28,9 @@ interface Props {
 interface State {
 	disabled: boolean;
 	answered: boolean;
+	passcode: string;
+	secondary: Secondary;
+	secondaryState: SecondaryState;
 }
 
 const css = {
@@ -29,6 +48,15 @@ const css = {
 		margin: '5px',
 		width: '116px',
 	} as React.CSSProperties,
+	secondaryButton: {
+		margin: '5px auto',
+		padding: '8px 15px',
+		width: '75%',
+	} as React.CSSProperties,
+	secondaryInput: {
+		margin: '5px auto',
+		width: '75%',
+	} as React.CSSProperties,
 };
 
 export default class Validate extends React.Component<Props, State> {
@@ -37,12 +65,178 @@ export default class Validate extends React.Component<Props, State> {
 		this.state = {
 			disabled: false,
 			answered: false,
+			passcode: '',
+			secondary: null,
+			secondaryState: null,
 		};
+	}
+
+	secondarySubmit(factor: string): void {
+		let passcode = '';
+		if (factor === 'passcode') {
+			passcode = this.state.passcode;
+		}
+
+		SuperAgent
+			.put('/ssh/secondary')
+			.send({
+				token: this.state.secondary.token,
+				factor: factor,
+				passcode: passcode
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				this.setState({
+					...this.state,
+					passcode: '',
+					secondaryState: {
+						...this.state.secondaryState,
+						passcode: true,
+					},
+				});
+
+				if (res && res.status === 404) {
+					Alert.error('SSH verification request has expired', 0);
+				} else if (err) {
+					Alert.errorRes(res, 'Failed to approve SSH key', 0);
+					return;
+				} else if (res.status === 201 && factor === 'sms') {
+					Alert.info('Text message sent', 0);
+					return;
+				} else {
+					Alert.success('Successfully approved SSH key', 0);
+				}
+
+				this.setState({
+					...this.state,
+					answered: true,
+					secondary: null,
+				});
+
+				window.history.replaceState(
+					null, null, window.location.pathname);
+			});
+	}
+
+	secondary(): JSX.Element {
+		return <div>
+			<div className="pt-non-ideal-state" style={css.body}>
+				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
+					<span className="pt-icon pt-icon-key"/>
+				</div>
+				<h4 className="pt-non-ideal-state-title">
+					{this.state.secondary.label}
+				</h4>
+				<span style={css.description}>
+					Secondary authentication required
+				</span>
+			</div>
+			<div className="layout vertical center-justified" style={css.buttons}>
+				<button
+					className="pt-button"
+					style={css.secondaryButton}
+					type="button"
+					hidden={!this.state.secondary.push}
+					disabled={!this.state.secondaryState.push}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							secondaryState: {
+								...this.state.secondaryState,
+								push: false,
+							},
+						});
+						this.secondarySubmit('push');
+					}}
+				>
+					Push
+				</button>
+				<button
+					className="pt-button"
+					style={css.secondaryButton}
+					type="button"
+					hidden={!this.state.secondary.phone}
+					disabled={!this.state.secondaryState.phone}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							secondaryState: {
+								...this.state.secondaryState,
+								phone: false,
+							},
+						});
+						this.secondarySubmit('phone');
+					}}
+				>
+					Call Me
+				</button>
+				<button
+					className="pt-button"
+					style={css.secondaryButton}
+					type="button"
+					hidden={!this.state.secondary.sms}
+					disabled={!this.state.secondaryState.sms}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							secondaryState: {
+								...this.state.secondaryState,
+								sms: false,
+							},
+						});
+						this.secondarySubmit('sms');
+					}}
+				>
+					Text Me
+				</button>
+				<input
+					className="pt-input"
+					style={css.secondaryInput}
+					hidden={!this.state.secondary.passcode}
+					disabled={!this.state.secondaryState.passcode}
+					type="text"
+					autoCapitalize="off"
+					spellCheck={false}
+					placeholder="Passcode"
+					value={this.state.passcode || ''}
+					onChange={(evt): void => {
+						this.setState({
+							...this.state,
+							passcode: evt.target.value,
+						});
+					}}
+				/>
+				<button
+					className="pt-button"
+					style={css.secondaryButton}
+					type="button"
+					hidden={!this.state.secondary.passcode}
+					disabled={!this.state.secondaryState.passcode}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							secondaryState: {
+								...this.state.secondaryState,
+								passcode: false,
+							},
+						});
+						this.secondarySubmit('passcode');
+					}}
+				>
+					Submit
+				</button>
+			</div>
+		</div>;
 	}
 
 	render(): JSX.Element {
 		if (this.state.answered) {
 			return <Session/>;
+		}
+
+		if (this.state.secondary) {
+			return this.secondary();
 		}
 
 		return <div>
@@ -78,10 +272,25 @@ export default class Validate extends React.Component<Props, State> {
 									disabled: false,
 								});
 
-								if (res.status === 404) {
+								if (res && res.status === 404) {
 									Alert.error('SSH verification request has expired', 0);
 								} else if (err) {
 									Alert.errorRes(res, 'Failed to approve SSH key', 0);
+								} else if (res.status === 201) {
+
+									this.setState({
+										...this.state,
+										secondary: res.body,
+										secondaryState: {
+											push: true,
+											phone: true,
+											passcode: true,
+											sms: true,
+										},
+										disabled: false,
+									});
+
+									return;
 								} else {
 									Alert.success('Successfully approved SSH key', 0);
 								}
@@ -89,6 +298,7 @@ export default class Validate extends React.Component<Props, State> {
 								this.setState({
 									...this.state,
 									answered: true,
+									disabled: false,
 								});
 
 								window.history.replaceState(
