@@ -21,7 +21,6 @@ interface State {
 	message: string;
 	authority: AuthorityTypes.Authority;
 	addRole: string;
-	hostCertChecked: boolean;
 }
 
 const css = {
@@ -76,7 +75,6 @@ export default class Authority extends React.Component<Props, State> {
 			message: '',
 			authority: null,
 			addRole: null,
-			hostCertChecked: false,
 		};
 	}
 
@@ -280,7 +278,7 @@ export default class Authority extends React.Component<Props, State> {
 					key={token}
 					buttonClass="pt-minimal pt-intent-danger pt-icon-remove"
 					type="text"
-					hidden={!authority.host_domain && !this.state.hostCertChecked}
+					hidden={!authority.host_certificates}
 					readOnly={true}
 					autoSelect={true}
 					listStyle={true}
@@ -344,40 +342,15 @@ export default class Authority extends React.Component<Props, State> {
 					<PageSwitch
 						label="Host certificates"
 						help="Allow servers to validate and sign SSH host keys."
-						checked={!!authority.host_domain || this.state.hostCertChecked}
+						checked={authority.host_certificates}
 						onToggle={(): void => {
-							let state: boolean;
-							let authr: AuthorityTypes.Authority;
-
-							if (this.state.changed) {
-								authr = {
-									...this.state.authority,
-								};
-							} else {
-								authr = {
-									...this.props.authority,
-								};
-							}
-
-							state = !(!!authority.host_domain ||
-								this.state.hostCertChecked);
-
-							if (!state) {
-								authr.host_domain = '';
-								authr.host_tokens = [];
-							}
-
-							this.setState({
-								...this.state,
-								changed: true,
-								hostCertChecked: state,
-								authority: authr,
-							});
+							this.toggle('host_certificates');
 						}}
 					/>
 					<PageSwitch
 						label="Strict host checking"
 						help="Enable strict host checking for SSH clients connecting to servers in this domain."
+						hidden={!authority.host_certificates}
 						checked={authority.strict_host_checking}
 						onToggle={(): void => {
 							this.toggle('strict_host_checking');
@@ -389,7 +362,6 @@ export default class Authority extends React.Component<Props, State> {
 						type="text"
 						placeholder="Host domain"
 						value={authority.host_domain}
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
 						onChange={(val): void => {
 							let authr: AuthorityTypes.Authority;
 
@@ -408,7 +380,6 @@ export default class Authority extends React.Component<Props, State> {
 							this.setState({
 								...this.state,
 								changed: true,
-								hostCertChecked: true,
 								authority: authr,
 							});
 						}}
@@ -418,7 +389,6 @@ export default class Authority extends React.Component<Props, State> {
 						help="Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
 						type="text"
 						placeholder="Bastion host"
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
 						value={authority.host_proxy}
 						onChange={(val): void => {
 							this.set('host_proxy', val);
@@ -462,7 +432,7 @@ export default class Authority extends React.Component<Props, State> {
 						help="Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440."
 						type="text"
 						placeholder="Host certificate expire minutes"
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						hidden={!authority.host_certificates}
 						value={authority.host_expire}
 						onChange={(val): void => {
 							this.set('host_expire', parseInt(val, 10));
@@ -503,7 +473,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<label
 						style={css.itemsLabel}
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						hidden={!authority.host_certificates}
 					>
 						Host Tokens
 						<Help
@@ -517,7 +487,7 @@ export default class Authority extends React.Component<Props, State> {
 						style={css.itemsAdd}
 						type="button"
 						disabled={this.state.changed}
-						hidden={!authority.host_domain && !this.state.hostCertChecked}
+						hidden={!authority.host_certificates}
 						onClick={(): void => {
 							AuthorityActions.createToken(
 									this.props.authority.id).then((): void => {
