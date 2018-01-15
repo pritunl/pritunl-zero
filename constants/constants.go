@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Version         = "1.0.777.78"
+	Version         = "1.0.783.83"
 	DatabaseVersion = 1
 	ConfPath        = "/etc/pritunl-zero.json"
 	LogPath         = "/var/log/pritunl-zero.log"
