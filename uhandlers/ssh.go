@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
 	"regexp"
@@ -78,6 +79,30 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
+	secProviderId, err, errData := chal.Approve(db, usr, c.Request, false)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if secProviderId != "" {
+		secd, err := secondary.NewChallenge(
+			db, usr.Id, chal.Id, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	}
+
 	err = audit.New(
 		db,
 		c.Request,
@@ -87,12 +112,6 @@ func sshValidatePut(c *gin.Context) {
 			"ssh_key": chal.PubKey,
 		},
 	)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
-
-	err, errData := chal.Approve(db, usr, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -153,6 +172,100 @@ func sshValidateDelete(c *gin.Context) {
 	}
 
 	event.Publish(db, "ssh_challenge", chal.Id)
+
+	c.Status(200)
+}
+
+type sshSecondaryData struct {
+	Token    string `json:"token"`
+	Factor   string `json:"factor"`
+	Passcode string `json:"passcode"`
+}
+
+func sshSecondaryPut(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+	data := &sshSecondaryData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Two-factor authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	errData, err := secd.Handle(db, c.Request, data.Factor, data.Passcode)
+	if err != nil {
+		if _, ok := err.(*secondary.IncompleteError); ok {
+			c.Status(201)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	chal, err := challenge.GetChallenge(db, secd.ChallengeId)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	_, err, errData = chal.Approve(db, usr, c.Request, true)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.SshApprove,
+		audit.Fields{
+			"ssh_key": chal.PubKey,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.Publish(db, "ssh_challenge", chal.Id)
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
 
 	c.Status(200)
 }
