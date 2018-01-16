@@ -87,7 +87,7 @@ func sshValidatePut(c *gin.Context) {
 
 	if secProviderId != "" {
 		secd, err := secondary.NewChallenge(
-			db, usr.Id, chal.Id, secProviderId)
+			db, usr.Id, secondary.Authority, chal.Id, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -193,7 +193,7 @@ func sshSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	secd, err := secondary.Get(db, data.Token)
+	secd, err := secondary.Get(db, data.Token, secondary.Authority)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{

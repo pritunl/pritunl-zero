@@ -85,7 +85,7 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if secProviderId != "" {
-		secd, err := secondary.New(db, usr.Id, secProviderId)
+		secd, err := secondary.New(db, usr.Id, secondary.Admin, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -142,7 +142,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	secd, err := secondary.Get(db, data.Token)
+	secd, err := secondary.Get(db, data.Token, secondary.Admin)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
@@ -297,7 +297,7 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if secProviderId != "" {
-		secd, err := secondary.New(db, usr.Id, secProviderId)
+		secd, err := secondary.New(db, usr.Id, secondary.Admin, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return

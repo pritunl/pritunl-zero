@@ -472,7 +472,7 @@ func keybaseChallengePut(c *gin.Context) {
 		}
 
 		secd, err := secondary.NewChallenge(
-			db, usr.Id, chal.Id, secProviderId)
+			db, usr.Id, secondary.Keybase, chal.Id, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -523,7 +523,7 @@ func keybaseSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	secd, err := secondary.Get(db, data.Token)
+	secd, err := secondary.Get(db, data.Token, secondary.Keybase)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
