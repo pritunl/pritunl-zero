@@ -442,6 +442,14 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostExpire = 15
 	}
 
+	if a.HostCertificates && a.HostDomain == "" {
+		errData = &errortypes.ErrorData{
+			Error:   "host_domain_required",
+			Message: "Host domain must be set for host certificates",
+		}
+		return
+	}
+
 	if a.HostDomain == "" {
 		a.HostCertificates = false
 		a.StrictHostChecking = false
