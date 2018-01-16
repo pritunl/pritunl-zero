@@ -29,6 +29,7 @@ type Secondary struct {
 	Id          string                      `bson:"_id"`
 	ProviderId  bson.ObjectId               `bson:"provider_id"`
 	UserId      bson.ObjectId               `bson:"user_id"`
+	Type        string                      `bson:"type"`
 	ChallengeId string                      `bson:"challenge_id"`
 	Timestamp   time.Time                   `bson:"timestamp"`
 	PushSent    bool                        `bson:"push_sent"`

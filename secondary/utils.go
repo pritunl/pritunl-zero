@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func New(db *database.Database, userId bson.ObjectId,
+func New(db *database.Database, userId bson.ObjectId, typ string,
 	proivderId bson.ObjectId) (secd *Secondary, err error) {
 
 	token, err := utils.RandStr(48)
@@ -18,6 +18,7 @@ func New(db *database.Database, userId bson.ObjectId,
 	secd = &Secondary{
 		Id:         token,
 		UserId:     userId,
+		Type:       typ,
 		ProviderId: proivderId,
 		Timestamp:  time.Now(),
 	}
@@ -31,7 +32,7 @@ func New(db *database.Database, userId bson.ObjectId,
 }
 
 func NewChallenge(db *database.Database, userId bson.ObjectId,
-	chalId string, proivderId bson.ObjectId) (
+	typ string, chalId string, proivderId bson.ObjectId) (
 	secd *Secondary, err error) {
 
 	token, err := utils.RandStr(48)
@@ -42,6 +43,7 @@ func NewChallenge(db *database.Database, userId bson.ObjectId,
 	secd = &Secondary{
 		Id:          token,
 		UserId:      userId,
+		Type:        typ,
 		ChallengeId: chalId,
 		ProviderId:  proivderId,
 		Timestamp:   time.Now(),
@@ -55,13 +57,16 @@ func NewChallenge(db *database.Database, userId bson.ObjectId,
 	return
 }
 
-func Get(db *database.Database, token string) (
+func Get(db *database.Database, token string, typ string) (
 	secd *Secondary, err error) {
 
 	coll := db.SecondaryTokens()
 	secd = &Secondary{}
 
-	err = coll.FindOneId(token, secd)
+	err = coll.FindOne(&bson.M{
+		"_id":  token,
+		"type": typ,
+	}, secd)
 	if err != nil {
 		return
 	}
