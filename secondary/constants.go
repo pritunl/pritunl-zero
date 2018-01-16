@@ -8,4 +8,10 @@ const (
 	Phone    = "phone"
 	Passcode = "passcode"
 	Sms      = "sms"
+
+	Admin     = "admin"
+	User      = "user"
+	Proxy     = "proxy"
+	Authority = "authority"
+	Keybase   = "keybase"
 )
