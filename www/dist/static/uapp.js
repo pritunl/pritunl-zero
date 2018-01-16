@@ -11341,6 +11341,11 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@15.6.1.js", "n
                     this.secondarySubmit('sms');
                 } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
                     this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
+                }, onKeyPress: evt => {
+                    if (evt.key === 'Enter') {
+                        this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                        this.secondarySubmit('passcode');
+                    }
                 } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
                     this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
                     this.secondarySubmit('passcode');
