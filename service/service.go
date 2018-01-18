@@ -27,6 +27,7 @@ type Service struct {
 	Type              string        `bson:"type" json:"type"`
 	ShareSession      bool          `bson:"share_session" json:"share_session"`
 	WebSockets        bool          `bson:"websockets" json:"websockets"`
+	DisableCsrfCheck  bool          `bson:"disable_csrf_check" json:"disable_csrf_check"`
 	Domains           []*Domain     `bson:"domains" json:"domains"`
 	Roles             []string      `bson:"roles" json:"roles"`
 	Servers           []*Server     `bson:"servers" json:"servers"`
