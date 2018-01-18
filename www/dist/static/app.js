@@ -27876,6 +27876,8 @@ System.registerDynamic("app/components/Service.js", ["npm:react@15.6.1.js", "app
                     this.set('share_session', !service.share_session);
                 } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", help: "This will allow WebSockets to be proxied to the user. If the internal service relies on WebSockets this must be enabled.", checked: service.websockets, onToggle: () => {
                     this.set('websockets', !service.websockets);
+                } }), React.createElement(PageSwitch_1.default, { label: "CSRF Check", help: "Check headers to block cross domain requests. The service must implement CSRF protection if disabled.", checked: !service.disable_csrf_check, onToggle: () => {
+                    this.set('disable_csrf_check', !service.disable_csrf_check);
                 } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, service: null }));
                 }, onSave: this.onSave }));
