@@ -682,6 +682,14 @@ export default class Service extends React.Component<Props, State> {
 							this.set('websockets', !service.websockets);
 						}}
 					/>
+					<PageSwitch
+						label="CSRF Check"
+						help="Check headers to block cross domain requests. The service must implement CSRF protection if disabled."
+						checked={!service.disable_csrf_check}
+						onToggle={(): void => {
+							this.set('disable_csrf_check', !service.disable_csrf_check);
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
