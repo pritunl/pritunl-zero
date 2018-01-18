@@ -67,15 +67,17 @@ func (a *Authorizer) GetUser(db *database.Database) (
 	usr *user.User, err error) {
 
 	if a.sess != nil {
-		usr, err = a.sess.GetUser(db)
-		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				usr = nil
-				err = nil
-				break
-			default:
-				return
+		if db != nil {
+			usr, err = a.sess.GetUser(db)
+			if err != nil {
+				switch err.(type) {
+				case *database.NotFoundError:
+					usr = nil
+					err = nil
+					break
+				default:
+					return
+				}
 			}
 		}
 
@@ -83,15 +85,17 @@ func (a *Authorizer) GetUser(db *database.Database) (
 			a.sess = nil
 		}
 	} else if a.sig != nil {
-		usr, err = a.sig.GetUser(db)
-		if err != nil {
-			switch err.(type) {
-			case *database.NotFoundError:
-				usr = nil
-				err = nil
-				break
-			default:
-				return
+		if db != nil {
+			usr, err = a.sig.GetUser(db)
+			if err != nil {
+				switch err.(type) {
+				case *database.NotFoundError:
+					usr = nil
+					err = nil
+					break
+				default:
+					return
+				}
 			}
 		}
 
