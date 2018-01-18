@@ -43,6 +43,13 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			req.Header.Set("X-Forwarded-Proto", w.proxyProto)
 			req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
+			if authr != nil {
+				usr, _ := authr.GetUser(nil)
+				if usr != nil {
+					req.Header.Set("X-Forwarded-User", usr.Username)
+				}
+			}
+
 			if w.reqHost != "" {
 				req.Host = w.reqHost
 			}
