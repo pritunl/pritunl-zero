@@ -182,7 +182,7 @@ func (w *webSocketConn) Close() {
 	}
 }
 
-func (w *webSocket) Director(req *http.Request) (
+func (w *webSocket) Director(req *http.Request, authr *authorizer.Authorizer) (
 	u *url.URL, header http.Header) {
 
 	header = utils.CloneHeader(req.Header)
@@ -196,6 +196,13 @@ func (w *webSocket) Director(req *http.Request) (
 		strings.Split(req.RemoteAddr, ":")[0])
 	header.Set("X-Forwarded-Proto", w.proxyProto)
 	header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+
+	if authr != nil {
+		usr, _ := authr.GetUser(nil)
+		if usr != nil {
+			req.Header.Set("X-Forwarded-User", usr.Username)
+		}
+	}
 
 	header.Del("Upgrade")
 	header.Del("Connection")
@@ -211,7 +218,7 @@ func (w *webSocket) Director(req *http.Request) (
 func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	db *database.Database, authr *authorizer.Authorizer) {
 
-	u, header := w.Director(r)
+	u, header := w.Director(r, authr)
 
 	scheme := ""
 	if u.Scheme == "https" {
