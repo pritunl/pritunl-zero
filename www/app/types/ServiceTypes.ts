@@ -19,6 +19,7 @@ export interface Service {
 	type?: string;
 	share_session?: boolean;
 	websockets?: boolean;
+	disable_csrf_check?: boolean;
 	domains?: Domain[];
 	roles?: string[];
 	servers?: Server[];
