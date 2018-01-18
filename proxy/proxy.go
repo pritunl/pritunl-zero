@@ -57,9 +57,11 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
-	valid := auth.CsrfCheck(w, r, host.Domain.Domain)
-	if !valid {
-		return true
+	if !host.Service.DisableCsrfCheck {
+		valid := auth.CsrfCheck(w, r, host.Domain.Domain)
+		if !valid {
+			return true
+		}
 	}
 
 	db := database.GetDatabase()
