@@ -130,7 +130,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	redirectJson(c, c.Request.URL.Query().Get("redirect_url"))
 }
 
 type secondaryData struct {
@@ -233,7 +233,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	redirectJson(c, c.Request.URL.Query().Get("redirect_url"))
 }
 
 func logoutGet(c *gin.Context) {
@@ -266,7 +266,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	usr, _, errData, err := auth.Callback(db, sig, query)
+	usr, tokn, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
 		switch err.(type) {
 		case *auth.InvalidState:
@@ -323,6 +323,10 @@ func authCallbackGet(c *gin.Context) {
 			return
 		}
 
+		if tokn.Query != "" {
+			urlQuery += "&" + tokn.Query
+		}
+
 		c.Redirect(302, "/login?"+urlQuery)
 	}
 
@@ -348,5 +352,5 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/")
+	redirectQuery(c, tokn.Query)
 }
