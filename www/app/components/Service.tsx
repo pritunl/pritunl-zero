@@ -693,7 +693,7 @@ export default class Service extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSwitch
-						label="CSRF Check"
+						label="CSRF check"
 						help="Check headers to block cross domain requests. The service must implement CSRF protection if disabled."
 						checked={!service.disable_csrf_check}
 						onToggle={(): void => {
