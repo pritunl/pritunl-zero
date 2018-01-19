@@ -608,6 +608,16 @@ export default class Service extends React.Component<Props, State> {
 					>
 						Add Server
 					</button>
+					<PageInput
+						label="Logout Path"
+						help="Optional, path such as '/logout' that will end the Pritunl Zero users session."
+						type="text"
+						placeholder="Enter logout path"
+						value={service.logout_path}
+						onChange={(val): void => {
+							this.set('logout_path', val);
+						}}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
