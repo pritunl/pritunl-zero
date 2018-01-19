@@ -162,6 +162,16 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
+	if host.Service.LogoutPath != "" && r.URL.Path == host.Service.LogoutPath {
+		err = authr.Clear(db, w, r)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
+		}
+
+		return false
+	}
+
 	wProxies[rand.Intn(wLen)].ServeHTTP(w, r, authr)
 	return true
 }
