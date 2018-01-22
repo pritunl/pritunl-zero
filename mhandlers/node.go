@@ -17,7 +17,7 @@ type nodeData struct {
 	Type               string          `json:"type"`
 	Port               int             `json:"port"`
 	Protocol           string          `json:"protocol"`
-	Certificate        bson.ObjectId   `json:"certificate"`
+	Certificates       []bson.ObjectId `json:"certificates"`
 	ManagementDomain   string          `json:"management_domain"`
 	UserDomain         string          `json:"user_domain"`
 	Services           []bson.ObjectId `json:"services"`
@@ -54,7 +54,7 @@ func nodePut(c *gin.Context) {
 	nde.Type = data.Type
 	nde.Port = data.Port
 	nde.Protocol = data.Protocol
-	nde.Certificate = data.Certificate
+	nde.Certificates = data.Certificates
 	nde.ManagementDomain = data.ManagementDomain
 	nde.UserDomain = data.UserDomain
 	nde.Services = data.Services
@@ -65,7 +65,7 @@ func nodePut(c *gin.Context) {
 		"type",
 		"port",
 		"protocol",
-		"certificate",
+		"certificates",
 		"management_domain",
 		"user_domain",
 		"services",
