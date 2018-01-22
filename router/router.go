@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"crypto/tls"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
@@ -32,7 +33,7 @@ type Router struct {
 	typ              string
 	port             int
 	protocol         string
-	certificate      *certificate.Certificate
+	certificates     []*certificate.Certificate
 	managementDomain string
 	userDomain       string
 	mRouter          *gin.Engine
@@ -149,7 +150,7 @@ func (r *Router) initWeb() (err error) {
 	r.typ = node.Self.Type
 	r.managementDomain = node.Self.ManagementDomain
 	r.userDomain = node.Self.UserDomain
-	r.certificate = node.Self.CertificateObj
+	r.certificates = node.Self.CertificateObjs
 
 	r.port = node.Self.Port
 	if r.port == 0 {
@@ -200,20 +201,12 @@ func (r *Router) initWeb() (err error) {
 		MaxHeaderBytes: 4096,
 	}
 
-	if r.protocol != "http" {
-		if r.certificate != nil {
-			err = r.certificate.Write()
-			if err != nil {
-				return
-			}
-		} else {
-			err = certificate.SelfGenerateCert(
-				constants.CertPath,
-				constants.KeyPath,
-			)
-			if err != nil {
-				return
-			}
+	if r.protocol != "http" &&
+		(r.certificates == nil || len(r.certificates) == 0) {
+
+		_, _, err = certificate.SelfCert()
+		if err != nil {
+			return
 		}
 	}
 
@@ -245,8 +238,80 @@ func (r *Router) startWeb() {
 			}
 		}
 	} else {
-		err := r.webServer.ListenAndServeTLS(
-			constants.CertPath, constants.KeyPath)
+		tlsConfig := &tls.Config{}
+		tlsConfig.Certificates = []tls.Certificate{}
+
+		if r.certificates != nil {
+			for _, cert := range r.certificates {
+				keypair, err := tls.X509KeyPair(
+					[]byte(cert.Certificate),
+					[]byte(cert.Key),
+				)
+				if err != nil {
+					err = &errortypes.ReadError{
+						errors.Wrap(
+							err,
+							"router: Failed to load certificate",
+						),
+					}
+					logrus.WithFields(logrus.Fields{
+						"error": err,
+					}).Error("router: Web server certificate error")
+					return
+				}
+
+				tlsConfig.Certificates = append(
+					tlsConfig.Certificates,
+					keypair,
+				)
+			}
+		}
+
+		if len(tlsConfig.Certificates) == 0 {
+			certPem, keyPem, err := certificate.SelfCert()
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Web server self certificate error")
+				return
+			}
+
+			keypair, err := tls.X509KeyPair(certPem, keyPem)
+			if err != nil {
+				err = &errortypes.ReadError{
+					errors.Wrap(
+						err,
+						"router: Failed to load self certificate",
+					),
+				}
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Web server self certificate error")
+				return
+			}
+
+			tlsConfig.Certificates = append(
+				tlsConfig.Certificates,
+				keypair,
+			)
+		}
+
+		tlsConfig.BuildNameToCertificate()
+
+		r.webServer.TLSConfig = tlsConfig
+
+		listener, err := tls.Listen("tcp", r.webServer.Addr, tlsConfig)
+		if err != nil {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "router: TLS listen failed"),
+			}
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("router: Web server TLS error")
+			return
+		}
+
+		err = r.webServer.Serve(listener)
 		if err != nil {
 			if err == http.ErrServerClosed {
 				err = nil
@@ -358,9 +423,11 @@ func (r *Router) hashNode() []byte {
 	io.WriteString(hash, strconv.Itoa(node.Self.Port))
 	io.WriteString(hash, node.Self.Protocol)
 
-	cert := node.Self.CertificateObj
-	if cert != nil {
-		io.WriteString(hash, cert.Hash())
+	certs := node.Self.CertificateObjs
+	if certs != nil {
+		for _, cert := range certs {
+			io.WriteString(hash, cert.Hash())
+		}
 	}
 
 	return hash.Sum(nil)
