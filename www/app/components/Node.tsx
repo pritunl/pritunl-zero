@@ -595,7 +595,7 @@ export default class Node extends React.Component<Props, State> {
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
-								addService: val,
+								addCert: val,
 							});
 						}}
 						onSubmit={this.onAddCert}
