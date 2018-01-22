@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
@@ -23,25 +24,27 @@ var (
 )
 
 type Node struct {
-	Id                 bson.ObjectId            `bson:"_id" json:"id"`
-	Name               string                   `bson:"name" json:"name"`
-	Type               string                   `bson:"type" json:"type"`
-	Timestamp          time.Time                `bson:"timestamp" json:"timestamp"`
-	Port               int                      `bson:"port" json:"port"`
-	Protocol           string                   `bson:"protocol" json:"protocol"`
-	Certificate        bson.ObjectId            `bson:"certificate" json:"certificate"`
-	ManagementDomain   string                   `bson:"management_domain" json:"management_domain"`
-	UserDomain         string                   `bson:"user_domain" json:"user_domain"`
-	Services           []bson.ObjectId          `bson:"services" json:"services"`
-	RequestsMin        int64                    `bson:"requests_min" json:"requests_min"`
-	ForwardedForHeader string                   `bson:"forwarded_for_header" json:"forwarded_for_header"`
-	Memory             float64                  `bson:"memory" json:"memory"`
-	Load1              float64                  `bson:"load1" json:"load1"`
-	Load5              float64                  `bson:"load5" json:"load5"`
-	Load15             float64                  `bson:"load15" json:"load15"`
-	CertificateObj     *certificate.Certificate `bson:"-" json:"-"`
-	reqLock            sync.Mutex               `bson:"-" json:"-"`
-	reqCount           *list.List               `bson:"-" json:"-"`
+	Id                 bson.ObjectId              `bson:"_id" json:"id"`
+	Name               string                     `bson:"name" json:"name"`
+	Type               string                     `bson:"type" json:"type"`
+	Timestamp          time.Time                  `bson:"timestamp" json:"timestamp"`
+	Port               int                        `bson:"port" json:"port"`
+	Protocol           string                     `bson:"protocol" json:"protocol"`
+	Certificate        bson.ObjectId              `bson:"certificate" json:"certificate"`
+	Certificates       []bson.ObjectId            `bson:"certificates" json:"certificates"`
+	ManagementDomain   string                     `bson:"management_domain" json:"management_domain"`
+	UserDomain         string                     `bson:"user_domain" json:"user_domain"`
+	Services           []bson.ObjectId            `bson:"services" json:"services"`
+	RequestsMin        int64                      `bson:"requests_min" json:"requests_min"`
+	ForwardedForHeader string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
+	Memory             float64                    `bson:"memory" json:"memory"`
+	Load1              float64                    `bson:"load1" json:"load1"`
+	Load5              float64                    `bson:"load5" json:"load5"`
+	Load15             float64                    `bson:"load15" json:"load15"`
+	Version            int                        `bson:"version" json:"-"`
+	CertificateObjs    []*certificate.Certificate `bson:"-" json:"-"`
+	reqLock            sync.Mutex                 `bson:"-" json:"-"`
+	reqCount           *list.List                 `bson:"-" json:"-"`
 }
 
 func (n *Node) AddRequest() {
@@ -72,6 +75,10 @@ func (n *Node) Validate(db *database.Database) (
 			Message: "Invalid node server port",
 		}
 		return
+	}
+
+	if n.Certificates == nil {
+		n.Certificates = []bson.ObjectId{}
 	}
 
 	if n.Type == "" {
@@ -182,7 +189,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Type = nde.Type
 	n.Port = nde.Port
 	n.Protocol = nde.Protocol
-	n.Certificate = nde.Certificate
+	n.Certificates = nde.Certificates
 	n.ManagementDomain = nde.ManagementDomain
 	n.UserDomain = nde.UserDomain
 	n.Services = nde.Services
@@ -191,24 +198,31 @@ func (n *Node) update(db *database.Database) (err error) {
 	return
 }
 
-func (n *Node) loadCert(db *database.Database) (err error) {
-	if n.Certificate == "" {
-		n.CertificateObj = nil
+func (n *Node) loadCerts(db *database.Database) (err error) {
+	certObjs := []*certificate.Certificate{}
+
+	if n.Certificates == nil || len(n.Certificates) == 0 {
+		n.CertificateObjs = certObjs
 		return
 	}
 
-	cert, err := certificate.Get(db, n.Certificate)
-	if err != nil {
-		n.CertificateObj = nil
-		switch err.(type) {
-		case *database.NotFoundError:
-			err = nil
-			break
+	for _, certId := range n.Certificates {
+		cert, e := certificate.Get(db, certId)
+		if e != nil {
+			switch e.(type) {
+			case *database.NotFoundError:
+				e = nil
+				break
+			default:
+				err = e
+				return
+			}
+		} else {
+			certObjs = append(certObjs, cert)
 		}
-		return
-	} else {
-		n.CertificateObj = cert
 	}
+
+	n.CertificateObjs = certObjs
 
 	return
 }
@@ -252,7 +266,7 @@ func (n *Node) sync() {
 		}).Error("node: Failed to update node")
 	}
 
-	err = n.loadCert(db)
+	err = n.loadCerts(db)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
@@ -351,7 +365,7 @@ func (n *Node) Init() (err error) {
 
 	n.reqInit()
 
-	err = n.loadCert(db)
+	err = n.loadCerts(db)
 	if err != nil {
 		return
 	}
@@ -364,4 +378,41 @@ func (n *Node) Init() (err error) {
 	go n.reqSync()
 
 	return
+}
+
+func init() {
+	module := requires.New("node")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		nodes, err := GetAll(db)
+		if err != nil {
+			return
+		}
+
+		for _, node := range nodes {
+			if node.Certificate != "" && len(node.Certificates) == 0 &&
+				node.Version < 1 {
+
+				node.Certificates = []bson.ObjectId{
+					node.Certificate,
+				}
+				node.Version = 1
+
+				err = node.CommitFields(
+					db,
+					set.NewSet("certificates", "version"),
+				)
+				if err != nil {
+					return
+				}
+
+			}
+		}
+
+		return
+	}
 }
