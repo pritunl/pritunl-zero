@@ -108,6 +108,7 @@ func (n *Node) Validate(db *database.Database) (
 
 func (n *Node) Format() {
 	utils.SortObjectIds(n.Services)
+	utils.SortObjectIds(n.Certificates)
 }
 
 func (n *Node) SetActive() {
