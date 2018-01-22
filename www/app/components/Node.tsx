@@ -5,11 +5,11 @@ import * as ServiceTypes from '../types/ServiceTypes';
 import * as CertificateTypes from '../types/CertificateTypes';
 import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
+import CertificatesStore from '../stores/CertificatesStore';
 import ServicesStore from '../stores/ServicesStore';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
 import PageInputSwitch from './PageInputSwitch';
-import PageSelect from './PageSelect';
 import PageSelectButton from './PageSelectButton';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
@@ -28,6 +28,7 @@ interface State {
 	message: string;
 	node: NodeTypes.Node;
 	addService: string;
+	addCert: string;
 	forwardedChecked: boolean;
 }
 
@@ -83,6 +84,7 @@ export default class Node extends React.Component<Props, State> {
 			message: '',
 			node: null,
 			addService: null,
+			addCert: null,
 			forwardedChecked: false,
 		};
 	}
@@ -201,7 +203,7 @@ export default class Node extends React.Component<Props, State> {
 		}
 
 		let services = [
-			...node.services,
+			...(node.services || []),
 		];
 
 		if (services.indexOf(serviceId) === -1) {
@@ -233,7 +235,7 @@ export default class Node extends React.Component<Props, State> {
 		}
 
 		let services = [
-			...node.services,
+			...(node.services || []),
 		];
 
 		let i = services.indexOf(service);
@@ -252,13 +254,84 @@ export default class Node extends React.Component<Props, State> {
 		});
 	}
 
+	onAddCert = (): void => {
+		let node: NodeTypes.Node;
+
+		if (!this.state.addCert && !this.props.certificates.length) {
+			return;
+		}
+
+		let certId = this.state.addCert || this.props.certificates[0].id;
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let certificates = [
+			...(node.certificates || []),
+		];
+
+		if (certificates.indexOf(certId) === -1) {
+			certificates.push(certId);
+		}
+
+		certificates.sort();
+
+		node.certificates = certificates;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			node: node,
+		});
+	}
+
+	onRemoveCert = (certId: string): void => {
+		let node: NodeTypes.Node;
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let certificates = [
+			...(node.certificates || []),
+		];
+
+		let i = certificates.indexOf(certId);
+		if (i === -1) {
+			return;
+		}
+
+		certificates.splice(i, 1);
+
+		node.certificates = certificates;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			node: node,
+		});
+	}
+
 	render(): JSX.Element {
 		let node: NodeTypes.Node = this.state.node || this.props.node;
 		let active = node.requests_min !== 0 || node.memory !== 0 ||
 				node.load1 !== 0 || node.load5 !== 0 || node.load15 !== 0;
 
 		let services: JSX.Element[] = [];
-		for (let serviceId of node.services) {
+		for (let serviceId of (node.services || [])) {
 			let service = ServicesStore.service(serviceId);
 			if (!service) {
 				continue;
@@ -292,12 +365,34 @@ export default class Node extends React.Component<Props, State> {
 			servicesSelect.push(<option key="null" value="">None</option>);
 		}
 
-		let certificates: JSX.Element[] = [
-			<option key="null" value="">Self Signed</option>,
-		];
+		let certificates: JSX.Element[] = [];
+		for (let certId of (node.certificates || [])) {
+			let cert = CertificatesStore.certificate(certId);
+			if (!cert) {
+				continue;
+			}
+
+			certificates.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={cert.id}
+				>
+					{cert.name}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveCert(cert.id);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let certificatesSelect: JSX.Element[] = [];
 		if (this.props.certificates.length) {
 			for (let certificate of this.props.certificates) {
-				certificates.push(
+				certificatesSelect.push(
 					<option key={certificate.id} value={certificate.id}>
 						{certificate.name}
 					</option>,
@@ -477,17 +572,36 @@ export default class Node extends React.Component<Props, State> {
 							},
 						]}
 					/>
-					<PageSelect
-						label="Certificate"
-						help="The certificate to use for this nodes web server. The certificate must be valid for all the domains that this node provides access to. This includes the management domain and any service domains."
-						value={node.certificate}
+					<label
+						className="pt-label"
+						style={css.label}
 						hidden={node.protocol === 'http'}
-						onChange={(val): void => {
-							this.set('certificate', val);
-						}}
 					>
-						{certificates}
-					</PageSelect>
+						Certificates
+						<Help
+							title="Certificates"
+							content="The certificates to use for this nodes web server. The certificates must be valid for all the domains that this node provides access to. This includes the management domain and any service domains."
+						/>
+						<div>
+							{certificates}
+						</div>
+					</label>
+					<PageSelectButton
+						hidden={node.protocol === 'http'}
+						label="Add Certificate"
+						value={this.state.addCert}
+						disabled={!this.props.certificates.length}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								addService: val,
+							});
+						}}
+						onSubmit={this.onAddCert}
+					>
+						{certificatesSelect}
+					</PageSelectButton>
 					<PageInputSwitch
 						label="Forwarded for header"
 						help="Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer. Additionally the nodes firewall should be configured to only accept requests from the load balancer to prevent requests being sent directly to the node bypassing the load balancer."
