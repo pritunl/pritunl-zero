@@ -11,7 +11,7 @@ export interface Node {
 	timestamp?: string;
 	management_domain?: string;
 	user_domain?: string;
-	certificate?: string;
+	certificates?: string[];
 	requests_min?: number;
 	memory?: number;
 	load1?: number;
