@@ -206,11 +206,6 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	err = cert.Write()
-	if err != nil {
-		return
-	}
-
 	return
 }
 
