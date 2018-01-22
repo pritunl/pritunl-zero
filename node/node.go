@@ -77,7 +77,7 @@ func (n *Node) Validate(db *database.Database) (
 		return
 	}
 
-	if n.Certificates == nil {
+	if n.Certificates == nil || n.Protocol != "https" {
 		n.Certificates = []bson.ObjectId{}
 	}
 
