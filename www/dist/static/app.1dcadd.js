@@ -25443,7 +25443,7 @@ System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@15.6.1.j
     exports.default = PageInputSwitch;
     
 });
-System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageInputSwitch.js", "app/components/PageSelect.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/CertificatesStore.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageInputSwitch.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -25452,11 +25452,11 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
     const React = $__require("npm:react@15.6.1.js");
     const NodeActions = $__require("app/actions/NodeActions.js");
     const MiscUtils = $__require("app/utils/MiscUtils.js");
+    const CertificatesStore_1 = $__require("app/stores/CertificatesStore.js");
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
     const PageInputSwitch_1 = $__require("app/components/PageInputSwitch.js");
-    const PageSelect_1 = $__require("app/components/PageSelect.js");
     const PageSelectButton_1 = $__require("app/components/PageSelectButton.js");
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
@@ -25539,7 +25539,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                 } else {
                     node = Object.assign({}, this.props.node);
                 }
-                let services = [...node.services];
+                let services = [...(node.services || [])];
                 if (services.indexOf(serviceId) === -1) {
                     services.push(serviceId);
                 }
@@ -25554,7 +25554,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                 } else {
                     node = Object.assign({}, this.props.node);
                 }
-                let services = [...node.services];
+                let services = [...(node.services || [])];
                 let i = services.indexOf(service);
                 if (i === -1) {
                     return;
@@ -25563,12 +25563,48 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                 node.services = services;
                 this.setState(Object.assign({}, this.state, { changed: true, node: node }));
             };
+            this.onAddCert = () => {
+                let node;
+                if (!this.state.addCert && !this.props.certificates.length) {
+                    return;
+                }
+                let certId = this.state.addCert || this.props.certificates[0].id;
+                if (this.state.changed) {
+                    node = Object.assign({}, this.state.node);
+                } else {
+                    node = Object.assign({}, this.props.node);
+                }
+                let certificates = [...(node.certificates || [])];
+                if (certificates.indexOf(certId) === -1) {
+                    certificates.push(certId);
+                }
+                certificates.sort();
+                node.certificates = certificates;
+                this.setState(Object.assign({}, this.state, { changed: true, node: node }));
+            };
+            this.onRemoveCert = certId => {
+                let node;
+                if (this.state.changed) {
+                    node = Object.assign({}, this.state.node);
+                } else {
+                    node = Object.assign({}, this.props.node);
+                }
+                let certificates = [...(node.certificates || [])];
+                let i = certificates.indexOf(certId);
+                if (i === -1) {
+                    return;
+                }
+                certificates.splice(i, 1);
+                node.certificates = certificates;
+                this.setState(Object.assign({}, this.state, { changed: true, node: node }));
+            };
             this.state = {
                 disabled: false,
                 changed: false,
                 message: '',
                 node: null,
                 addService: null,
+                addCert: null,
                 forwardedChecked: false
             };
         }
@@ -25602,7 +25638,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
             let node = this.state.node || this.props.node;
             let active = node.requests_min !== 0 || node.memory !== 0 || node.load1 !== 0 || node.load5 !== 0 || node.load15 !== 0;
             let services = [];
-            for (let serviceId of node.services) {
+            for (let serviceId of node.services || []) {
                 let service = ServicesStore_1.default.service(serviceId);
                 if (!service) {
                     continue;
@@ -25619,10 +25655,20 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
             } else {
                 servicesSelect.push(React.createElement("option", { key: "null", value: "" }, "None"));
             }
-            let certificates = [React.createElement("option", { key: "null", value: "" }, "Self Signed")];
+            let certificates = [];
+            for (let certId of node.certificates || []) {
+                let cert = CertificatesStore_1.default.certificate(certId);
+                if (!cert) {
+                    continue;
+                }
+                certificates.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: cert.id }, cert.name, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                        this.onRemoveCert(cert.id);
+                    } })));
+            }
+            let certificatesSelect = [];
             if (this.props.certificates.length) {
                 for (let certificate of this.props.certificates) {
-                    certificates.push(React.createElement("option", { key: certificate.id, value: certificate.id }, certificate.name));
+                    certificatesSelect.push(React.createElement("option", { key: certificate.id, value: certificate.id }, certificate.name));
                 }
             }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm node remove", disabled: active || this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of node", type: "text", placeholder: "Enter name", value: node.name, onChange: val => {
@@ -25669,9 +25715,9 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
                     progressClass: 'pt-no-stripes pt-intent-danger',
                     label: 'Load15',
                     value: node.load15
-                }] }), React.createElement(PageSelect_1.default, { label: "Certificate", help: "The certificate to use for this nodes web server. The certificate must be valid for all the domains that this node provides access to. This includes the management domain and any service domains.", value: node.certificate, hidden: node.protocol === 'http', onChange: val => {
-                    this.set('certificate', val);
-                } }, certificates), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", help: "Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer. Additionally the nodes firewall should be configured to only accept requests from the load balancer to prevent requests being sent directly to the node bypassing the load balancer.", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, checked: this.state.forwardedChecked, defaultValue: "X-Forwarded-For", onChange: (state, val) => {
+                }] }), React.createElement("label", { className: "pt-label", style: css.label, hidden: node.protocol === 'http' }, "Certificates", React.createElement(Help_1.default, { title: "Certificates", content: "The certificates to use for this nodes web server. The certificates must be valid for all the domains that this node provides access to. This includes the management domain and any service domains." }), React.createElement("div", null, certificates)), React.createElement(PageSelectButton_1.default, { hidden: node.protocol === 'http', label: "Add Certificate", value: this.state.addCert, disabled: !this.props.certificates.length, buttonClass: "pt-intent-success", onChange: val => {
+                    this.setState(Object.assign({}, this.state, { addService: val }));
+                }, onSubmit: this.onAddCert }, certificatesSelect), React.createElement(PageInputSwitch_1.default, { label: "Forwarded for header", help: "Enable when using a load balancer. This header value will be used to get the users IP address. It is important to only enable this when a load balancer is used. If it is enabled without a load balancer users can spoof their IP address by providing a value for the header that will not be overwritten by a load balancer. Additionally the nodes firewall should be configured to only accept requests from the load balancer to prevent requests being sent directly to the node bypassing the load balancer.", type: "text", placeholder: "Forwarded for header", value: node.forwarded_for_header, checked: this.state.forwardedChecked, defaultValue: "X-Forwarded-For", onChange: (state, val) => {
                     let nde;
                     if (this.state.changed) {
                         nde = Object.assign({}, this.state.node);
