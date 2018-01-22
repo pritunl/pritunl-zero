@@ -10,14 +10,16 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/utils"
 	"math/big"
 	"time"
 )
 
-var selfCert = false
+var (
+	selfCertPem []byte
+	selfKeyPem  []byte
+)
 
-func selfGenerateCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
+func selfCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
 	cert *x509.Certificate, certByt []byte, certKey *ecdsa.PrivateKey,
 	err error) {
 
@@ -36,7 +38,10 @@ func selfGenerateCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
 	serial, err := rand.Int(rand.Reader, serialLimit)
 	if err != nil {
 		err = &errortypes.ReadError{
-			errors.Wrap(err, "certificate: Failed to generate certificate serial"),
+			errors.Wrap(
+				err,
+				"certificate: Failed to generate certificate serial",
+			),
 		}
 		return
 	}
@@ -80,19 +85,21 @@ func selfGenerateCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
 	return
 }
 
-func SelfGenerateCert(certPath, keyPath string) (err error) {
-	if selfCert {
+func SelfCert() (certPem, keyPem []byte, err error) {
+	if selfCertPem != nil && selfKeyPem != nil {
+		certPem = selfCertPem
+		keyPem = selfKeyPem
 		return
 	}
 
 	logrus.Info("certificate: Generating self signed certificate")
 
-	caCert, _, caKey, err := selfGenerateCert(nil, nil)
+	caCert, _, caKey, err := selfCert(nil, nil)
 	if err != nil {
 		return
 	}
 
-	_, certByt, certKey, err := selfGenerateCert(caCert, caKey)
+	_, certByt, certKey, err := selfCert(caCert, caKey)
 	if err != nil {
 		return
 	}
@@ -109,27 +116,16 @@ func SelfGenerateCert(certPath, keyPath string) (err error) {
 		Type:  "EC PRIVATE KEY",
 		Bytes: certKeyByte,
 	}
-
-	certKeyPem := string(pem.EncodeToMemory(certKeyBlock))
-
-	err = utils.CreateWrite(keyPath, certKeyPem, 0600)
-	if err != nil {
-		return
-	}
+	keyPem = pem.EncodeToMemory(certKeyBlock)
 
 	certBlock := &pem.Block{
 		Type:  "CERTIFICATE",
 		Bytes: certByt,
 	}
+	certPem = pem.EncodeToMemory(certBlock)
 
-	certPem := string(pem.EncodeToMemory(certBlock))
-
-	err = utils.CreateWrite(certPath, certPem, 0644)
-	if err != nil {
-		return
-	}
-
-	selfCert = true
+	selfCertPem = certPem
+	selfKeyPem = keyPem
 
 	return
 }
