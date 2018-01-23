@@ -17,7 +17,7 @@ func MemoryUsed() (used float64, err error) {
 		return
 	}
 
-	used = virt.UsedPercent
+	used = ToFixed(virt.UsedPercent, 2)
 
 	return
 }
@@ -40,9 +40,9 @@ func LoadAverage() (ld *LoadStat, err error) {
 	}
 
 	ld = &LoadStat{
-		Load1:  avg.Load1 / count * 100,
-		Load5:  avg.Load5 / count * 100,
-		Load15: avg.Load15 / count * 100,
+		Load1:  ToFixed(avg.Load1/count*100, 2),
+		Load5:  ToFixed(avg.Load5/count*100, 2),
+		Load15: ToFixed(avg.Load15/count*100, 2),
 	}
 
 	return
