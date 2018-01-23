@@ -395,22 +395,27 @@ func init() {
 		}
 
 		for _, node := range nodes {
-			if node.Certificate != "" && len(node.Certificates) == 0 &&
-				node.Version < 1 {
-
-				node.Certificates = []bson.ObjectId{
-					node.Certificate,
-				}
+			if node.Version < 1 {
+				changed := set.NewSet("version")
 				node.Version = 1
+
+				if node.Certificate != "" &&
+					(node.Certificates == nil ||
+						len(node.Certificates) == 0) {
+
+					node.Certificates = []bson.ObjectId{
+						node.Certificate,
+					}
+					changed.Add("certificates")
+				}
 
 				err = node.CommitFields(
 					db,
-					set.NewSet("certificates", "version"),
+					changed,
 				)
 				if err != nil {
 					return
 				}
-
 			}
 		}
 
