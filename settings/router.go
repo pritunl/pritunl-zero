@@ -4,6 +4,9 @@ var Router *router
 
 type router struct {
 	Id                  string `bson:"_id"`
+	ReadTimeout         int    `bson:"read_timeout" default:"300"`
+	WriteTimeout        int    `bson:"write_timeout" default:"300"`
+	IdleTimeout         int    `bson:"idle_timeout" default:"60"`
 	DialTimeout         int    `bson:"dial_timeout" default:"60"`
 	DialKeepAlive       int    `bson:"dial_timeout" default:"60"`
 	MaxIdleConns        int    `bson:"max_idle_conns" default:"1000"`
