@@ -18,6 +18,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/phandlers"
 	"github.com/pritunl/pritunl-zero/proxy"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
@@ -192,12 +193,16 @@ func (r *Router) initWeb() (err error) {
 		phandlers.Register(r.proxy, r.pRouter)
 	}
 
+	readTimeout := time.Duration(settings.Router.ReadTimeout) * time.Second
+	writeTimeout := time.Duration(settings.Router.WriteTimeout) * time.Second
+	idleTimeout := time.Duration(settings.Router.IdleTimeout) * time.Second
+
 	r.webServer = &http.Server{
 		Addr:           fmt.Sprintf(":%d", r.port),
 		Handler:        r,
-		ReadTimeout:    1 * time.Minute,
-		WriteTimeout:   1 * time.Minute,
-		IdleTimeout:    1 * time.Minute,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		IdleTimeout:    idleTimeout,
 		MaxHeaderBytes: 4096,
 	}
 
