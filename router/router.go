@@ -194,16 +194,19 @@ func (r *Router) initWeb() (err error) {
 	}
 
 	readTimeout := time.Duration(settings.Router.ReadTimeout) * time.Second
+	readHeaderTimeout := time.Duration(
+		settings.Router.ReadHeaderTimeout) * time.Second
 	writeTimeout := time.Duration(settings.Router.WriteTimeout) * time.Second
 	idleTimeout := time.Duration(settings.Router.IdleTimeout) * time.Second
 
 	r.webServer = &http.Server{
-		Addr:           fmt.Sprintf(":%d", r.port),
-		Handler:        r,
-		ReadTimeout:    readTimeout,
-		WriteTimeout:   writeTimeout,
-		IdleTimeout:    idleTimeout,
-		MaxHeaderBytes: 4096,
+		Addr:              fmt.Sprintf(":%d", r.port),
+		Handler:           r,
+		ReadTimeout:       readTimeout,
+		ReadHeaderTimeout: readHeaderTimeout,
+		WriteTimeout:      writeTimeout,
+		IdleTimeout:       idleTimeout,
+		MaxHeaderBytes:    4096,
 	}
 
 	if r.protocol != "http" &&
