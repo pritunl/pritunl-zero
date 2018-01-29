@@ -8,7 +8,7 @@ type router struct {
 	WriteTimeout        int    `bson:"write_timeout" default:"300"`
 	IdleTimeout         int    `bson:"idle_timeout" default:"60"`
 	DialTimeout         int    `bson:"dial_timeout" default:"60"`
-	DialKeepAlive       int    `bson:"dial_timeout" default:"60"`
+	DialKeepAlive       int    `bson:"dial_keep_alive" default:"60"`
 	MaxIdleConns        int    `bson:"max_idle_conns" default:"1000"`
 	MaxIdleConnsPerHost int    `bson:"max_idle_conns_per_host" default:"100"`
 	IdleConnTimeout     int    `bson:"dial_timeout" default:"90"`
