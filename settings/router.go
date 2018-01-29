@@ -5,7 +5,7 @@ var Router *router
 type router struct {
 	Id                  string `bson:"_id"`
 	ReadTimeout         int    `bson:"read_timeout" default:"300"`
-	ReadHeaderTimeout   int    `bson:"read_header_timeout" default:"90"`
+	ReadHeaderTimeout   int    `bson:"read_header_timeout" default:"60"`
 	WriteTimeout        int    `bson:"write_timeout" default:"300"`
 	IdleTimeout         int    `bson:"idle_timeout" default:"60"`
 	DialTimeout         int    `bson:"dial_timeout" default:"60"`
