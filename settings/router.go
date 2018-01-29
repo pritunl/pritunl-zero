@@ -12,7 +12,7 @@ type router struct {
 	DialKeepAlive       int    `bson:"dial_keep_alive" default:"60"`
 	MaxIdleConns        int    `bson:"max_idle_conns" default:"1000"`
 	MaxIdleConnsPerHost int    `bson:"max_idle_conns_per_host" default:"100"`
-	IdleConnTimeout     int    `bson:"dial_timeout" default:"90"`
+	IdleConnTimeout     int    `bson:"idle_conn_timeout" default:"90"`
 	HandshakeTimeout    int    `bson:"handshake_timeout" default:"10"`
 	ContinueTimeout     int    `bson:"continue_timeout" default:"10"`
 	SkipVerify          bool   `bson:"skip_verify"`
