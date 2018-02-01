@@ -225,9 +225,13 @@ func (r *Router) startWeb() {
 	defer r.waiter.Done()
 
 	logrus.WithFields(logrus.Fields{
-		"production": constants.Production,
-		"protocol":   r.protocol,
-		"port":       r.port,
+		"production":          constants.Production,
+		"protocol":            r.protocol,
+		"port":                r.port,
+		"read_timeout":        settings.Router.ReadTimeout,
+		"write_timeout":       settings.Router.WriteTimeout,
+		"idle_timeout":        settings.Router.IdleTimeout,
+		"read_header_timeout": settings.Router.ReadHeaderTimeout,
 	}).Info("router: Starting web server")
 
 	if r.protocol == "http" {
