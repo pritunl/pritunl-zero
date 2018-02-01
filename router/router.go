@@ -458,7 +458,7 @@ func (r *Router) watchNode() {
 		hash := r.hashNode()
 		if bytes.Compare(r.nodeHash, hash) != 0 {
 			r.nodeHash = hash
-			time.Sleep(time.Duration(rand.Intn(6)) * time.Second)
+			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 			r.Restart()
 			time.Sleep(2 * time.Second)
 		}
