@@ -22,6 +22,7 @@ import (
 	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
 	"io"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -457,6 +458,7 @@ func (r *Router) watchNode() {
 		hash := r.hashNode()
 		if bytes.Compare(r.nodeHash, hash) != 0 {
 			r.nodeHash = hash
+			time.Sleep(time.Duration(rand.Intn(6)) * time.Second)
 			r.Restart()
 			time.Sleep(2 * time.Second)
 		}
