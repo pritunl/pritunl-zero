@@ -27,6 +27,4 @@ var (
 		"www",
 		"/usr/share/pritunl-zero/www",
 	}
-	CertPath = filepath.Join(TempPath, "server.crt")
-	KeyPath  = filepath.Join(TempPath, "server.key")
 )
