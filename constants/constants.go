@@ -1,7 +1,6 @@
 package constants
 
 import (
-	"path/filepath"
 	"time"
 )
 
