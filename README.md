@@ -127,8 +127,6 @@ sudo systemctl enable mongod pritunl-zero
 ### centos 7
 
 ```bash
-# SELinux must be disabled
-
 sudo tee -a /etc/yum.repos.d/mongodb-org-3.4.repo << EOF
 [mongodb-org-3.6]
 name=MongoDB Repository
