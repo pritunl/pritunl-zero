@@ -18,8 +18,7 @@ func Node() (err error) {
 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 
 	nde := &node.Node{
-		Id:   bson.ObjectIdHex(config.Config.NodeId),
-		Type: node.Management,
+		Id: bson.ObjectIdHex(config.Config.NodeId),
 	}
 	err = nde.Init()
 	if err != nil {
