@@ -3,8 +3,10 @@ package audit
 const (
 	AdminLogin                = "admin_login"
 	AdminLoginFailed          = "admin_login_failed"
-	Login                     = "login"
-	LoginFailed               = "login_failed"
+	ProxyLogin                = "proxy_login"
+	ProxyLoginFailed          = "proxy_login_failed"
+	UserLogin                 = "user_login"
+	UserLoginFailed           = "user_login_failed"
 	DuoApprove                = "duo_approve"
 	DuoDeny                   = "duo_deny"
 	OneLoginApprove           = "one_login_approve"
