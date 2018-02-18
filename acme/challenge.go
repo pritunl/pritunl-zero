@@ -17,7 +17,7 @@ func (c *Challenge) Insert(db *database.Database) (err error) {
 
 	err = coll.Insert(c)
 	if err != nil {
-		database.ParseError(err)
+		err = database.ParseError(err)
 		return
 	}
 
