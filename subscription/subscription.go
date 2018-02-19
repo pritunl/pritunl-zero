@@ -9,6 +9,7 @@ import (
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -110,6 +111,18 @@ func Update() (errData *errortypes.ErrorData, err error) {
 				err,
 				"subscription: Failed to parse subscription response",
 			),
+		}
+		return
+	}
+
+	if !strings.Contains(subData.Plan, "zero") {
+		errData = &errortypes.ErrorData{
+			Error:   "invalid_plan",
+			Message: "Invalid subscription plan",
+		}
+
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "subscription: Invalid plan"),
 		}
 		return
 	}
