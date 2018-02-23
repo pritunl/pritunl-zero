@@ -107,6 +107,12 @@ func GenerateEcKey() (encodedPriv, encodedPub []byte, err error) {
 
 func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
 	block, _ := pem.Decode([]byte(data))
+	if block == nil {
+		err = &errortypes.ParseError{
+			errors.New("authority: Failed to decode private key"),
+		}
+		return
+	}
 
 	switch block.Type {
 	case "RSA PRIVATE KEY":

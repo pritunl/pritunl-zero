@@ -61,7 +61,7 @@ func (p *Policy) Validate(db *database.Database) (
 		},
 	}).Distinct("_id", &services)
 	if err != nil {
-		database.ParseError(err)
+		err = database.ParseError(err)
 		return
 	}
 	p.Services = services
@@ -78,7 +78,7 @@ func (p *Policy) Validate(db *database.Database) (
 		},
 	}).Distinct("_id", &authorities)
 	if err != nil {
-		database.ParseError(err)
+		err = database.ParseError(err)
 		return
 	}
 	p.Authorities = authorities

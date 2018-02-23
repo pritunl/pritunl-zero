@@ -388,6 +388,12 @@ func (a *Authority) TokenDelete(token string) (err error) {
 
 func (a *Authority) Export(passphrase string) (encKey string, err error) {
 	block, _ := pem.Decode([]byte(a.PrivateKey))
+	if block == nil {
+		err = &errortypes.ParseError{
+			errors.New("authority: Failed to decode private key"),
+		}
+		return
+	}
 
 	encBlock, err := x509.EncryptPEMBlock(
 		rand.Reader,
