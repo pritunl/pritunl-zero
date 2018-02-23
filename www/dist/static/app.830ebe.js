@@ -16439,6 +16439,7 @@ System.registerDynamic("app/components/UsersPage.js", ["npm:react@15.6.1.js", "a
             margin: '0 0 0 0'
         },
         link: {
+            cursor: 'pointer',
             userSelect: 'none',
             margin: '5px 5px 0 0'
         },
@@ -16471,32 +16472,38 @@ System.registerDynamic("app/components/UsersPage.js", ["npm:react@15.6.1.js", "a
             if (pages <= 1) {
                 return React.createElement("div", null);
             }
-            let offset = 1;
-            if (pages < 5) {
-                offset = 0;
-            }
             let links = [];
-            let start = Math.max(offset, page - 7);
-            let end = Math.min(pages - offset, start + 15);
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
             for (let i = start; i < end; i++) {
-                links.push(React.createElement("a", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
                         UserActions.traverse(i);
                         if (this.props.onPage) {
                             this.props.onPage();
                         }
                     } }, i + 1));
             }
-            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === 0 ? Object.assign({}, css.button, css.current) : css.button, type: "button", onClick: () => {
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
                     UserActions.traverse(0);
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "First"), links, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === pages ? Object.assign({}, css.buttonLast, css.current) : css.buttonLast, type: "button", onClick: () => {
-                    UserActions.traverse(this.state.pages);
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    UserActions.traverse(Math.max(0, this.state.page - 1));
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "Last"));
+                } }), links, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    UserActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    UserActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
         }
     }
     exports.default = Users;
@@ -16550,7 +16557,7 @@ System.registerDynamic("app/components/Users.js", ["npm:react@15.6.1.js", "npm:r
                 let users = UsersStore_1.default.users;
                 let selected = {};
                 let curSelected = this.state.selected;
-                this.state.users.forEach(user => {
+                users.forEach(user => {
                     if (curSelected[user.id]) {
                         selected[user.id] = true;
                     }
@@ -16882,6 +16889,7 @@ System.registerDynamic("app/components/AuditsPage.js", ["npm:react@15.6.1.js", "
             margin: '0 0 0 0'
         },
         link: {
+            cursor: 'pointer',
             userSelect: 'none',
             margin: '5px 5px 0 0'
         },
@@ -16914,32 +16922,38 @@ System.registerDynamic("app/components/AuditsPage.js", ["npm:react@15.6.1.js", "
             if (pages <= 1) {
                 return React.createElement("div", null);
             }
-            let offset = 1;
-            if (pages < 5) {
-                offset = 0;
-            }
             let links = [];
-            let start = Math.max(offset, page - 7);
-            let end = Math.min(pages - offset, start + 15);
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
             for (let i = start; i < end; i++) {
-                links.push(React.createElement("a", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
                         AuditActions.traverse(i);
                         if (this.props.onPage) {
                             this.props.onPage();
                         }
                     } }, i + 1));
             }
-            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === 0 ? Object.assign({}, css.button, css.current) : css.button, type: "button", onClick: () => {
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
                     AuditActions.traverse(0);
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "First"), links, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === pages ? Object.assign({}, css.buttonLast, css.current) : css.buttonLast, type: "button", onClick: () => {
-                    AuditActions.traverse(this.state.pages);
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    AuditActions.traverse(Math.max(0, this.state.page - 1));
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "Last"));
+                } }), links, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    AuditActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    AuditActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
         }
     }
     exports.default = AuditsPage;
@@ -17010,15 +17024,15 @@ System.registerDynamic("app/utils/AgentUtils.js", [], true, function ($__require
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     function formatContinent(agent) {
-        return agent.continent && agent.continent_code ? agent.continent + ' (' + agent.continent_code + ')' : agent.continent || agent.continent_code || 'Unknown';
+        return agent.continent && agent.continent_code ? agent.continent + (agent.continent_code && agent.continent_code !== 'XX' ? ' (' + agent.continent_code + ')' : '') : agent.continent || agent.continent_code || 'Unknown';
     }
     exports.formatContinent = formatContinent;
     function formatLocation(agent) {
-        return (agent.city ? agent.city + ', ' : '') + (agent.region || 'Unknown') + (agent.region_code ? ' (' + agent.region_code + ')' : '');
+        return (agent.city && agent.city !== 'Unknown' ? agent.city + ', ' : '') + (agent.region || 'Unknown') + (agent.region_code && agent.region_code !== 'XX' ? ' (' + agent.region_code + ')' : '');
     }
     exports.formatLocation = formatLocation;
     function formatCountry(agent) {
-        return (agent.country || 'Unknown') + (agent.country_code ? ' (' + agent.country_code + ')' : '');
+        return (agent.country || 'Unknown') + (agent.country_code && agent.country_code !== 'XX' ? ' (' + agent.country_code + ')' : '');
     }
     exports.formatCountry = formatCountry;
     function formatCoordinates(agent) {
@@ -17105,6 +17119,7 @@ System.registerDynamic("app/components/SshcertificatesPage.js", ["npm:react@15.6
             margin: '0 0 0 0'
         },
         link: {
+            cursor: 'pointer',
             userSelect: 'none',
             margin: '5px 5px 0 0'
         },
@@ -17137,32 +17152,38 @@ System.registerDynamic("app/components/SshcertificatesPage.js", ["npm:react@15.6
             if (pages <= 1) {
                 return React.createElement("div", null);
             }
-            let offset = 1;
-            if (pages < 5) {
-                offset = 0;
-            }
             let links = [];
-            let start = Math.max(offset, page - 7);
-            let end = Math.min(pages - offset, start + 15);
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
             for (let i = start; i < end; i++) {
-                links.push(React.createElement("a", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
                         SshcertificateActions.traverse(i);
                         if (this.props.onPage) {
                             this.props.onPage();
                         }
                     } }, i + 1));
             }
-            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === 0 ? Object.assign({}, css.button, css.current) : css.button, type: "button", onClick: () => {
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
                     SshcertificateActions.traverse(0);
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "First"), links, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === pages ? Object.assign({}, css.buttonLast, css.current) : css.buttonLast, type: "button", onClick: () => {
-                    SshcertificateActions.traverse(this.state.pages);
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    SshcertificateActions.traverse(Math.max(0, this.state.page - 1));
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "Last"));
+                } }), links, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    SshcertificateActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    SshcertificateActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
         }
     }
     exports.default = SshcertificatesPage;
@@ -25627,6 +25648,9 @@ System.registerDynamic("app/components/Node.js", ["npm:react@15.6.1.js", "app/ac
             } else {
                 vals.splice(i, 1);
             }
+            vals = vals.filter(val => {
+                return !!val;
+            });
             vals.sort();
             let val = vals.join('_');
             if (val === '') {
@@ -27300,6 +27324,7 @@ System.registerDynamic("app/components/LogsPage.js", ["npm:react@15.6.1.js", "ap
             margin: '0 0 0 0'
         },
         link: {
+            cursor: 'pointer',
             userSelect: 'none',
             margin: '5px 5px 0 0'
         },
@@ -27332,32 +27357,38 @@ System.registerDynamic("app/components/LogsPage.js", ["npm:react@15.6.1.js", "ap
             if (pages <= 1) {
                 return React.createElement("div", null);
             }
-            let offset = 1;
-            if (pages < 5) {
-                offset = 0;
-            }
             let links = [];
-            let start = Math.max(offset, page - 7);
-            let end = Math.min(pages - offset, start + 15);
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
             for (let i = start; i < end; i++) {
-                links.push(React.createElement("a", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign({}, css.link, css.current) : css.link, onClick: () => {
                         LogActions.traverse(i);
                         if (this.props.onPage) {
                             this.props.onPage();
                         }
                     } }, i + 1));
             }
-            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === 0 ? Object.assign({}, css.button, css.current) : css.button, type: "button", onClick: () => {
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
                     LogActions.traverse(0);
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "First"), links, React.createElement("button", { className: "pt-button", hidden: !offset, style: page === pages ? Object.assign({}, css.buttonLast, css.current) : css.buttonLast, type: "button", onClick: () => {
-                    LogActions.traverse(this.state.pages);
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    LogActions.traverse(Math.max(0, this.state.page - 1));
                     if (this.props.onPage) {
                         this.props.onPage();
                     }
-                } }, "Last"));
+                } }), links, React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    LogActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    LogActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
         }
     }
     exports.default = LogsPage;
@@ -35646,8 +35677,17 @@ System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:re
     const css = {
         nav: {
             overflowX: 'auto',
-            overflowY: 'hidden',
-            userSelect: 'none'
+            overflowY: 'auto',
+            userSelect: 'none',
+            height: 'auto'
+        },
+        navTitle: {
+            height: 'auto'
+        },
+        navGroup: {
+            flexWrap: 'wrap',
+            height: 'auto',
+            padding: '10px 0'
         },
         link: {
             padding: '0 8px',
@@ -35690,7 +35730,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@15.6.1.js", "npm:re
             if (!this.state.subscription.active) {
                 return React.createElement(Subscription_1.default, null);
             }
-            return React.createElement(ReactRouter.HashRouter, null, React.createElement("div", null, React.createElement("nav", { className: "pt-navbar layout horizontal", style: css.nav }, React.createElement("div", { className: "pt-navbar-group pt-align-left flex" }, React.createElement("div", { className: "pt-navbar-heading", style: css.heading }, "Pritunl Zero"), React.createElement(Loading_1.default, { style: css.loading, size: "small" })), React.createElement("div", { className: "pt-navbar-group pt-align-right" }, React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-people", style: css.link, to: "/users" }, "Users"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-cloud", style: css.link, to: "/services" }, "Services"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-layers", style: css.link, to: "/nodes" }, "Nodes"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-filter", style: css.link, to: "/policies" }, "Policies"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-office", style: css.link, to: "/authorities" }, "Authorities"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-endorsed", style: css.link, to: "/certificates" }, "Certificates"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-history", style: css.link, to: "/logs" }, "Logs"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-cog", style: css.link, to: "/settings" }, "Settings"), React.createElement(ReactRouter.Link, { to: "/subscription", style: css.sub }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-credit-card", style: css.link, onClick: () => {
+            return React.createElement(ReactRouter.HashRouter, null, React.createElement("div", null, React.createElement("nav", { className: "pt-navbar layout horizontal", style: css.nav }, React.createElement("div", { className: "pt-navbar-group pt-align-left flex", style: css.navTitle }, React.createElement("div", { className: "pt-navbar-heading", style: css.heading }, "Pritunl Zero"), React.createElement(Loading_1.default, { style: css.loading, size: "small" })), React.createElement("div", { className: "pt-navbar-group pt-align-right", style: css.navGroup }, React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-people", style: css.link, to: "/users" }, "Users"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-cloud", style: css.link, to: "/services" }, "Services"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-layers", style: css.link, to: "/nodes" }, "Nodes"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-filter", style: css.link, to: "/policies" }, "Policies"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-office", style: css.link, to: "/authorities" }, "Authorities"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-endorsed", style: css.link, to: "/certificates" }, "Certificates"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-history", style: css.link, to: "/logs" }, "Logs"), React.createElement(ReactRouter.Link, { className: "pt-button pt-minimal pt-icon-cog", style: css.link, to: "/settings" }, "Settings"), React.createElement(ReactRouter.Link, { to: "/subscription", style: css.sub }, React.createElement("button", { className: "pt-button pt-minimal pt-icon-credit-card", style: css.link, onClick: () => {
                     SubscriptionActions.sync(true);
                 } }, "Subscription")), React.createElement(ReactRouter.Route, { render: props => React.createElement("button", { className: "pt-button pt-minimal pt-icon-refresh", disabled: this.state.disabled, onClick: () => {
                         let pathname = props.location.pathname;
