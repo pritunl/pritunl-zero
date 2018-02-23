@@ -69,7 +69,7 @@ func authSessionPost(c *gin.Context) {
 			db,
 			c.Request,
 			usr.Id,
-			audit.LoginFailed,
+			audit.UserLoginFailed,
 			audit.Fields{
 				"error":   errData.Error,
 				"message": errData.Message,
@@ -105,7 +105,7 @@ func authSessionPost(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.Login,
+		audit.UserLogin,
 		audit.Fields{
 			"method": "local",
 		},
@@ -188,7 +188,7 @@ func authSecondaryPost(c *gin.Context) {
 			db,
 			c.Request,
 			usr.Id,
-			audit.LoginFailed,
+			audit.UserLoginFailed,
 			audit.Fields{
 				"error":   errData.Error,
 				"message": errData.Message,
@@ -207,7 +207,7 @@ func authSecondaryPost(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.Login,
+		audit.UserLogin,
 		audit.Fields{
 			"method": "local",
 		},
@@ -320,7 +320,7 @@ func authCallbackGet(c *gin.Context) {
 			db,
 			c.Request,
 			usr.Id,
-			audit.LoginFailed,
+			audit.UserLoginFailed,
 			audit.Fields{
 				"error":   errData.Error,
 				"message": errData.Message,
@@ -359,7 +359,7 @@ func authCallbackGet(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.Login,
+		audit.UserLogin,
 		audit.Fields{
 			"method": "sso",
 		},
