@@ -9,7 +9,6 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
-	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -311,8 +310,6 @@ func (n *Node) reqSync() {
 }
 
 func (n *Node) Init() (err error) {
-	_ = service.Server{}
-
 	db := database.GetDatabase()
 	defer db.Close()
 
