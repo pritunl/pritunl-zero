@@ -24,6 +24,7 @@ const css = {
 		margin: '0 0 0 0',
 	} as React.CSSProperties,
 	link: {
+		cursor: 'pointer',
 		userSelect: 'none',
 		margin: '5px 5px 0 0',
 	} as React.CSSProperties,
@@ -69,17 +70,12 @@ export default class LogsPage extends React.Component<Props, State> {
 			return <div/>;
 		}
 
-		let offset = 1;
-		if (pages < 5) {
-			offset = 0;
-		}
-
 		let links: JSX.Element[] = [];
-		let start = Math.max(offset, page - 7);
-		let end = Math.min(pages - offset, start + 15);
+		let start = Math.max(0, page - 7);
+		let end = Math.min(pages, start + 15);
 
 		for (let i = start; i < end; i++) {
-			links.push(<a
+			links.push(<span
 				key={i}
 				style={page === i ? {
 					...css.link,
@@ -93,17 +89,14 @@ export default class LogsPage extends React.Component<Props, State> {
 				}}
 			>
 				{i + 1}
-			</a>);
+			</span>);
 		}
 
 		return <div className="layout horizontal center-justified">
 			<button
-				className="pt-button"
-				hidden={!offset}
-				style={page === 0 ? {
-					...css.button,
-					...css.current,
-				} : css.button}
+				className="pt-button pt-minimal pt-icon-chevron-backward"
+				hidden={pages < 5}
+				disabled={page === 0}
 				type="button"
 				onClick={(): void => {
 					LogActions.traverse(0);
@@ -111,27 +104,45 @@ export default class LogsPage extends React.Component<Props, State> {
 						this.props.onPage();
 					}
 				}}
-			>
-				First
-			</button>
-			{links}
+			/>
 			<button
-				className="pt-button"
-				hidden={!offset}
-				style={page === pages ? {
-					...css.buttonLast,
-					...css.current,
-				} : css.buttonLast}
+				className="pt-button pt-minimal pt-icon-chevron-left"
+				style={css.button}
+				disabled={page === 0}
 				type="button"
 				onClick={(): void => {
-					LogActions.traverse(this.state.pages);
+					LogActions.traverse(Math.max(0, this.state.page - 1));
 					if (this.props.onPage) {
 						this.props.onPage();
 					}
 				}}
-			>
-				Last
-			</button>
+			/>
+			{links}
+			<button
+				className="pt-button pt-minimal pt-icon-chevron-right"
+				style={css.button}
+				disabled={page === pages - 1}
+				type="button"
+				onClick={(): void => {
+					LogActions.traverse(Math.min(
+						this.state.pages - 1, this.state.page + 1));
+					if (this.props.onPage) {
+						this.props.onPage();
+					}
+				}}
+			/>
+			<button
+				className="pt-button pt-minimal pt-icon-chevron-forward"
+				hidden={pages < 5}
+				disabled={page === pages - 1}
+				type="button"
+				onClick={(): void => {
+					LogActions.traverse(this.state.pages - 1);
+					if (this.props.onPage) {
+						this.props.onPage();
+					}
+				}}
+			/>
 		</div>;
 	}
 }
