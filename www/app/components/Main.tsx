@@ -36,8 +36,17 @@ interface State {
 const css = {
 	nav: {
 		overflowX: 'auto',
-		overflowY: 'hidden',
+		overflowY: 'auto',
 		userSelect: 'none',
+		height: 'auto',
+	} as React.CSSProperties,
+	navTitle: {
+		height: 'auto',
+	} as React.CSSProperties,
+	navGroup: {
+		flexWrap: 'wrap',
+		height: 'auto',
+		padding: '10px 0',
 	} as React.CSSProperties,
 	link: {
 		padding: '0 8px',
@@ -93,13 +102,16 @@ export default class Main extends React.Component<{}, State> {
 		return <ReactRouter.HashRouter>
 			<div>
 				<nav className="pt-navbar layout horizontal" style={css.nav}>
-					<div className="pt-navbar-group pt-align-left flex">
+					<div
+						className="pt-navbar-group pt-align-left flex"
+						style={css.navTitle}
+					>
 						<div className="pt-navbar-heading"
 							style={css.heading}
 						>Pritunl Zero</div>
 						<Loading style={css.loading} size="small"/>
 					</div>
-					<div className="pt-navbar-group pt-align-right">
+					<div className="pt-navbar-group pt-align-right" style={css.navGroup}>
 						<ReactRouter.Link
 							className="pt-button pt-minimal pt-icon-people"
 							style={css.link}
