@@ -123,6 +123,10 @@ export default class Node extends React.Component<Props, State> {
 			vals.splice(i, 1);
 		}
 
+		vals = vals.filter((val): boolean => {
+			return !!val;
+		});
+
 		vals.sort();
 
 		let val = vals.join('_');
