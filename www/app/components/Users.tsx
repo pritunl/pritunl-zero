@@ -85,7 +85,7 @@ export default class Users extends React.Component<{}, State> {
 		let selected: Selected = {};
 		let curSelected = this.state.selected;
 
-		this.state.users.forEach((user: UserTypes.User): void => {
+		users.forEach((user: UserTypes.User): void => {
 			if (curSelected[user.id]) {
 				selected[user.id] = true;
 			}
