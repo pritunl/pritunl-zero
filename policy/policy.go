@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"net"
 	"net/http"
 )
 
@@ -205,6 +206,41 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 					errData = &errortypes.ErrorData{
 						Error:   "location_policy",
 						Message: "Location not permitted",
+					}
+				}
+				return
+			}
+			break
+		case CIDR:
+			match := false
+
+			if ip := net.ParseIP(agnt.Ip); ip != nil {
+				for _, value := range rule.Values {
+					if _, cidr, err := net.ParseCIDR(value); err == nil {
+						if cidr.Contains(ip) {
+							match = true
+							break
+						}
+					}
+				}
+			}
+
+			if !match {
+				if rule.Disable {
+					errData = &errortypes.ErrorData{
+						Error:   "unauthorized",
+						Message: "Not authorized",
+					}
+
+					usr.Disabled = true
+					err = usr.CommitFields(db, set.NewSet("disabled"))
+					if err != nil {
+						return
+					}
+				} else {
+					errData = &errortypes.ErrorData{
+						Error:   "cidr_policy",
+						Message: "IP not permitted",
 					}
 				}
 				return

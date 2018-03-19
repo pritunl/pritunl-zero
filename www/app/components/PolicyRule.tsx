@@ -4,6 +4,7 @@ import * as PolicyTypes from '../types/PolicyTypes';
 import * as Constants from '../Constants';
 import PageSwitch from './PageSwitch';
 import PageSelectButton from './PageSelectButton';
+import PageInputButton from './PageInputButton';
 import Help from './Help';
 
 interface Props {
@@ -100,6 +101,10 @@ export default class PolicyRule extends React.Component<Props, State> {
 				selectLabel = 'Location policies';
 				options = Constants.locations;
 				break;
+			case 'cidr':
+				label = 'Permitted CIDR Blocks';
+				selectLabel = 'CIDR Blocks';
+				break;
 		}
 
 		let optionsSelect: JSX.Element[] = [];
@@ -124,7 +129,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 					style={css.item}
 					key={value}
 				>
-					{options[value] || value}
+					{options ? options[value] || value : value}
 					<button
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
@@ -133,6 +138,48 @@ export default class PolicyRule extends React.Component<Props, State> {
 					/>
 				</div>,
 			);
+		}
+
+		let valueAppender: JSX.Element[] = []
+		if (options) {
+			valueAppender.push(
+				<PageSelectButton
+					hidden={rule.values == null}
+					buttonClass="pt-intent-success pt-icon-add"
+					label="Add"
+					value={this.state.addValue}
+					onChange={(val): void => {
+						this.setState({
+							...this.state,
+							addValue: val,
+						});
+					}}
+					onSubmit={(): void => {
+						this.onAddValue(this.state.addValue || defaultOption);
+					}}
+					>
+					{optionsSelect}
+				</PageSelectButton>
+			)
+		} else {
+			valueAppender.push(
+				<PageInputButton
+					hidden={rule.values == null}
+					buttonClass="pt-intent-success pt-icon-add"
+					label="Add"
+					type="text"
+					value={this.state.addValue}
+					onChange={(val): void => {
+						this.setState({
+							...this.state,
+							addValue: val,
+						});
+					}}
+					onSubmit={(): void => {
+						this.onAddValue(this.state.addValue);
+					}}
+				/>
+			)
 		}
 
 		return <div>
@@ -170,23 +217,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 					{values}
 				</div>
 			</label>
-			<PageSelectButton
-				hidden={rule.values == null}
-				buttonClass="pt-intent-success pt-icon-add"
-				label="Add"
-				value={this.state.addValue}
-				onChange={(val): void => {
-					this.setState({
-						...this.state,
-						addValue: val,
-					});
-				}}
-				onSubmit={(): void => {
-					this.onAddValue(this.state.addValue || defaultOption);
-				}}
-			>
-				{optionsSelect}
-			</PageSelectButton>
+			{valueAppender}
 		</div>;
 	}
 }
