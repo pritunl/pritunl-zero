@@ -3,19 +3,22 @@ import * as AgentTypes from '../types/AgentTypes';
 
 export function formatContinent(agent: AgentTypes.Agent): string {
 	return agent.continent && agent.continent_code ?
-		agent.continent + ' (' + agent.continent_code + ')' :
+		agent.continent + ((agent.continent_code &&
+		agent.continent_code !== 'XX') ? ' (' + agent.continent_code + ')' : '') :
 		agent.continent || agent.continent_code || 'Unknown';
 }
 
 export function formatLocation(agent: AgentTypes.Agent): string {
-	return (agent.city ? agent.city + ', ' : '') +
+	return ((agent.city && agent.city !== 'Unknown') ? agent.city + ', ' : '') +
 		(agent.region || 'Unknown') +
-		(agent.region_code ? ' (' + agent.region_code + ')' : '');
+		((agent.region_code && agent.region_code !== 'XX') ?
+			' (' + agent.region_code + ')' : '');
 }
 
 export function formatCountry(agent: AgentTypes.Agent): string {
 	return (agent.country || 'Unknown') +
-		(agent.country_code ? ' (' + agent.country_code + ')' : '');
+		((agent.country_code && agent.country_code !== 'XX') ?
+			' (' + agent.country_code + ')' : '');
 }
 
 export function formatCoordinates(agent: AgentTypes.Agent): string {
