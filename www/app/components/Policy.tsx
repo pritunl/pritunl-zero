@@ -521,6 +521,9 @@ export default class Policy extends React.Component<Props, State> {
 		let location = policy.rules.location || {
 			type: 'location',
 		};
+		let cidr = policy.rules.cidr || {
+			type: 'cidr',
+		};
 
 		let providerIds: string[] = [];
 		let adminProviders: JSX.Element[] = [];
@@ -834,6 +837,12 @@ export default class Policy extends React.Component<Props, State> {
 						rule={browser}
 						onChange={(val): void => {
 							this.setRule('browser', val);
+						}}
+					/>
+					<PolicyRule
+						rule={cidr}
+						onChange={(val): void => {
+							this.setRule('cidr', val);
 						}}
 					/>
 				</div>

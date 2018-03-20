@@ -7,4 +7,5 @@ const (
 	OperatingSystem = "operating_system"
 	Browser         = "browser"
 	Location        = "location"
+	CIDR            = "cidr"
 )
