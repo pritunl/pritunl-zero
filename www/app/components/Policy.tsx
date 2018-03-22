@@ -521,6 +521,9 @@ export default class Policy extends React.Component<Props, State> {
 		let location = policy.rules.location || {
 			type: 'location',
 		};
+		let whitelistNetworks = policy.rules.whitelist_networks || {
+			type: 'whitelist_networks',
+		};
 
 		let providerIds: string[] = [];
 		let adminProviders: JSX.Element[] = [];
@@ -795,6 +798,12 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authorityProviders}
 					</PageSelect>
+					<PolicyRule
+						rule={whitelistNetworks}
+						onChange={(val): void => {
+							this.setRule('whitelist_networks', val);
+						}}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
