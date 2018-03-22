@@ -2,6 +2,7 @@ package policy
 
 import (
 	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/agent"
@@ -10,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
+	"net"
 	"net/http"
 )
 
@@ -205,6 +207,52 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 					errData = &errortypes.ErrorData{
 						Error:   "location_policy",
 						Message: "Location not permitted",
+					}
+				}
+				return
+			}
+			break
+		case WhitelistNetworks:
+			match := false
+			clientIp := net.ParseIP(agnt.Ip)
+
+			for _, value := range rule.Values {
+				_, network, e := net.ParseCIDR(value)
+				if e != nil {
+					err = &errortypes.ParseError{
+						errors.Wrap(e, "policy: Failed to parse network"),
+					}
+
+					logrus.WithFields(logrus.Fields{
+						"network": value,
+						"error":   err,
+					}).Error("policy: Invalid whitelist network")
+					err = nil
+					continue
+				}
+
+				if network.Contains(clientIp) {
+					match = true
+					break
+				}
+			}
+
+			if !match {
+				if rule.Disable {
+					errData = &errortypes.ErrorData{
+						Error:   "unauthorized",
+						Message: "Not authorized",
+					}
+
+					usr.Disabled = true
+					err = usr.CommitFields(db, set.NewSet("disabled"))
+					if err != nil {
+						return
+					}
+				} else {
+					errData = &errortypes.ErrorData{
+						Error:   "whitelist_networks_policy",
+						Message: "Network not permitted",
 					}
 				}
 				return
