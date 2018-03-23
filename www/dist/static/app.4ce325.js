@@ -25882,7 +25882,7 @@ System.registerDynamic("app/stores/PoliciesStore.js", ["app/dispatcher/Dispatche
     exports.default = new PoliciesStore();
     
 });
-System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "app/Constants.js", "app/components/PageSwitch.js", "app/components/PageSelectButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "app/Constants.js", "app/components/PageSwitch.js", "app/components/PageInputButton.js", "app/components/PageSelectButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -25891,6 +25891,7 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
     const React = $__require("npm:react@15.6.1.js");
     const Constants = $__require("app/Constants.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
+    const PageInputButton_1 = $__require("app/components/PageInputButton.js");
     const PageSelectButton_1 = $__require("app/components/PageSelectButton.js");
     const Help_1 = $__require("app/components/Help.js");
     const css = {
@@ -25903,6 +25904,9 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
         constructor(props, context) {
             super(props, context);
             this.onAddValue = value => {
+                if (!value) {
+                    return;
+                }
                 let rule = this.clone();
                 let values = [...rule.values];
                 if (values.indexOf(value) === -1) {
@@ -25911,7 +25915,6 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
                 values.sort();
                 rule.values = values;
                 this.props.onChange(rule);
-                this.setState(Object.assign({}, this.state));
             };
             this.state = {
                 addValue: ''
@@ -25934,8 +25937,10 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
         render() {
             let rule = this.props.rule;
             let defaultOption;
+            let inputType;
             let label;
             let selectLabel;
+            let selectPlaceholder;
             let options;
             switch (this.props.rule.type) {
                 case 'operating_system':
@@ -25953,6 +25958,11 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
                     selectLabel = 'Location policies';
                     options = Constants.locations;
                     break;
+                case 'whitelist_networks':
+                    label = 'Whitelisted Networks';
+                    selectLabel = 'Whitelisted network policies';
+                    selectPlaceholder = 'Add network';
+                    break;
             }
             let optionsSelect = [];
             for (let option in options) {
@@ -25966,9 +25976,24 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
             }
             let values = [];
             for (let value of rule.values || []) {
-                values.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: value }, options[value] || value, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                values.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: value }, options ? options[value] || value : value, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
                         this.onRemoveValue(value);
                     } })));
+            }
+            let inputElem;
+            if (options) {
+                inputElem = React.createElement(PageSelectButton_1.default, { hidden: rule.values == null, buttonClass: "pt-intent-success pt-icon-add", label: "Add", value: this.state.addValue, onChange: val => {
+                        this.setState(Object.assign({}, this.state, { addValue: val }));
+                    }, onSubmit: () => {
+                        this.onAddValue(this.state.addValue || defaultOption);
+                    } }, optionsSelect);
+            } else {
+                inputElem = React.createElement(PageInputButton_1.default, { hidden: rule.values == null, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: selectPlaceholder, value: this.state.addValue, onChange: val => {
+                        this.setState(Object.assign({}, this.state, { addValue: val }));
+                    }, onSubmit: () => {
+                        this.onAddValue(this.state.addValue);
+                        this.setState(Object.assign({}, this.state, { addValue: null }));
+                    } });
             }
             return React.createElement("div", null, React.createElement(PageSwitch_1.default, { label: selectLabel, help: "Turn on to enable policy.", checked: rule.values != null, onToggle: () => {
                     let state = this.clone();
@@ -25978,11 +26003,7 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@15.6.1.js", "
                     let state = this.clone();
                     state.disable = !state.disable;
                     this.props.onChange(state);
-                } }), React.createElement("label", { className: "pt-label", hidden: rule.values == null }, label, React.createElement(Help_1.default, { title: label, content: "One of the values must match for the check to pass." }), React.createElement("div", null, values)), React.createElement(PageSelectButton_1.default, { hidden: rule.values == null, buttonClass: "pt-intent-success pt-icon-add", label: "Add", value: this.state.addValue, onChange: val => {
-                    this.setState(Object.assign({}, this.state, { addValue: val }));
-                }, onSubmit: () => {
-                    this.onAddValue(this.state.addValue || defaultOption);
-                } }, optionsSelect));
+                } }), React.createElement("label", { className: "pt-label", hidden: rule.values == null }, label, React.createElement(Help_1.default, { title: label, content: "One of the values must match for the check to pass." }), React.createElement("div", null, values)), inputElem);
         }
     }
     exports.default = PolicyRule;
@@ -26268,6 +26289,9 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
             let location = policy.rules.location || {
                 type: 'location'
             };
+            let whitelistNetworks = policy.rules.whitelist_networks || {
+                type: 'whitelist_networks'
+            };
             let providerIds = [];
             let adminProviders = [];
             let userProviders = [];
@@ -26347,7 +26371,9 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@15.6.1.js", "app/
                     }
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.disabled, label: "Authority Two-Factor Provider", help: "Two-factor authentication provider that will be used. For users matching multiple policies the first provider will be used.", hidden: !authorityProvider, value: policy.authority_secondary, onChange: val => {
                     this.set('authority_secondary', val);
-                } }, authorityProviders)), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                } }, authorityProviders), React.createElement(PolicyRule_1.default, { rule: whitelistNetworks, onChange: val => {
+                    this.setRule('whitelist_networks', val);
+                } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: policy.id || 'None'
                 }] }), React.createElement(PageSelect_1.default, { disabled: this.state.disabled, label: "Keybase Mode", help: "Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled.", value: policy.keybase_mode, onChange: val => {
