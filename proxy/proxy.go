@@ -2,9 +2,11 @@ package proxy
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
@@ -194,10 +196,15 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 			for _, cidr := range srvc.WhitelistNetworks {
 				_, network, err := net.ParseCIDR(cidr)
 				if err != nil {
+					err = &errortypes.ParseError{
+						errors.Wrap(err, "proxy: Failed to parse network"),
+					}
+
 					logrus.WithFields(logrus.Fields{
 						"network": cidr,
 						"error":   err,
 					}).Error("proxy: Invalid whitelist network")
+					err = nil
 					continue
 				}
 
