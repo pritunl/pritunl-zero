@@ -57,10 +57,6 @@ export default class PolicyRule extends React.Component<Props, State> {
 		rule.values = values;
 
 		this.props.onChange(rule);
-
-		this.setState({
-			...this.state,
-		});
 	}
 
 	onRemoveValue(value: string): void {
@@ -182,6 +178,10 @@ export default class PolicyRule extends React.Component<Props, State> {
 				}}
 				onSubmit={(): void => {
 					this.onAddValue(this.state.addValue);
+					this.setState({
+						...this.state,
+						addValue: null,
+					});
 				}}
 			/>;
 		}
