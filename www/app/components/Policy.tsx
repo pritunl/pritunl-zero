@@ -524,6 +524,9 @@ export default class Policy extends React.Component<Props, State> {
 		let whitelistNetworks = policy.rules.whitelist_networks || {
 			type: 'whitelist_networks',
 		};
+		let blacklistNetworks = policy.rules.blacklist_networks || {
+			type: 'blacklist_networks',
+		};
 
 		let providerIds: string[] = [];
 		let adminProviders: JSX.Element[] = [];
@@ -682,6 +685,19 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authoritiesSelect}
 					</PageSelectButton>
+					<PageSelect
+						disabled={this.state.disabled}
+						label="Keybase Mode"
+						help="Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled."
+						value={policy.keybase_mode}
+						onChange={(val): void => {
+							this.set('keybase_mode', val);
+						}}
+					>
+						<option value="optional">Optional</option>
+						<option value="required">Required</option>
+						<option value="disabled">Disabled</option>
+					</PageSelect>
 					<PageSwitch
 						label="Admin two-factor authentication"
 						help="Require admins to use two-factor authentication."
@@ -798,12 +814,6 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authorityProviders}
 					</PageSelect>
-					<PolicyRule
-						rule={whitelistNetworks}
-						onChange={(val): void => {
-							this.setRule('whitelist_networks', val);
-						}}
-					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
@@ -814,19 +824,18 @@ export default class Policy extends React.Component<Props, State> {
 							},
 						]}
 					/>
-					<PageSelect
-						disabled={this.state.disabled}
-						label="Keybase Mode"
-						help="Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled."
-						value={policy.keybase_mode}
+					<PolicyRule
+						rule={whitelistNetworks}
 						onChange={(val): void => {
-							this.set('keybase_mode', val);
+							this.setRule('whitelist_networks', val);
 						}}
-					>
-						<option value="optional">Optional</option>
-						<option value="required">Required</option>
-						<option value="disabled">Disabled</option>
-					</PageSelect>
+					/>
+					<PolicyRule
+						rule={blacklistNetworks}
+						onChange={(val): void => {
+							this.setRule('blacklist_networks', val);
+						}}
+					/>
 					<PolicyRule
 						rule={location}
 						onChange={(val): void => {
