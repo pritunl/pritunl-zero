@@ -95,10 +95,6 @@ export default class Main extends React.Component<{}, State> {
 			return <div/>;
 		}
 
-		if (!this.state.subscription.active) {
-			return <Subscription/>;
-		}
-
 		return <ReactRouter.HashRouter>
 			<div>
 				<nav className="pt-navbar layout horizontal" style={css.nav}>

@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as SettingsTypes from '../types/SettingsTypes';
 import SettingsStore from '../stores/SettingsStore';
+import SubscriptionStore from '../stores/SubscriptionStore';
 import * as SettingsActions from '../actions/SettingsActions';
 import Page from './Page';
 import PageHeader from './PageHeader';
@@ -13,6 +14,7 @@ import PageSelectButton from './PageSelectButton';
 import PageSave from './PageSave';
 import SettingsProvider from './SettingsProvider';
 import SettingsSecondaryProvider from './SettingsSecondaryProvider';
+import NonState from './NonState';
 
 interface State {
 	changed: boolean;
@@ -113,6 +115,9 @@ export default class Settings extends React.Component<{}, State> {
 			return <div/>;
 		}
 
+		let subscriptionActive = SubscriptionStore.subscription ?
+			SubscriptionStore.subscription.active : false;
+
 		let providers: JSX.Element[] = [];
 		for (let i = 0; i < settings.auth_providers.length; i++) {
 			providers.push(<SettingsProvider
@@ -160,7 +165,15 @@ export default class Settings extends React.Component<{}, State> {
 		return <Page>
 			<PageHeader label="Settings"/>
 			<PageSplit>
-				<PagePanel>
+				<PagePanel hidden={subscriptionActive}>
+					<NonState
+						hidden={false}
+						iconClass="pt-icon-credit-card"
+						title="Subscription Required"
+						description="Subscription required for single sign-on."
+					/>
+				</PagePanel>
+				<PagePanel hidden={!subscriptionActive}>
 					<div className="pt-border" style={css.providers}>
 						<h5 style={css.providersLabel}>Authentication Providers</h5>
 					</div>
