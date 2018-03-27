@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	className?: string;
+	hidden?: boolean;
 }
 
 const css = {
@@ -15,7 +16,11 @@ const css = {
 
 export default class PagePanel extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div className={this.props.className} style={css.panel}>
+		return <div
+			className={this.props.className}
+			style={css.panel}
+			hidden={this.props.hidden}
+		>
 			{this.props.children}
 		</div>;
 	}
