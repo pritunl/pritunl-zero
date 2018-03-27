@@ -13,7 +13,7 @@ cp node_modules/@blueprintjs/icons/resources/icons/icons-20.eot dist/static/
 cp node_modules/@blueprintjs/icons/resources/icons/icons-20.ttf dist/static/
 cp node_modules/@blueprintjs/icons/resources/icons/icons-20.woff dist/static/
 cp jspm_packages/system.js dist/static/
-sed -i 's|../resources/icons/||g' dist/static/blueprint.css
+sed -i 's|../../resources/icons/||g' dist/static/blueprint-icons.css
 jspm bundle app/App.js
 mv build.js dist/static/app.js
 mv build.js.map dist/static/app.js.map
