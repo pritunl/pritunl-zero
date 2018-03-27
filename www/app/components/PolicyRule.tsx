@@ -82,7 +82,6 @@ export default class PolicyRule extends React.Component<Props, State> {
 		let rule = this.props.rule;
 		let defaultOption: string;
 
-		let inputType: string;
 		let label: string;
 		let selectLabel: string;
 		let selectPlaceholder: string;
@@ -106,6 +105,11 @@ export default class PolicyRule extends React.Component<Props, State> {
 			case 'whitelist_networks':
 				label = 'Whitelisted Networks';
 				selectLabel = 'Whitelisted network policies';
+				selectPlaceholder = 'Add network';
+				break;
+			case 'blacklist_networks':
+				label = 'Blacklisted Networks';
+				selectLabel = 'Blacklisted network policies';
 				selectPlaceholder = 'Add network';
 				break;
 		}
