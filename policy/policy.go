@@ -258,6 +258,52 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 				return
 			}
 			break
+		case BlacklistNetworks:
+			match := false
+			clientIp := net.ParseIP(agnt.Ip)
+
+			for _, value := range rule.Values {
+				_, network, e := net.ParseCIDR(value)
+				if e != nil {
+					err = &errortypes.ParseError{
+						errors.Wrap(e, "policy: Failed to parse network"),
+					}
+
+					logrus.WithFields(logrus.Fields{
+						"network": value,
+						"error":   err,
+					}).Error("policy: Invalid blacklist network")
+					err = nil
+					continue
+				}
+
+				if network.Contains(clientIp) {
+					match = true
+					break
+				}
+			}
+
+			if match {
+				if rule.Disable {
+					errData = &errortypes.ErrorData{
+						Error:   "unauthorized",
+						Message: "Not authorized",
+					}
+
+					usr.Disabled = true
+					err = usr.CommitFields(db, set.NewSet("disabled"))
+					if err != nil {
+						return
+					}
+				} else {
+					errData = &errortypes.ErrorData{
+						Error:   "blacklist_networks_policy",
+						Message: "Network not permitted",
+					}
+				}
+				return
+			}
+			break
 		}
 	}
 
