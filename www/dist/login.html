@@ -238,21 +238,23 @@
           authLocal.style.display = 'block';
         };
 
-        state.providers.forEach(function(provider) {
-          document.getElementById(provider.id).onclick = function() {
-            var location = '/auth/request';
+        for (i = 0; i < state.providers.length; i++) {
+          (function(provider) {
+            document.getElementById(provider.id).onclick = function() {
+              var location = '/auth/request';
 
-            if (window.location.search !== '') {
-              location += window.location.search + '&';
-            } else {
-              location += '?';
-            }
+              if (window.location.search !== '') {
+                location += window.location.search + '&';
+              } else {
+                location += '?';
+              }
 
-            location += 'id=' + provider.id;
+              location += 'id=' + provider.id;
 
-            window.location = location;
-          };
-        });
+              window.location = location;
+            };
+          })(state.providers[i]);
+        }
       };
 
       loadState();
@@ -290,7 +292,9 @@
       };
 
       document.getElementById('login-form').onsubmit = function(evt) {
-        evt.preventDefault();
+        if (evt) {
+          evt.preventDefault ? evt.preventDefault() : evt.returnValue = false
+        }
 
         submitElm.disabled = true;
         for (i = 0; i < authCancels.length; i++) {
@@ -368,7 +372,7 @@
         return false;
       };
 
-      var authCancels = document.getElementsByClassName('auth-cancel');
+      var authCancels = document.querySelectorAll('.auth-cancel');
       for (i = 0; i < authCancels.length; i++) {
         authCancels[i].onclick = function() {
           authLocal.style.display = 'none';
