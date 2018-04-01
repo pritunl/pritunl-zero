@@ -2,8 +2,10 @@
 import * as React from 'react';
 import * as AuthorityTypes from '../types/AuthorityTypes';
 import AuthoritiesStore from '../stores/AuthoritiesStore';
-import ServicesStore from '../stores/ServicesStore';
 import * as AuthorityActions from '../actions/AuthorityActions';
+import NodesStore from "../stores/NodesStore";
+import * as NodeActions from "../actions/NodeActions";
+import * as NodeTypes from "../types/NodeTypes";
 import NonState from './NonState';
 import Authority from './Authority';
 import Page from './Page';
@@ -11,6 +13,7 @@ import PageHeader from './PageHeader';
 
 interface State {
 	authorities: AuthorityTypes.AuthoritiesRo;
+	nodes: NodeTypes.NodesRo;
 	disabled: boolean;
 }
 
@@ -31,24 +34,28 @@ export default class Authorities extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			authorities: AuthoritiesStore.authorities,
+			nodes: NodesStore.nodes,
 			disabled: false,
 		};
 	}
 
 	componentDidMount(): void {
 		AuthoritiesStore.addChangeListener(this.onChange);
+		NodesStore.addChangeListener(this.onChange);
 		AuthorityActions.sync();
+		NodeActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		AuthoritiesStore.removeChangeListener(this.onChange);
-		ServicesStore.removeChangeListener(this.onChange);
+		NodesStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
 		this.setState({
 			...this.state,
 			authorities: AuthoritiesStore.authorities,
+			nodes: NodesStore.nodes,
 		});
 	}
 
@@ -59,6 +66,7 @@ export default class Authorities extends React.Component<{}, State> {
 				authority: AuthorityTypes.AuthorityRo): void => {
 			authoritiesDom.push(<Authority
 				key={authority.id}
+				nodes={this.state.nodes}
 				authority={authority}
 			/>);
 		});
