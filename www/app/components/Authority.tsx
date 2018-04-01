@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as AuthorityTypes from '../types/AuthorityTypes';
+import * as NodeTypes from "../types/NodeTypes";
 import * as AuthorityActions from '../actions/AuthorityActions';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
@@ -13,6 +14,7 @@ import ConfirmButton from './ConfirmButton';
 import Help from './Help';
 
 interface Props {
+	nodes: NodeTypes.NodesRo;
 	authority: AuthorityTypes.AuthorityRo;
 }
 
@@ -397,6 +399,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<AuthorityDeploy
 						disabled={this.state.disabled}
+						nodes={this.props.nodes}
 						authority={authority}
 					/>
 				</div>
