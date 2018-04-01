@@ -6,16 +6,23 @@ import Help from './Help';
 import PageInput from './PageInput';
 import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
+import PageSelect from './PageSelect';
+import * as NodeTypes from "../types/NodeTypes";
 
 interface Props {
 	disabled?: boolean;
+	nodes: NodeTypes.NodesRo;
 	authority: AuthorityTypes.AuthorityRo;
 }
 
 interface State {
 	popover: boolean;
+	route53: boolean;
+	awsAccessKey: string;
+	awsSecretKey: string;
 	hostCertificate: boolean;
 	hostname: string;
+	server: string;
 	addRole: string;
 	roles: string[];
 }
@@ -29,6 +36,9 @@ const css = {
 	item: {
 		margin: '9px 5px 0 5px',
 		height: '20px',
+	} as React.CSSProperties,
+	callout: {
+		marginBottom: '15px',
 	} as React.CSSProperties,
 	popover: {
 		width: '230px',
@@ -54,8 +64,12 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			popover: false,
+			route53: false,
+			awsAccessKey: '',
+			awsSecretKey: '',
 			hostCertificate: null,
 			hostname: '',
+			server: null,
 			addRole: '',
 			roles: [],
 		};
@@ -104,41 +118,86 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 
 	render(): JSX.Element {
 		let popoverElem: JSX.Element;
-		let content = '';
-		let hostCertificate = this.state.hostCertificate;
-		if (hostCertificate === null) {
-			hostCertificate = this.props.authority.host_certificates;
-		}
-		if (!this.props.authority.host_certificates ||
-				!this.props.authority.host_tokens.length) {
-			hostCertificate = false;
-		}
 
-		let hostname = this.state.hostname ||
-			(this.props.authority.host_domain ?
-				'.' + this.props.authority.host_domain : '');
+		if (this.state.popover) {
+			let content = '';
+			let callout = '';
+			let hostCertificate = this.state.hostCertificate;
+			let hostCertificateDisabled = false;
+			if (hostCertificate === null) {
+				hostCertificate = this.props.authority.host_certificates;
+			}
 
-		let roles: JSX.Element[] = [];
-		for (let role of this.state.roles) {
-			roles.push(
-				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
-					style={css.item}
-					key={role}
-				>
-					{role}
-					<button
-						className="pt-tag-remove"
-						onMouseUp={(): void => {
-							this.onRemoveRole(role);
-						}}
-					/>
-				</div>,
-			);
-		}
+			let servers = new Set();
+			let serverDefault: string = null;
+			let serversElm: JSX.Element[] = [];
+			if (this.props.nodes) {
+				for (let node of this.props.nodes) {
+					if (node.user_domain) {
+						servers.add(node.user_domain);
+					}
+				}
+			}
 
-		if (hostCertificate) {
-			content = `sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
+			if (!this.props.authority.host_tokens.length || servers.size === 0) {
+				hostCertificate = false;
+				hostCertificateDisabled = true;
+			}
+
+			servers.forEach((server): void => {
+				if (!serverDefault) {
+					serverDefault = server;
+				}
+				serversElm.push(<option value={server}>{server}</option>);
+			});
+			if (servers.size === 1) {
+				serversElm = [];
+			}
+
+			let epel = '';
+			let boto = '';
+			let route53 = '';
+			if (this.state.route53 && hostCertificate) {
+				epel = '\nsudo yum -y install epel-release || ' +
+					'sudo rpm -Uvh https://dl.fedoraproject.org/' +
+					'pub/epel/epel-release-latest-7.noarch.rpm';
+				boto = ' python2-boto3 python27-boto3';
+				if (this.state.awsAccessKey) {
+					route53 += '\nsudo pritunl-ssh-host config aws-access-key ' +
+						this.state.awsAccessKey;
+				}
+				if (this.state.awsSecretKey) {
+					route53 += '\nsudo pritunl-ssh-host config aws-access-key ' +
+						this.state.awsSecretKey;
+				}
+				route53 += '\nsudo pritunl-ssh-host config route-53-zone ' +
+					this.props.authority.host_domain;
+			}
+
+			let roles: JSX.Element[] = [];
+			for (let role of this.state.roles) {
+				roles.push(
+					<div
+						className="pt-tag pt-tag-removable pt-intent-primary"
+						style={css.item}
+						key={role}
+					>
+						{role}
+						<button
+							className="pt-tag-remove"
+							onMouseUp={(): void => {
+								this.onRemoveRole(role);
+							}}
+						/>
+					</div>,
+				);
+			}
+
+			if (hostCertificate) {
+				callout = ' Provisioning may take several minutes if the servers ' +
+					'DNS record was created recently.';
+				content = `#!/bin/bash
+sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
 sudo tee -a /etc/ssh/sshd_config << EOF
 
@@ -163,19 +222,20 @@ EOF
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
 gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A > key.tmp
 sudo rpm --import key.tmp
-rm -f key.tmp
-sudo yum -y install pritunl-ssh-host
-
+rm -f key.tmp${epel}
+sudo yum -y install pritunl-ssh-host${boto}
+${route53}
 sudo pritunl-ssh-host config add-token ${
 	this.props.authority.host_tokens.length ?
 	this.props.authority.host_tokens[0] : 'HOST_TOKEN_UNAVAILABLE'}
-sudo pritunl-ssh-host config hostname ${hostname}
-sudo pritunl-ssh-host config server ${window.location.host}
+sudo pritunl-ssh-host config hostname ${this.state.hostname}
+sudo pritunl-ssh-host config server ${this.state.server || serverDefault}
 
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
-		} else {
-			content = `sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
+			} else {
+				content = `#!/bin/bash
+sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
 sudo tee -a /etc/ssh/sshd_config << EOF
 
@@ -191,11 +251,10 @@ EOF
 
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
-		}
+			}
 
-		if (this.state.popover) {
 			popoverElem = <Blueprint.Dialog
-				title="Deploy Test"
+				title="Deploy Script"
 				style={css.dialog}
 				isOpen={this.state.popover}
 				onClose={(): void => {
@@ -206,11 +265,18 @@ sudo service sshd restart || true`;
 				}}
 			>
 				<div className="pt-dialog-body">
+					<div
+						className="pt-callout pt-intent-primary pt-icon-info-sign"
+						style={css.callout}
+					>
+						Open port 9748 and use the startup script below to provision
+						a Pritunl Zero host.{callout}
+					</div>
 					<PageSwitch
 						label="Host certificate"
 						hidden={!this.props.authority.host_certificates}
-						disabled={!this.props.authority.host_tokens.length}
-						help="Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token."
+						disabled={hostCertificateDisabled}
+						help="Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain."
 						checked={hostCertificate}
 						onToggle={(): void => {
 							this.setState({
@@ -219,17 +285,71 @@ sudo service sshd restart || true`;
 							});
 						}}
 					/>
+					<PageSelect
+						hidden={!hostCertificate || serversElm.length === 0}
+						label="Pritunl Zero Server"
+						help="A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login."
+						value={this.state.server || serverDefault}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								server: val,
+							});
+						}}
+					>
+						{serversElm}
+					</PageSelect>
 					<PageInput
 						label="Server Hostname"
 						hidden={!hostCertificate}
-						help="Hostname of the server. The Pritunl Zero server must be able to resolve the server using this hostname to provision the host certificate. The hostname must be a subdomain of the authority domain."
+						help="Hostname portion of the server domain. The Pritunl Zero server must be able to resolve the server using this hostname to provision the host certificate. The hostname will be combined with the authority domain to form the servers domain."
 						type="text"
 						placeholder="Server hostname"
-						value={hostname}
+						value={this.state.hostname}
 						onChange={(val): void => {
 							this.setState({
 								...this.state,
 								hostname: val,
+							});
+						}}
+					/>
+					<PageSwitch
+						label="Auto Route53 configuration"
+						hidden={!hostCertificate}
+						help="Automatically update a Route53 record for this servers hostname. The authority domain must be hosted in Route53."
+						checked={this.state.route53}
+						onToggle={(): void => {
+							this.setState({
+								...this.state,
+								route53: !this.state.route53,
+							});
+						}}
+					/>
+					<PageInput
+						label="AWS Access Key"
+						hidden={!hostCertificate || !this.state.route53}
+						help="AWS access key for auto Route53 configuration. Leave blank if the instance is configured with a Route53 instance IAM role."
+						type="text"
+						placeholder="Leave blank to use instance role"
+						value={this.state.awsAccessKey}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								awsAccessKey: val,
+							});
+						}}
+					/>
+					<PageInput
+						label="AWS Secret Key"
+						hidden={!hostCertificate || !this.state.route53}
+						help="AWS secret key for auto Route53 configuration. Leave blank if the instance is configured with a Route53 instance IAM role."
+						type="text"
+						placeholder="Leave blank to use instance role"
+						value={this.state.awsSecretKey}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								awsSecretKey: val,
 							});
 						}}
 					/>
