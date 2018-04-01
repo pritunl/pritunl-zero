@@ -167,7 +167,7 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 						this.state.awsAccessKey;
 				}
 				if (this.state.awsSecretKey) {
-					route53 += '\nsudo pritunl-ssh-host config aws-access-key ' +
+					route53 += '\nsudo pritunl-ssh-host config aws-secret-key ' +
 						this.state.awsSecretKey;
 				}
 				route53 += '\nsudo pritunl-ssh-host config route-53-zone ' +
