@@ -5,6 +5,7 @@ import * as AuthorityActions from '../actions/AuthorityActions';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
 import PageInputButton from './PageInputButton';
+import AuthorityDeploy from './AuthorityDeploy';
 import PageTextArea from './PageTextArea';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
@@ -393,6 +394,10 @@ export default class Authority extends React.Component<Props, State> {
 						onChange={(val): void => {
 							this.set('host_proxy', val);
 						}}
+					/>
+					<AuthorityDeploy
+						disabled={this.state.disabled}
+						authority={authority}
 					/>
 				</div>
 				<div style={css.group}>
