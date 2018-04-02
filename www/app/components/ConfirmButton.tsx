@@ -6,6 +6,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 interface Props {
 	style?: React.CSSProperties;
+	grouped?: boolean;
 	className?: string;
 	hidden?: boolean;
 	progressClassName?: string;
@@ -22,12 +23,25 @@ interface State {
 }
 
 const css = {
+	box: {
+		display: 'inline-flex',
+	} as React.CSSProperties,
 	actionProgress: {
 		position: 'absolute',
 		bottom: 0,
 		left: 0,
 		borderRadius: 0,
 		borderBottomLeftRadius: '3px',
+		borderBottomRightRadius: '3px',
+		width: '100%',
+		height: '4px',
+	} as React.CSSProperties,
+	squareActionProgress: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		borderRadius: 0,
+		borderBottomLeftRadius: '1px',
 		borderBottomRightRadius: '3px',
 		width: '100%',
 		height: '4px',
@@ -133,42 +147,62 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
-		let confirmElem: JSX.Element;
-
 		let style = {
 			...this.props.style,
 		};
 		style.position = 'relative';
 
+		let className = this.props.className || '';
+		if (!this.props.label) {
+			className += ' pt-button-empty';
+		}
+
 		if (Constants.mobile) {
 			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
 				'Confirm ' + (this.props.label || '');
 
-			confirmElem = <Blueprint.Dialog
-				title="Confirm"
-				style={css.dialog}
-				isOpen={this.state.dialog}
-				onClose={this.closeDialog}
-			>
-				<div className="pt-dialog-body">
-					{confirmMsg}
-				</div>
-				<div className="pt-dialog-footer">
-					<div className="pt-dialog-footer-actions">
-						<button
-							className="pt-button"
-							type="button"
-							onClick={this.closeDialog}
-						>Cancel</button>
-						<button
-							className="pt-button pt-intent-primary"
-							type="button"
-							onClick={this.closeDialogConfirm}
-						>Ok</button>
+			return <div style={css.box}>
+				<button
+					className={'pt-button ' + className}
+					style={style}
+					type="button"
+					hidden={this.props.hidden}
+					disabled={this.props.disabled}
+					onMouseDown={Constants.mobile ? undefined : this.confirm}
+					onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
+					onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
+					onClick={Constants.mobile ? this.openDialog : undefined}
+				>
+					{this.props.label}
+				</button>
+				<Blueprint.Dialog
+					title="Confirm"
+					style={css.dialog}
+					isOpen={this.state.dialog}
+					onClose={this.closeDialog}
+				>
+					<div className="pt-dialog-body">
+						{confirmMsg}
 					</div>
-				</div>
-			</Blueprint.Dialog>;
+					<div className="pt-dialog-footer">
+						<div className="pt-dialog-footer-actions">
+							<button
+								className="pt-button"
+								type="button"
+								onClick={this.closeDialog}
+							>Cancel</button>
+							<button
+								className="pt-button pt-intent-primary"
+								type="button"
+								onClick={this.closeDialogConfirm}
+							>Ok</button>
+						</div>
+					</div>
+				</Blueprint.Dialog>
+			</div>
 		} else {
+			let confirmElem: JSX.Element;
+
 			if (this.state.confirming) {
 				let confirmStyle = {
 					width: this.state.confirm * 10 + '%',
@@ -177,34 +211,36 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					left: 0,
 				};
 
+				let progressStyle: React.CSSProperties;
+				if (this.props.grouped) {
+					progressStyle = css.squareActionProgress;
+				} else {
+					progressStyle = css.actionProgress;
+				}
+
 				confirmElem = <div
 					className={'pt-progress-bar pt-no-stripes ' + (
 						this.props.progressClassName || '')}
-					style={css.actionProgress}
+					style={progressStyle}
 				>
 					<div className="pt-progress-meter" style={confirmStyle}/>
 				</div>;
 			}
-		}
 
-		let className = this.props.className || '';
-		if (!this.props.label) {
-			className += ' pt-button-empty';
+			return <button
+				className={'pt-button ' + className}
+				style={style}
+				type="button"
+				hidden={this.props.hidden}
+				disabled={this.props.disabled}
+				onMouseDown={Constants.mobile ? undefined : this.confirm}
+				onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
+				onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
+				onClick={Constants.mobile ? this.openDialog : undefined}
+			>
+				{this.props.label}
+				{confirmElem}
+			</button>;
 		}
-
-		return <button
-			className={'pt-button ' + className}
-			style={style}
-			type="button"
-			hidden={this.props.hidden}
-			disabled={this.props.disabled}
-			onMouseDown={Constants.mobile ? undefined : this.confirm}
-			onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
-			onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
-			onClick={Constants.mobile ? this.openDialog : undefined}
-		>
-			{this.props.label}
-			{confirmElem}
-		</button>;
 	}
 }
