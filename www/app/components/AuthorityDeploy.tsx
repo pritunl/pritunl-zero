@@ -254,7 +254,7 @@ sudo service sshd restart || true`;
 			}
 
 			popoverElem = <Blueprint.Dialog
-				title="Deploy Script"
+				title="Generate Deploy Script"
 				style={css.dialog}
 				isOpen={this.state.popover}
 				onClose={(): void => {
