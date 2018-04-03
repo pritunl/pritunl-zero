@@ -314,7 +314,7 @@ export default class Authority extends React.Component<Props, State> {
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-cross"
+							className="pt-minimal pt-intent-danger pt-icon-trash"
 							progressClassName="pt-intent-danger"
 							confirmMsg="Confirm authority remove"
 							disabled={this.state.disabled}

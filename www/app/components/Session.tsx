@@ -80,7 +80,7 @@ export default class Session extends React.Component<Props, State> {
 				<div style={css.group}>
 					<div style={css.remove}>
 						<button
-							className="pt-button pt-minimal pt-intent-danger pt-icon-cross"
+							className="pt-button pt-minimal pt-intent-danger pt-icon-trash"
 							type="button"
 							hidden={session.removed}
 							disabled={this.state.disabled}

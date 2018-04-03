@@ -412,7 +412,7 @@ export default class Node extends React.Component<Props, State> {
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-cross"
+							className="pt-minimal pt-intent-danger pt-icon-trash"
 							progressClassName="pt-intent-danger"
 							confirmMsg="Confirm node remove"
 							disabled={active || this.state.disabled}
