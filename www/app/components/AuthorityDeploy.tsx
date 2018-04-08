@@ -420,7 +420,7 @@ sudo service sshd restart || true`;
 					});
 				}}
 			>
-				Deploy Script
+				Generate Deploy Script
 			</button>
 			{popoverElem}
 		</div>;
