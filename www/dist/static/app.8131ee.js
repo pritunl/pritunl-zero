@@ -4497,7 +4497,7 @@ System.registerDynamic("app/components/Session.js", ["npm:react@16.2.0.js", "app
             if (session.removed) {
                 cardStyle.opacity = 0.6;
             }
-            return React.createElement("div", { className: "pt-card", style: cardStyle }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger pt-icon-cross", type: "button", hidden: session.removed, disabled: this.state.disabled, onClick: this.onDelete })), React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+            return React.createElement("div", { className: "pt-card", style: cardStyle }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger pt-icon-trash", type: "button", hidden: session.removed, disabled: this.state.disabled, onClick: this.onDelete })), React.createElement(PageInfo_1.default, { style: css.info, fields: [{
                     label: 'ID',
                     value: session.id || 'None'
                 }, {
@@ -10577,7 +10577,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.2.0.js", "app/ac
                     certificatesSelect.push(React.createElement("option", { key: certificate.id, value: certificate.id }, certificate.name));
                 }
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm node remove", disabled: active || this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of node", type: "text", placeholder: "Enter name", value: node.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm node remove", disabled: active || this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of node", type: "text", placeholder: "Enter name", value: node.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageSwitch_1.default, { label: "Management", help: "Provides access to the admin console.", checked: node.type.indexOf('management') !== -1, onToggle: () => {
                     this.toggleType('management');
@@ -11204,7 +11204,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@16.2.0.js", "app/
             let userProvider = policy.user_secondary && providerIds.indexOf(policy.user_secondary) !== -1;
             let proxyProvider = policy.proxy_secondary && providerIds.indexOf(policy.proxy_secondary) !== -1;
             let authorityProvider = policy.authority_secondary && providerIds.indexOf(policy.authority_secondary) !== -1;
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm policy remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of policy", type: "text", placeholder: "Enter name", value: policy.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm policy remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of policy", type: "text", placeholder: "Enter name", value: policy.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this policy. All requests from users with associated roles must pass this policy check." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
@@ -11573,6 +11573,8 @@ System.registerDynamic("app/components/AuthorityDeploy.js", ["npm:react@16.2.0.j
             if (this.state.popover) {
                 let content = '';
                 let callout = '';
+                let errorMsg = '';
+                let errorMsgElem;
                 let hostCertificate = this.state.hostCertificate;
                 let hostCertificateDisabled = false;
                 if (hostCertificate === null) {
@@ -11601,6 +11603,22 @@ System.registerDynamic("app/components/AuthorityDeploy.js", ["npm:react@16.2.0.j
                 if (servers.size === 1) {
                     serversElm = [];
                 }
+                let bastionUsername = '';
+                let bastionHostname = '';
+                if (this.props.proxy) {
+                    let bastionSplit = this.props.authority.host_proxy.split('@');
+                    if (bastionSplit.length === 2) {
+                        bastionUsername = this.props.authority.host_proxy.split('@')[0];
+                        if (bastionSplit[1].indexOf(this.props.authority.host_domain) !== -1) {
+                            bastionHostname = bastionSplit[1].replace('.' + this.props.authority.host_domain, '');
+                        }
+                    }
+                    if (!bastionUsername) {
+                        errorMsg = 'Bastion host is missing username.';
+                    } else if (!bastionHostname) {
+                        errorMsg = 'Bastion hostname is not a subdomain of host domain.';
+                    }
+                }
                 let epel = '';
                 let boto = '';
                 let route53 = '';
@@ -11621,7 +11639,54 @@ System.registerDynamic("app/components/AuthorityDeploy.js", ["npm:react@16.2.0.j
                             this.onRemoveRole(role);
                         } })));
                 }
-                if (hostCertificate) {
+                if (this.props.proxy) {
+                    callout = ' Provisioning may take several minutes if the servers ' + 'DNS record was created recently.';
+                    content = `#!/bin/bash
+sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
+sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
+sudo tee -a /etc/ssh/sshd_config << EOF
+
+Match User ${bastionUsername}
+	AllowAgentForwarding no
+	AllowTcpForwarding yes
+	PermitOpen *:22
+	GatewayPorts no
+	X11Forwarding no
+	PermitTunnel no
+	ForceCommand echo 'Pritunl Zero Bastion Host'
+	TrustedUserCAKeys /etc/ssh/trusted
+	AuthorizedPrincipalsFile /etc/ssh/principals
+Match all
+EOF
+sudo tee /etc/ssh/principals << EOF
+bastion
+EOF
+sudo tee /etc/ssh/trusted << EOF
+${this.props.authority.public_key}
+EOF
+
+sudo tee -a /etc/yum.repos.d/pritunl.repo << EOF
+[pritunl]
+name=Pritunl Repository
+baseurl=https://repo.pritunl.com/stable/yum/centos/7/
+gpgcheck=1
+enabled=1
+EOF
+
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A > key.tmp
+sudo rpm --import key.tmp
+rm -f key.tmp${epel}
+sudo yum -y install pritunl-ssh-host${boto}
+${route53}
+sudo pritunl-ssh-host config add-token ${this.props.authority.host_tokens.length ? this.props.authority.host_tokens[0] : 'HOST_TOKEN_UNAVAILABLE'}
+sudo pritunl-ssh-host config hostname ${bastionHostname}
+sudo pritunl-ssh-host config server ${this.state.server || serverDefault}
+sudo useradd ${bastionUsername} || true
+
+sudo systemctl restart sshd || true
+sudo service sshd restart || true`;
+                } else if (hostCertificate) {
                     callout = ' Provisioning may take several minutes if the servers ' + 'DNS record was created recently.';
                     content = `#!/bin/bash
 sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
@@ -11677,13 +11742,16 @@ EOF
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
                 }
+                if (errorMsg) {
+                    errorMsgElem = React.createElement("div", { className: "pt-dialog-body" }, React.createElement("div", { className: "pt-callout pt-intent-danger pt-icon-ban-circle", style: css.callout }, errorMsg));
+                }
                 popoverElem = React.createElement(Blueprint.Dialog, { title: "Generate Deploy Script", style: css.dialog, isOpen: this.state.popover, onClose: () => {
                         this.setState(Object.assign({}, this.state, { popover: false }));
-                    } }, React.createElement("div", { className: "pt-dialog-body" }, React.createElement("div", { className: "pt-callout pt-intent-primary pt-icon-info-sign", style: css.callout }, "Open port 9748 and use the startup script below to provision a Pritunl Zero host.", callout), React.createElement(PageSwitch_1.default, { label: "Host certificate", hidden: !this.props.authority.host_certificates, disabled: hostCertificateDisabled, help: "Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain.", checked: hostCertificate, onToggle: () => {
+                    } }, errorMsgElem, React.createElement("div", { className: "pt-dialog-body", hidden: !!errorMsgElem }, React.createElement("div", { className: "pt-callout pt-intent-primary pt-icon-info-sign", style: css.callout }, "Open port 9748 and use the startup script below to provision a Pritunl Zero host.", callout), React.createElement(PageSwitch_1.default, { label: "Host certificate", hidden: !this.props.authority.host_certificates || this.props.proxy, disabled: hostCertificateDisabled, help: "Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain.", checked: hostCertificate, onToggle: () => {
                         this.setState(Object.assign({}, this.state, { hostCertificate: !hostCertificate }));
-                    } }), React.createElement(PageSelect_1.default, { hidden: !hostCertificate || serversElm.length === 0, label: "Pritunl Zero Server", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: this.state.server || serverDefault, onChange: val => {
+                    } }), React.createElement(PageSelect_1.default, { hidden: !hostCertificate || serversElm.length === 0 || this.props.proxy, label: "Pritunl Zero Server", help: "The Pritunl Zero server hostname that the client will authenticate from.", value: this.state.server || serverDefault, onChange: val => {
                         this.setState(Object.assign({}, this.state, { server: val }));
-                    } }, serversElm), React.createElement(PageInput_1.default, { label: "Server Hostname", hidden: !hostCertificate, help: "Hostname portion of the server domain. The Pritunl Zero server must be able to resolve the server using this hostname to provision the host certificate. The hostname will be combined with the authority domain to form the servers domain.", type: "text", placeholder: "Server hostname", value: this.state.hostname, onChange: val => {
+                    } }, serversElm), React.createElement(PageInput_1.default, { label: "Server Hostname", hidden: !hostCertificate || this.props.proxy, help: "Hostname portion of the server domain. The Pritunl Zero server must be able to resolve the server using this hostname to provision the host certificate. The hostname will be combined with the authority domain to form the servers domain.", type: "text", placeholder: "Server hostname", value: this.state.hostname, onChange: val => {
                         this.setState(Object.assign({}, this.state, { hostname: val }));
                     } }), React.createElement(PageSwitch_1.default, { label: "Auto Route53 configuration", hidden: !hostCertificate, help: "Automatically update a Route53 record for this servers hostname. The authority domain must be hosted in Route53.", checked: this.state.route53, onToggle: () => {
                         this.setState(Object.assign({}, this.state, { route53: !this.state.route53 }));
@@ -11691,7 +11759,7 @@ sudo service sshd restart || true`;
                         this.setState(Object.assign({}, this.state, { awsAccessKey: val }));
                     } }), React.createElement(PageInput_1.default, { label: "AWS Secret Key", hidden: !hostCertificate || !this.state.route53, help: "AWS secret key for auto Route53 configuration. Leave blank if the instance is configured with an instance role.", type: "text", placeholder: "Leave blank to use instance role", value: this.state.awsSecretKey, onChange: val => {
                         this.setState(Object.assign({}, this.state, { awsSecretKey: val }));
-                    } }), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this server. The user must have at least one matching role to access this server." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                    } }), React.createElement("label", { className: "pt-label", hidden: this.props.proxy }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this server. The user must have at least one matching role to access this server." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", hidden: this.props.proxy, label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                         this.setState(Object.assign({}, this.state, { addRole: val }));
                     }, onSubmit: this.onAddRole }), React.createElement("textarea", { className: "pt-input", style: css.textarea, readOnly: true, autoCapitalize: "off", spellCheck: false, rows: 18, value: content, onClick: evt => {
                         evt.currentTarget.select();
@@ -11699,9 +11767,15 @@ sudo service sshd restart || true`;
                         this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
                     } }, "Close"))));
             }
-            return React.createElement("div", { style: css.box }, React.createElement("button", { className: "pt-button pt-icon-cloud-upload pt-intent-primary", style: css.button, type: "button", disabled: this.props.disabled, onClick: () => {
+            let buttonLabel = '';
+            if (this.props.proxy) {
+                buttonLabel = 'Generate Bastion Deploy Script';
+            } else {
+                buttonLabel = 'Generate Deploy Script';
+            }
+            return React.createElement("div", { style: css.box }, React.createElement("button", { className: "pt-button pt-icon-cloud-upload pt-intent-primary", style: css.button, type: "button", disabled: this.props.disabled || this.props.proxy && (!this.props.authority.host_proxy || !this.props.authority.host_certificates), onClick: () => {
                     this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
-                } }, "Generate Deploy Script"), popoverElem);
+                } }, buttonLabel), popoverElem);
         }
     }
     exports.default = AuthorityDeploy;
@@ -11872,7 +11946,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.2.0.js", "a
                         });
                     } }));
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm authority remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of authority", type: "text", placeholder: "Enter name", value: authority.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm authority remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of authority", type: "text", placeholder: "Enter name", value: authority.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: authority.public_key, onChange: val => {
                     this.set('key', val);
@@ -11891,7 +11965,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.2.0.js", "a
                     this.setState(Object.assign({}, this.state, { changed: true, authority: authr }));
                 } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
                     this.set('host_proxy', val);
-                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: authority.id || 'None'
                 }, {
@@ -12226,7 +12300,7 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@16.2.0.js", 
                         this.onRemoveDomain(index);
                     } }));
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm certificate remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of certificate", type: "text", placeholder: "Name", value: cert.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm certificate remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of certificate", type: "text", placeholder: "Name", value: cert.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageTextArea_1.default, { readOnly: cert.type !== 'text', label: "Private Key", help: "Certificate private key in PEM format", placeholder: "Private key", rows: 6, value: cert.key, onChange: val => {
                     this.set('key', val);
@@ -13108,7 +13182,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.2.0.js", "app
                         this.onRemoveWhitelistNet(whitelistNet);
                     } })));
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-cross", progressClassName: "pt-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Service type", value: service.type, onChange: val => {
                     this.set('type', val);
