@@ -268,12 +268,28 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 		return
 	}
 
+	roles := usr.Roles
+	if a.HostProxy != "" {
+		hasBastion := false
+
+		for _, role := range roles {
+			if role == "bastion" {
+				hasBastion = true
+				break
+			}
+		}
+
+		if !hasBastion {
+			roles = append(usr.Roles, "bastion")
+		}
+	}
+
 	cert = &ssh.Certificate{
 		Key:             pubKey,
 		Serial:          serial,
 		CertType:        ssh.UserCert,
 		KeyId:           usr.Id.Hex(),
-		ValidPrincipals: usr.Roles,
+		ValidPrincipals: roles,
 		ValidAfter:      uint64(validAfter),
 		ValidBefore:     uint64(validBefore),
 		Permissions: ssh.Permissions{
