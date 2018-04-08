@@ -123,6 +123,8 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 		if (this.state.popover) {
 			let content = '';
 			let callout = '';
+			let errorMsg = '';
+			let errorMsgElem: JSX.Element;
 			let hostCertificate = this.state.hostCertificate;
 			let hostCertificateDisabled = false;
 			if (hostCertificate === null) {
@@ -166,6 +168,12 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 						bastionHostname = bastionSplit[1].replace(
 							'.' + this.props.authority.host_domain, '');
 					}
+				}
+
+				if (!bastionUsername) {
+					errorMsg = 'Bastion host is missing username.';
+				} else if (!bastionHostname) {
+					errorMsg = 'Bastion hostname is not a subdomain of host domain.';
 				}
 			}
 
@@ -316,6 +324,17 @@ sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
 			}
 
+			if (errorMsg) {
+				errorMsgElem = <div className="pt-dialog-body">
+					<div
+						className="pt-callout pt-intent-danger pt-icon-ban-circle"
+						style={css.callout}
+					>
+						{errorMsg}
+					</div>
+				</div>;
+			}
+
 			popoverElem = <Blueprint.Dialog
 				title="Generate Deploy Script"
 				style={css.dialog}
@@ -327,7 +346,8 @@ sudo service sshd restart || true`;
 					});
 				}}
 			>
-				<div className="pt-dialog-body">
+				{errorMsgElem}
+				<div className="pt-dialog-body" hidden={!!errorMsgElem}>
 					<div
 						className="pt-callout pt-intent-primary pt-icon-info-sign"
 						style={css.callout}
