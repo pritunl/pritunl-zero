@@ -498,12 +498,21 @@ sudo service sshd restart || true`;
 			</Blueprint.Dialog>;
 		}
 
+		let buttonLabel = '';
+		if (this.props.proxy) {
+			buttonLabel = 'Generate Bastion Deploy Script';
+		} else {
+			buttonLabel = 'Generate Deploy Script';
+		}
+
 		return <div style={css.box}>
 			<button
 				className="pt-button pt-icon-cloud-upload pt-intent-primary"
 				style={css.button}
 				type="button"
-				disabled={this.props.disabled}
+				disabled={this.props.disabled ||
+					(this.props.proxy && (!this.props.authority.host_proxy ||
+					!this.props.authority.host_certificates))}
 				onClick={(): void => {
 					this.setState({
 						...this.state,
@@ -511,7 +520,7 @@ sudo service sshd restart || true`;
 					});
 				}}
 			>
-				Generate Deploy Script
+				{buttonLabel}
 			</button>
 			{popoverElem}
 		</div>;
