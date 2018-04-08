@@ -155,6 +155,20 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 				serversElm = [];
 			}
 
+			let bastionUsername = '';
+			let bastionHostname = '';
+			if (this.props.proxy) {
+				let bastionSplit = this.props.authority.host_proxy.split('@');
+				if (bastionSplit.length === 2) {
+					bastionUsername = this.props.authority.host_proxy.split('@')[0];
+					if (bastionSplit[1].indexOf(
+							this.props.authority.host_domain) !== -1) {
+						bastionHostname = bastionSplit[1].replace(
+							'.' + this.props.authority.host_domain, '');
+					}
+				}
+			}
+
 			let epel = '';
 			let boto = '';
 			let route53 = '';
@@ -194,7 +208,55 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 				);
 			}
 
-			if (hostCertificate) {
+			if (this.props.proxy) {
+				callout = ' Provisioning may take several minutes if the servers ' +
+					'DNS record was created recently.';
+				content = `#!/bin/bash
+sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
+sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
+sudo tee -a /etc/ssh/sshd_config << EOF
+
+Match User ${bastionUsername}
+    AllowAgentForwarding no
+    AllowTcpForwarding yes
+    PermitOpen *.${this.props.authority.host_domain}:22
+    GatewayPorts no
+    X11Forwarding no
+    PermitTunnel no
+    ForceCommand echo 'Pritunl Zero Bastion Host'
+    TrustedUserCAKeys /etc/ssh/trusted
+    AuthorizedPrincipalsFile /etc/ssh/principals
+EOF
+sudo tee /etc/ssh/principals << EOF
+bastion
+EOF
+sudo tee /etc/ssh/trusted << EOF
+${this.props.authority.public_key}
+EOF
+
+sudo tee -a /etc/yum.repos.d/pritunl.repo << EOF
+[pritunl]
+name=Pritunl Repository
+baseurl=https://repo.pritunl.com/stable/yum/centos/7/
+gpgcheck=1
+enabled=1
+EOF
+
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A > key.tmp
+sudo rpm --import key.tmp
+rm -f key.tmp${epel}
+sudo yum -y install pritunl-ssh-host${boto}
+${route53}
+sudo pritunl-ssh-host config add-token ${
+	this.props.authority.host_tokens.length ?
+	this.props.authority.host_tokens[0] : 'HOST_TOKEN_UNAVAILABLE'}
+sudo pritunl-ssh-host config hostname ${bastionHostname}
+sudo pritunl-ssh-host config server ${this.state.server || serverDefault}
+
+sudo systemctl restart sshd || true
+sudo service sshd restart || true`;
+			} else if (hostCertificate) {
 				callout = ' Provisioning may take several minutes if the servers ' +
 					'DNS record was created recently.';
 				content = `#!/bin/bash
@@ -275,7 +337,8 @@ sudo service sshd restart || true`;
 					</div>
 					<PageSwitch
 						label="Host certificate"
-						hidden={!this.props.authority.host_certificates}
+						hidden={!this.props.authority.host_certificates ||
+							this.props.proxy}
 						disabled={hostCertificateDisabled}
 						help="Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain."
 						checked={hostCertificate}
@@ -287,7 +350,8 @@ sudo service sshd restart || true`;
 						}}
 					/>
 					<PageSelect
-						hidden={!hostCertificate || serversElm.length === 0}
+						hidden={!hostCertificate || serversElm.length === 0 ||
+							this.props.proxy}
 						label="Pritunl Zero Server"
 						help="A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login."
 						value={this.state.server || serverDefault}
@@ -302,7 +366,7 @@ sudo service sshd restart || true`;
 					</PageSelect>
 					<PageInput
 						label="Server Hostname"
-						hidden={!hostCertificate}
+						hidden={!hostCertificate || this.props.proxy}
 						help="Hostname portion of the server domain. The Pritunl Zero server must be able to resolve the server using this hostname to provision the host certificate. The hostname will be combined with the authority domain to form the servers domain."
 						type="text"
 						placeholder="Server hostname"
@@ -354,7 +418,10 @@ sudo service sshd restart || true`;
 							});
 						}}
 					/>
-					<label className="pt-label">
+					<label
+						className="pt-label"
+						hidden={this.props.proxy}
+					>
 						Roles
 						<Help
 							title="Roles"
@@ -366,6 +433,7 @@ sudo service sshd restart || true`;
 					</label>
 					<PageInputButton
 						buttonClass="pt-intent-success pt-icon-add"
+						hidden={this.props.proxy}
 						label="Add"
 						type="text"
 						placeholder="Add role"
