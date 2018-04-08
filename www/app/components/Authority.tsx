@@ -401,6 +401,13 @@ export default class Authority extends React.Component<Props, State> {
 						disabled={this.state.disabled}
 						nodes={this.props.nodes}
 						authority={authority}
+						proxy={false}
+					/>
+					<AuthorityDeploy
+						disabled={this.state.disabled || !authority.host_proxy}
+						nodes={this.props.nodes}
+						authority={authority}
+						proxy={true}
 					/>
 				</div>
 				<div style={css.group}>
