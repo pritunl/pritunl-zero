@@ -328,7 +328,7 @@ sudo service sshd restart || true`;
 					<PageInput
 						label="AWS Access Key"
 						hidden={!hostCertificate || !this.state.route53}
-						help="AWS access key for auto Route53 configuration. Leave blank if the instance is configured with a Route53 instance IAM role."
+						help="AWS access key for auto Route53 configuration. Leave blank if the instance is configured with an instance role."
 						type="text"
 						placeholder="Leave blank to use instance role"
 						value={this.state.awsAccessKey}
@@ -342,7 +342,7 @@ sudo service sshd restart || true`;
 					<PageInput
 						label="AWS Secret Key"
 						hidden={!hostCertificate || !this.state.route53}
-						help="AWS secret key for auto Route53 configuration. Leave blank if the instance is configured with a Route53 instance IAM role."
+						help="AWS secret key for auto Route53 configuration. Leave blank if the instance is configured with an instance role."
 						type="text"
 						placeholder="Leave blank to use instance role"
 						value={this.state.awsSecretKey}
