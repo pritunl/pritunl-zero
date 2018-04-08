@@ -13,6 +13,7 @@ interface Props {
 	disabled?: boolean;
 	nodes: NodeTypes.NodesRo;
 	authority: AuthorityTypes.AuthorityRo;
+	proxy: boolean;
 }
 
 interface State {
