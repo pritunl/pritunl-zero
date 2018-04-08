@@ -373,7 +373,7 @@ sudo service sshd restart || true`;
 						hidden={!hostCertificate || serversElm.length === 0 ||
 							this.props.proxy}
 						label="Pritunl Zero Server"
-						help="A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login."
+						help="The Pritunl Zero server hostname that the client will authenticate from."
 						value={this.state.server || serverDefault}
 						onChange={(val): void => {
 							this.setState({
