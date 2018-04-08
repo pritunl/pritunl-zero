@@ -225,15 +225,16 @@ sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
 sudo tee -a /etc/ssh/sshd_config << EOF
 
 Match User ${bastionUsername}
-    AllowAgentForwarding no
-    AllowTcpForwarding yes
-    PermitOpen *.${this.props.authority.host_domain}:22
-    GatewayPorts no
-    X11Forwarding no
-    PermitTunnel no
-    ForceCommand echo 'Pritunl Zero Bastion Host'
-    TrustedUserCAKeys /etc/ssh/trusted
-    AuthorizedPrincipalsFile /etc/ssh/principals
+	AllowAgentForwarding no
+	AllowTcpForwarding yes
+	PermitOpen *:22
+	GatewayPorts no
+	X11Forwarding no
+	PermitTunnel no
+	ForceCommand echo 'Pritunl Zero Bastion Host'
+	TrustedUserCAKeys /etc/ssh/trusted
+	AuthorizedPrincipalsFile /etc/ssh/principals
+Match all
 EOF
 sudo tee /etc/ssh/principals << EOF
 bastion
@@ -261,6 +262,7 @@ sudo pritunl-ssh-host config add-token ${
 	this.props.authority.host_tokens[0] : 'HOST_TOKEN_UNAVAILABLE'}
 sudo pritunl-ssh-host config hostname ${bastionHostname}
 sudo pritunl-ssh-host config server ${this.state.server || serverDefault}
+sudo useradd ${bastionUsername} || true
 
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
