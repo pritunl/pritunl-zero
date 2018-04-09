@@ -115,7 +115,9 @@ func Update() (errData *errortypes.ErrorData, err error) {
 		return
 	}
 
-	if !strings.Contains(subData.Plan, "zero") {
+	if !strings.Contains(subData.Plan, "zero") &&
+		!strings.Contains(subData.Plan, "cloud") {
+
 		errData = &errortypes.ErrorData{
 			Error:   "invalid_plan",
 			Message: "Invalid subscription plan",
