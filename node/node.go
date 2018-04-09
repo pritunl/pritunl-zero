@@ -5,6 +5,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/certificate"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -40,6 +41,7 @@ type Node struct {
 	Load1              float64                    `bson:"load1" json:"load1"`
 	Load5              float64                    `bson:"load5" json:"load5"`
 	Load15             float64                    `bson:"load15" json:"load15"`
+	SoftwareVersion    string                     `bson:"software_version" json:"software_version"`
 	Version            int                        `bson:"version" json:"-"`
 	CertificateObjs    []*certificate.Certificate `bson:"-" json:"-"`
 	reqLock            sync.Mutex                 `bson:"-" json:"-"`
@@ -325,6 +327,8 @@ func (n *Node) Init() (err error) {
 		}
 	}
 
+	n.SoftwareVersion = constants.Version
+
 	if n.Name == "" {
 		n.Name = utils.RandName()
 	}
@@ -347,13 +351,14 @@ func (n *Node) Init() (err error) {
 
 	_, err = coll.UpsertId(n.Id, &bson.M{
 		"$set": &bson.M{
-			"_id":       n.Id,
-			"name":      n.Name,
-			"type":      n.Type,
-			"timestamp": time.Now(),
-			"protocol":  n.Protocol,
-			"port":      n.Port,
-			"services":  n.Services,
+			"_id":              n.Id,
+			"name":             n.Name,
+			"type":             n.Type,
+			"timestamp":        time.Now(),
+			"protocol":         n.Protocol,
+			"port":             n.Port,
+			"services":         n.Services,
+			"software_version": n.SoftwareVersion,
 		},
 	})
 	if err != nil {
