@@ -153,12 +153,30 @@ func (w *webSocketConn) Run(db *database.Database) {
 		}
 	}()
 
-	wait := make(chan bool, 2)
+	wait := make(chan bool, 4)
 	go func() {
+		defer func() {
+			rec := recover()
+			if rec != nil {
+				logrus.WithFields(logrus.Fields{
+					"panic": rec,
+				}).Error("proxy: WebSocket back panic")
+				wait <- true
+			}
+		}()
 		io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
 		wait <- true
 	}()
 	go func() {
+		defer func() {
+			rec := recover()
+			if rec != nil {
+				logrus.WithFields(logrus.Fields{
+					"panic": rec,
+				}).Error("proxy: WebSocket front panic")
+				wait <- true
+			}
+		}()
 		io.Copy(w.front.UnderlyingConn(), w.back.UnderlyingConn())
 		wait <- true
 	}()
