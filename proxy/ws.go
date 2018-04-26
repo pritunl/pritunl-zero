@@ -276,6 +276,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		logrus.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("proxy: WebSocket dial error")
+		return
 	}
 	defer backConn.Close()
 
@@ -288,6 +289,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		logrus.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("proxy: WebSocket upgrade error")
+		return
 	}
 	defer frontConn.Close()
 
