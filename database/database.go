@@ -151,6 +151,10 @@ func Connect() (err error) {
 		return
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"mongodb_host": mgoUrl.Host,
+	}).Info("database: Connecting to MongoDB server")
+
 	vals := mgoUrl.Query()
 	mgoSsl := vals.Get("ssl")
 	mgoSslCerts := vals.Get("ssl_ca_certs")
