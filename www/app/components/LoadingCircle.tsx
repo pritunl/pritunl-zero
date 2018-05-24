@@ -13,7 +13,7 @@ interface State {
 	loading: boolean;
 }
 
-export default class Loading extends React.Component<Props, State> {
+export default class LoadingCircle extends React.Component<Props, State> {
 	constructor(props: Props, context: any) {
 		super(props, context);
 		this.state = {
