@@ -20,7 +20,6 @@ func Get(db *database.Database, nodeId bson.ObjectId) (
 }
 
 func GetAll(db *database.Database) (nodes []*Node, err error) {
-
 	coll := db.Nodes()
 	nodes = []*Node{}
 
