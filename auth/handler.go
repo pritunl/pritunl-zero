@@ -5,6 +5,9 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base64"
+	"net/url"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
@@ -15,8 +18,6 @@ import (
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
-	"net/url"
-	"strings"
 )
 
 func Local(db *database.Database, username, password string) (
@@ -30,7 +31,7 @@ func Local(db *database.Database, username, password string) (
 			err = nil
 			errData = &errortypes.ErrorData{
 				Error:   "auth_invalid",
-				Message: "Authencation credentials are invalid",
+				Message: "Authentication credentials are invalid",
 			}
 			break
 		}
@@ -41,7 +42,7 @@ func Local(db *database.Database, username, password string) (
 	if !valid {
 		errData = &errortypes.ErrorData{
 			Error:   "auth_invalid",
-			Message: "Authencation credentials are invalid",
+			Message: "Authentication credentials are invalid",
 		}
 		return
 	}
