@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	buffer  = make(chan *logrus.Entry, 32)
+	buffer  = make(chan *logrus.Entry, 128)
 	senders = []sender{}
 )
 
@@ -50,6 +50,7 @@ func init() {
 
 	module.Handler = func() (err error) {
 		initSender()
+		initDatabaseSender()
 		return
 	}
 }

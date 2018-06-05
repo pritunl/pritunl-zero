@@ -7,7 +7,7 @@ import (
 type logHook struct{}
 
 func (h *logHook) Fire(entry *logrus.Entry) (err error) {
-	if len(buffer) <= 125 {
+	if len(buffer) <= 32 {
 		buffer <- entry
 	}
 
