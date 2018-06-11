@@ -5,8 +5,10 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
@@ -21,21 +23,23 @@ type SecondaryData struct {
 	Phone    bool   `json:"phone"`
 	Passcode bool   `json:"passcode"`
 	Sms      bool   `json:"sms"`
+	Device   bool   `json:"device"`
 }
 
 type Secondary struct {
-	usr         *user.User                  `bson:"-"`
-	provider    *settings.SecondaryProvider `bson:"-"`
-	Id          string                      `bson:"_id"`
-	ProviderId  bson.ObjectId               `bson:"provider_id"`
-	UserId      bson.ObjectId               `bson:"user_id"`
-	Type        string                      `bson:"type"`
-	ChallengeId string                      `bson:"challenge_id"`
-	Timestamp   time.Time                   `bson:"timestamp"`
-	PushSent    bool                        `bson:"push_sent"`
-	PhoneSent   bool                        `bson:"phone_sent"`
-	SmsSent     bool                        `bson:"sms_sent"`
-	Disabled    bool                        `bson:"disabled"`
+	usr          *user.User                  `bson:"-"`
+	provider     *settings.SecondaryProvider `bson:"-"`
+	Id           string                      `bson:"_id"`
+	ProviderId   bson.ObjectId               `bson:"provider_id,omitempty"`
+	UserId       bson.ObjectId               `bson:"user_id"`
+	Type         string                      `bson:"type"`
+	ChallengeId  string                      `bson:"challenge_id"`
+	Timestamp    time.Time                   `bson:"timestamp"`
+	PushSent     bool                        `bson:"push_sent"`
+	PhoneSent    bool                        `bson:"phone_sent"`
+	SmsSent      bool                        `bson:"sms_sent"`
+	Disabled     bool                        `bson:"disabled"`
+	U2fChallenge *u2flib.Challenge           `bson:"u2f_challenge"`
 }
 
 func (s *Secondary) Push(db *database.Database, r *http.Request) (
@@ -310,7 +314,274 @@ func (s *Secondary) Sms(db *database.Database, r *http.Request) (
 	return
 }
 
+func (s *Secondary) DeviceRegisterRequest(db *database.Database) (
+	jsonResp interface{}, errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary registration has already been completed",
+		}
+		return
+	}
+
+	if s.ProviderId != DeviceProvider {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device register not available"),
+		}
+		return
+	}
+
+	if s.U2fChallenge != nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device registration already requested"),
+		}
+		return
+	}
+
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	devices, err := device.GetAll(db, usr.Id)
+	if err != nil {
+		return
+	}
+
+	regs := []u2flib.Registration{}
+	for _, devc := range devices {
+		reg, e := devc.UnmarshalRegistration()
+		if e != nil {
+			err = e
+			return
+		}
+
+		regs = append(regs, reg)
+	}
+
+	chal, err := u2flib.NewChallenge(device.GetAppId(), settings.Local.Facets)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "secondary: Failed to generate u2f challenge"),
+		}
+		return
+	}
+
+	s.U2fChallenge = chal
+	err = s.CommitFields(db, set.NewSet("u2f_challenge"))
+	if err != nil {
+		return
+	}
+
+	jsonResp = u2flib.NewWebRegisterRequest(chal, regs)
+
+	return
+}
+
+func (s *Secondary) DeviceRegisterResponse(db *database.Database,
+	regResp *u2flib.RegisterResponse) (
+	errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary registration has already been completed",
+		}
+		return
+	}
+
+	if s.ProviderId != DeviceProvider {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device register not available"),
+		}
+		return
+	}
+
+	if s.U2fChallenge == nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device registration not requested"),
+		}
+		return
+	}
+
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	u2fConfig := &u2flib.Config{
+		SkipAttestationVerify: true,
+	}
+
+	reg, err := u2flib.Register(*regResp, *s.U2fChallenge, u2fConfig)
+	if err != nil {
+		err = &errortypes.AuthenticationError{
+			errors.Wrap(err, "secondary: Failed to register u2f device"),
+		}
+		return
+	}
+
+	devc := device.New(usr.Id, device.U2f)
+	devc.User = usr.Id
+
+	err = devc.MarshalRegistration(reg)
+	if err != nil {
+		return
+	}
+
+	err = devc.Insert(db)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Secondary) DeviceSignRequest(db *database.Database) (
+	jsonResp interface{}, errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
+
+	if s.ProviderId != DeviceProvider {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device sign not available"),
+		}
+		return
+	}
+
+	if s.U2fChallenge != nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device sign already requested"),
+		}
+		return
+	}
+
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	devices, err := device.GetAll(db, usr.Id)
+	if err != nil {
+		return
+	}
+
+	regs := []u2flib.Registration{}
+	for _, devc := range devices {
+		reg, e := devc.UnmarshalRegistration()
+		if e != nil {
+			err = e
+			return
+		}
+
+		regs = append(regs, reg)
+	}
+
+	chal, err := u2flib.NewChallenge(device.GetAppId(), settings.Local.Facets)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "secondary: Failed to generate u2f challenge"),
+		}
+		return
+	}
+
+	s.U2fChallenge = chal
+	err = s.CommitFields(db, set.NewSet("u2f_challenge"))
+	if err != nil {
+		return
+	}
+
+	jsonResp = chal.SignRequest(regs)
+
+	return
+}
+
+func (s *Secondary) DeviceSignResponse(db *database.Database,
+	signResp *u2flib.SignResponse) (errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary authentication has already been completed",
+		}
+		return
+	}
+
+	if s.ProviderId != DeviceProvider {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device sign not available"),
+		}
+		return
+	}
+
+	if s.U2fChallenge == nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device sign not requested"),
+		}
+		return
+	}
+
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	devices, err := device.GetAll(db, usr.Id)
+	if err != nil {
+		return
+	}
+
+	for _, devc := range devices {
+		reg, e := devc.UnmarshalRegistration()
+		if e != nil {
+			err = e
+			return
+		}
+
+		counter, e := reg.Authenticate(
+			*signResp, *s.U2fChallenge, devc.U2fCounter)
+		if e != nil {
+			continue
+		}
+
+		devc.U2fCounter = counter
+		err = devc.CommitFields(db, set.NewSet("u2f_counter"))
+		if err != nil {
+			return
+		}
+
+		return
+	}
+
+	errData = &errortypes.ErrorData{
+		Error:   "secondary_denied",
+		Message: "Secondary authentication was denied",
+	}
+
+	return
+}
+
 func (s *Secondary) GetData() (data *SecondaryData, err error) {
+	if s.ProviderId == DeviceProvider {
+		data = &SecondaryData{
+			Token:    s.Id,
+			Label:    "U2F Device",
+			Push:     false,
+			Phone:    false,
+			Passcode: false,
+			Sms:      false,
+			Device:   true,
+		}
+		return
+	}
+
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
@@ -323,11 +594,22 @@ func (s *Secondary) GetData() (data *SecondaryData, err error) {
 		Phone:    provider.PhoneFactor,
 		Passcode: provider.PasscodeFactor || provider.SmsFactor,
 		Sms:      provider.SmsFactor,
+		Device:   false,
 	}
 	return
 }
 
 func (s *Secondary) GetQuery() (query string, err error) {
+	if s.ProviderId == DeviceProvider {
+		query = fmt.Sprintf(
+			"secondary=%s&label=%s&factors=%s",
+			s.Id,
+			"U2F Device",
+			"device",
+		)
+		return
+	}
+
 	provider, err := s.GetProvider()
 	if err != nil {
 		return
