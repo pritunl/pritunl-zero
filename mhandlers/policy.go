@@ -23,6 +23,10 @@ type policyData struct {
 	UserSecondary      bson.ObjectId           `json:"user_secondary"`
 	ProxySecondary     bson.ObjectId           `json:"proxy_secondary"`
 	AuthoritySecondary bson.ObjectId           `json:"authority_secondary"`
+	AdminDevice        bool                    `json:"admin_device"`
+	UserDevice         bool                    `json:"user_device"`
+	ProxyDevice        bool                    `json:"proxy_device"`
+	AuthorityDevice    bool                    `json:"authority_device"`
 }
 
 func policyPut(c *gin.Context) {
@@ -61,6 +65,10 @@ func policyPut(c *gin.Context) {
 	polcy.UserSecondary = data.UserSecondary
 	polcy.ProxySecondary = data.ProxySecondary
 	polcy.AuthoritySecondary = data.AuthoritySecondary
+	polcy.AdminDevice = data.AdminDevice
+	polcy.UserDevice = data.UserDevice
+	polcy.ProxyDevice = data.ProxyDevice
+	polcy.AuthorityDevice = data.AuthorityDevice
 
 	fields := set.NewSet(
 		"name",
@@ -73,6 +81,10 @@ func policyPut(c *gin.Context) {
 		"user_secondary",
 		"proxy_secondary",
 		"authority_secondary",
+		"admin_device",
+		"user_device",
+		"proxy_device",
+		"authority_device",
 	)
 
 	errData, err := polcy.Validate(db)
@@ -124,6 +136,10 @@ func policyPost(c *gin.Context) {
 		UserSecondary:      data.UserSecondary,
 		ProxySecondary:     data.ProxySecondary,
 		AuthoritySecondary: data.AuthoritySecondary,
+		AdminDevice:        data.AdminDevice,
+		UserDevice:         data.UserDevice,
+		ProxyDevice:        data.ProxyDevice,
+		AuthorityDevice:    data.AuthorityDevice,
 	}
 
 	errData, err := polcy.Validate(db)
