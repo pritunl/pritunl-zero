@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
@@ -33,6 +34,10 @@ type Policy struct {
 	UserSecondary      bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
 	ProxySecondary     bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
 	AuthoritySecondary bson.ObjectId    `bson:"authority_secondary,omitempty" json:"authority_secondary"`
+	AdminDevice        bool             `bson:"admin_device" json:"admin_device"`
+	UserDevice         bool             `bson:"user_device" json:"user_device"`
+	ProxyDevice        bool             `bson:"proxy_device" json:"proxy_device"`
+	AuthorityDevice    bool             `bson:"authority_device" json:"authority_device"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
@@ -49,6 +54,7 @@ func (p *Policy) Validate(db *database.Database) (
 			Error:   "keybase_mode_invalid",
 			Message: "Keybase mode is invalid",
 		}
+		return
 	}
 
 	if p.Services == nil {
@@ -104,6 +110,29 @@ func (p *Policy) Validate(db *database.Database) (
 		settings.Auth.GetSecondaryProvider(p.AuthoritySecondary) == nil {
 
 		p.AuthoritySecondary = ""
+	}
+
+	hasUserNode := false
+	nodes, err := node.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	for _, nde := range nodes {
+		if nde.UserDomain != "" {
+			hasUserNode = true
+			break
+		}
+	}
+
+	if (p.AdminDevice || p.UserDevice || p.ProxyDevice ||
+		p.AuthorityDevice) && !hasUserNode {
+
+		errData = &errortypes.ErrorData{
+			Error:   "keybase_mode_invalid",
+			Message: "Keybase mode is invalid",
+		}
+		return
 	}
 
 	return

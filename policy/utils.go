@@ -54,7 +54,7 @@ func GetRoles(db *database.Database, roles []string) (
 		"roles": &bson.M{
 			"$in": roles,
 		},
-	}).Iter()
+	}).Sort("_id").Iter()
 
 	polcy := &Policy{}
 	for cursor.Next(polcy) {
