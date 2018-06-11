@@ -7,6 +7,8 @@ const (
 	ProxyLoginFailed          = "proxy_login_failed"
 	UserLogin                 = "user_login"
 	UserLoginFailed           = "user_login_failed"
+	UserDeviceRegister        = "user_device_register"
+	UserDeviceRegisterFailed  = "user_device_register_failed"
 	DuoApprove                = "duo_approve"
 	DuoDeny                   = "duo_deny"
 	OneLoginApprove           = "one_login_approve"
