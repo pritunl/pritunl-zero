@@ -52,6 +52,11 @@ func (d *Database) Policies() (coll *Collection) {
 	return
 }
 
+func (d *Database) Devices() (coll *Collection) {
+	coll = d.getCollection("devices")
+	return
+}
+
 func (d *Database) Sessions() (coll *Collection) {
 	coll = d.getCollection("sessions")
 	return
