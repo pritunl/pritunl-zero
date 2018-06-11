@@ -200,7 +200,7 @@ func AuthAdmin(c *gin.Context) {
 		return
 	}
 
-	_, errData, err := validator.ValidateAdmin(
+	_, _, errData, err := validator.ValidateAdmin(
 		db, usr, authr.IsApi(), c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -239,7 +239,7 @@ func AuthUser(c *gin.Context) {
 		return
 	}
 
-	_, errData, err := validator.ValidateUser(
+	_, _, errData, err := validator.ValidateUser(
 		db, usr, authr.IsApi(), c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
