@@ -45,6 +45,8 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 	dbGroup.POST("/auth/secondary", authSecondaryPost)
 	dbGroup.GET("/auth/request", authRequestGet)
 	dbGroup.GET("/auth/callback", authCallbackGet)
+	dbGroup.GET("/auth/u2f/sign", authU2fSignGet)
+	dbGroup.POST("/auth/u2f/sign", authU2fSignPost)
 	sessGroup.GET("/logout", logoutGet)
 
 	engine.GET("/check", checkGet)
