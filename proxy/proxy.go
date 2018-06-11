@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/auth"
@@ -10,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"gopkg.in/mgo.v2/bson"
@@ -142,7 +144,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	_, errData, err := validator.ValidateProxy(
+	_, _, errData, err := validator.ValidateProxy(
 		db, usr, authr.IsApi(), host.Service, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
@@ -231,8 +233,21 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 
 	wProxies := map[string][]*web{}
 	wsProxies := map[string][]*webSocket{}
+	facets := []string{}
+
+	if node.Self.UserDomain != "" {
+		facets = append(facets,
+			fmt.Sprintf("https://%s", node.Self.UserDomain))
+	}
+
+	if node.Self.ManagementDomain != "" {
+		facets = append(facets,
+			fmt.Sprintf("https://%s", node.Self.ManagementDomain))
+	}
 
 	for domain, host := range p.Hosts {
+		facets = append(facets, fmt.Sprintf("https://%s", domain))
+
 		domainProxies := []*web{}
 		for _, server := range host.Service.Servers {
 			prxy := newWeb(proto, port, host, server)
@@ -252,6 +267,7 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 
 	p.wProxies = wProxies
 	p.wsProxies = wsProxies
+	settings.Local.Facets = facets
 
 	return
 }
