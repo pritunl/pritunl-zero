@@ -14,6 +14,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"strings"
+	"github.com/pritunl/pritunl-zero/u2flib"
 )
 
 func authStateGet(c *gin.Context) {
@@ -57,7 +58,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	secProviderId, errData, err := validator.ValidateAdmin(
+	deviceAuth, secProviderId, errData, err := validator.ValidateAdmin(
 		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -84,7 +85,23 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	if secProviderId != "" {
+	if deviceAuth {
+		secd, err := secondary.New(db, usr.Id, secondary.Admin,
+			secondary.DeviceProvider)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	} else if secProviderId != "" {
 		secd, err := secondary.New(db, usr.Id, secondary.Admin, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -177,7 +194,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	_, errData, err = validator.ValidateAdmin(db, usr, false, c.Request)
+	_, _, errData, err = validator.ValidateAdmin(db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -269,7 +286,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	secProviderId, errData, err := validator.ValidateAdmin(
+	deviceAuth, secProviderId, errData, err := validator.ValidateAdmin(
 		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -296,7 +313,23 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	if secProviderId != "" {
+	if deviceAuth {
+		secd, err := secondary.New(db, usr.Id, secondary.Admin,
+			secondary.DeviceProvider)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	} else if secProviderId != "" {
 		secd, err := secondary.New(db, usr.Id, secondary.Admin, secProviderId)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -336,4 +369,146 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	c.Redirect(302, "/")
+}
+
+func authU2fSignGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	token := c.Query("token")
+
+	secd, err := secondary.Get(db, token, secondary.Admin)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Two-factor authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	resp, errData, err := secd.DeviceSignRequest(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(401, errData)
+		return
+	}
+
+	c.JSON(200, resp)
+}
+
+type u2fSignData struct {
+	Token    string               `json:"token"`
+	Response *u2flib.SignResponse `json:"response"`
+}
+
+func authU2fSignPost(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	data := &u2fSignData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token, secondary.Admin)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Two-factor authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	errData, err := secd.DeviceSignResponse(db, data.Response)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	_, secProviderId, errData, err := validator.ValidateAdmin(
+		db, usr, false, c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.AdminLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	if secProviderId != "" {
+		secd, err := secondary.New(db, usr.Id, secondary.Admin, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminLogin,
+		audit.Fields{
+			"method": "secondary",
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	cook := cookie.NewAdmin(c.Writer, c.Request)
+
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Admin)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.Status(200)
 }
