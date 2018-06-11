@@ -438,6 +438,26 @@ func addIndexes() (err error) {
 		}
 	}
 
+	coll = db.Devices()
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"user"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"provider"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
 	coll = db.Sessions()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"user"},
