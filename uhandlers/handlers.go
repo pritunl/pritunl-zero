@@ -39,12 +39,20 @@ func Register(engine *gin.Engine) {
 	dbGroup.POST("/auth/secondary", authSecondaryPost)
 	dbGroup.GET("/auth/request", authRequestGet)
 	dbGroup.GET("/auth/callback", authCallbackGet)
+	engine.GET("/auth/u2f/app.json", authU2fAppGet)
+	csrfGroup.GET("/auth/u2f/register", authU2fRegisterGet)
+	csrfGroup.POST("/auth/u2f/register", authU2fRegisterPost)
+	dbGroup.GET("/auth/u2f/sign", authU2fSignGet)
+	dbGroup.POST("/auth/u2f/sign", authU2fSignPost)
 	sessGroup.GET("/logout", logoutGet)
 	sessGroup.GET("/logout_all", logoutAllGet)
 
 	engine.GET("/check", checkGet)
 
 	authGroup.GET("/csrf", csrfGet)
+
+	authGroup.GET("/device", devicesGet)
+	authGroup.DELETE("/device/:device_id", deviceDelete)
 
 	sessGroup.GET("/keybase", sshGet)
 	csrfGroup.GET("/keybase/info/:token", keybaseInfoGet)
