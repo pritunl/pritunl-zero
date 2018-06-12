@@ -362,13 +362,17 @@ func authCallbackGet(c *gin.Context) {
 			return
 		}
 
-		data, err := secd.GetData()
+		urlQuery, err := secd.GetQuery()
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
 
-		c.JSON(201, data)
+		if tokn.Query != "" {
+			urlQuery += "&" + tokn.Query
+		}
+
+		c.Redirect(302, "/login?"+urlQuery)
 		return
 	} else if secProviderId != "" {
 		secd, err := secondary.New(db, usr.Id, secondary.User, secProviderId)
