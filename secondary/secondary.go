@@ -12,9 +12,9 @@ import (
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
-	"net/url"
 )
 
 type SecondaryData struct {
@@ -423,7 +423,7 @@ func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 		return
 	}
 
-	devc := device.New(usr.Id, device.U2f)
+	devc := device.New(usr.Id, device.U2f, device.Secondary)
 	devc.User = usr.Id
 	devc.Name = name
 
