@@ -4,7 +4,7 @@ import * as ReactRouter from 'react-router-dom';
 import * as Theme from '../Theme';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import SubscriptionStore from '../stores/SubscriptionStore';
-import Loading from './Loading';
+import LoadingBar from './LoadingBar';
 import Subscription from './Subscription';
 import Users from './Users';
 import UserDetailed from './UserDetailed';
@@ -60,9 +60,6 @@ const css = {
 		fontSize: '18px',
 		fontWeight: 'bold',
 	} as React.CSSProperties,
-	loading: {
-		margin: '0 5px 0 1px',
-	} as React.CSSProperties,
 };
 
 export default class Main extends React.Component<{}, State> {
@@ -105,7 +102,6 @@ export default class Main extends React.Component<{}, State> {
 						<div className="pt-navbar-heading"
 							style={css.heading}
 						>Pritunl Zero</div>
-						<Loading style={css.loading} size="small"/>
 					</div>
 					<div className="pt-navbar-group pt-align-right" style={css.navGroup}>
 						<ReactRouter.Link
@@ -369,6 +365,7 @@ export default class Main extends React.Component<{}, State> {
 						/>
 					</div>
 				</nav>
+				<LoadingBar intent="primary"/>
 				<ReactRouter.Route path="/" exact={true} render={() => (
 					<Users/>
 				)}/>
