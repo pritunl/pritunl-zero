@@ -20,6 +20,23 @@ func Get(db *database.Database, devcId bson.ObjectId) (
 	return
 }
 
+func GetUser(db *database.Database, devcId bson.ObjectId,
+	userId bson.ObjectId) (devc *Device, err error) {
+
+	coll := db.Devices()
+	devc = &Device{}
+
+	err = coll.FindOne(&bson.M{
+		"_id":  devcId,
+		"user": userId,
+	}, devc)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database, userId bson.ObjectId) (
 	devices []*Device, err error) {
 
