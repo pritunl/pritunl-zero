@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"net/url"
 )
 
 type SecondaryData struct {
@@ -380,7 +381,7 @@ func (s *Secondary) DeviceRegisterRequest(db *database.Database) (
 }
 
 func (s *Secondary) DeviceRegisterResponse(db *database.Database,
-	regResp *u2flib.RegisterResponse) (
+	regResp *u2flib.RegisterResponse, name string) (
 	errData *errortypes.ErrorData, err error) {
 
 	if s.Disabled {
@@ -424,9 +425,15 @@ func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 
 	devc := device.New(usr.Id, device.U2f)
 	devc.User = usr.Id
+	devc.Name = name
 
 	err = devc.MarshalRegistration(reg)
 	if err != nil {
+		return
+	}
+
+	errData, err = devc.Validate(db)
+	if err != nil || errData != nil {
 		return
 	}
 
@@ -604,7 +611,7 @@ func (s *Secondary) GetQuery() (query string, err error) {
 		query = fmt.Sprintf(
 			"secondary=%s&label=%s&factors=%s",
 			s.Id,
-			"U2F Device",
+			url.PathEscape("U2F Device"),
 			"device",
 		)
 		return
@@ -632,7 +639,7 @@ func (s *Secondary) GetQuery() (query string, err error) {
 	query = fmt.Sprintf(
 		"secondary=%s&label=%s&factors=%s",
 		s.Id,
-		provider.Label,
+		url.PathEscape(provider.Label),
 		strings.Join(factors, ","),
 	)
 
