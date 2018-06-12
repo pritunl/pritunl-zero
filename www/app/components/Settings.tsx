@@ -213,7 +213,7 @@ export default class Settings extends React.Component<{}, State> {
 					</div>
 					{secondaryProviders}
 					<PageSelectButton
-						label="Add Two-Factor Provider"
+						label="Add Secondary Provider"
 						value={this.state.secondaryProvider}
 						buttonClass="pt-intent-success"
 						onChange={(val: string): void => {
