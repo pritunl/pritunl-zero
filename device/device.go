@@ -15,14 +15,37 @@ import (
 type Device struct {
 	Id           bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	User         bson.ObjectId `bson:"user" json:"user"`
+	Name         string        `bson:"name" json:"name"`
 	Type         string        `bson:"type" json:"type"`
 	Timestamp    time.Time     `bson:"timestamp" json:"timestamp"`
 	Disabled     bool          `bson:"disabled" json:"disabled"`
-	ActiveUntil  time.Time     `bson:"active_until" json:"active_until"`
+	ActiveUntil  time.Time     `bson:"activeactive_until_until" json:"active_until"`
 	LastActive   time.Time     `bson:"last_active" json:"last_active"`
 	U2fCounter   uint32        `bson:"u2f_counter"`
 	U2fKeyHandle []byte        `bson:"u2f_key_handle"`
 	U2fPublicKey []byte        `bson:"u2f_public_key"`
+}
+
+func (d *Device) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if len(d.Name) == 0 {
+		errData = &errortypes.ErrorData{
+			Error:   "device_name_missing",
+			Message: "Device name is required",
+		}
+		return
+	}
+
+	if len(d.Name) > 22 {
+		errData = &errortypes.ErrorData{
+			Error:   "device_name_invalid",
+			Message: "Device name is too long",
+		}
+		return
+	}
+
+	return
 }
 
 func (d *Device) MarshalRegistration(reg *u2flib.Registration) (err error) {
