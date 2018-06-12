@@ -31,7 +31,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
-			if polcy.AdminDevice {
+			if polcy.AdminDeviceSecondary {
 				deviceAuth = true
 			}
 
@@ -72,7 +72,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
-			if polcy.UserDevice {
+			if polcy.UserDeviceSecondary {
 				deviceAuth = true
 			}
 
@@ -135,7 +135,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
-			if polcy.ProxyDevice {
+			if polcy.ProxyDeviceSecondary {
 				deviceAuth = true
 			}
 
@@ -158,7 +158,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
-			if polcy.ProxyDevice {
+			if polcy.ProxyDeviceSecondary {
 				deviceAuth = true
 			}
 
