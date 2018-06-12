@@ -337,8 +337,15 @@ sudo service sshd restart || true`;
 				</div>;
 			}
 
+			let title = '';
+			if (this.props.proxy) {
+				title = 'Generate Bastion Deploy Script';
+			} else {
+				title = 'Generate Deploy Script';
+			}
+
 			popoverElem = <Blueprint.Dialog
-				title="Generate Deploy Script"
+				title={title}
 				style={css.dialog}
 				isOpen={this.state.popover}
 				onClose={(): void => {
