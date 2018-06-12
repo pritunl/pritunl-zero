@@ -12,21 +12,21 @@ import (
 )
 
 type policyData struct {
-	Id                 bson.ObjectId           `json:"id"`
-	Name               string                  `json:"name"`
-	Services           []bson.ObjectId         `json:"services"`
-	Authorities        []bson.ObjectId         `json:"authorities"`
-	Roles              []string                `json:"roles"`
-	Rules              map[string]*policy.Rule `json:"rules"`
-	KeybaseMode        string                  `json:"keybase_mode"`
-	AdminSecondary     bson.ObjectId           `json:"admin_secondary"`
-	UserSecondary      bson.ObjectId           `json:"user_secondary"`
-	ProxySecondary     bson.ObjectId           `json:"proxy_secondary"`
-	AuthoritySecondary bson.ObjectId           `json:"authority_secondary"`
-	AdminDevice        bool                    `json:"admin_device"`
-	UserDevice         bool                    `json:"user_device"`
-	ProxyDevice        bool                    `json:"proxy_device"`
-	AuthorityDevice    bool                    `json:"authority_device"`
+	Id                       bson.ObjectId           `json:"id"`
+	Name                     string                  `json:"name"`
+	Services                 []bson.ObjectId         `json:"services"`
+	Authorities              []bson.ObjectId         `json:"authorities"`
+	Roles                    []string                `json:"roles"`
+	Rules                    map[string]*policy.Rule `json:"rules"`
+	KeybaseMode              string                  `json:"keybase_mode"`
+	AdminSecondary           bson.ObjectId           `json:"admin_secondary"`
+	UserSecondary            bson.ObjectId           `json:"user_secondary"`
+	ProxySecondary           bson.ObjectId           `json:"proxy_secondary"`
+	AuthoritySecondary       bson.ObjectId           `json:"authority_secondary"`
+	AdminDeviceSecondary     bool                    `json:"admin_device_secondary"`
+	UserDeviceSecondary      bool                    `json:"user_device_secondary"`
+	ProxyDeviceSecondary     bool                    `json:"proxy_device_secondary"`
+	AuthorityDeviceSecondary bool                    `json:"authority_device_secondary"`
 }
 
 func policyPut(c *gin.Context) {
@@ -65,10 +65,10 @@ func policyPut(c *gin.Context) {
 	polcy.UserSecondary = data.UserSecondary
 	polcy.ProxySecondary = data.ProxySecondary
 	polcy.AuthoritySecondary = data.AuthoritySecondary
-	polcy.AdminDevice = data.AdminDevice
-	polcy.UserDevice = data.UserDevice
-	polcy.ProxyDevice = data.ProxyDevice
-	polcy.AuthorityDevice = data.AuthorityDevice
+	polcy.AdminDeviceSecondary = data.AdminDeviceSecondary
+	polcy.UserDeviceSecondary = data.UserDeviceSecondary
+	polcy.ProxyDeviceSecondary = data.ProxyDeviceSecondary
+	polcy.AuthorityDeviceSecondary = data.AuthorityDeviceSecondary
 
 	fields := set.NewSet(
 		"name",
@@ -126,20 +126,20 @@ func policyPost(c *gin.Context) {
 	}
 
 	polcy := &policy.Policy{
-		Name:               data.Name,
-		Services:           data.Services,
-		Authorities:        data.Authorities,
-		Roles:              data.Roles,
-		Rules:              data.Rules,
-		KeybaseMode:        data.KeybaseMode,
-		AdminSecondary:     data.AdminSecondary,
-		UserSecondary:      data.UserSecondary,
-		ProxySecondary:     data.ProxySecondary,
-		AuthoritySecondary: data.AuthoritySecondary,
-		AdminDevice:        data.AdminDevice,
-		UserDevice:         data.UserDevice,
-		ProxyDevice:        data.ProxyDevice,
-		AuthorityDevice:    data.AuthorityDevice,
+		Name:                     data.Name,
+		Services:                 data.Services,
+		Authorities:              data.Authorities,
+		Roles:                    data.Roles,
+		Rules:                    data.Rules,
+		KeybaseMode:              data.KeybaseMode,
+		AdminSecondary:           data.AdminSecondary,
+		UserSecondary:            data.UserSecondary,
+		ProxySecondary:           data.ProxySecondary,
+		AuthoritySecondary:       data.AuthoritySecondary,
+		AdminDeviceSecondary:     data.AdminDeviceSecondary,
+		UserDeviceSecondary:      data.UserDeviceSecondary,
+		ProxyDeviceSecondary:     data.ProxyDeviceSecondary,
+		AuthorityDeviceSecondary: data.AuthorityDeviceSecondary,
 	}
 
 	errData, err := polcy.Validate(db)
