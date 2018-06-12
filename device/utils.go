@@ -62,9 +62,10 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func New(userId bson.ObjectId, typ string) (devc *Device) {
+func New(userId bson.ObjectId, typ, mode string) (devc *Device) {
 	devc = &Device{
 		Type:       typ,
+		Mode:       mode,
 		User:       userId,
 		Timestamp:  time.Now(),
 		LastActive: time.Now(),

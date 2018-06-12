@@ -17,6 +17,7 @@ type Device struct {
 	User         bson.ObjectId `bson:"user" json:"user"`
 	Name         string        `bson:"name" json:"name"`
 	Type         string        `bson:"type" json:"type"`
+	Mode         string        `bson:"mode" json:"mode"`
 	Timestamp    time.Time     `bson:"timestamp" json:"timestamp"`
 	Disabled     bool          `bson:"disabled" json:"disabled"`
 	ActiveUntil  time.Time     `bson:"activeactive_until_until" json:"active_until"`
