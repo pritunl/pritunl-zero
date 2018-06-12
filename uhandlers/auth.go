@@ -471,6 +471,7 @@ func authU2fRegisterGet(c *gin.Context) {
 
 type u2fRegisterData struct {
 	Token    string                   `json:"token"`
+	Name     string                   `json:"name"`
 	Response *u2flib.RegisterResponse `json:"response"`
 }
 
@@ -510,7 +511,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	errData, err := secd.DeviceRegisterResponse(db, data.Response)
+	errData, err := secd.DeviceRegisterResponse(db, data.Response, data.Name)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
