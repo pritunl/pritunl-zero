@@ -4,6 +4,7 @@ import * as SuperAgent from 'superagent';
 import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
 import Session from './Session';
+import Loader from "../Loader";
 
 interface Secondary {
 	token: string;
