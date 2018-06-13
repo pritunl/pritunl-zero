@@ -27,8 +27,8 @@ type Challenge struct {
 }
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
-	r *http.Request, secondary bool) (secProvider bson.ObjectId, err error,
-	errData *errortypes.ErrorData) {
+	r *http.Request, device, secondary bool) (deviceAuth bool,
+	secProvider bson.ObjectId, err error, errData *errortypes.ErrorData) {
 
 	allAuthrs, err := authority.GetAll(db)
 	if err != nil {
@@ -75,14 +75,19 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	}
 
 	for _, polcy := range policies {
-		if polcy.AuthoritySecondary != "" {
-			secProvider = polcy.AuthoritySecondary
-			if !secondary {
-				return
-			} else {
-				break
-			}
+		if polcy.UserDeviceSecondary {
+			deviceAuth = true
 		}
+
+		if polcy.AuthoritySecondary != "" && secProvider == "" {
+			secProvider = polcy.AuthoritySecondary
+		}
+	}
+
+	if (deviceAuth && !device && !secondary) ||
+		(secProvider != "" && !secondary) {
+
+		return
 	}
 
 	if c.State != "" {
