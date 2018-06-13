@@ -102,6 +102,21 @@ func deviceDelete(c *gin.Context) {
 		return
 	}
 
+	count, err := device.Count(db, usr.Id)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if count < 2 {
+		errData := &errortypes.ErrorData{
+			Error:   "device_empty",
+			Message: "Contact administrator to remove security device",
+		}
+		c.JSON(400, errData)
+		return
+	}
+
 	err = device.RemoveUser(db, devcId, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
