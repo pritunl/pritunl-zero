@@ -51,9 +51,14 @@ func Register(engine *gin.Engine) {
 
 	authGroup.GET("/csrf", csrfGet)
 
-	authGroup.GET("/device", devicesGet)
-	authGroup.PUT("/device/:device_id", devicePut)
-	authGroup.DELETE("/device/:device_id", deviceDelete)
+	csrfGroup.GET("/device", devicesGet)
+	csrfGroup.PUT("/device/:device_id", devicePut)
+	csrfGroup.DELETE("/device/:device_id", deviceDelete)
+	csrfGroup.PUT("/device/:device_id/secondary", deviceU2fSecondaryPut)
+	csrfGroup.GET("/device/:device_id/sign", deviceU2fSignGet)
+	csrfGroup.POST("/device/:device_id/sign", deviceU2fSignPost)
+	csrfGroup.GET("/device/:device_id/register", deviceU2fRegisterGet)
+	csrfGroup.POST("/device/:device_id/register", deviceU2fRegisterPost)
 
 	sessGroup.GET("/keybase", sshGet)
 	csrfGroup.GET("/keybase/info/:token", keybaseInfoGet)
