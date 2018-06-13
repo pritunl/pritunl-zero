@@ -13,6 +13,8 @@ interface Secondary {
 	phone: boolean;
 	passcode: boolean;
 	sms: boolean;
+	device: boolean;
+	device_register: boolean;
 }
 
 interface SecondaryState {
@@ -60,7 +62,18 @@ const css = {
 	} as React.CSSProperties,
 };
 
+const u2fErrorCodes: {[index: number]: string} = {
+	0: 'ok',
+	1: 'other',
+	2: 'bad request',
+	3: 'configuration unsupported',
+	4: 'device ineligible',
+	5: 'timed out',
+};
+
 export default class Validate extends React.Component<Props, State> {
+	alertKey: string;
+
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
@@ -70,6 +83,110 @@ export default class Validate extends React.Component<Props, State> {
 			secondary: null,
 			secondaryState: null,
 		};
+	}
+
+	u2fSigned = (resp: any): void => {
+		Alert.dismiss(this.alertKey);
+
+		if (resp.errorCode) {
+			let errorMsg = 'U2F error code ' + resp.errorCode;
+			let u2fMsg = u2fErrorCodes[resp.errorCode as number];
+			if (u2fMsg) {
+				errorMsg += ': ' + u2fMsg;
+			}
+			Alert.error(errorMsg);
+
+			return
+		}
+
+		let loader = new Loader().loading();
+
+		SuperAgent
+			.post('/ssh/u2f/sign')
+			.send({
+				token: this.state.secondary.token,
+				response: resp,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to complete device sign');
+					return;
+				}
+
+				if (res.status === 201) {
+					this.setState({
+						...this.state,
+						secondary: res.body,
+						secondaryState: {
+							push: true,
+							phone: true,
+							passcode: true,
+							sms: true,
+						},
+						disabled: false,
+					});
+
+					return;
+				}
+
+				this.setState({
+					...this.state,
+					answered: true,
+					secondary: null,
+				});
+
+				window.history.replaceState(
+					null, null, window.location.pathname);
+
+				Alert.success('Successfully approved SSH key', 0);
+			});
+	}
+
+	deviceSign(token: string): void {
+		let loader = new Loader().loading();
+
+		SuperAgent
+			.get('/ssh/u2f/sign')
+			.query({
+				token: token,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to request device sign');
+					return;
+				}
+
+				this.alertKey = Alert.info(
+					'Insert your security key and tap the button', 30000);
+
+				(window as any).u2f.sign(res.body.appId,
+					res.body.challenge, res.body.registeredKeys,
+					this.u2fSigned, 30);
+			});
+	}
+
+	device(): JSX.Element {
+		return <div>
+			<div className="pt-non-ideal-state" style={css.body}>
+				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
+					<span className="pt-icon pt-icon-key"/>
+				</div>
+				<h4 className="pt-non-ideal-state-title">
+					{this.state.secondary.label}
+				</h4>
+				<span style={css.description}>
+					Insert your security key and tap the button
+				</span>
+			</div>
+		</div>;
 	}
 
 	secondarySubmit(factor: string): void {
@@ -102,7 +219,7 @@ export default class Validate extends React.Component<Props, State> {
 				} else if (err) {
 					Alert.errorRes(res, 'Failed to approve SSH key', 0);
 					return;
-				} else if (res.status === 201 && factor === 'sms') {
+				} else if (res.status === 206 && factor === 'sms') {
 					Alert.info('Text message sent', 0);
 					return;
 				} else {
@@ -249,6 +366,9 @@ export default class Validate extends React.Component<Props, State> {
 		}
 
 		if (this.state.secondary) {
+			if (this.state.secondary.device) {
+				return this.device();
+			}
 			return this.secondary();
 		}
 
@@ -302,6 +422,10 @@ export default class Validate extends React.Component<Props, State> {
 										},
 										disabled: false,
 									});
+
+									if (res.body.device) {
+										this.deviceSign(res.body.token);
+									}
 
 									return;
 								} else {

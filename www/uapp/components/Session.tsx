@@ -1,5 +1,10 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import Devices from './Devices';
+
+interface State {
+	devicesOpen: boolean;
+}
 
 const css = {
 	body: {
@@ -18,8 +23,26 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Session extends React.Component<{}, {}> {
+export default class Session extends React.Component<{}, State> {
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			devicesOpen: false,
+		};
+	}
+
 	render(): JSX.Element {
+		if (this.state.devicesOpen) {
+			return <Devices
+				onClose={(): void => {
+					this.setState({
+						...this.state,
+						devicesOpen: false,
+					});
+				}}
+			/>;
+		}
+
 		return <div>
 			<div className="pt-non-ideal-state" style={css.body}>
 				<h4 className="pt-non-ideal-state-title">
@@ -40,6 +63,18 @@ export default class Session extends React.Component<{}, {}> {
 				>
 					Install SSH Client
 				</a>
+				<button
+					className="pt-button pt-large pt-intent-success pt-icon-id-number"
+					style={css.button}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							devicesOpen: true,
+						});
+					}}
+				>
+					U2F Devices
+				</button>
 				<a
 					className="pt-button pt-large pt-intent-warning pt-icon-delete"
 					style={css.button}
