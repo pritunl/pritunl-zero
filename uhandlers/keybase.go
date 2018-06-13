@@ -528,7 +528,7 @@ func keybaseSecondaryPut(c *gin.Context) {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
 				Error:   "secondary_expired",
-				Message: "Two-factor authentication has expired",
+				Message: "Secondary authentication has expired",
 			}
 			c.JSON(401, errData)
 		} else {

@@ -244,7 +244,7 @@ func sshSecondaryPut(c *gin.Context) {
 	errData, err := secd.Handle(db, c.Request, data.Factor, data.Passcode)
 	if err != nil {
 		if _, ok := err.(*secondary.IncompleteError); ok {
-			c.Status(201)
+			c.Status(206)
 		} else {
 			utils.AbortWithError(c, 500, err)
 		}
