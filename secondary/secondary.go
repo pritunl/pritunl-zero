@@ -18,13 +18,14 @@ import (
 )
 
 type SecondaryData struct {
-	Token    string `json:"token"`
-	Label    string `json:"label"`
-	Push     bool   `json:"push"`
-	Phone    bool   `json:"phone"`
-	Passcode bool   `json:"passcode"`
-	Sms      bool   `json:"sms"`
-	Device   bool   `json:"device"`
+	Token          string `json:"token"`
+	Label          string `json:"label"`
+	Push           bool   `json:"push"`
+	Phone          bool   `json:"phone"`
+	Passcode       bool   `json:"passcode"`
+	Sms            bool   `json:"sms"`
+	Device         bool   `json:"device"`
+	DeviceRegister bool   `json:"device_register"`
 }
 
 type Secondary struct {
@@ -382,7 +383,7 @@ func (s *Secondary) DeviceRegisterRequest(db *database.Database) (
 
 func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 	regResp *u2flib.RegisterResponse, name string) (
-	errData *errortypes.ErrorData, err error) {
+	devc *device.Device, errData *errortypes.ErrorData, err error) {
 
 	if s.Disabled {
 		errData = &errortypes.ErrorData{
@@ -423,7 +424,7 @@ func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 		return
 	}
 
-	devc := device.New(usr.Id, device.U2f, device.Secondary)
+	devc = device.New(usr.Id, device.U2f, device.Secondary)
 	devc.User = usr.Id
 	devc.Name = name
 
@@ -577,14 +578,26 @@ func (s *Secondary) DeviceSignResponse(db *database.Database,
 
 func (s *Secondary) GetData() (data *SecondaryData, err error) {
 	if s.ProviderId == DeviceProvider {
+		label := ""
+		register := false
+
+		if strings.Contains(s.Type, "register") {
+			label = "Register U2F Device"
+			register = true
+		} else {
+			label = "U2F Device"
+			register = false
+		}
+
 		data = &SecondaryData{
-			Token:    s.Id,
-			Label:    "U2F Device",
-			Push:     false,
-			Phone:    false,
-			Passcode: false,
-			Sms:      false,
-			Device:   true,
+			Token:          s.Id,
+			Label:          label,
+			Push:           false,
+			Phone:          false,
+			Passcode:       false,
+			Sms:            false,
+			Device:         !register,
+			DeviceRegister: register,
 		}
 		return
 	}
@@ -595,24 +608,36 @@ func (s *Secondary) GetData() (data *SecondaryData, err error) {
 	}
 
 	data = &SecondaryData{
-		Token:    s.Id,
-		Label:    provider.Label,
-		Push:     provider.PushFactor,
-		Phone:    provider.PhoneFactor,
-		Passcode: provider.PasscodeFactor || provider.SmsFactor,
-		Sms:      provider.SmsFactor,
-		Device:   false,
+		Token:          s.Id,
+		Label:          provider.Label,
+		Push:           provider.PushFactor,
+		Phone:          provider.PhoneFactor,
+		Passcode:       provider.PasscodeFactor || provider.SmsFactor,
+		Sms:            provider.SmsFactor,
+		Device:         false,
+		DeviceRegister: false,
 	}
 	return
 }
 
 func (s *Secondary) GetQuery() (query string, err error) {
 	if s.ProviderId == DeviceProvider {
+		label := ""
+		factor := ""
+
+		if strings.Contains(s.Type, "register") {
+			label = "Register U2F Device"
+			factor = "device_register"
+		} else {
+			label = "U2F Device"
+			factor = "device"
+		}
+
 		query = fmt.Sprintf(
 			"secondary=%s&label=%s&factors=%s",
 			s.Id,
-			url.PathEscape("U2F Device"),
-			"device",
+			url.PathEscape(label),
+			factor,
 		)
 		return
 	}

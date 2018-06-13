@@ -14,12 +14,21 @@ const (
 	Sms      = "sms"
 	Device   = "device"
 
-	Admin     = "admin"
-	User      = "user"
-	Proxy     = "proxy"
-	Register  = "register"
-	Authority = "authority"
-	Keybase   = "keybase"
+	Admin                    = "admin"
+	AdminDevice              = "admin_device"
+	AdminDeviceRegister      = "admin_device_register"
+	User                     = "user"
+	UserDevice               = "user_device"
+	UserDeviceRegister       = "user_device_register"
+	UserManage               = "user_manage"
+	UserManageDevice         = "user_manage_device"
+	UserManageDeviceRegister = "user_manage_device_register"
+	Proxy                    = "proxy"
+	ProxyDevice              = "proxy_device"
+	ProxyDeviceRegister      = "proxy_device_register"
+	Authority                = "authority"
+	AuthorityDevice          = "authority_device"
+	Keybase                  = "keybase"
 )
 
 var (
