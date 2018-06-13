@@ -81,10 +81,10 @@ func policyPut(c *gin.Context) {
 		"user_secondary",
 		"proxy_secondary",
 		"authority_secondary",
-		"admin_device",
-		"user_device",
-		"proxy_device",
-		"authority_device",
+		"admin_device_secondary",
+		"user_device_secondary",
+		"proxy_device_secondary",
+		"authority_device_secondary",
 	)
 
 	errData, err := polcy.Validate(db)
