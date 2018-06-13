@@ -857,25 +857,28 @@ export default class Policy extends React.Component<Props, State> {
 					<PageSwitch
 						label="Admin U2F device authentication"
 						help="Require admins to use U2F device authentication."
-						checked={policy.admin_device}
+						checked={policy.admin_device_secondary}
 						onToggle={(): void => {
-							this.set('admin_device', !policy.admin_device)
+							this.set('admin_device_secondary',
+								!policy.admin_device_secondary)
 						}}
 					/>
 					<PageSwitch
 						label="User U2F device authentication"
 						help="Require users to use U2F device authentication."
-						checked={policy.user_device}
+						checked={policy.user_device_secondary}
 						onToggle={(): void => {
-							this.set('user_device', !policy.user_device)
+							this.set('user_device_secondary',
+								!policy.user_device_secondary)
 						}}
 					/>
 					<PageSwitch
 						label="Service U2F device authentication"
 						help="Require service users to use U2F device authentication."
-						checked={policy.proxy_device}
+						checked={policy.proxy_device_secondary}
 						onToggle={(): void => {
-							this.set('proxy_device', !policy.proxy_device)
+							this.set('proxy_device_secondary',
+								!policy.proxy_device_secondary)
 						}}
 					/>
 				</div>
