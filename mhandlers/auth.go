@@ -635,7 +635,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	cook := cookie.NewUser(c.Writer, c.Request)
+	cook := cookie.NewAdmin(c.Writer, c.Request)
 
 	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Admin)
 	if err != nil {
