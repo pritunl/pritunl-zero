@@ -62,8 +62,25 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
+func Count(db *database.Database, userId bson.ObjectId) (
+	count int, err error) {
+
+	coll := db.Devices()
+
+	count, err = coll.Find(&bson.M{
+		"user": userId,
+	}).Count()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func New(userId bson.ObjectId, typ, mode string) (devc *Device) {
 	devc = &Device{
+		Id:         bson.NewObjectId(),
 		Type:       typ,
 		Mode:       mode,
 		User:       userId,
