@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/service"
@@ -15,6 +16,7 @@ import (
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
+	"gopkg.in/mgo.v2/bson"
 	"strings"
 )
 
@@ -93,8 +95,28 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if deviceAuth {
-		secd, err := secondary.New(db, usr.Id, secondary.Proxy,
-			secondary.DeviceProvider)
+		deviceCount, err := device.Count(db, usr.Id)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		secType := ""
+		var secProvider bson.ObjectId
+		if deviceCount == 0 {
+			if secProviderId == "" {
+				secType = secondary.ProxyDeviceRegister
+				secProvider = secondary.DeviceProvider
+			} else {
+				secType = secondary.Proxy
+				secProvider = secProviderId
+			}
+		} else {
+			secType = secondary.ProxyDevice
+			secProvider = secondary.DeviceProvider
+		}
+
+		secd, err := secondary.New(db, usr.Id, secType, secProvider)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -172,12 +194,18 @@ func authSecondaryPost(c *gin.Context) {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
 				Error:   "secondary_expired",
-				Message: "Two-factor authentication has expired",
+				Message: "Secondary authentication has expired",
 			}
 			c.JSON(401, errData)
 		} else {
 			utils.AbortWithError(c, 500, err)
 		}
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -192,17 +220,26 @@ func authSecondaryPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.ProxyLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
 
-	usr, err := secd.GetUser(db)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
-
-	_, _, errData, err = validator.ValidateProxy(
+	deviceAuth, _, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -227,6 +264,32 @@ func authSecondaryPost(c *gin.Context) {
 
 		c.JSON(401, errData)
 		return
+	}
+
+	if deviceAuth {
+		deviceCount, err := device.Count(db, usr.Id)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if deviceCount == 0 {
+			secd, err := secondary.New(db, usr.Id,
+				secondary.ProxyDeviceRegister, secondary.DeviceProvider)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			data, err := secd.GetData()
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			c.JSON(201, data)
+			return
+		}
 	}
 
 	err = audit.New(
@@ -329,8 +392,28 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if deviceAuth {
-		secd, err := secondary.New(db, usr.Id, secondary.Proxy,
-			secondary.DeviceProvider)
+		deviceCount, err := device.Count(db, usr.Id)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		secType := ""
+		var secProvider bson.ObjectId
+		if deviceCount == 0 {
+			if secProviderId == "" {
+				secType = secondary.ProxyDeviceRegister
+				secProvider = secondary.DeviceProvider
+			} else {
+				secType = secondary.Proxy
+				secProvider = secProviderId
+			}
+		} else {
+			secType = secondary.ProxyDevice
+			secProvider = secondary.DeviceProvider
+		}
+
+		secd, err := secondary.New(db, usr.Id, secType, secProvider)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -394,21 +477,219 @@ func authCallbackGet(c *gin.Context) {
 	redirectQuery(c, tokn.Query)
 }
 
-func authU2fSignGet(c *gin.Context) {
+func authU2fRegisterGet(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	token := c.Query("token")
 
-	secd, err := secondary.Get(db, token, secondary.Proxy)
+	secd, err := secondary.Get(db, token, secondary.ProxyDeviceRegister)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
 				Error:   "secondary_expired",
-				Message: "Two-factor authentication has expired",
+				Message: "Secondary authentication has expired",
 			}
 			c.JSON(401, errData)
 		} else {
 			utils.AbortWithError(c, 500, err)
 		}
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	resp, errData, err := secd.DeviceRegisterRequest(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.ProxyLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	c.JSON(200, resp)
+}
+
+type u2fRegisterData struct {
+	Token    string                   `json:"token"`
+	Name     string                   `json:"name"`
+	Response *u2flib.RegisterResponse `json:"response"`
+}
+
+func authU2fRegisterPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	srvc := c.MustGet("service").(*service.Service)
+
+	data := &u2fRegisterData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token, secondary.ProxyDeviceRegister)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Secondary authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	_, _, errData, err := validator.ValidateProxy(
+		db, usr, false, srvc, c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.ProxyLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	devc, errData, err := secd.DeviceRegisterResponse(
+		db, data.Response, data.Name)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.DeviceRegisterFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.DeviceRegister,
+		audit.Fields{
+			"device_id": devc.Id,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.ProxyLogin,
+		audit.Fields{
+			"method": "secondary",
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	cook := cookie.NewProxy(srvc, c.Writer, c.Request)
+
+	_, err = cook.NewSession(db, c.Request, usr.Id, true, session.Proxy)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.Status(200)
+}
+
+func authU2fSignGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	token := c.Query("token")
+
+	secd, err := secondary.Get(db, token, secondary.ProxyDevice)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Secondary authentication has expired",
+			}
+			c.JSON(401, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	usr, err := secd.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -419,6 +700,21 @@ func authU2fSignGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.ProxyLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		c.JSON(401, errData)
 		return
 	}
@@ -442,23 +738,17 @@ func authU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	secd, err := secondary.Get(db, data.Token, secondary.Proxy)
+	secd, err := secondary.Get(db, data.Token, secondary.ProxyDevice)
 	if err != nil {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
 				Error:   "secondary_expired",
-				Message: "Two-factor authentication has expired",
+				Message: "Secondary authentication has expired",
 			}
 			c.JSON(401, errData)
 		} else {
 			utils.AbortWithError(c, 500, err)
 		}
-		return
-	}
-
-	errData, err := secd.DeviceSignResponse(db, data.Response)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -470,6 +760,32 @@ func authU2fSignPost(c *gin.Context) {
 
 	_, secProviderId, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.ProxyLoginFailed,
+			audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(401, errData)
+		return
+	}
+
+	errData, err = secd.DeviceSignResponse(db, data.Response)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
