@@ -76,7 +76,9 @@ export default class PageInputButton extends React.Component<Props, {}> {
 			button = <ConfirmButton
 				className={buttonClass}
 				style={buttonStyle}
+				progressClassName="pt-intent-danger"
 				disabled={this.props.disabled || this.props.buttonDisabled}
+				grouped={true}
 				onConfirm={this.props.onSubmit}
 				label={buttonLabel}
 			/>;
