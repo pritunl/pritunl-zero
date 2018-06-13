@@ -72,6 +72,12 @@ func Register(engine *gin.Engine) {
 
 	authGroup.GET("/csrf", csrfGet)
 
+	csrfGroup.GET("/device/:user_id", devicesGet)
+	csrfGroup.PUT("/device/:device_id", devicePut)
+	csrfGroup.DELETE("/device/:device_id", deviceDelete)
+	csrfGroup.GET("/device/:user_id/register", deviceU2fRegisterGet)
+	csrfGroup.POST("/device/:user_id/register", deviceU2fRegisterPost)
+
 	csrfGroup.GET("/event", eventGet)
 
 	csrfGroup.GET("/log", logsGet)
