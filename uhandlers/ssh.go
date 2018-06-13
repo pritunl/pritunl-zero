@@ -6,10 +6,12 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/challenge"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/ssh"
+	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 	"regexp"
 	"time"
@@ -79,13 +81,50 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	secProviderId, err, errData := chal.Approve(db, usr, c.Request, false)
+	deviceAuth, secProviderId, err, errData := chal.Approve(
+		db, usr, c.Request, false, false)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	if secProviderId != "" {
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	if deviceAuth {
+		deviceCount, err := device.Count(db, usr.Id)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if deviceCount == 0 {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_device_unavailable",
+				Message: "Secondary authentication device not available",
+			}
+			c.JSON(400, errData)
+			return
+		}
+
+		secd, err := secondary.NewChallenge(db, usr.Id,
+			secondary.AuthorityDevice, chal.Id, secondary.DeviceProvider)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	} else if secProviderId != "" {
 		secd, err := secondary.NewChallenge(
 			db, usr.Id, secondary.Authority, chal.Id, secProviderId)
 		if err != nil {
@@ -118,11 +157,6 @@ func sshValidatePut(c *gin.Context) {
 	}
 
 	event.Publish(db, "ssh_challenge", chal.Id)
-
-	if errData != nil {
-		c.JSON(400, errData)
-		return
-	}
 
 	c.Status(200)
 }
@@ -198,9 +232,9 @@ func sshSecondaryPut(c *gin.Context) {
 		if _, ok := err.(*database.NotFoundError); ok {
 			errData := &errortypes.ErrorData{
 				Error:   "secondary_expired",
-				Message: "Two-factor authentication has expired",
+				Message: "Secondary authentication has expired",
 			}
-			c.JSON(401, errData)
+			c.JSON(400, errData)
 		} else {
 			utils.AbortWithError(c, 500, err)
 		}
@@ -218,7 +252,7 @@ func sshSecondaryPut(c *gin.Context) {
 	}
 
 	if errData != nil {
-		c.JSON(401, errData)
+		c.JSON(400, errData)
 		return
 	}
 
@@ -240,9 +274,14 @@ func sshSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	_, err, errData = chal.Approve(db, usr, c.Request, true)
+	_, _, err, errData = chal.Approve(db, usr, c.Request, true, true)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
 		return
 	}
 
@@ -262,10 +301,145 @@ func sshSecondaryPut(c *gin.Context) {
 
 	event.Publish(db, "ssh_challenge", chal.Id)
 
+	c.Status(200)
+}
+
+func sshU2fSignGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	token := c.Query("token")
+
+	secd, err := secondary.Get(db, token, secondary.AuthorityDevice)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Secondary authentication has expired",
+			}
+			c.JSON(400, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	resp, errData, err := secd.DeviceSignRequest(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	if errData != nil {
 		c.JSON(400, errData)
 		return
 	}
+
+	c.JSON(200, resp)
+}
+
+type sshU2fSignData struct {
+	Token    string               `json:"token"`
+	Response *u2flib.SignResponse `json:"response"`
+}
+
+func sshU2fSignPost(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+	data := &sshU2fSignData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	secd, err := secondary.Get(db, data.Token, secondary.AuthorityDevice)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			errData := &errortypes.ErrorData{
+				Error:   "secondary_expired",
+				Message: "Secondary authentication has expired",
+			}
+			c.JSON(400, errData)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	errData, err := secd.DeviceSignResponse(db, data.Response)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	chal, err := challenge.GetChallenge(db, secd.ChallengeId)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithStatus(c, 404)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	_, secProviderId, err, errData := chal.Approve(
+		db, usr, c.Request, true, false)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	if secProviderId != "" {
+		secd, err := secondary.NewChallenge(db, usr.Id,
+			secondary.Authority, chal.Id, secProviderId)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		data, err := secd.GetData()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(201, data)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.SshApprove,
+		audit.Fields{
+			"ssh_key": chal.PubKey,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.Publish(db, "ssh_challenge", chal.Id)
 
 	c.Status(200)
 }

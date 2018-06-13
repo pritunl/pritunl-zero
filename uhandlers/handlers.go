@@ -71,6 +71,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup.PUT("/ssh/validate/:ssh_token", sshValidatePut)
 	csrfGroup.DELETE("/ssh/validate/:ssh_token", sshValidateDelete)
 	csrfGroup.PUT("/ssh/secondary", sshSecondaryPut)
+	csrfGroup.GET("/ssh/u2f/sign", sshU2fSignGet)
+	csrfGroup.POST("/ssh/u2f/sign", sshU2fSignPost)
 	dbGroup.POST("/ssh/challenge", sshChallengePost)
 	dbGroup.PUT("/ssh/challenge", sshChallengePut)
 	dbGroup.POST("/ssh/host", sshHostPost)
