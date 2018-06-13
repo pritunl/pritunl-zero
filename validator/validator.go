@@ -35,9 +35,8 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.AdminSecondary != "" {
+			if polcy.AdminSecondary != "" && secProvider == "" {
 				secProvider = polcy.AdminSecondary
-				break
 			}
 		}
 	}
@@ -76,9 +75,8 @@ func ValidateUser(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.UserSecondary != "" {
+			if polcy.UserSecondary != "" && secProvider == "" {
 				secProvider = polcy.UserSecondary
-				break
 			}
 		}
 	}
@@ -139,9 +137,8 @@ func ValidateProxy(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.ProxySecondary != "" {
+			if polcy.ProxySecondary != "" && secProvider == "" {
 				secProvider = polcy.ProxySecondary
-				break
 			}
 		}
 
@@ -162,9 +159,8 @@ func ValidateProxy(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.ProxySecondary != "" {
+			if polcy.ProxySecondary != "" && secProvider == "" {
 				secProvider = polcy.ProxySecondary
-				break
 			}
 		}
 	}
