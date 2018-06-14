@@ -362,7 +362,8 @@ func (s *Secondary) DeviceRegisterRequest(db *database.Database) (
 		regs = append(regs, reg)
 	}
 
-	chal, err := u2flib.NewChallenge(device.GetAppId(), settings.Local.Facets)
+	chal, err := u2flib.NewChallenge(settings.Local.AppId,
+		settings.Local.Facets)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "secondary: Failed to generate u2f challenge"),
@@ -492,7 +493,8 @@ func (s *Secondary) DeviceSignRequest(db *database.Database) (
 		regs = append(regs, reg)
 	}
 
-	chal, err := u2flib.NewChallenge(device.GetAppId(), settings.Local.Facets)
+	chal, err := u2flib.NewChallenge(settings.Local.AppId,
+		settings.Local.Facets)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "secondary: Failed to generate u2f challenge"),
