@@ -22,6 +22,7 @@ type Device struct {
 	Disabled     bool          `bson:"disabled" json:"disabled"`
 	ActiveUntil  time.Time     `bson:"activeactive_until_until" json:"active_until"`
 	LastActive   time.Time     `bson:"last_active" json:"last_active"`
+	U2fRaw       []byte        `bson:"u2f_raw"`
 	U2fCounter   uint32        `bson:"u2f_counter"`
 	U2fKeyHandle []byte        `bson:"u2f_key_handle"`
 	U2fPublicKey []byte        `bson:"u2f_public_key"`
@@ -58,6 +59,7 @@ func (d *Device) MarshalRegistration(reg *u2flib.Registration) (err error) {
 		return
 	}
 
+	d.U2fRaw = reg.Raw
 	d.U2fKeyHandle = reg.KeyHandle
 	d.U2fPublicKey = pubPkix
 
