@@ -141,6 +141,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set(
 		"Authorization",
@@ -211,6 +212,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", apiHeader)
 
 	resp, err = oneloginClient.Do(req)
@@ -270,6 +272,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 			return
 		}
 
+		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Authorization", apiHeader)
 
 		resp, err = oneloginClient.Do(req)
@@ -317,6 +320,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 			return
 		}
 
+		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Authorization", apiHeader)
 
 		resp, err = oneloginClient.Do(req)
@@ -389,6 +393,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", apiHeader)
 
 	resp, err = oneloginClient.Do(req)
@@ -500,6 +505,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 			return
 		}
 
+		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", apiHeader)
 		req.Header.Set("User-Agent", r.UserAgent())
@@ -627,6 +633,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 			return
 		}
 
+		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", apiHeader)
 		req.Header.Set("User-Agent", r.UserAgent())
