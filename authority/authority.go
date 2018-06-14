@@ -51,6 +51,8 @@ type Authority struct {
 	HostExpire         int           `bson:"host_expire" json:"host_expire"`
 	PrivateKey         string        `bson:"private_key" json:"-"`
 	PublicKey          string        `bson:"public_key" json:"public_key"`
+	ProxyPrivateKey    string        `bson:"proxy_private_key" json:"-"`
+	ProxyPublicKey     string        `bson:"proxy_public_key" json:"proxy_public_key"`
 	HostDomain         string        `bson:"host_domain" json:"host_domain"`
 	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
 	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
@@ -60,6 +62,21 @@ type Authority struct {
 
 func (a *Authority) GetDomain(hostname string) string {
 	return hostname + "." + a.HostDomain
+}
+
+func (a *Authority) GenerateRsaProxyPrivateKey() (err error) {
+	privKeyBytes, pubKeyBytes, err := GenerateRsaKey()
+	if err != nil {
+		return
+	}
+
+	a.Info = &Info{
+		KeyAlg: "RSA 4096",
+	}
+	a.ProxyPrivateKey = strings.TrimSpace(string(privKeyBytes))
+	a.ProxyPublicKey = strings.TrimSpace(string(pubKeyBytes))
+
+	return
 }
 
 func (a *Authority) GenerateRsaPrivateKey() (err error) {
