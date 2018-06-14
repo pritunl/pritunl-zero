@@ -881,6 +881,15 @@ export default class Policy extends React.Component<Props, State> {
 								!policy.proxy_device_secondary)
 						}}
 					/>
+					<PageSwitch
+						label="Authority U2F device authentication"
+						help="Require users retrieving SSH certificates from an authority to use U2F device authentication."
+						checked={policy.authority_device_secondary}
+						onToggle={(): void => {
+							this.set('authority_device_secondary',
+								!policy.authority_device_secondary)
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
