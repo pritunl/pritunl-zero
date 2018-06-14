@@ -219,6 +219,7 @@ func NewWebRegisterRequest(c *Challenge, regs []Registration) *WebRegisterReques
 	rr := WebRegisterRequest{
 		AppID:            c.AppID,
 		RegisterRequests: []RegisterRequest{req},
+		RegisteredKeys:   []RegisteredKey{},
 	}
 
 	for _, r := range regs {
