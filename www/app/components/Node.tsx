@@ -469,7 +469,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('_') === -1 ||
 							node.type.indexOf('user') === -1}
 						label="User Domain"
-						help="Domain that will be used to access the user interface. Changing this will invalidate any existing U2F devices."
+						help="Domain that will be used to access the user interface. When using U2F domain must be the same on all nodes with user active. Changing this will invalidate any existing U2F devices."
 						type="text"
 						placeholder="Enter user domain"
 						value={node.user_domain}
