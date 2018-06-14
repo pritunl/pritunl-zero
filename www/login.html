@@ -56,7 +56,8 @@
       }
 
       #alert,
-      #secondary-alert {
+      #secondary-alert,
+      #device-alert {
         display: none;
         margin-bottom: 15px;
         transition: background-color ease-in-out 0.1s,
@@ -64,7 +65,8 @@
       }
 
       #alert.flash,
-      #secondary-alert.flash {
+      #secondary-alert.flash,
+      #device-alert.flash {
         background-color: rgba(255, 255, 255, 0.50);
       }
 
@@ -77,6 +79,10 @@
       }
 
       #auth-secondary {
+        display: none;
+      }
+
+      #auth-device {
         display: none;
       }
 
@@ -99,6 +105,18 @@
         autocapitalize="off" spellcheck="false"
         type="text" placeholder="Passcode"/>
       <button id="secondary-submit" class="pt-button auth-button">Submit</button>
+    </div>
+    <div id="auth-device" class="pt-card pt-elevation-2">
+      <h5 id="device-label"></h5>
+      <div id="device-alert" class="pt-callout"></div>
+      <form id="device-form">
+        <label class="pt-label">
+          <input id="device-name" class="pt-input"
+            type="text" placeholder="Device name" autofocus/>
+        </label>
+        <input id="device-submit" class="pt-button" disabled
+          type="submit" value="Register Device"/>
+      </form>
     </div>
     <div id="auth-local" class="pt-card pt-elevation-2">
       <div id="alert" class="pt-callout"></div>
@@ -139,7 +157,7 @@
         2: 'bad request',
         3: 'configuration unsupported',
         4: 'device ineligible',
-        5: 'timed out',
+        5: 'timed out'
       };
 
       var secondaryToken = null;
@@ -149,7 +167,8 @@
         phone: false,
         sms: false,
         passcode: false,
-        device: false
+        device: false,
+        device_register: false
       };
       var secondaryAuth = document.getElementById('auth-secondary');
       var secondaryLabel = document.getElementById('secondary-label');
@@ -184,8 +203,117 @@
           if (queryKeyVal[1].indexOf('device') !== -1) {
             secondaryFactors.device = true;
           }
+          if (queryKeyVal[1].indexOf('device_register') !== -1) {
+            secondaryFactors.device_register = true;
+          }
         }
       }
+
+      var deviceAuthElm = document.getElementById('auth-device');
+      var deviceLabelElm = document.getElementById('device-label');
+      var deviceFormElm = document.getElementById('device-form');
+      var deviceNameElm = document.getElementById('device-name');
+      var deviceSubmitElm = document.getElementById('device-submit');
+      var deviceAlertElm = document.getElementById('device-alert');
+
+      var deviceRegister = function() {
+        setDeviceAlert(
+          'U2F device registration required', 'warning');
+
+        deviceNameElm.onkeyup = function(evt) {
+          deviceSubmitElm.disabled = !evt.target.value;
+        };
+
+        var u2fRegistered = function(resp) {
+          if (resp.errorCode) {
+            var errorMsg = 'U2F error code ' + resp.errorCode;
+            var u2fMsg = u2fErrorCodes[resp.errorCode];
+            if (u2fMsg) {
+              errorMsg += ': ' + u2fMsg;
+            }
+            setDeviceAlert(errorMsg, 'danger');
+            return
+          }
+
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setDeviceAlert();
+                window.location = '/';
+              } else if (xmlhttp.status === 202) {
+                setDeviceAlert();
+                window.location = JSON.parse(xmlhttp.response)['redirect'];
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setDeviceAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'POST',
+            '/auth/u2f/register' + window.location.search,
+            true
+          );
+          xmlhttp.setRequestHeader('Content-Type', 'application/json');
+          xmlhttp.send(JSON.stringify({
+            token: secondaryToken,
+            name: deviceNameElm.value,
+            response: resp
+          }));
+        };
+
+        deviceFormElm.onsubmit = function(evt) {
+          if (evt) {
+            evt.preventDefault ? evt.preventDefault() :
+              evt.returnValue = false;
+          }
+
+          deviceSubmitElm.disabled = true;
+          deviceNameElm.disabled = true;
+
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setDeviceAlert(
+                  'Insert your security key and tap the button', 'info');
+
+                var resp = JSON.parse(xmlhttp.responseText);
+                u2f.register(resp.appId, resp.registerRequests,
+                  resp.registeredKeys, u2fRegistered, 30);
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setDeviceAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'GET',
+            '/auth/u2f/register?token=' + secondaryToken,
+            true
+          );
+          xmlhttp.send();
+        }
+      };
 
       var deviceAuth = function() {
         var u2fSigned = function(resp) {
@@ -207,7 +335,7 @@
                 setSecondaryAlert();
                 window.location = '/';
               } else if (xmlhttp.status === 201) {
-                setAlert();
+                setSecondaryAlert();
 
                 var data = JSON.parse(xmlhttp.response);
                 secondaryToken = data['token'];
@@ -217,8 +345,10 @@
                 secondaryFactors.sms = data['sms'];
                 secondaryFactors.passcode = data['passcode'];
                 secondaryFactors.device = data['device'];
+                secondaryFactors.device_register = data['device_register'];
 
                 secondaryLabel.innerText = secondaryLabl;
+                deviceLabelElm.innerText = secondaryLabl;
                 secondaryPush.style.display = secondaryFactors.push ?
                   'block' : 'none';
                 secondaryPhone.style.display = secondaryFactors.phone ?
@@ -232,8 +362,14 @@
                 secondaryDevice.style.display = secondaryFactors.device ?
                   'block' : 'none';
                 authLocal.style.display = 'none';
-                secondaryAuth.style.display = 'block';
 
+                if (secondaryFactors.device_register) {
+                  deviceAuthElm.style.display = 'block';
+                  deviceRegister();
+                  return;
+                }
+
+                secondaryAuth.style.display = 'block';
                 if (secondaryFactors.device) {
                   deviceAuth();
                 }
@@ -297,10 +433,11 @@
           );
           xmlhttp.send();
         }
-      }
+      };
 
       if (secondaryToken) {
         secondaryLabel.innerText = secondaryLabl;
+        deviceLabelElm.innerText = secondaryLabl;
         secondaryPush.style.display = secondaryFactors.push ?
           'block' : 'none';
         secondaryPhone.style.display = secondaryFactors.phone ?
@@ -314,10 +451,15 @@
         secondaryDevice.style.display = secondaryFactors.device ?
           'block' : 'none';
         authButtons.style.display = 'none';
-        secondaryAuth.style.display = 'block';
 
-        if (secondaryFactors.device) {
-          deviceAuth();
+        if (secondaryFactors.device_register) {
+          deviceAuthElm.style.display = 'block';
+          deviceRegister();
+        } else {
+          secondaryAuth.style.display = 'block';
+          if (secondaryFactors.device) {
+            deviceAuth();
+          }
         }
       }
 
@@ -432,7 +574,7 @@
 
       document.getElementById('login-form').onsubmit = function(evt) {
         if (evt) {
-          evt.preventDefault ? evt.preventDefault() : evt.returnValue = false
+          evt.preventDefault ? evt.preventDefault() : evt.returnValue = false;
         }
 
         submitElm.disabled = true;
@@ -467,8 +609,10 @@
               secondaryFactors.sms = data['sms'];
               secondaryFactors.passcode = data['passcode'];
               secondaryFactors.device = data['device'];
+              secondaryFactors.device_register = data['device_register'];
 
               secondaryLabel.innerText = secondaryLabl;
+              deviceLabelElm.innerText = secondaryLabl;
               secondaryPush.style.display = secondaryFactors.push ?
                 'block' : 'none';
               secondaryPhone.style.display = secondaryFactors.phone ?
@@ -482,10 +626,15 @@
               secondaryDevice.style.display = secondaryFactors.device ?
                 'block' : 'none';
               authLocal.style.display = 'none';
-              secondaryAuth.style.display = 'block';
 
-              if (secondaryFactors.device) {
-                deviceAuth();
+              if (secondaryFactors.device_register) {
+                deviceAuthElm.style.display = 'block';
+                deviceRegister();
+              } else {
+                secondaryAuth.style.display = 'block';
+                if (secondaryFactors.device) {
+                  deviceAuth();
+                }
               }
             } else if (xmlhttp.status === 202) {
               setAlert();
@@ -558,6 +707,38 @@
         }
       };
 
+      var flashDeviceAlert = function() {
+        var alertClass = deviceAlertElm.className;
+        var alertClassFlash = alertClass + ' flash';
+
+        deviceAlertElm.className = alertClassFlash;
+        setTimeout(function() {
+          deviceAlertElm.className = alertClass;
+          setTimeout(function() {
+            deviceAlertElm.className = alertClassFlash;
+            setTimeout(function() {
+              deviceAlertElm.className = alertClass;
+            }.bind(this), 150);
+          }.bind(this), 150);
+        }.bind(this), 150);
+      };
+
+      var setDeviceAlert = function(alert, intent) {
+        intent = intent || 'default';
+
+        if (alert) {
+          deviceAlertElm.className = 'pt-callout pt-intent-' + intent;
+          deviceAlertElm.innerHTML = alert;
+          if (deviceAlertElm.style.display === 'block') {
+            flashDeviceAlert(deviceAlertElm);
+          } else {
+            deviceAlertElm.style.display = 'block';
+          }
+        } else {
+          deviceAlertElm.style.display = 'none';
+        }
+      };
+
       var secondaryChallenge = function(factor, passcode, callback) {
         var xmlhttp = new XMLHttpRequest();
 
@@ -567,13 +748,33 @@
               setSecondaryAlert();
               callback(true);
               window.location = '/';
-            } else if (xmlhttp.status === 201 && factor === 'sms') {
-              setSecondaryAlert('Text message sent', 'info');
+            } else if (xmlhttp.status === 201) {
+              setSecondaryAlert();
               callback(true);
+
+              var data = JSON.parse(xmlhttp.response);
+              secondaryToken = data['token'];
+              secondaryLabl = data['label'];
+              secondaryFactors.push = data['push'];
+              secondaryFactors.phone = data['phone'];
+              secondaryFactors.sms = data['sms'];
+              secondaryFactors.passcode = data['passcode'];
+              secondaryFactors.device = data['device'];
+              secondaryFactors.device_register = data['device_register'];
+
+              deviceLabelElm.innerText = secondaryLabl;
+
+              secondaryAuth.style.display = 'none';
+              deviceAuthElm.style.display = 'block';
+
+              deviceRegister();
             } else if (xmlhttp.status === 202) {
               setSecondaryAlert();
               callback(true);
               window.location = JSON.parse(xmlhttp.response)['redirect'];
+            } else if (xmlhttp.status === 206 && factor === 'sms') {
+              setSecondaryAlert('Text message sent', 'info');
+              callback(true);
             } else {
               var errorMsg;
 
