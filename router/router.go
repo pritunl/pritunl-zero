@@ -109,7 +109,12 @@ func (r *Router) initRedirect() (err error) {
 				return
 			}
 
-			req.URL.Host = req.Host
+			newHost := utils.StripPort(req.Host)
+			if r.port != 443 {
+				newHost += fmt.Sprintf(":%d", r.port)
+			}
+
+			req.URL.Host = newHost
 			req.URL.Scheme = "https"
 
 			http.Redirect(w, req, req.URL.String(),
