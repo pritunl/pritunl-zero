@@ -105,3 +105,54 @@ func NewHostCertificate(db *database.Database, hostname string, port int,
 
 	return
 }
+
+func NewBastionHostCertificate(db *database.Database, hostname,
+	pubKey string, authr *authority.Authority) (
+	cert *Certificate, err error) {
+
+	pubKey = strings.TrimSpace(pubKey)
+
+	if len(pubKey) > settings.System.SshPubKeyLen {
+		err = errortypes.ParseError{
+			errors.New("ssh: Public key too long"),
+		}
+		return
+	}
+
+	cert = &Certificate{
+		Id:               bson.NewObjectId(),
+		AuthorityIds:     []bson.ObjectId{},
+		Timestamp:        time.Now(),
+		PubKey:           pubKey,
+		Certificates:     []string{},
+		CertificatesInfo: []*Info{},
+	}
+
+	crt, certStr, err := authr.CreateHostCertificate(hostname, pubKey)
+	if err != nil {
+		return
+	}
+
+	info := &Info{
+		Expires:    time.Unix(int64(crt.ValidBefore), 0),
+		Serial:     fmt.Sprintf("%d", crt.Serial),
+		Principals: crt.ValidPrincipals,
+		Extensions: []string{},
+	}
+
+	for permission := range crt.Permissions.Extensions {
+		info.Extensions = append(info.Extensions, permission)
+	}
+
+	cert.AuthorityIds = append(cert.AuthorityIds, authr.Id)
+	cert.Certificates = append(cert.Certificates, certStr)
+	cert.CertificatesInfo = append(cert.CertificatesInfo, info)
+
+	err = cert.Insert(db)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
