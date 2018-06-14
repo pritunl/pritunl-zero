@@ -1,8 +1,6 @@
 package device
 
 import (
-	"fmt"
-	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 )
 
@@ -32,8 +30,4 @@ func GetFacets() (facets *Facets) {
 			},
 		},
 	}
-}
-
-func GetAppId() string {
-	return fmt.Sprintf("https://%s/auth/u2f/app.json", node.Self.UserDomain)
 }
