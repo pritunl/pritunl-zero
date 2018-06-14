@@ -17,6 +17,7 @@ import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as SessionActions from '../actions/SessionActions';
+import * as DeviceActions from '../actions/DeviceActions';
 import * as AuditActions from '../actions/AuditActions';
 import * as SshcertificateActions from '../actions/SshcertificateActions';
 import * as NodeActions from '../actions/NodeActions';
@@ -209,6 +210,17 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 										SessionActions.reload().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+										DeviceActions.reload().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
