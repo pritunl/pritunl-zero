@@ -189,7 +189,8 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 	facets := []string{}
 
 	if node.Self.UserDomain != "" {
-		appId = fmt.Sprintf("https://%s", node.Self.UserDomain)
+		appId = fmt.Sprintf("https://%s/auth/u2f/app.json",
+			node.Self.UserDomain)
 	}
 
 	nodeServices := set.NewSet()
@@ -204,7 +205,8 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 
 	for _, nde := range nodes {
 		if appId == "" {
-			appId = fmt.Sprintf("https://%s", nde.UserDomain)
+			appId = fmt.Sprintf("https://%s/auth/u2f/app.json",
+				nde.UserDomain)
 		}
 		if nde.UserDomain != "" {
 			facets = append(facets,
