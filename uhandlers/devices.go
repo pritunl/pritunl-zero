@@ -325,6 +325,8 @@ func deviceU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
+	event.PublishDispatch(db, "device.change")
+
 	c.JSON(200, nil)
 }
 

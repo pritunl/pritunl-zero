@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/u2flib"
@@ -672,6 +673,8 @@ func authU2fRegisterPost(c *gin.Context) {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
+
+	event.PublishDispatch(db, "device.change")
 
 	err = audit.New(
 		db,
