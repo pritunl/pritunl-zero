@@ -3,6 +3,7 @@ package proxy
 import (
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -184,15 +185,52 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 	err error) {
 
 	hosts := map[string]*Host{}
+	appId := ""
+	facets := []string{}
 
-	srvcs, err := service.GetMulti(db, services)
+	if node.Self.UserDomain != "" {
+		appId = fmt.Sprintf("https://%s", node.Self.UserDomain)
+	}
+
+	nodeServices := set.NewSet()
+	for _, srvc := range services {
+		nodeServices.Add(srvc)
+	}
+
+	nodes, err := node.GetAll(db)
+	if err != nil {
+		return
+	}
+
+	for _, nde := range nodes {
+		if appId == "" {
+			appId = fmt.Sprintf("https://%s", nde.UserDomain)
+		}
+		if nde.UserDomain != "" {
+			facets = append(facets,
+				fmt.Sprintf("https://%s", nde.UserDomain))
+		}
+		if nde.ManagementDomain != "" {
+			facets = append(facets,
+				fmt.Sprintf("https://%s", nde.ManagementDomain))
+		}
+	}
+
+	srvcs, err := service.GetAll(db)
 	if err != nil {
 		p.Hosts = hosts
 		return
 	}
 
 	for _, srvc := range srvcs {
+		nodeService := nodeServices.Contains(srvc.Id)
+
 		for _, domain := range srvc.Domains {
+			facets = append(facets, fmt.Sprintf("https://%s", domain.Domain))
+
+			if !nodeService {
+				continue
+			}
 			whitelistNets := []*net.IPNet{}
 
 			for _, cidr := range srvc.WhitelistNetworks {
@@ -223,6 +261,9 @@ func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
 		}
 	}
 
+	settings.Local.AppId = appId
+	settings.Local.Facets = facets
+
 	p.Hosts = hosts
 
 	return
@@ -233,21 +274,8 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 
 	wProxies := map[string][]*web{}
 	wsProxies := map[string][]*webSocket{}
-	facets := []string{}
-
-	if node.Self.UserDomain != "" {
-		facets = append(facets,
-			fmt.Sprintf("https://%s", node.Self.UserDomain))
-	}
-
-	if node.Self.ManagementDomain != "" {
-		facets = append(facets,
-			fmt.Sprintf("https://%s", node.Self.ManagementDomain))
-	}
 
 	for domain, host := range p.Hosts {
-		facets = append(facets, fmt.Sprintf("https://%s", domain))
-
 		domainProxies := []*web{}
 		for _, server := range host.Service.Servers {
 			prxy := newWeb(proto, port, host, server)
@@ -267,7 +295,6 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 
 	p.wProxies = wProxies
 	p.wsProxies = wsProxies
-	settings.Local.Facets = facets
 
 	return
 }
