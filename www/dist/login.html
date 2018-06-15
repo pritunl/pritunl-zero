@@ -56,7 +56,8 @@
       }
 
       #alert,
-      #secondary-alert {
+      #secondary-alert,
+      #device-alert {
         display: none;
         margin-bottom: 15px;
         transition: background-color ease-in-out 0.1s,
@@ -64,7 +65,8 @@
       }
 
       #alert.flash,
-      #secondary-alert.flash {
+      #secondary-alert.flash,
+      #device-alert.flash {
         background-color: rgba(255, 255, 255, 0.50);
       }
 
@@ -76,8 +78,11 @@
         display: none;
       }
 
-
       #auth-secondary {
+        display: none;
+      }
+
+      #auth-device {
         display: none;
       }
 
@@ -92,6 +97,7 @@
     <div id="auth-secondary" class="pt-card pt-elevation-2">
       <h5 id="secondary-label"></h5>
       <div id="secondary-alert" class="pt-callout"></div>
+      <div id="secondary-device" class="pt-callout">Insert your security key and tap the button</div>
       <button id="secondary-push" class="pt-button auth-button">Push</button>
       <button id="secondary-phone" class="pt-button auth-button">Call Me</button>
       <button id="secondary-sms" class="pt-button auth-button">Text Me</button>
@@ -99,6 +105,18 @@
         autocapitalize="off" spellcheck="false"
         type="text" placeholder="Passcode"/>
       <button id="secondary-submit" class="pt-button auth-button">Submit</button>
+    </div>
+    <div id="auth-device" class="pt-card pt-elevation-2">
+      <h5 id="device-label"></h5>
+      <div id="device-alert" class="pt-callout"></div>
+      <form id="device-form">
+        <label class="pt-label">
+          <input id="device-name" class="pt-input"
+            type="text" placeholder="Device name" autofocus/>
+        </label>
+        <input id="device-submit" class="pt-button" disabled
+          type="submit" value="Register Device"/>
+      </form>
     </div>
     <div id="auth-local" class="pt-card pt-elevation-2">
       <div id="alert" class="pt-callout"></div>
@@ -117,6 +135,13 @@
       <button class="pt-button auth-cancel">Cancel</button>
     </div>
     <script type="text/javascript">
+      //Copyright 2014-2015 Google Inc. All rights reserved.
+      //Use of this source code is governed by a BSD-style
+      //license that can be found in the LICENSE file or at
+      //https://developers.google.com/open-source/licenses/bsd
+      "use strict";var js_api_version,u2f=u2f||{};u2f.EXTENSION_ID="kmendfapggjehodndflmmgagdbamhnfd",u2f.MessageTypes={U2F_REGISTER_REQUEST:"u2f_register_request",U2F_REGISTER_RESPONSE:"u2f_register_response",U2F_SIGN_REQUEST:"u2f_sign_request",U2F_SIGN_RESPONSE:"u2f_sign_response",U2F_GET_API_VERSION_REQUEST:"u2f_get_api_version_request",U2F_GET_API_VERSION_RESPONSE:"u2f_get_api_version_response"},u2f.ErrorCodes={OK:0,OTHER_ERROR:1,BAD_REQUEST:2,CONFIGURATION_UNSUPPORTED:3,DEVICE_INELIGIBLE:4,TIMEOUT:5},u2f.U2fRequest,u2f.U2fResponse,u2f.Error,u2f.Transport,u2f.Transports,u2f.SignRequest,u2f.SignResponse,u2f.RegisterRequest,u2f.RegisterResponse,u2f.RegisteredKey,u2f.GetJsApiVersionResponse,u2f.getMessagePort=function(e){if("undefined"!=typeof chrome&&chrome.runtime){var t={type:u2f.MessageTypes.U2F_SIGN_REQUEST,signRequests:[]};chrome.runtime.sendMessage(u2f.EXTENSION_ID,t,function(){chrome.runtime.lastError?u2f.getIframePort_(e):u2f.getChromeRuntimePort_(e)})}else u2f.isAndroidChrome_()?u2f.getAuthenticatorPort_(e):u2f.isIosChrome_()?u2f.getIosPort_(e):u2f.getIframePort_(e)},u2f.isAndroidChrome_=function(){var e=navigator.userAgent;return-1!=e.indexOf("Chrome")&&-1!=e.indexOf("Android")},u2f.isIosChrome_=function(){return-1<["iPhone","iPad","iPod"].indexOf(navigator.platform)},u2f.getChromeRuntimePort_=function(e){var t=chrome.runtime.connect(u2f.EXTENSION_ID,{includeTlsChannelId:!0});setTimeout(function(){e(new u2f.WrappedChromeRuntimePort_(t))},0)},u2f.getAuthenticatorPort_=function(e){setTimeout(function(){e(new u2f.WrappedAuthenticatorPort_)},0)},u2f.getIosPort_=function(e){setTimeout(function(){e(new u2f.WrappedIosPort_)},0)},u2f.WrappedChromeRuntimePort_=function(e){this.port_=e},u2f.formatSignRequest_=function(e,t,o,r,n){if(void 0===js_api_version||js_api_version<1.1){for(var s=[],u=0;u<o.length;u++)s[u]={version:o[u].version,challenge:t,keyHandle:o[u].keyHandle,appId:e};return{type:u2f.MessageTypes.U2F_SIGN_REQUEST,signRequests:s,timeoutSeconds:r,requestId:n}}return{type:u2f.MessageTypes.U2F_SIGN_REQUEST,appId:e,challenge:t,registeredKeys:o,timeoutSeconds:r,requestId:n}},u2f.formatRegisterRequest_=function(e,t,o,r,n){if(void 0===js_api_version||js_api_version<1.1){for(var s=0;s<o.length;s++)o[s].appId=e;var u=[];for(s=0;s<t.length;s++)u[s]={version:t[s].version,challenge:o[0],keyHandle:t[s].keyHandle,appId:e};return{type:u2f.MessageTypes.U2F_REGISTER_REQUEST,signRequests:u,registerRequests:o,timeoutSeconds:r,requestId:n}}return{type:u2f.MessageTypes.U2F_REGISTER_REQUEST,appId:e,registerRequests:o,registeredKeys:t,timeoutSeconds:r,requestId:n}},u2f.WrappedChromeRuntimePort_.prototype.postMessage=function(e){this.port_.postMessage(e)},u2f.WrappedChromeRuntimePort_.prototype.addEventListener=function(e,t){var o=e.toLowerCase();"message"==o||"onmessage"==o?this.port_.onMessage.addListener(function(e){t({data:e})}):console.error("WrappedChromeRuntimePort only supports onMessage")},u2f.WrappedAuthenticatorPort_=function(){this.requestId_=-1,this.requestObject_=null},u2f.WrappedAuthenticatorPort_.prototype.postMessage=function(e){var t=u2f.WrappedAuthenticatorPort_.INTENT_URL_BASE_+";S.request="+encodeURIComponent(JSON.stringify(e))+";end";document.location=t},u2f.WrappedAuthenticatorPort_.prototype.getPortType=function(){return"WrappedAuthenticatorPort_"},u2f.WrappedAuthenticatorPort_.prototype.addEventListener=function(e,t){if("message"==e.toLowerCase()){window.addEventListener("message",this.onRequestUpdate_.bind(this,t),!1)}else console.error("WrappedAuthenticatorPort only supports message")},u2f.WrappedAuthenticatorPort_.prototype.onRequestUpdate_=function(e,t){var o=JSON.parse(t.data),r=(o.intentURL,o.errorCode,null);o.hasOwnProperty("data")&&(r=JSON.parse(o.data)),e({data:r})},u2f.WrappedAuthenticatorPort_.INTENT_URL_BASE_="intent:#Intent;action=com.google.android.apps.authenticator.AUTHENTICATE",u2f.WrappedIosPort_=function(){},u2f.WrappedIosPort_.prototype.postMessage=function(e){var t=JSON.stringify(e),o="u2f://auth?"+encodeURI(t);location.replace(o)},u2f.WrappedIosPort_.prototype.getPortType=function(){return"WrappedIosPort_"},u2f.WrappedIosPort_.prototype.addEventListener=function(e,t){"message"!==e.toLowerCase()&&console.error("WrappedIosPort only supports message")},u2f.getIframePort_=function(t){var e="chrome-extension://"+u2f.EXTENSION_ID,o=document.createElement("iframe");o.src=e+"/u2f-comms.html",o.setAttribute("style","display:none"),document.body.appendChild(o);var r=new MessageChannel,n=function(e){"ready"==e.data?(r.port1.removeEventListener("message",n),t(r.port1)):console.error('First event on iframe port was not "ready"')};r.port1.addEventListener("message",n),r.port1.start(),o.addEventListener("load",function(){o.contentWindow.postMessage("init",e,[r.port2])})},u2f.EXTENSION_TIMEOUT_SEC=30,u2f.port_=null,u2f.waitingForPort_=[],u2f.reqCounter_=0,u2f.callbackMap_={},u2f.getPortSingleton_=function(e){u2f.port_?e(u2f.port_):(0==u2f.waitingForPort_.length&&u2f.getMessagePort(function(e){for(u2f.port_=e,u2f.port_.addEventListener("message",u2f.responseHandler_);u2f.waitingForPort_.length;)u2f.waitingForPort_.shift()(u2f.port_)}),u2f.waitingForPort_.push(e))},u2f.responseHandler_=function(e){var t=e.data,o=t.requestId;if(o&&u2f.callbackMap_[o]){var r=u2f.callbackMap_[o];delete u2f.callbackMap_[o],r(t.responseData)}else console.error("Unknown or missing requestId in response.")},u2f.sign=function(t,o,r,n,s){void 0===js_api_version?u2f.getApiVersion(function(e){js_api_version=void 0===e.js_api_version?0:e.js_api_version,console.log("Extension JS API Version: ",js_api_version),u2f.sendSignRequest(t,o,r,n,s)}):u2f.sendSignRequest(t,o,r,n,s)},u2f.sendSignRequest=function(n,s,u,i,a){u2f.getPortSingleton_(function(e){var t=++u2f.reqCounter_;u2f.callbackMap_[t]=i;var o=void 0!==a?a:u2f.EXTENSION_TIMEOUT_SEC,r=u2f.formatSignRequest_(n,s,u,o,t);e.postMessage(r)})},u2f.register=function(t,o,r,n,s){void 0===js_api_version?u2f.getApiVersion(function(e){js_api_version=void 0===e.js_api_version?0:e.js_api_version,console.log("Extension JS API Version: ",js_api_version),u2f.sendRegisterRequest(t,o,r,n,s)}):u2f.sendRegisterRequest(t,o,r,n,s)},u2f.sendRegisterRequest=function(n,s,u,i,a){u2f.getPortSingleton_(function(e){var t=++u2f.reqCounter_;u2f.callbackMap_[t]=i;var o=void 0!==a?a:u2f.EXTENSION_TIMEOUT_SEC,r=u2f.formatRegisterRequest_(n,u,s,o,t);e.postMessage(r)})},u2f.getApiVersion=function(n,s){u2f.getPortSingleton_(function(e){if(e.getPortType){var t;switch(e.getPortType()){case"WrappedIosPort_":case"WrappedAuthenticatorPort_":t=1.1;break;default:t=0}n({js_api_version:t})}else{var o=++u2f.reqCounter_;u2f.callbackMap_[o]=n;var r={type:u2f.MessageTypes.U2F_GET_API_VERSION_REQUEST,timeoutSeconds:void 0!==s?s:u2f.EXTENSION_TIMEOUT_SEC,requestId:o};e.postMessage(r)}})};
+    </script>
+    <script type="text/javascript">
       var i;
       var state;
       var authButtons = document.getElementById('auth-buttons');
@@ -126,13 +151,24 @@
       var passwordElm = document.getElementById('password');
       var submitElm = document.getElementById('submit');
 
+      var u2fErrorCodes = {
+        0: 'ok',
+        1: 'other',
+        2: 'bad request',
+        3: 'configuration unsupported',
+        4: 'device ineligible',
+        5: 'timed out'
+      };
+
       var secondaryToken = null;
       var secondaryLabl = '';
       var secondaryFactors = {
         push: false,
         phone: false,
         sms: false,
-        passcode: false
+        passcode: false,
+        device: false,
+        device_register: false
       };
       var secondaryAuth = document.getElementById('auth-secondary');
       var secondaryLabel = document.getElementById('secondary-label');
@@ -142,6 +178,7 @@
       var secondarySms = document.getElementById('secondary-sms');
       var secondaryPasscode = document.getElementById('secondary-passcode');
       var secondarySubmit = document.getElementById('secondary-submit');
+      var secondaryDevice = document.getElementById('secondary-device');
 
       var queryVals = window.location.search.substring(1).split('&');
       for (i = 0; i < queryVals.length; i++) {
@@ -149,7 +186,7 @@
         if (queryKeyVal[0] === 'secondary') {
           secondaryToken = queryKeyVal[1];
         } else if (queryKeyVal[0] === 'label') {
-          secondaryLabl = queryKeyVal[1];
+          secondaryLabl = decodeURIComponent(queryKeyVal[1]);
         } else if (queryKeyVal[0] === 'factors') {
           if (queryKeyVal[1].indexOf('push') !== -1) {
             secondaryFactors.push = true;
@@ -163,24 +200,240 @@
           if (queryKeyVal[1].indexOf('passcode') !== -1) {
             secondaryFactors.passcode = true;
           }
+          if (queryKeyVal[1].indexOf('device') !== -1) {
+            secondaryFactors.device = true;
+          }
+          if (queryKeyVal[1].indexOf('device_register') !== -1) {
+            secondaryFactors.device_register = true;
+          }
         }
       }
 
-      if (secondaryToken) {
-        secondaryLabel.innerText = secondaryLabl;
-        secondaryPush.style.display = secondaryFactors.push ?
-          'block' : 'none';
-        secondaryPhone.style.display = secondaryFactors.phone ?
-          'block' : 'none';
-        secondarySms.style.display = secondaryFactors.sms ?
-          'block' : 'none';
-        secondaryPasscode.style.display = secondaryFactors.passcode ?
-          'block' : 'none';
-        secondarySubmit.style.display = secondaryFactors.passcode ?
-          'block' : 'none';
-        authButtons.style.display = 'none';
-        secondaryAuth.style.display = 'block';
-      }
+      var deviceAuthElm = document.getElementById('auth-device');
+      var deviceLabelElm = document.getElementById('device-label');
+      var deviceFormElm = document.getElementById('device-form');
+      var deviceNameElm = document.getElementById('device-name');
+      var deviceSubmitElm = document.getElementById('device-submit');
+      var deviceAlertElm = document.getElementById('device-alert');
+
+      var deviceRegister = function() {
+        setDeviceAlert(
+          'U2F device registration required', 'warning');
+
+        deviceNameElm.onkeyup = function(evt) {
+          deviceSubmitElm.disabled = !evt.target.value;
+        };
+
+        var u2fRegistered = function(resp) {
+          if (resp.errorCode) {
+            var errorMsg = 'U2F error code ' + resp.errorCode;
+            var u2fMsg = u2fErrorCodes[resp.errorCode];
+            if (u2fMsg) {
+              errorMsg += ': ' + u2fMsg;
+            }
+            setDeviceAlert(errorMsg, 'danger');
+            return
+          }
+
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setDeviceAlert();
+                window.location = '/';
+              } else if (xmlhttp.status === 202) {
+                setDeviceAlert();
+                window.location = JSON.parse(xmlhttp.response)['redirect'];
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setDeviceAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'POST',
+            '/auth/u2f/register' + window.location.search,
+            true
+          );
+          xmlhttp.setRequestHeader('Content-Type', 'application/json');
+          xmlhttp.send(JSON.stringify({
+            token: secondaryToken,
+            name: deviceNameElm.value,
+            response: resp
+          }));
+        };
+
+        deviceFormElm.onsubmit = function(evt) {
+          if (evt) {
+            evt.preventDefault ? evt.preventDefault() :
+              evt.returnValue = false;
+          }
+
+          deviceSubmitElm.disabled = true;
+          deviceNameElm.disabled = true;
+
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setDeviceAlert(
+                  'Insert your security key and tap the button', 'info');
+
+                var resp = JSON.parse(xmlhttp.responseText);
+                u2f.register(resp.appId, resp.registerRequests,
+                  resp.registeredKeys, u2fRegistered, 30);
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setDeviceAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'GET',
+            '/auth/u2f/register?token=' + secondaryToken,
+            true
+          );
+          xmlhttp.send();
+        }
+      };
+
+      var deviceAuth = function() {
+        var u2fSigned = function(resp) {
+          if (resp.errorCode) {
+            var errorMsg = 'U2F error code ' + resp.errorCode;
+            var u2fMsg = u2fErrorCodes[resp.errorCode];
+            if (u2fMsg) {
+              errorMsg += ': ' + u2fMsg;
+            }
+            setSecondaryAlert(errorMsg, 'danger');
+            return
+          }
+
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setSecondaryAlert();
+                window.location = '/';
+              } else if (xmlhttp.status === 201) {
+                setSecondaryAlert();
+
+                var data = JSON.parse(xmlhttp.response);
+                secondaryToken = data['token'];
+                secondaryLabl = data['label'];
+                secondaryFactors.push = data['push'];
+                secondaryFactors.phone = data['phone'];
+                secondaryFactors.sms = data['sms'];
+                secondaryFactors.passcode = data['passcode'];
+                secondaryFactors.device = data['device'];
+                secondaryFactors.device_register = data['device_register'];
+
+                secondaryLabel.innerText = secondaryLabl;
+                deviceLabelElm.innerText = secondaryLabl;
+                secondaryPush.style.display = secondaryFactors.push ?
+                  'block' : 'none';
+                secondaryPhone.style.display = secondaryFactors.phone ?
+                  'block' : 'none';
+                secondarySms.style.display = secondaryFactors.sms ?
+                  'block' : 'none';
+                secondaryPasscode.style.display = secondaryFactors.passcode ?
+                  'block' : 'none';
+                secondarySubmit.style.display = secondaryFactors.passcode ?
+                  'block' : 'none';
+                secondaryDevice.style.display = secondaryFactors.device ?
+                  'block' : 'none';
+                authLocal.style.display = 'none';
+
+                if (secondaryFactors.device_register) {
+                  deviceAuthElm.style.display = 'block';
+                  deviceRegister();
+                  return;
+                }
+
+                secondaryAuth.style.display = 'block';
+                if (secondaryFactors.device) {
+                  deviceAuth();
+                }
+              } else if (xmlhttp.status === 202) {
+                setSecondaryAlert();
+                window.location = JSON.parse(xmlhttp.response)['redirect'];
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setSecondaryAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'POST',
+            '/auth/u2f/sign' + window.location.search,
+            true
+          );
+          xmlhttp.setRequestHeader('Content-Type', 'application/json');
+          xmlhttp.send(JSON.stringify({
+            token: secondaryToken,
+            response: resp
+          }));
+        };
+
+        if (secondaryFactors.device) {
+          var xmlhttp = new XMLHttpRequest();
+
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+              if (xmlhttp.status === 200) {
+                setSecondaryAlert();
+                var resp = JSON.parse(xmlhttp.responseText);
+                u2f.sign(resp.appId, resp.challenge,
+                  resp.registeredKeys, u2fSigned, 30);
+              } else {
+                var errorMsg;
+
+                try {
+                  errorMsg = JSON.parse(xmlhttp.responseText)['error_msg'];
+                } catch(error) {
+                  errorMsg = 'Server error occurred';
+                }
+
+                setSecondaryAlert(errorMsg, 'danger');
+              }
+            }
+          };
+
+          xmlhttp.open(
+            'GET',
+            '/auth/u2f/sign?token=' + secondaryToken,
+            true
+          );
+          xmlhttp.send();
+        }
+      };
 
       var loadState = function() {
         var xmlhttp = new XMLHttpRequest();
@@ -257,8 +510,6 @@
         }
       };
 
-      loadState();
-
       var flashAlert = function() {
         var alertClass = alertElm.className;
         var alertClassFlash = alertClass + ' flash';
@@ -293,7 +544,7 @@
 
       document.getElementById('login-form').onsubmit = function(evt) {
         if (evt) {
-          evt.preventDefault ? evt.preventDefault() : evt.returnValue = false
+          evt.preventDefault ? evt.preventDefault() : evt.returnValue = false;
         }
 
         submitElm.disabled = true;
@@ -327,8 +578,11 @@
               secondaryFactors.phone = data['phone'];
               secondaryFactors.sms = data['sms'];
               secondaryFactors.passcode = data['passcode'];
+              secondaryFactors.device = data['device'];
+              secondaryFactors.device_register = data['device_register'];
 
               secondaryLabel.innerText = secondaryLabl;
+              deviceLabelElm.innerText = secondaryLabl;
               secondaryPush.style.display = secondaryFactors.push ?
                 'block' : 'none';
               secondaryPhone.style.display = secondaryFactors.phone ?
@@ -339,8 +593,19 @@
                 'block' : 'none';
               secondarySubmit.style.display = secondaryFactors.passcode ?
                 'block' : 'none';
+              secondaryDevice.style.display = secondaryFactors.device ?
+                'block' : 'none';
               authLocal.style.display = 'none';
-              secondaryAuth.style.display = 'block';
+
+              if (secondaryFactors.device_register) {
+                deviceAuthElm.style.display = 'block';
+                deviceRegister();
+              } else {
+                secondaryAuth.style.display = 'block';
+                if (secondaryFactors.device) {
+                  deviceAuth();
+                }
+              }
             } else if (xmlhttp.status === 202) {
               setAlert();
               window.location = JSON.parse(xmlhttp.response)['redirect'];
@@ -371,14 +636,6 @@
 
         return false;
       };
-
-      var authCancels = document.querySelectorAll('.auth-cancel');
-      for (i = 0; i < authCancels.length; i++) {
-        authCancels[i].onclick = function() {
-          authLocal.style.display = 'none';
-          authButtons.style.display = 'block';
-        };
-      }
 
       var flashSecondaryAlert = function() {
         var alertClass = secondaryAlert.className;
@@ -412,6 +669,38 @@
         }
       };
 
+      var flashDeviceAlert = function() {
+        var alertClass = deviceAlertElm.className;
+        var alertClassFlash = alertClass + ' flash';
+
+        deviceAlertElm.className = alertClassFlash;
+        setTimeout(function() {
+          deviceAlertElm.className = alertClass;
+          setTimeout(function() {
+            deviceAlertElm.className = alertClassFlash;
+            setTimeout(function() {
+              deviceAlertElm.className = alertClass;
+            }.bind(this), 150);
+          }.bind(this), 150);
+        }.bind(this), 150);
+      };
+
+      var setDeviceAlert = function(alert, intent) {
+        intent = intent || 'default';
+
+        if (alert) {
+          deviceAlertElm.className = 'pt-callout pt-intent-' + intent;
+          deviceAlertElm.innerHTML = alert;
+          if (deviceAlertElm.style.display === 'block') {
+            flashDeviceAlert(deviceAlertElm);
+          } else {
+            deviceAlertElm.style.display = 'block';
+          }
+        } else {
+          deviceAlertElm.style.display = 'none';
+        }
+      };
+
       var secondaryChallenge = function(factor, passcode, callback) {
         var xmlhttp = new XMLHttpRequest();
 
@@ -421,13 +710,33 @@
               setSecondaryAlert();
               callback(true);
               window.location = '/';
-            } else if (xmlhttp.status === 201 && factor === 'sms') {
-              setSecondaryAlert('Text message sent', 'info');
+            } else if (xmlhttp.status === 201) {
+              setSecondaryAlert();
               callback(true);
+
+              var data = JSON.parse(xmlhttp.response);
+              secondaryToken = data['token'];
+              secondaryLabl = data['label'];
+              secondaryFactors.push = data['push'];
+              secondaryFactors.phone = data['phone'];
+              secondaryFactors.sms = data['sms'];
+              secondaryFactors.passcode = data['passcode'];
+              secondaryFactors.device = data['device'];
+              secondaryFactors.device_register = data['device_register'];
+
+              deviceLabelElm.innerText = secondaryLabl;
+
+              secondaryAuth.style.display = 'none';
+              deviceAuthElm.style.display = 'block';
+
+              deviceRegister();
             } else if (xmlhttp.status === 202) {
               setSecondaryAlert();
               callback(true);
               window.location = JSON.parse(xmlhttp.response)['redirect'];
+            } else if (xmlhttp.status === 206 && factor === 'sms') {
+              setSecondaryAlert('Text message sent', 'info');
+              callback(true);
             } else {
               var errorMsg;
 
@@ -499,6 +808,44 @@
         }
       };
       secondarySubmit.onclick = secondarySub;
+
+      var authCancels = document.querySelectorAll('.auth-cancel');
+      for (i = 0; i < authCancels.length; i++) {
+        authCancels[i].onclick = function() {
+          authLocal.style.display = 'none';
+          authButtons.style.display = 'block';
+        };
+      }
+
+      if (secondaryToken) {
+        secondaryLabel.innerText = secondaryLabl;
+        deviceLabelElm.innerText = secondaryLabl;
+        secondaryPush.style.display = secondaryFactors.push ?
+          'block' : 'none';
+        secondaryPhone.style.display = secondaryFactors.phone ?
+          'block' : 'none';
+        secondarySms.style.display = secondaryFactors.sms ?
+          'block' : 'none';
+        secondaryPasscode.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
+        secondarySubmit.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
+        secondaryDevice.style.display = secondaryFactors.device ?
+          'block' : 'none';
+        authButtons.style.display = 'none';
+
+        if (secondaryFactors.device_register) {
+          deviceAuthElm.style.display = 'block';
+          deviceRegister();
+        } else {
+          secondaryAuth.style.display = 'block';
+          if (secondaryFactors.device) {
+            deviceAuth();
+          }
+        }
+      }
+
+      loadState();
     </script>
   </body>
 </html>
