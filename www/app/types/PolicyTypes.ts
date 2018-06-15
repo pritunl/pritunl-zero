@@ -20,6 +20,10 @@ export interface Policy {
 	user_secondary?: string;
 	proxy_secondary?: string;
 	authority_secondary?: string;
+	admin_device_secondary?: boolean;
+	user_device_secondary?: boolean;
+	proxy_device_secondary?: boolean;
+	authority_device_secondary?: boolean;
 }
 
 export type Policies = Policy[];
