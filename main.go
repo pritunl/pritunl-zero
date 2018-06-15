@@ -15,13 +15,14 @@ const help = `
 Usage: pritunl-zero COMMAND
 
 Commands:
-  version     Show version
-  mongo       Set MongoDB URI
-  set         Set a setting
-  unset       Unset a setting
-  start       Start node
-  clear-logs  Clear logs
-  export-ssh  Export SSH authorities for emergency client
+  version         Show version
+  mongo           Set MongoDB URI
+  set             Set a setting
+  unset           Unset a setting
+  start           Start node
+  clear-logs      Clear logs
+  reset-password  Reset administrator password
+  export-ssh      Export SSH authorities for emergency client
 `
 
 func Init() {
@@ -60,6 +61,13 @@ func main() {
 	case "reset-id":
 		logger.Init()
 		err := cmd.ResetId()
+		if err != nil {
+			panic(err)
+		}
+		return
+	case "reset-password":
+		Init()
+		err := cmd.ResetPassword()
 		if err != nil {
 			panic(err)
 		}
