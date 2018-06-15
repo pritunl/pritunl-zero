@@ -42,10 +42,10 @@ const css = {
 		margin: '19px 0 0 0',
 	} as React.CSSProperties,
 	button: {
-		margin: '10px 0 0 10px',
+		margin: '8px 0 0 8px',
 	} as React.CSSProperties,
-	buttonFirst: {
-		margin: '10px 0 0 0',
+	buttons: {
+		marginTop: '8px',
 	} as React.CSSProperties,
 };
 
@@ -190,10 +190,10 @@ export default class Users extends React.Component<{}, State> {
 				<div className="layout horizontal wrap" style={css.header}>
 					<h2 style={css.heading}>Users</h2>
 					<div className="flex"/>
-					<div>
+					<div style={css.buttons}>
 						<button
 							className={filterClass}
-							style={css.buttonFirst}
+							style={css.button}
 							type="button"
 							onClick={(): void => {
 								if (this.state.filter === null) {
