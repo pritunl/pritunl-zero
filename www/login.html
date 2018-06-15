@@ -435,34 +435,6 @@
         }
       };
 
-      if (secondaryToken) {
-        secondaryLabel.innerText = secondaryLabl;
-        deviceLabelElm.innerText = secondaryLabl;
-        secondaryPush.style.display = secondaryFactors.push ?
-          'block' : 'none';
-        secondaryPhone.style.display = secondaryFactors.phone ?
-          'block' : 'none';
-        secondarySms.style.display = secondaryFactors.sms ?
-          'block' : 'none';
-        secondaryPasscode.style.display = secondaryFactors.passcode ?
-          'block' : 'none';
-        secondarySubmit.style.display = secondaryFactors.passcode ?
-          'block' : 'none';
-        secondaryDevice.style.display = secondaryFactors.device ?
-          'block' : 'none';
-        authButtons.style.display = 'none';
-
-        if (secondaryFactors.device_register) {
-          deviceAuthElm.style.display = 'block';
-          deviceRegister();
-        } else {
-          secondaryAuth.style.display = 'block';
-          if (secondaryFactors.device) {
-            deviceAuth();
-          }
-        }
-      }
-
       var loadState = function() {
         var xmlhttp = new XMLHttpRequest();
 
@@ -537,8 +509,6 @@
           })(state.providers[i]);
         }
       };
-
-      loadState();
 
       var flashAlert = function() {
         var alertClass = alertElm.className;
@@ -666,14 +636,6 @@
 
         return false;
       };
-
-      var authCancels = document.querySelectorAll('.auth-cancel');
-      for (i = 0; i < authCancels.length; i++) {
-        authCancels[i].onclick = function() {
-          authLocal.style.display = 'none';
-          authButtons.style.display = 'block';
-        };
-      }
 
       var flashSecondaryAlert = function() {
         var alertClass = secondaryAlert.className;
@@ -846,6 +808,44 @@
         }
       };
       secondarySubmit.onclick = secondarySub;
+
+      var authCancels = document.querySelectorAll('.auth-cancel');
+      for (i = 0; i < authCancels.length; i++) {
+        authCancels[i].onclick = function() {
+          authLocal.style.display = 'none';
+          authButtons.style.display = 'block';
+        };
+      }
+
+      if (secondaryToken) {
+        secondaryLabel.innerText = secondaryLabl;
+        deviceLabelElm.innerText = secondaryLabl;
+        secondaryPush.style.display = secondaryFactors.push ?
+          'block' : 'none';
+        secondaryPhone.style.display = secondaryFactors.phone ?
+          'block' : 'none';
+        secondarySms.style.display = secondaryFactors.sms ?
+          'block' : 'none';
+        secondaryPasscode.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
+        secondarySubmit.style.display = secondaryFactors.passcode ?
+          'block' : 'none';
+        secondaryDevice.style.display = secondaryFactors.device ?
+          'block' : 'none';
+        authButtons.style.display = 'none';
+
+        if (secondaryFactors.device_register) {
+          deviceAuthElm.style.display = 'block';
+          deviceRegister();
+        } else {
+          secondaryAuth.style.display = 'block';
+          if (secondaryFactors.device) {
+            deviceAuth();
+          }
+        }
+      }
+
+      loadState();
     </script>
   </body>
 </html>
