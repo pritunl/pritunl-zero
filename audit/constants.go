@@ -7,6 +7,7 @@ const (
 	ProxyLoginFailed          = "proxy_login_failed"
 	UserLogin                 = "user_login"
 	UserLoginFailed           = "user_login_failed"
+	UserAccountDisabled       = "user_account_disabled"
 	AdminDeviceRegister       = "admin_device_register"
 	DeviceRegister            = "device_register"
 	DeviceRegisterFailed      = "device_register_failed"
