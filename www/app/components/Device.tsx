@@ -149,15 +149,6 @@ export default class Device extends React.Component<Props, State> {
 							onConfirm={this.onDelete}
 						/>
 					</div>
-					<PageInfo
-						style={css.info}
-						fields={[
-							{
-								label: 'ID',
-								value: device.id || 'None',
-							},
-						]}
-					/>
 					<div
 						className="pt-input-group flex"
 						style={css.inputGroup}
@@ -183,6 +174,15 @@ export default class Device extends React.Component<Props, State> {
 							onClick={this.onSave}
 						/>
 					</div>
+					<PageInfo
+						style={css.info}
+						fields={[
+							{
+								label: 'ID',
+								value: device.id || 'None',
+							},
+						]}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
