@@ -176,7 +176,7 @@ export default class Device extends React.Component<Props, State> {
 					</span>
 				</div>
 				<div style={css.item}>
-					Last Used: <span className="pt-text-muted">
+					Last Active: <span className="pt-text-muted">
 						{MiscUtils.formatDateMid(device.last_active)}
 					</span>
 				</div>
