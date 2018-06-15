@@ -108,18 +108,56 @@ func deviceDelete(c *gin.Context) {
 		return
 	}
 
-	if count < 2 {
-		errData := &errortypes.ErrorData{
-			Error:   "device_empty",
-			Message: "Contact administrator to remove security device",
+	if count <= 1 {
+		usr.Disabled = true
+		err = usr.CommitFields(db, set.NewSet("disabled"))
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
 		}
-		c.JSON(400, errData)
-		return
 	}
 
 	err = device.RemoveUser(db, devcId, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	count, err = device.Count(db, usr.Id)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if count == 0 {
+		if !usr.Disabled {
+			usr.Disabled = true
+			err = usr.CommitFields(db, set.NewSet("disabled"))
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+		}
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.UserAccountDisabled,
+			audit.Fields{
+				"reason": "All authentication devices removed",
+			},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		errData := &errortypes.ErrorData{
+			Error:   "device_empty",
+			Message: "Account disabled contact an administrator",
+		}
+		c.JSON(401, errData)
 		return
 	}
 
