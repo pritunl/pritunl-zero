@@ -93,8 +93,14 @@ export function remove(deviceId: string): Promise<void> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
 				if (err) {
-					Alert.errorRes(res, 'Failed to delete devices');
+					Alert.errorRes(res, 'Failed to delete device');
 					reject(err);
 					return;
 				}
