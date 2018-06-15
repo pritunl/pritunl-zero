@@ -4726,7 +4726,7 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.4.1.js", "app/
             minWidth: '250px'
         },
         inputGroup: {
-            marginTop: '15px',
+            marginBottom: '15px',
             width: '100%',
             maxWidth: '280px'
         },

@@ -1846,7 +1846,7 @@ System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "np
                             }, disabled: false }));
                         return;
                     }
-                    this.setState(Object.assign({}, this.state, { register: res.body }));
+                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
                 });
             };
             this.deviceSign = () => {
@@ -1941,7 +1941,7 @@ System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "np
                 } else if (res.status === 206 && factor === 'sms') {
                     Alert.info('Text message sent', 0);
                 } else {
-                    this.setState(Object.assign({}, this.state, { register: res.body }));
+                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
                 }
             });
         }
