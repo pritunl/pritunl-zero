@@ -92,9 +92,6 @@ const css = {
 		right: '7px',
 		width: '36px',
 	} as React.CSSProperties,
-	registerButton: {
-		whiteSpace: 'nowrap',
-	} as React.CSSProperties,
 };
 
 const u2fErrorCodes: {[index: number]: string} = {
@@ -258,7 +255,6 @@ export default class Devices extends React.Component<Props, State> {
 					<div>
 						<button
 							className="pt-button pt-intent-success pt-icon-add"
-							style={css.registerButton}
 							disabled={this.state.disabled}
 							onClick={this.registerSign}
 						>Add Device</button>
@@ -333,6 +329,11 @@ export default class Devices extends React.Component<Props, State> {
 	deviceSign = (): void => {
 		let loader = new Loader().loading();
 
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+
 		SuperAgent
 			.get('/device/u2f/sign')
 			.query({
@@ -371,7 +372,6 @@ export default class Devices extends React.Component<Props, State> {
 				</span>
 				<button
 					className="pt-button pt-intent-success pt-icon-id-number"
-					style={css.registerButton}
 					disabled={this.state.disabled}
 					onClick={this.deviceSign}
 				>Authenticate</button>
@@ -646,7 +646,6 @@ export default class Devices extends React.Component<Props, State> {
 				</div>
 				<button
 					className="pt-button pt-intent-success pt-icon-add"
-					style={css.registerButton}
 					disabled={this.state.disabled}
 					onClick={this.onRegister}
 				>Add Device</button>
