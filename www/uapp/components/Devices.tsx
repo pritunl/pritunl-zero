@@ -321,6 +321,7 @@ export default class Devices extends React.Component<Props, State> {
 
 				this.setState({
 					...this.state,
+					disabled: false,
 					register: res.body,
 				});
 			});
@@ -419,6 +420,7 @@ export default class Devices extends React.Component<Props, State> {
 				} else {
 					this.setState({
 						...this.state,
+						disabled: false,
 						register: res.body,
 					});
 				}
