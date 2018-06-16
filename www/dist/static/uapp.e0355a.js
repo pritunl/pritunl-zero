@@ -105,217 +105,448 @@ System.registerDynamic("uapp/components/LoadingBar.js", ["npm:react@16.4.1.js", 
     exports.default = LoadingBar;
     
 });
-System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "npm:superagent@3.8.3.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
+System.registerDynamic('npm:events@3.0.0/events.js', [], true, function ($__require, exports, module) {
+  // Copyright Joyent, Inc. and other Node contributors.
+  //
+  // Permission is hereby granted, free of charge, to any person obtaining a
+  // copy of this software and associated documentation files (the
+  // "Software"), to deal in the Software without restriction, including
+  // without limitation the rights to use, copy, modify, merge, publish,
+  // distribute, sublicense, and/or sell copies of the Software, and to permit
+  // persons to whom the Software is furnished to do so, subject to the
+  // following conditions:
+  //
+  // The above copyright notice and this permission notice shall be included
+  // in all copies or substantial portions of the Software.
+  //
+  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+  // NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+  // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+  // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+  // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  'use strict';
+
+  var global = this || self,
+      GLOBAL = global;
+  var R = typeof Reflect === 'object' ? Reflect : null;
+  var ReflectApply = R && typeof R.apply === 'function' ? R.apply : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  };
+
+  var ReflectOwnKeys;
+  if (R && typeof R.ownKeys === 'function') {
+    ReflectOwnKeys = R.ownKeys;
+  } else if (Object.getOwnPropertySymbols) {
+    ReflectOwnKeys = function ReflectOwnKeys(target) {
+      return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
+    };
+  } else {
+    ReflectOwnKeys = function ReflectOwnKeys(target) {
+      return Object.getOwnPropertyNames(target);
+    };
+  }
+
+  function ProcessEmitWarning(warning) {
+    if (console && console.warn) console.warn(warning);
+  }
+
+  var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+    return value !== value;
+  };
+
+  function EventEmitter() {
+    EventEmitter.init.call(this);
+  }
+  module.exports = EventEmitter;
+
+  // Backwards-compat with node 0.10.x
+  EventEmitter.EventEmitter = EventEmitter;
+
+  EventEmitter.prototype._events = undefined;
+  EventEmitter.prototype._eventsCount = 0;
+  EventEmitter.prototype._maxListeners = undefined;
+
+  // By default EventEmitters will print a warning if more than 10 listeners are
+  // added to it. This is a useful default which helps finding memory leaks.
+  var defaultMaxListeners = 10;
+
+  Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+    enumerable: true,
+    get: function () {
+      return defaultMaxListeners;
+    },
+    set: function (arg) {
+      if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+        throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+      }
+      defaultMaxListeners = arg;
+    }
+  });
+
+  EventEmitter.init = function () {
+
+    if (this._events === undefined || this._events === Object.getPrototypeOf(this)._events) {
+      this._events = Object.create(null);
+      this._eventsCount = 0;
+    }
+
+    this._maxListeners = this._maxListeners || undefined;
+  };
+
+  // Obviously not all Emitters should be limited to 10. This function allows
+  // that to be increased. Set to zero for unlimited.
+  EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+    if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+      throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+    }
+    this._maxListeners = n;
+    return this;
+  };
+
+  function $getMaxListeners(that) {
+    if (that._maxListeners === undefined) return EventEmitter.defaultMaxListeners;
+    return that._maxListeners;
+  }
+
+  EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+    return $getMaxListeners(this);
+  };
+
+  EventEmitter.prototype.emit = function emit(type) {
+    var args = [];
+    for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+    var doError = type === 'error';
+
+    var events = this._events;
+    if (events !== undefined) doError = doError && events.error === undefined;else if (!doError) return false;
+
+    // If there is no 'error' event listener then throw.
+    if (doError) {
+      var er;
+      if (args.length > 0) er = args[0];
+      if (er instanceof Error) {
+        // Note: The comments on the `throw` lines are intentional, they show
+        // up in Node's output if this results in an unhandled exception.
+        throw er; // Unhandled 'error' event
+      }
+      // At least give some kind of context to the user
+      var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+      err.context = er;
+      throw err; // Unhandled 'error' event
+    }
+
+    var handler = events[type];
+
+    if (handler === undefined) return false;
+
+    if (typeof handler === 'function') {
+      ReflectApply(handler, this, args);
+    } else {
+      var len = handler.length;
+      var listeners = arrayClone(handler, len);
+      for (var i = 0; i < len; ++i) ReflectApply(listeners[i], this, args);
+    }
+
+    return true;
+  };
+
+  function _addListener(target, type, listener, prepend) {
+    var m;
+    var events;
+    var existing;
+
+    if (typeof listener !== 'function') {
+      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+    }
+
+    events = target._events;
+    if (events === undefined) {
+      events = target._events = Object.create(null);
+      target._eventsCount = 0;
+    } else {
+      // To avoid recursion in the case that type === "newListener"! Before
+      // adding it to the listeners, first emit "newListener".
+      if (events.newListener !== undefined) {
+        target.emit('newListener', type, listener.listener ? listener.listener : listener);
+
+        // Re-assign `events` because a newListener handler could have caused the
+        // this._events to be assigned to a new object
+        events = target._events;
+      }
+      existing = events[type];
+    }
+
+    if (existing === undefined) {
+      // Optimize the case of one listener. Don't need the extra array object.
+      existing = events[type] = listener;
+      ++target._eventsCount;
+    } else {
+      if (typeof existing === 'function') {
+        // Adding the second element, need to change to array.
+        existing = events[type] = prepend ? [listener, existing] : [existing, listener];
+        // If we've already got an array, just append.
+      } else if (prepend) {
+        existing.unshift(listener);
+      } else {
+        existing.push(listener);
+      }
+
+      // Check for listener leak
+      m = $getMaxListeners(target);
+      if (m > 0 && existing.length > m && !existing.warned) {
+        existing.warned = true;
+        // No error code for this since it is a Warning
+        // eslint-disable-next-line no-restricted-syntax
+        var w = new Error('Possible EventEmitter memory leak detected. ' + existing.length + ' ' + String(type) + ' listeners ' + 'added. Use emitter.setMaxListeners() to ' + 'increase limit');
+        w.name = 'MaxListenersExceededWarning';
+        w.emitter = target;
+        w.type = type;
+        w.count = existing.length;
+        ProcessEmitWarning(w);
+      }
+    }
+
+    return target;
+  }
+
+  EventEmitter.prototype.addListener = function addListener(type, listener) {
+    return _addListener(this, type, listener, false);
+  };
+
+  EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+  EventEmitter.prototype.prependListener = function prependListener(type, listener) {
+    return _addListener(this, type, listener, true);
+  };
+
+  function onceWrapper() {
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+    if (!this.fired) {
+      this.target.removeListener(this.type, this.wrapFn);
+      this.fired = true;
+      ReflectApply(this.listener, this.target, args);
+    }
+  }
+
+  function _onceWrap(target, type, listener) {
+    var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+    var wrapped = onceWrapper.bind(state);
+    wrapped.listener = listener;
+    state.wrapFn = wrapped;
+    return wrapped;
+  }
+
+  EventEmitter.prototype.once = function once(type, listener) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+    }
+    this.on(type, _onceWrap(this, type, listener));
+    return this;
+  };
+
+  EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+    }
+    this.prependListener(type, _onceWrap(this, type, listener));
+    return this;
+  };
+
+  // Emits a 'removeListener' event if and only if the listener was removed.
+  EventEmitter.prototype.removeListener = function removeListener(type, listener) {
+    var list, events, position, i, originalListener;
+
+    if (typeof listener !== 'function') {
+      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+    }
+
+    events = this._events;
+    if (events === undefined) return this;
+
+    list = events[type];
+    if (list === undefined) return this;
+
+    if (list === listener || list.listener === listener) {
+      if (--this._eventsCount === 0) this._events = Object.create(null);else {
+        delete events[type];
+        if (events.removeListener) this.emit('removeListener', type, list.listener || listener);
+      }
+    } else if (typeof list !== 'function') {
+      position = -1;
+
+      for (i = list.length - 1; i >= 0; i--) {
+        if (list[i] === listener || list[i].listener === listener) {
+          originalListener = list[i].listener;
+          position = i;
+          break;
+        }
+      }
+
+      if (position < 0) return this;
+
+      if (position === 0) list.shift();else {
+        spliceOne(list, position);
+      }
+
+      if (list.length === 1) events[type] = list[0];
+
+      if (events.removeListener !== undefined) this.emit('removeListener', type, originalListener || listener);
+    }
+
+    return this;
+  };
+
+  EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+  EventEmitter.prototype.removeAllListeners = function removeAllListeners(type) {
+    var listeners, events, i;
+
+    events = this._events;
+    if (events === undefined) return this;
+
+    // not listening for removeListener, no need to emit
+    if (events.removeListener === undefined) {
+      if (arguments.length === 0) {
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+      } else if (events[type] !== undefined) {
+        if (--this._eventsCount === 0) this._events = Object.create(null);else delete events[type];
+      }
+      return this;
+    }
+
+    // emit removeListener for all listeners on all events
+    if (arguments.length === 0) {
+      var keys = Object.keys(events);
+      var key;
+      for (i = 0; i < keys.length; ++i) {
+        key = keys[i];
+        if (key === 'removeListener') continue;
+        this.removeAllListeners(key);
+      }
+      this.removeAllListeners('removeListener');
+      this._events = Object.create(null);
+      this._eventsCount = 0;
+      return this;
+    }
+
+    listeners = events[type];
+
+    if (typeof listeners === 'function') {
+      this.removeListener(type, listeners);
+    } else if (listeners !== undefined) {
+      // LIFO order
+      for (i = listeners.length - 1; i >= 0; i--) {
+        this.removeListener(type, listeners[i]);
+      }
+    }
+
+    return this;
+  };
+
+  function _listeners(target, type, unwrap) {
+    var events = target._events;
+
+    if (events === undefined) return [];
+
+    var evlistener = events[type];
+    if (evlistener === undefined) return [];
+
+    if (typeof evlistener === 'function') return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+    return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+  }
+
+  EventEmitter.prototype.listeners = function listeners(type) {
+    return _listeners(this, type, true);
+  };
+
+  EventEmitter.prototype.rawListeners = function rawListeners(type) {
+    return _listeners(this, type, false);
+  };
+
+  EventEmitter.listenerCount = function (emitter, type) {
+    if (typeof emitter.listenerCount === 'function') {
+      return emitter.listenerCount(type);
+    } else {
+      return listenerCount.call(emitter, type);
+    }
+  };
+
+  EventEmitter.prototype.listenerCount = listenerCount;
+  function listenerCount(type) {
+    var events = this._events;
+
+    if (events !== undefined) {
+      var evlistener = events[type];
+
+      if (typeof evlistener === 'function') {
+        return 1;
+      } else if (evlistener !== undefined) {
+        return evlistener.length;
+      }
+    }
+
+    return 0;
+  }
+
+  EventEmitter.prototype.eventNames = function eventNames() {
+    return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+  };
+
+  function arrayClone(arr, n) {
+    var copy = new Array(n);
+    for (var i = 0; i < n; ++i) copy[i] = arr[i];
+    return copy;
+  }
+
+  function spliceOne(list, index) {
+    for (; index + 1 < list.length; index++) list[index] = list[index + 1];
+    list.pop();
+  }
+
+  function unwrapListeners(arr) {
+    var ret = new Array(arr.length);
+    for (var i = 0; i < ret.length; ++i) {
+      ret[i] = arr[i].listener || arr[i];
+    }
+    return ret;
+  }
+});
+System.registerDynamic("npm:events@3.0.0.js", ["npm:events@3.0.0/events.js"], true, function ($__require, exports, module) {
+  var global = this || self,
+      GLOBAL = global;
+  module.exports = $__require("npm:events@3.0.0/events.js");
+});
+System.registerDynamic("uapp/EventEmitter.js", ["npm:events@3.0.0.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
-    const React = $__require("npm:react@16.4.1.js");
-    const SuperAgent = $__require("npm:superagent@3.8.3.js");
-    const Csrf = $__require("uapp/Csrf.js");
-    const Alert = $__require("uapp/Alert.js");
-    const Session_1 = $__require("uapp/components/Session.js");
-    const Loader_1 = $__require("uapp/Loader.js");
-    const css = {
-        body: {
-            padding: 0
-        },
-        description: {
-            opacity: 0.7,
-            padding: '0 10px'
-        },
-        buttons: {
-            marginTop: '15px'
-        },
-        button: {
-            margin: '5px',
-            width: '116px'
-        },
-        secondaryButton: {
-            margin: '5px auto',
-            padding: '8px 15px',
-            width: '75%'
-        },
-        secondaryInput: {
-            margin: '5px auto',
-            width: '75%'
-        }
-    };
-    const u2fErrorCodes = {
-        0: 'ok',
-        1: 'other',
-        2: 'bad request',
-        3: 'configuration unsupported',
-        4: 'device ineligible',
-        5: 'timed out'
-    };
-    class Validate extends React.Component {
-        constructor(props, context) {
-            super(props, context);
-            this.u2fSigned = resp => {
-                Alert.dismiss(this.alertKey);
-                if (resp.errorCode) {
-                    let errorMsg = 'U2F error code ' + resp.errorCode;
-                    let u2fMsg = u2fErrorCodes[resp.errorCode];
-                    if (u2fMsg) {
-                        errorMsg += ': ' + u2fMsg;
-                    }
-                    Alert.error(errorMsg);
-                    return;
-                }
-                let loader = new Loader_1.default().loading();
-                SuperAgent.post('/ssh/u2f/sign').send({
-                    token: this.state.secondary.token,
-                    response: resp
-                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                    loader.done();
-                    if (err) {
-                        Alert.errorRes(res, 'Failed to complete device sign');
-                        return;
-                    }
-                    if (res.status === 201) {
-                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
-                                push: true,
-                                phone: true,
-                                passcode: true,
-                                sms: true
-                            }, disabled: false }));
-                        return;
-                    }
-                    this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
-                    window.history.replaceState(null, null, window.location.pathname);
-                    Alert.success('Successfully approved SSH key', 0);
-                });
-            };
-            this.state = {
-                disabled: false,
-                answered: false,
-                passcode: '',
-                secondary: null,
-                secondaryState: null
-            };
-        }
-        deviceSign(token) {
-            let loader = new Loader_1.default().loading();
-            SuperAgent.get('/ssh/u2f/sign').query({
-                token: token
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                loader.done();
-                if (err) {
-                    Alert.errorRes(res, 'Failed to request device sign');
-                    return;
-                }
-                this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
-                window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
+    const Events = $__require("npm:events@3.0.0.js");
+    class EventEmitter extends Events.EventEmitter {
+        emitDefer(event, ...args) {
+            setTimeout(() => {
+                this.emit(event, ...args);
             });
-        }
-        device() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Insert your security key and tap the button")));
-        }
-        secondarySubmit(factor) {
-            let passcode = '';
-            if (factor === 'passcode') {
-                passcode = this.state.passcode;
-            }
-            SuperAgent.put('/ssh/secondary').send({
-                token: this.state.secondary.token,
-                factor: factor,
-                passcode: passcode
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
-                if (res && res.status === 404) {
-                    Alert.error('SSH verification request has expired', 0);
-                } else if (err) {
-                    Alert.errorRes(res, 'Failed to approve SSH key', 0);
-                    return;
-                } else if (res.status === 206 && factor === 'sms') {
-                    Alert.info('Text message sent', 0);
-                    return;
-                } else {
-                    Alert.success('Successfully approved SSH key', 0);
-                }
-                this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
-                window.history.replaceState(null, null, window.location.pathname);
-            });
-        }
-        secondary() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Secondary authentication required")), React.createElement("div", { className: "layout vertical center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.push, disabled: !this.state.secondaryState.push, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { push: false }) }));
-                    this.secondarySubmit('push');
-                } }, "Push"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.phone, disabled: !this.state.secondaryState.phone, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { phone: false }) }));
-                    this.secondarySubmit('phone');
-                } }, "Call Me"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.sms, disabled: !this.state.secondaryState.sms, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { sms: false }) }));
-                    this.secondarySubmit('sms');
-                } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
-                    this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
-                }, onKeyPress: evt => {
-                    if (evt.key === 'Enter') {
-                        this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
-                        this.secondarySubmit('passcode');
-                    }
-                } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
-                    this.secondarySubmit('passcode');
-                } }, "Submit")));
-        }
-        render() {
-            if (this.state.answered) {
-                return React.createElement(Session_1.default, null);
-            }
-            if (this.state.secondary) {
-                if (this.state.secondary.device) {
-                    return this.device();
-                }
-                return this.secondary();
-            }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                        this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res && res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
-                        } else if (err) {
-                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
-                        } else if (res.status === 201) {
-                            this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
-                                    push: true,
-                                    phone: true,
-                                    passcode: true,
-                                    sms: true
-                                }, disabled: false }));
-                            if (res.body.device) {
-                                this.deviceSign(res.body.token);
-                            }
-                            return;
-                        } else {
-                            Alert.success('Successfully approved SSH key', 0);
-                        }
-                        this.setState(Object.assign({}, this.state, { answered: true, disabled: false }));
-                        window.history.replaceState(null, null, window.location.pathname);
-                    });
-                } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                        this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
-                        } else if (err) {
-                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
-                            return;
-                        } else {
-                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
-                        }
-                        this.setState(Object.assign({}, this.state, { answered: true }));
-                        window.history.replaceState(null, null, window.location.pathname);
-                    });
-                } }, "Deny")));
         }
     }
-    exports.default = Validate;
+    exports.default = EventEmitter;
     
+});
+System.registerDynamic("uapp/types/GlobalTypes.js", [], true, function ($__require, exports, module) {
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.CHANGE = 'change';
+  
 });
 System.registerDynamic("uapp/stores/DevicesStore.js", ["uapp/dispatcher/Dispatcher.js", "uapp/EventEmitter.js", "uapp/types/DeviceTypes.js", "uapp/types/GlobalTypes.js"], true, function ($__require, exports, module) {
     "use strict";
@@ -2032,504 +2263,6 @@ System.registerDynamic("uapp/components/Session.js", ["npm:react@16.4.1.js", "ua
     exports.default = Session;
     
 });
-System.registerDynamic('npm:events@3.0.0/events.js', [], true, function ($__require, exports, module) {
-  // Copyright Joyent, Inc. and other Node contributors.
-  //
-  // Permission is hereby granted, free of charge, to any person obtaining a
-  // copy of this software and associated documentation files (the
-  // "Software"), to deal in the Software without restriction, including
-  // without limitation the rights to use, copy, modify, merge, publish,
-  // distribute, sublicense, and/or sell copies of the Software, and to permit
-  // persons to whom the Software is furnished to do so, subject to the
-  // following conditions:
-  //
-  // The above copyright notice and this permission notice shall be included
-  // in all copies or substantial portions of the Software.
-  //
-  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-  // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-  // NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-  // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-  // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-  // USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-  'use strict';
-
-  var global = this || self,
-      GLOBAL = global;
-  var R = typeof Reflect === 'object' ? Reflect : null;
-  var ReflectApply = R && typeof R.apply === 'function' ? R.apply : function ReflectApply(target, receiver, args) {
-    return Function.prototype.apply.call(target, receiver, args);
-  };
-
-  var ReflectOwnKeys;
-  if (R && typeof R.ownKeys === 'function') {
-    ReflectOwnKeys = R.ownKeys;
-  } else if (Object.getOwnPropertySymbols) {
-    ReflectOwnKeys = function ReflectOwnKeys(target) {
-      return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
-    };
-  } else {
-    ReflectOwnKeys = function ReflectOwnKeys(target) {
-      return Object.getOwnPropertyNames(target);
-    };
-  }
-
-  function ProcessEmitWarning(warning) {
-    if (console && console.warn) console.warn(warning);
-  }
-
-  var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
-    return value !== value;
-  };
-
-  function EventEmitter() {
-    EventEmitter.init.call(this);
-  }
-  module.exports = EventEmitter;
-
-  // Backwards-compat with node 0.10.x
-  EventEmitter.EventEmitter = EventEmitter;
-
-  EventEmitter.prototype._events = undefined;
-  EventEmitter.prototype._eventsCount = 0;
-  EventEmitter.prototype._maxListeners = undefined;
-
-  // By default EventEmitters will print a warning if more than 10 listeners are
-  // added to it. This is a useful default which helps finding memory leaks.
-  var defaultMaxListeners = 10;
-
-  Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
-    enumerable: true,
-    get: function () {
-      return defaultMaxListeners;
-    },
-    set: function (arg) {
-      if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
-        throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
-      }
-      defaultMaxListeners = arg;
-    }
-  });
-
-  EventEmitter.init = function () {
-
-    if (this._events === undefined || this._events === Object.getPrototypeOf(this)._events) {
-      this._events = Object.create(null);
-      this._eventsCount = 0;
-    }
-
-    this._maxListeners = this._maxListeners || undefined;
-  };
-
-  // Obviously not all Emitters should be limited to 10. This function allows
-  // that to be increased. Set to zero for unlimited.
-  EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-    if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
-      throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
-    }
-    this._maxListeners = n;
-    return this;
-  };
-
-  function $getMaxListeners(that) {
-    if (that._maxListeners === undefined) return EventEmitter.defaultMaxListeners;
-    return that._maxListeners;
-  }
-
-  EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-    return $getMaxListeners(this);
-  };
-
-  EventEmitter.prototype.emit = function emit(type) {
-    var args = [];
-    for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
-    var doError = type === 'error';
-
-    var events = this._events;
-    if (events !== undefined) doError = doError && events.error === undefined;else if (!doError) return false;
-
-    // If there is no 'error' event listener then throw.
-    if (doError) {
-      var er;
-      if (args.length > 0) er = args[0];
-      if (er instanceof Error) {
-        // Note: The comments on the `throw` lines are intentional, they show
-        // up in Node's output if this results in an unhandled exception.
-        throw er; // Unhandled 'error' event
-      }
-      // At least give some kind of context to the user
-      var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
-      err.context = er;
-      throw err; // Unhandled 'error' event
-    }
-
-    var handler = events[type];
-
-    if (handler === undefined) return false;
-
-    if (typeof handler === 'function') {
-      ReflectApply(handler, this, args);
-    } else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i) ReflectApply(listeners[i], this, args);
-    }
-
-    return true;
-  };
-
-  function _addListener(target, type, listener, prepend) {
-    var m;
-    var events;
-    var existing;
-
-    if (typeof listener !== 'function') {
-      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-    }
-
-    events = target._events;
-    if (events === undefined) {
-      events = target._events = Object.create(null);
-      target._eventsCount = 0;
-    } else {
-      // To avoid recursion in the case that type === "newListener"! Before
-      // adding it to the listeners, first emit "newListener".
-      if (events.newListener !== undefined) {
-        target.emit('newListener', type, listener.listener ? listener.listener : listener);
-
-        // Re-assign `events` because a newListener handler could have caused the
-        // this._events to be assigned to a new object
-        events = target._events;
-      }
-      existing = events[type];
-    }
-
-    if (existing === undefined) {
-      // Optimize the case of one listener. Don't need the extra array object.
-      existing = events[type] = listener;
-      ++target._eventsCount;
-    } else {
-      if (typeof existing === 'function') {
-        // Adding the second element, need to change to array.
-        existing = events[type] = prepend ? [listener, existing] : [existing, listener];
-        // If we've already got an array, just append.
-      } else if (prepend) {
-        existing.unshift(listener);
-      } else {
-        existing.push(listener);
-      }
-
-      // Check for listener leak
-      m = $getMaxListeners(target);
-      if (m > 0 && existing.length > m && !existing.warned) {
-        existing.warned = true;
-        // No error code for this since it is a Warning
-        // eslint-disable-next-line no-restricted-syntax
-        var w = new Error('Possible EventEmitter memory leak detected. ' + existing.length + ' ' + String(type) + ' listeners ' + 'added. Use emitter.setMaxListeners() to ' + 'increase limit');
-        w.name = 'MaxListenersExceededWarning';
-        w.emitter = target;
-        w.type = type;
-        w.count = existing.length;
-        ProcessEmitWarning(w);
-      }
-    }
-
-    return target;
-  }
-
-  EventEmitter.prototype.addListener = function addListener(type, listener) {
-    return _addListener(this, type, listener, false);
-  };
-
-  EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-  EventEmitter.prototype.prependListener = function prependListener(type, listener) {
-    return _addListener(this, type, listener, true);
-  };
-
-  function onceWrapper() {
-    var args = [];
-    for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
-    if (!this.fired) {
-      this.target.removeListener(this.type, this.wrapFn);
-      this.fired = true;
-      ReflectApply(this.listener, this.target, args);
-    }
-  }
-
-  function _onceWrap(target, type, listener) {
-    var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
-    var wrapped = onceWrapper.bind(state);
-    wrapped.listener = listener;
-    state.wrapFn = wrapped;
-    return wrapped;
-  }
-
-  EventEmitter.prototype.once = function once(type, listener) {
-    if (typeof listener !== 'function') {
-      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-    }
-    this.on(type, _onceWrap(this, type, listener));
-    return this;
-  };
-
-  EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
-    if (typeof listener !== 'function') {
-      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-    }
-    this.prependListener(type, _onceWrap(this, type, listener));
-    return this;
-  };
-
-  // Emits a 'removeListener' event if and only if the listener was removed.
-  EventEmitter.prototype.removeListener = function removeListener(type, listener) {
-    var list, events, position, i, originalListener;
-
-    if (typeof listener !== 'function') {
-      throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-    }
-
-    events = this._events;
-    if (events === undefined) return this;
-
-    list = events[type];
-    if (list === undefined) return this;
-
-    if (list === listener || list.listener === listener) {
-      if (--this._eventsCount === 0) this._events = Object.create(null);else {
-        delete events[type];
-        if (events.removeListener) this.emit('removeListener', type, list.listener || listener);
-      }
-    } else if (typeof list !== 'function') {
-      position = -1;
-
-      for (i = list.length - 1; i >= 0; i--) {
-        if (list[i] === listener || list[i].listener === listener) {
-          originalListener = list[i].listener;
-          position = i;
-          break;
-        }
-      }
-
-      if (position < 0) return this;
-
-      if (position === 0) list.shift();else {
-        spliceOne(list, position);
-      }
-
-      if (list.length === 1) events[type] = list[0];
-
-      if (events.removeListener !== undefined) this.emit('removeListener', type, originalListener || listener);
-    }
-
-    return this;
-  };
-
-  EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-
-  EventEmitter.prototype.removeAllListeners = function removeAllListeners(type) {
-    var listeners, events, i;
-
-    events = this._events;
-    if (events === undefined) return this;
-
-    // not listening for removeListener, no need to emit
-    if (events.removeListener === undefined) {
-      if (arguments.length === 0) {
-        this._events = Object.create(null);
-        this._eventsCount = 0;
-      } else if (events[type] !== undefined) {
-        if (--this._eventsCount === 0) this._events = Object.create(null);else delete events[type];
-      }
-      return this;
-    }
-
-    // emit removeListener for all listeners on all events
-    if (arguments.length === 0) {
-      var keys = Object.keys(events);
-      var key;
-      for (i = 0; i < keys.length; ++i) {
-        key = keys[i];
-        if (key === 'removeListener') continue;
-        this.removeAllListeners(key);
-      }
-      this.removeAllListeners('removeListener');
-      this._events = Object.create(null);
-      this._eventsCount = 0;
-      return this;
-    }
-
-    listeners = events[type];
-
-    if (typeof listeners === 'function') {
-      this.removeListener(type, listeners);
-    } else if (listeners !== undefined) {
-      // LIFO order
-      for (i = listeners.length - 1; i >= 0; i--) {
-        this.removeListener(type, listeners[i]);
-      }
-    }
-
-    return this;
-  };
-
-  function _listeners(target, type, unwrap) {
-    var events = target._events;
-
-    if (events === undefined) return [];
-
-    var evlistener = events[type];
-    if (evlistener === undefined) return [];
-
-    if (typeof evlistener === 'function') return unwrap ? [evlistener.listener || evlistener] : [evlistener];
-
-    return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
-  }
-
-  EventEmitter.prototype.listeners = function listeners(type) {
-    return _listeners(this, type, true);
-  };
-
-  EventEmitter.prototype.rawListeners = function rawListeners(type) {
-    return _listeners(this, type, false);
-  };
-
-  EventEmitter.listenerCount = function (emitter, type) {
-    if (typeof emitter.listenerCount === 'function') {
-      return emitter.listenerCount(type);
-    } else {
-      return listenerCount.call(emitter, type);
-    }
-  };
-
-  EventEmitter.prototype.listenerCount = listenerCount;
-  function listenerCount(type) {
-    var events = this._events;
-
-    if (events !== undefined) {
-      var evlistener = events[type];
-
-      if (typeof evlistener === 'function') {
-        return 1;
-      } else if (evlistener !== undefined) {
-        return evlistener.length;
-      }
-    }
-
-    return 0;
-  }
-
-  EventEmitter.prototype.eventNames = function eventNames() {
-    return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
-  };
-
-  function arrayClone(arr, n) {
-    var copy = new Array(n);
-    for (var i = 0; i < n; ++i) copy[i] = arr[i];
-    return copy;
-  }
-
-  function spliceOne(list, index) {
-    for (; index + 1 < list.length; index++) list[index] = list[index + 1];
-    list.pop();
-  }
-
-  function unwrapListeners(arr) {
-    var ret = new Array(arr.length);
-    for (var i = 0; i < ret.length; ++i) {
-      ret[i] = arr[i].listener || arr[i];
-    }
-    return ret;
-  }
-});
-System.registerDynamic("npm:events@3.0.0.js", ["npm:events@3.0.0/events.js"], true, function ($__require, exports, module) {
-  var global = this || self,
-      GLOBAL = global;
-  module.exports = $__require("npm:events@3.0.0/events.js");
-});
-System.registerDynamic("uapp/EventEmitter.js", ["npm:events@3.0.0.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Events = $__require("npm:events@3.0.0.js");
-    class EventEmitter extends Events.EventEmitter {
-        emitDefer(event, ...args) {
-            setTimeout(() => {
-                this.emit(event, ...args);
-            });
-        }
-    }
-    exports.default = EventEmitter;
-    
-});
-System.registerDynamic("uapp/types/GlobalTypes.js", [], true, function ($__require, exports, module) {
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  Object.defineProperty(exports, "__esModule", { value: true });
-  exports.CHANGE = 'change';
-  
-});
-System.registerDynamic("uapp/stores/KeybaseStore.js", ["uapp/dispatcher/Dispatcher.js", "uapp/EventEmitter.js", "uapp/types/KeybaseTypes.js", "uapp/types/GlobalTypes.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
-    const EventEmitter_1 = $__require("uapp/EventEmitter.js");
-    const KeybaseTypes = $__require("uapp/types/KeybaseTypes.js");
-    const GlobalTypes = $__require("uapp/types/GlobalTypes.js");
-    class KeybaseStore extends EventEmitter_1.default {
-        constructor() {
-            super(...arguments);
-            this._token = Dispatcher_1.default.register(this._callback.bind(this));
-        }
-        get info() {
-            return this._info;
-        }
-        get infoM() {
-            if (this._info) {
-                return Object.assign({}, this._info);
-            }
-            return undefined;
-        }
-        emitChange() {
-            this.emitDefer(GlobalTypes.CHANGE);
-        }
-        addChangeListener(callback) {
-            this.on(GlobalTypes.CHANGE, callback);
-        }
-        removeChangeListener(callback) {
-            this.removeListener(GlobalTypes.CHANGE, callback);
-        }
-        _load(info) {
-            this._info = Object.freeze(info);
-            this.emitChange();
-        }
-        _unload() {
-            this._info = null;
-            this.emitChange();
-        }
-        _callback(action) {
-            switch (action.type) {
-                case KeybaseTypes.LOAD:
-                    this._load(action.data.info);
-                    break;
-                case KeybaseTypes.UNLOAD:
-                    this._unload();
-                    break;
-            }
-        }
-    }
-    exports.default = new KeybaseStore();
-    
-});
 System.registerDynamic('npm:flux@3.1.3/lib/Dispatcher.js', ['npm:fbjs@0.8.17/lib/invariant.js', 'github:jspm/nodelibs-process@0.1.2.js'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
@@ -2644,52 +2377,6 @@ System.registerDynamic("uapp/types/LoadingTypes.js", [], true, function ($__requ
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.ADD = 'loading.add';
   exports.DONE = 'loading.done';
-  
-});
-System.registerDynamic("uapp/Loader.js", ["uapp/dispatcher/Dispatcher.js", "uapp/types/LoadingTypes.js", "uapp/utils/MiscUtils.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
-    const LoadingTypes = $__require("uapp/types/LoadingTypes.js");
-    const MiscUtils = $__require("uapp/utils/MiscUtils.js");
-    class Loader {
-        constructor() {
-            this._id = MiscUtils.uuid();
-        }
-        loading() {
-            Dispatcher_1.default.dispatch({
-                type: LoadingTypes.ADD,
-                data: {
-                    id: this._id
-                }
-            });
-            return this;
-        }
-        done() {
-            Dispatcher_1.default.dispatch({
-                type: LoadingTypes.DONE,
-                data: {
-                    id: this._id
-                }
-            });
-            return this;
-        }
-    }
-    exports.default = Loader;
-    
-});
-System.registerDynamic("uapp/types/KeybaseTypes.js", [], true, function ($__require, exports, module) {
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  Object.defineProperty(exports, "__esModule", { value: true });
-  exports.LOAD = 'keybase.load';
-  exports.UNLOAD = 'keybase.unload';
-  exports.CHANGE = 'keybase.change';
   
 });
 System.registerDynamic("uapp/utils/MiscUtils.js", [], true, function ($__require, exports, module) {
@@ -2990,56 +2677,42 @@ System.registerDynamic("uapp/utils/MiscUtils.js", [], true, function ($__require
     exports.formatDateShortTime = formatDateShortTime;
     
 });
-System.registerDynamic("uapp/actions/KeybaseActions.js", ["npm:superagent@3.8.3.js", "uapp/dispatcher/Dispatcher.js", "uapp/Alert.js", "uapp/Csrf.js", "uapp/Loader.js", "uapp/types/KeybaseTypes.js", "uapp/utils/MiscUtils.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/Loader.js", ["uapp/dispatcher/Dispatcher.js", "uapp/types/LoadingTypes.js", "uapp/utils/MiscUtils.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
-    const SuperAgent = $__require("npm:superagent@3.8.3.js");
     const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
-    const Alert = $__require("uapp/Alert.js");
-    const Csrf = $__require("uapp/Csrf.js");
-    const Loader_1 = $__require("uapp/Loader.js");
-    const KeybaseTypes = $__require("uapp/types/KeybaseTypes.js");
+    const LoadingTypes = $__require("uapp/types/LoadingTypes.js");
     const MiscUtils = $__require("uapp/utils/MiscUtils.js");
-    let syncId;
-    function load(token) {
-        let curSyncId = MiscUtils.uuid();
-        syncId = curSyncId;
-        let loader = new Loader_1.default().loading();
-        return new Promise((resolve, reject) => {
-            SuperAgent.get('/keybase/info/' + token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                loader.done();
-                if (curSyncId !== syncId) {
-                    resolve();
-                    return;
+    class Loader {
+        constructor() {
+            this._id = MiscUtils.uuid();
+        }
+        loading() {
+            Dispatcher_1.default.dispatch({
+                type: LoadingTypes.ADD,
+                data: {
+                    id: this._id
                 }
-                if (err) {
-                    Alert.errorRes(res, 'Failed to load Keybase user information');
-                    reject(err);
-                    return;
-                }
-                Dispatcher_1.default.dispatch({
-                    type: KeybaseTypes.LOAD,
-                    data: {
-                        info: res.body
-                    }
-                });
-                resolve();
             });
-        });
+            return this;
+        }
+        done() {
+            Dispatcher_1.default.dispatch({
+                type: LoadingTypes.DONE,
+                data: {
+                    id: this._id
+                }
+            });
+            return this;
+        }
     }
-    exports.load = load;
-    function unload() {
-        Dispatcher_1.default.dispatch({
-            type: KeybaseTypes.UNLOAD
-        });
-    }
-    exports.unload = unload;
+    exports.default = Loader;
     
 });
-System.registerDynamic("uapp/components/Keybase.js", ["npm:react@16.4.1.js", "npm:superagent@3.8.3.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js", "uapp/stores/KeybaseStore.js", "uapp/actions/KeybaseActions.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "npm:superagent@3.8.3.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -3050,8 +2723,7 @@ System.registerDynamic("uapp/components/Keybase.js", ["npm:react@16.4.1.js", "np
     const Csrf = $__require("uapp/Csrf.js");
     const Alert = $__require("uapp/Alert.js");
     const Session_1 = $__require("uapp/components/Session.js");
-    const KeybaseStore_1 = $__require("uapp/stores/KeybaseStore.js");
-    const KeybaseActions = $__require("uapp/actions/KeybaseActions.js");
+    const Loader_1 = $__require("uapp/Loader.js");
     const css = {
         body: {
             padding: 0
@@ -3067,75 +2739,181 @@ System.registerDynamic("uapp/components/Keybase.js", ["npm:react@16.4.1.js", "np
             margin: '5px',
             width: '116px'
         },
-        picture: {
-            width: '100%',
-            maxWidth: '140px',
-            borderRadius: '50%'
+        secondaryButton: {
+            margin: '5px auto',
+            padding: '8px 15px',
+            width: '75%'
         },
-        item: {
-            margin: 0,
-            textAlign: 'center'
-        },
-        value: {
-            opacity: 0.7
+        secondaryInput: {
+            margin: '5px auto',
+            width: '75%'
         }
+    };
+    const u2fErrorCodes = {
+        0: 'ok',
+        1: 'other',
+        2: 'bad request',
+        3: 'configuration unsupported',
+        4: 'device ineligible',
+        5: 'timed out'
     };
     class Validate extends React.Component {
         constructor(props, context) {
             super(props, context);
-            this.onChange = () => {
-                this.setState(Object.assign({}, this.state, { info: KeybaseStore_1.default.info }));
+            this.u2fSigned = resp => {
+                Alert.dismiss(this.alertKey);
+                if (resp.errorCode) {
+                    let errorMsg = 'U2F error code ' + resp.errorCode;
+                    let u2fMsg = u2fErrorCodes[resp.errorCode];
+                    if (u2fMsg) {
+                        errorMsg += ': ' + u2fMsg;
+                    }
+                    Alert.error(errorMsg);
+                    return;
+                }
+                let loader = new Loader_1.default().loading();
+                SuperAgent.post('/ssh/u2f/sign').send({
+                    token: this.state.secondary.token,
+                    response: resp
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    if (err) {
+                        Alert.errorRes(res, 'Failed to complete device sign');
+                        return;
+                    }
+                    if (res.status === 201) {
+                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                push: true,
+                                phone: true,
+                                passcode: true,
+                                sms: true
+                            }, disabled: false }));
+                        return;
+                    }
+                    this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
+                    window.history.replaceState(null, null, window.location.pathname);
+                    Alert.success('Successfully approved SSH key', 0);
+                });
             };
             this.state = {
                 disabled: false,
                 answered: false,
-                info: KeybaseStore_1.default.info
+                passcode: '',
+                secondary: null,
+                secondaryState: null
             };
         }
-        componentDidMount() {
-            KeybaseStore_1.default.addChangeListener(this.onChange);
-            KeybaseActions.load(this.props.token);
+        deviceSign(token) {
+            let loader = new Loader_1.default().loading();
+            SuperAgent.get('/ssh/u2f/sign').query({
+                token: token
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (err) {
+                    Alert.errorRes(res, 'Failed to request device sign');
+                    return;
+                }
+                this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
+                window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
+            });
         }
-        componentWillUnmount() {
-            KeybaseStore_1.default.removeChangeListener(this.onChange);
-            KeybaseActions.unload();
+        device() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Insert your security key and tap the button")));
+        }
+        secondarySubmit(factor) {
+            let passcode = '';
+            if (factor === 'passcode') {
+                passcode = this.state.passcode;
+            }
+            SuperAgent.put('/ssh/secondary').send({
+                token: this.state.secondary.token,
+                factor: factor,
+                passcode: passcode
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
+                if (res && res.status === 404) {
+                    Alert.error('SSH verification request has expired', 0);
+                } else if (err) {
+                    Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                    return;
+                } else if (res.status === 206 && factor === 'sms') {
+                    Alert.info('Text message sent', 0);
+                    return;
+                } else {
+                    Alert.success('Successfully approved SSH key', 0);
+                }
+                this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
+                window.history.replaceState(null, null, window.location.pathname);
+            });
+        }
+        secondary() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Secondary authentication required")), React.createElement("div", { className: "layout vertical center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.push, disabled: !this.state.secondaryState.push, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { push: false }) }));
+                    this.secondarySubmit('push');
+                } }, "Push"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.phone, disabled: !this.state.secondaryState.phone, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { phone: false }) }));
+                    this.secondarySubmit('phone');
+                } }, "Call Me"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.sms, disabled: !this.state.secondaryState.sms, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { sms: false }) }));
+                    this.secondarySubmit('sms');
+                } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
+                }, onKeyPress: evt => {
+                    if (evt.key === 'Enter') {
+                        this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                        this.secondarySubmit('passcode');
+                    }
+                } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                    this.secondarySubmit('passcode');
+                } }, "Submit")));
         }
         render() {
-            let info = this.state.info || {};
             if (this.state.answered) {
                 return React.createElement(Session_1.default, null);
             }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Associate Keybase Account"), React.createElement("div", { hidden: !info.username }, React.createElement("img", { hidden: !info.picture, style: css.picture, src: info.picture }), React.createElement("div", { hidden: !info.username, style: css.item }, "Keybase: ", React.createElement("span", { style: css.value }, info.username)), React.createElement("div", { hidden: !info.twitter, style: css.item }, "Twitter: ", React.createElement("span", { style: css.value }, info.twitter)), React.createElement("div", { hidden: !info.github, style: css.item }, "Github: ", React.createElement("span", { style: css.value }, info.github))), React.createElement("span", { style: css.description }, "If you did not initiate this association deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+            if (this.state.secondary) {
+                if (this.state.secondary.device) {
+                    return this.device();
+                }
+                return this.secondary();
+            }
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.put('/keybase/validate').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).send({
-                        token: this.props.token,
-                        signature: this.props.signature
-                    }).end((err, res) => {
+                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res.status === 404) {
-                            Alert.error('Keybase association request has expired', 0);
+                        if (res && res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
                         } else if (err) {
-                            Alert.errorRes(res, 'Failed to associate keybase', 0);
+                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                        } else if (res.status === 201) {
+                            this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                    push: true,
+                                    phone: true,
+                                    passcode: true,
+                                    sms: true
+                                }, disabled: false }));
+                            if (res.body.device) {
+                                this.deviceSign(res.body.token);
+                            }
+                            return;
                         } else {
-                            Alert.success('Successfully associated keybase', 0);
+                            Alert.success('Successfully approved SSH key', 0);
                         }
-                        this.setState(Object.assign({}, this.state, { answered: true }));
+                        this.setState(Object.assign({}, this.state, { answered: true, disabled: false }));
                         window.history.replaceState(null, null, window.location.pathname);
                     });
                 } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.delete('/keybase/validate').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).send({
-                        token: this.props.token,
-                        signature: this.props.signature
-                    }).end((err, res) => {
+                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                         if (res.status === 404) {
-                            Alert.error('Keybase association request has expired', 0);
+                            Alert.error('SSH verification request has expired', 0);
                         } else if (err) {
-                            Alert.errorRes(res, 'Failed to deny keybase association', 0);
+                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
                             return;
                         } else {
-                            Alert.error('Successfully denied keybase association. ' + 'Report this incident to an administrator.', 0);
+                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
                         }
                         this.setState(Object.assign({}, this.state, { answered: true }));
                         window.history.replaceState(null, null, window.location.pathname);
@@ -3146,7 +2924,7 @@ System.registerDynamic("uapp/components/Keybase.js", ["npm:react@16.4.1.js", "np
     exports.default = Validate;
     
 });
-System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/components/LoadingBar.js", "uapp/components/Session.js", "uapp/components/Validate.js", "uapp/components/Keybase.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/components/LoadingBar.js", "uapp/components/Session.js", "uapp/components/Validate.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -3156,7 +2934,6 @@ System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/
     const LoadingBar_1 = $__require("uapp/components/LoadingBar.js");
     const Session_1 = $__require("uapp/components/Session.js");
     const Validate_1 = $__require("uapp/components/Validate.js");
-    const Keybase_1 = $__require("uapp/components/Keybase.js");
     const css = {
         card: {
             padding: '20px 15px',
@@ -3179,25 +2956,17 @@ System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/
     class Main extends React.Component {
         render() {
             let sshToken = '';
-            let keybaseToken = '';
-            let keybaseSig = '';
             let query = window.location.search.substring(1);
             let vals = query.split('&');
             for (let val of vals) {
                 let keyval = val.split('=');
                 if (keyval[0] === 'ssh-token') {
                     sshToken = keyval[1];
-                } else if (keyval[0] === 'keybase-token') {
-                    keybaseToken = keyval[1];
-                } else if (keyval[0] === 'keybase-sig') {
-                    keybaseSig = decodeURIComponent(keyval[1]).replace(/\+/g, ' ');
                 }
             }
             let bodyElm;
             if (sshToken) {
                 bodyElm = React.createElement(Validate_1.default, { token: sshToken });
-            } else if (keybaseToken && keybaseSig) {
-                bodyElm = React.createElement(Keybase_1.default, { token: keybaseToken, signature: keybaseSig });
             } else {
                 bodyElm = React.createElement(Session_1.default, null);
             }

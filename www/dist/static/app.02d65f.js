@@ -4234,10 +4234,6 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@16.4.1.js", 
             width: '200px',
             margin: '5px'
         },
-        keybase: {
-            width: '175px',
-            margin: '5px'
-        },
         role: {
             width: '150px',
             margin: '5px'
@@ -4266,14 +4262,6 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@16.4.1.js", 
                         filter.username = val;
                     } else {
                         delete filter.username;
-                    }
-                    this.props.onFilter(filter);
-                } }), React.createElement(SearchInput_1.default, { style: css.keybase, placeholder: "Keybase", value: this.props.filter.keybase, onChange: val => {
-                    let filter = Object.assign({}, this.props.filter);
-                    if (val) {
-                        filter.keybase = val;
-                    } else {
-                        delete filter.keybase;
                     }
                     this.props.onFilter(filter);
                 } }), React.createElement(SearchInput_1.default, { style: css.role, placeholder: "Role", value: this.props.filter.role, onChange: val => {
@@ -4726,7 +4714,7 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.4.1.js", "app/
             minWidth: '250px'
         },
         inputGroup: {
-            marginBottom: '15px',
+            marginBottom: '11px',
             width: '100%',
             maxWidth: '280px'
         },
@@ -10657,8 +10645,6 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@16.4.1.js",
                     this.set('username', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", help: "Password, leave blank to keep current password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
-                } }), React.createElement(PageInput_1.default, { disabled: this.state.locked, label: "Keybase Username", help: "Keybase username if user has associated Keybase account. Clear the value to allow user to associate a different Keybase account.", type: "text", placeholder: "Enter Keybase username", value: user.keybase, onChange: val => {
-                    this.set('keybase', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api', disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Token", help: "API token", type: "text", placeholder: "Save to generate token", value: user.token }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api' || !user.token || !user.secret, disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Secret", help: "API secret, will only be shown once", type: "text", placeholder: "", value: user.secret }), React.createElement(PageSwitch_1.default, { hidden: user.type !== 'api' || !user.token || !!user.secret, label: "Generate new token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", disabled: this.state.locked, checked: user.generate_secret, onToggle: () => {
                     this.set('generate_secret', !this.state.user.generate_secret);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
@@ -11595,9 +11581,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@16.4.1.js", "app/
                     this.setState(Object.assign({}, this.state, { addService: val }));
                 }, onSubmit: this.onAddService }, servicesSelect), React.createElement("label", { className: "pt-label", style: css.label }, "Authorities", React.createElement(Help_1.default, { title: "Authorities", content: "Authorities associated with this policy. All certificate requests to the associated authority must pass this policy check." }), React.createElement("div", null, authorities)), React.createElement(PageSelectButton_1.default, { label: "Add Authority", value: this.state.addAuthority, disabled: !this.props.authorities.length, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { addAuthority: val }));
-                }, onSubmit: this.onAddAuthority }, authoritiesSelect), React.createElement(PageSelect_1.default, { disabled: this.state.disabled, label: "Keybase Mode", help: "Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled.", value: policy.keybase_mode, onChange: val => {
-                    this.set('keybase_mode', val);
-                } }, React.createElement("option", { value: "optional" }, "Optional"), React.createElement("option", { value: "required" }, "Required"), React.createElement("option", { value: "disabled" }, "Disabled")), React.createElement(PageSwitch_1.default, { label: "Admin two-factor authentication", help: "Require admins to use two-factor authentication.", checked: adminProvider, onToggle: () => {
+                }, onSubmit: this.onAddAuthority }, authoritiesSelect), React.createElement(PageSwitch_1.default, { label: "Admin two-factor authentication", help: "Require admins to use two-factor authentication.", checked: adminProvider, onToggle: () => {
                     if (adminProvider) {
                         this.set('admin_secondary', null);
                     } else {
