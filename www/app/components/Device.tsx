@@ -31,7 +31,7 @@ const css = {
 		minWidth: '250px',
 	} as React.CSSProperties,
 	inputGroup: {
-		marginBottom: '15px',
+		marginBottom: '11px',
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
