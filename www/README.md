@@ -31,3 +31,12 @@ tsc --watch
 ```
 sh build.sh
 ```
+
+### clean
+
+```
+rm -rf app/*.js*
+rm -rf app/**/*.js*
+rm -rf uapp/*.js*
+rm -rf uapp/**/*.js*
+```
