@@ -4742,7 +4742,7 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.4.1.js", "app/
             this.onSave = () => {
                 this.setState(Object.assign({}, this.state, { disabled: true }));
                 DeviceActions.commit(this.state.device).then(() => {
-                    Alert.success("Device name updated");
+                    Alert.success('Device name updated');
                     this.setState(Object.assign({}, this.state, { disabled: false, changed: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
@@ -4851,6 +4851,10 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
             this.u2fRegistered = resp => {
                 Alert.dismiss(this.alertKey);
                 if (resp.errorCode) {
+                    this.u2fToken = null;
+                    this.setState({
+                        disabled: false
+                    });
                     let errorMsg = 'U2F error code ' + resp.errorCode;
                     let u2fMsg = Constants.u2fErrorCodes[resp.errorCode];
                     if (u2fMsg) {
@@ -4866,6 +4870,7 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
                     response: resp
                 }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                     loader.done();
+                    this.u2fToken = null;
                     this.setState(Object.assign({}, this.state, { disabled: false, deviceName: '' }));
                     if (err) {
                         Alert.errorRes(res, 'Failed to register device');

@@ -49,6 +49,10 @@
         width: 100%;
       }
 
+      .device-info {
+        margin-bottom: 16px;
+      }
+
       .pt-card .pt-button.auth-cancel,
       #auth-buttons .pt-button:last-child,
       #auth-secondary .pt-button:last-child {
@@ -97,7 +101,7 @@
     <div id="auth-secondary" class="pt-card pt-elevation-2">
       <h5 id="secondary-label"></h5>
       <div id="secondary-alert" class="pt-callout"></div>
-      <div id="secondary-device" class="pt-callout">Insert your security key and tap the button</div>
+      <div id="secondary-device" class="pt-callout device-info">Insert your security key and tap the button</div>
       <button id="secondary-push" class="pt-button auth-button">Push</button>
       <button id="secondary-phone" class="pt-button auth-button">Call Me</button>
       <button id="secondary-sms" class="pt-button auth-button">Text Me</button>
@@ -105,6 +109,7 @@
         autocapitalize="off" spellcheck="false"
         type="text" placeholder="Passcode"/>
       <button id="secondary-submit" class="pt-button auth-button">Submit</button>
+      <button id="secondary-cancel" class="pt-button auth-button">Cancel</button>
     </div>
     <div id="auth-device" class="pt-card pt-elevation-2">
       <h5 id="device-label"></h5>
@@ -178,6 +183,7 @@
       var secondarySms = document.getElementById('secondary-sms');
       var secondaryPasscode = document.getElementById('secondary-passcode');
       var secondarySubmit = document.getElementById('secondary-submit');
+      var secondaryCancel = document.getElementById('secondary-cancel');
       var secondaryDevice = document.getElementById('secondary-device');
 
       var queryVals = window.location.search.substring(1).split('&');
@@ -808,6 +814,26 @@
         }
       };
       secondarySubmit.onclick = secondarySub;
+      secondaryCancel.onclick = function() {
+        var query = [];
+
+        var queryVals = window.location.search.substring(1).split('&');
+        for (i = 0; i < queryVals.length; i++) {
+          var queryKeyVal = queryVals[i].split('=');
+          if (queryKeyVal[0] === 'secondary' ||
+              queryKeyVal[0] === 'label' ||
+              queryKeyVal[0] === 'factors') {
+            continue;
+          }
+          query.push(queryVals[i]);
+        }
+
+        var location = '/login';
+        if (query.length) {
+          location += '?' + query.join('&');
+        }
+        window.location = location;
+      };
 
       var authCancels = document.querySelectorAll('.auth-cancel');
       for (i = 0; i < authCancels.length; i++) {
