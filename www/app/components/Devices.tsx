@@ -81,6 +81,11 @@ export default class Devices extends React.Component<Props, State> {
 		Alert.dismiss(this.alertKey);
 
 		if (resp.errorCode) {
+			this.u2fToken = null;
+			this.setState({
+				disabled: false,
+			});
+
 			let errorMsg = 'U2F error code ' + resp.errorCode;
 			let u2fMsg = Constants.u2fErrorCodes[resp.errorCode as number];
 			if (u2fMsg) {
@@ -105,6 +110,7 @@ export default class Devices extends React.Component<Props, State> {
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
+				this.u2fToken = null;
 				this.setState({
 					...this.state,
 					disabled: false,
