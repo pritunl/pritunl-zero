@@ -5,7 +5,7 @@ import * as MiscUtils from '../utils/MiscUtils';
 import * as DeviceActions from '../actions/DeviceActions';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
-import * as Alert from "../Alert";
+import * as Alert from '../Alert';
 
 interface Props {
 	device: DeviceTypes.DeviceRo;
@@ -31,7 +31,7 @@ const css = {
 		minWidth: '250px',
 	} as React.CSSProperties,
 	inputGroup: {
-		marginTop: '15px',
+		marginBottom: '15px',
 		width: '100%',
 		maxWidth: '280px',
 	} as React.CSSProperties,
@@ -80,7 +80,7 @@ export default class Device extends React.Component<Props, State> {
 			disabled: true,
 		});
 		DeviceActions.commit(this.state.device).then((): void => {
-			Alert.success("Device name updated");
+			Alert.success('Device name updated');
 
 			this.setState({
 				...this.state,
