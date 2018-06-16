@@ -685,19 +685,6 @@ export default class Policy extends React.Component<Props, State> {
 					>
 						{authoritiesSelect}
 					</PageSelectButton>
-					<PageSelect
-						disabled={this.state.disabled}
-						label="Keybase Mode"
-						help="Set to required to require users to use Keybase for SSH certificates. Set to disable to prevent users from using Keybase. With multiple matching policies required overrides disabled."
-						value={policy.keybase_mode}
-						onChange={(val): void => {
-							this.set('keybase_mode', val);
-						}}
-					>
-						<option value="optional">Optional</option>
-						<option value="required">Required</option>
-						<option value="disabled">Disabled</option>
-					</PageSelect>
 					<PageSwitch
 						label="Admin two-factor authentication"
 						help="Require admins to use two-factor authentication."

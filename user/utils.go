@@ -102,29 +102,6 @@ func GetUsername(db *database.Database, typ, username string) (
 	return
 }
 
-func GetKeybase(db *database.Database, keybase string) (
-	usr *User, err error) {
-
-	coll := db.Users()
-	usr = &User{}
-
-	if keybase == "" {
-		err = &errortypes.NotFoundError{
-			errors.New("user: Keybase empty"),
-		}
-		return
-	}
-
-	err = coll.FindOne(&bson.M{
-		"keybase": keybase,
-	}, usr)
-	if err != nil {
-		return
-	}
-
-	return
-}
-
 func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
 	users []*User, count int, err error) {
 

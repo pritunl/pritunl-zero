@@ -3,7 +3,6 @@ import * as React from 'react';
 import LoadingBar from './LoadingBar';
 import Session from './Session';
 import Validate from './Validate';
-import Keybase from './Keybase';
 
 const css = {
 	card: {
@@ -28,18 +27,12 @@ const css = {
 export default class Main extends React.Component<{}, {}> {
 	render(): JSX.Element {
 		let sshToken = '';
-		let keybaseToken = '';
-		let keybaseSig = '';
 		let query = window.location.search.substring(1);
 		let vals = query.split('&');
 		for (let val of vals) {
 			let keyval = val.split('=');
 			if (keyval[0] === 'ssh-token') {
 				sshToken = keyval[1];
-			} else if (keyval[0] === 'keybase-token') {
-				keybaseToken = keyval[1];
-			} else if (keyval[0] === 'keybase-sig') {
-				keybaseSig = decodeURIComponent(keyval[1]).replace(/\+/g, ' ');
 			}
 		}
 
@@ -47,8 +40,6 @@ export default class Main extends React.Component<{}, {}> {
 
 		if (sshToken) {
 			bodyElm = <Validate token={sshToken}/>;
-		} else if (keybaseToken && keybaseSig) {
-			bodyElm = <Keybase token={keybaseToken} signature={keybaseSig}/>
 		} else {
 			bodyElm = <Session/>;
 		}

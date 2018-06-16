@@ -60,18 +60,6 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/device/:device_id/register", deviceU2fRegisterGet)
 	csrfGroup.POST("/device/:device_id/register", deviceU2fRegisterPost)
 
-	sessGroup.GET("/keybase", sshGet)
-	csrfGroup.GET("/keybase/info/:token", keybaseInfoGet)
-	csrfGroup.PUT("/keybase/validate", keybaseValidatePut)
-	csrfGroup.DELETE("/keybase/validate", keybaseValidateDelete)
-	dbGroup.PUT("/keybase/check", keybaseCheckPut)
-	dbGroup.POST("/keybase/challenge", keybaseChallengePost)
-	dbGroup.PUT("/keybase/challenge", keybaseChallengePut)
-	dbGroup.PUT("/keybase/secondary", keybaseSecondaryPut)
-
-	dbGroup.POST("/keybase/associate", keybaseAssociatePost)
-	dbGroup.GET("/keybase/associate/:token", keybaseAssociateGet)
-
 	sessGroup.GET("/ssh", sshGet)
 	csrfGroup.PUT("/ssh/validate/:ssh_token", sshValidatePut)
 	csrfGroup.DELETE("/ssh/validate/:ssh_token", sshValidateDelete)

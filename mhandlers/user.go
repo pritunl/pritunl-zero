@@ -20,7 +20,6 @@ type userData struct {
 	Type           string        `json:"type"`
 	Username       string        `json:"username"`
 	Password       string        `json:"password"`
-	Keybase        string        `json:"keybase"`
 	Roles          []string      `json:"roles"`
 	Administrator  string        `json:"administrator"`
 	Permissions    []string      `json:"permissions"`
@@ -101,7 +100,6 @@ func userPut(c *gin.Context) {
 
 	usr.Type = data.Type
 	usr.Username = data.Username
-	usr.Keybase = data.Keybase
 	usr.Roles = data.Roles
 	usr.Administrator = data.Administrator
 	usr.Permissions = data.Permissions
@@ -122,7 +120,6 @@ func userPut(c *gin.Context) {
 		"token",
 		"secret",
 		"username",
-		"keybase",
 		"roles",
 		"administrator",
 		"permissions",
@@ -186,7 +183,6 @@ func userPost(c *gin.Context) {
 	usr := &user.User{
 		Type:          data.Type,
 		Username:      data.Username,
-		Keybase:       data.Keybase,
 		Roles:         data.Roles,
 		Administrator: data.Administrator,
 		Permissions:   data.Permissions,
@@ -244,14 +240,6 @@ func usersGet(c *gin.Context) {
 	if username != "" {
 		query["username"] = &bson.M{
 			"$regex":   fmt.Sprintf(".*%s.*", username),
-			"$options": "i",
-		}
-	}
-
-	keybase := strings.TrimSpace(c.Query("keybase"))
-	if keybase != "" {
-		query["keybase"] = &bson.M{
-			"$regex":   fmt.Sprintf(".*%s.*", keybase),
 			"$options": "i",
 		}
 	}

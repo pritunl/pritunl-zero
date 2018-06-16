@@ -11,7 +11,6 @@ export interface User {
 	type?: string;
 	username?: string;
 	password?: string;
-	keybase?: string;
 	token?: string;
 	secret?: string;
 	last_active?: string;
@@ -25,7 +24,6 @@ export interface User {
 
 export interface Filter {
 	username?: string;
-	keybase?: string;
 	type?: string;
 	administrator?: boolean;
 	disabled?: boolean;

@@ -29,7 +29,6 @@ type Policy struct {
 	Authorities              []bson.ObjectId  `bson:"authorities" json:"authorities"`
 	Roles                    []string         `bson:"roles" json:"roles"`
 	Rules                    map[string]*Rule `bson:"rules" json:"rules"`
-	KeybaseMode              string           `bson:"keybase_mode" json:"keybase_mode"`
 	AdminSecondary           bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
 	UserSecondary            bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
 	ProxySecondary           bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
@@ -42,20 +41,6 @@ type Policy struct {
 
 func (p *Policy) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
-
-	switch p.KeybaseMode {
-	case Optional, Required, Disabled:
-		break
-	case "":
-		p.KeybaseMode = Optional
-		break
-	default:
-		errData = &errortypes.ErrorData{
-			Error:   "keybase_mode_invalid",
-			Message: "Keybase mode is invalid",
-		}
-		return
-	}
 
 	if p.Services == nil {
 		p.Services = []bson.ObjectId{}
@@ -130,8 +115,9 @@ func (p *Policy) Validate(db *database.Database) (
 		!hasUserNode {
 
 		errData = &errortypes.ErrorData{
-			Error:   "keybase_mode_invalid",
-			Message: "Keybase mode is invalid",
+			Error: "user_node_unavailable",
+			Message: "At least one node must have a user domain configured " +
+				"to use secondary device authentication",
 		}
 		return
 	}

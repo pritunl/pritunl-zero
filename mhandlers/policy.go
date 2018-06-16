@@ -18,7 +18,6 @@ type policyData struct {
 	Authorities              []bson.ObjectId         `json:"authorities"`
 	Roles                    []string                `json:"roles"`
 	Rules                    map[string]*policy.Rule `json:"rules"`
-	KeybaseMode              string                  `json:"keybase_mode"`
 	AdminSecondary           bson.ObjectId           `json:"admin_secondary"`
 	UserSecondary            bson.ObjectId           `json:"user_secondary"`
 	ProxySecondary           bson.ObjectId           `json:"proxy_secondary"`
@@ -60,7 +59,6 @@ func policyPut(c *gin.Context) {
 	polcy.Authorities = data.Authorities
 	polcy.Roles = data.Roles
 	polcy.Rules = data.Rules
-	polcy.KeybaseMode = data.KeybaseMode
 	polcy.AdminSecondary = data.AdminSecondary
 	polcy.UserSecondary = data.UserSecondary
 	polcy.ProxySecondary = data.ProxySecondary
@@ -76,7 +74,6 @@ func policyPut(c *gin.Context) {
 		"authorities",
 		"roles",
 		"rules",
-		"keybase_mode",
 		"admin_secondary",
 		"user_secondary",
 		"proxy_secondary",
@@ -131,7 +128,6 @@ func policyPost(c *gin.Context) {
 		Authorities:              data.Authorities,
 		Roles:                    data.Roles,
 		Rules:                    data.Rules,
-		KeybaseMode:              data.KeybaseMode,
 		AdminSecondary:           data.AdminSecondary,
 		UserSecondary:            data.UserSecondary,
 		ProxySecondary:           data.ProxySecondary,

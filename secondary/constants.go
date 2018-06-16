@@ -28,7 +28,6 @@ const (
 	ProxyDeviceRegister      = "proxy_device_register"
 	Authority                = "authority"
 	AuthorityDevice          = "authority_device"
-	Keybase                  = "keybase"
 )
 
 var (

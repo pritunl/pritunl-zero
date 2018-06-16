@@ -141,22 +141,3 @@ func Remove(db *database.Database, policyId bson.ObjectId) (err error) {
 
 	return
 }
-
-func KeybaseMode(policies []*Policy) (mode string) {
-	mode = Optional
-
-	for _, polcy := range policies {
-		switch polcy.KeybaseMode {
-		case Disabled:
-			if mode == Optional {
-				mode = Disabled
-			}
-			break
-		case Required:
-			mode = Required
-			break
-		}
-	}
-
-	return
-}

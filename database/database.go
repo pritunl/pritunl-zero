@@ -122,11 +122,6 @@ func (d *Database) SshCertificates() (coll *Collection) {
 	return
 }
 
-func (d *Database) KeybaseChallenges() (coll *Collection) {
-	coll = d.getCollection("keybase_challenges")
-	return
-}
-
 func (d *Database) AcmeChallenges() (coll *Collection) {
 	coll = d.getCollection("acme_challenges")
 	return
@@ -286,15 +281,6 @@ func addIndexes() (err error) {
 		}
 	}
 	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"keybase"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
 		Key:        []string{"type"},
 		Background: true,
 	})
@@ -418,18 +404,6 @@ func addIndexes() (err error) {
 	err = coll.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
 		ExpireAfter: 168 * time.Hour,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.KeybaseChallenges()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 6 * time.Minute,
 		Background:  true,
 	})
 	if err != nil {

@@ -60,20 +60,6 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		}
 	}
 
-	keybaseMode := policy.KeybaseMode(policies)
-	if keybaseMode == policy.Required {
-		err = c.Deny(db, usr)
-		if err != nil {
-			return
-		}
-
-		errData = &errortypes.ErrorData{
-			Error:   "keybase_required",
-			Message: "Keybase is required for this user",
-		}
-		return
-	}
-
 	for _, polcy := range policies {
 		if polcy.UserDeviceSecondary {
 			deviceAuth = true
