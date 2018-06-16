@@ -204,7 +204,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	deviceAuth, secProviderId, errData, err := validator.ValidateUser(
+	_, secProviderId, errData, err := validator.ValidateUser(
 		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -216,43 +216,25 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	if deviceAuth {
-		deviceCount, err := device.Count(db, usr.Id)
-		if err != nil {
-			utils.AbortWithError(c, 500, err)
-			return
+	deviceCount, err := device.Count(db, usr.Id)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if deviceCount > 0 || secProviderId != "" {
+		secType := ""
+		var secProvider bson.ObjectId
+
+		if deviceCount == 0 {
+			secType = secondary.UserManage
+			secProvider = secProviderId
+		} else {
+			secType = secondary.UserManageDevice
+			secProvider = secondary.DeviceProvider
 		}
 
-		if deviceCount > 0 || secProviderId != "" {
-			secType := ""
-			var secProvider bson.ObjectId
-
-			if deviceCount == 0 {
-				secType = secondary.UserManage
-				secProvider = secProviderId
-			} else {
-				secType = secondary.UserManageDevice
-				secProvider = secondary.DeviceProvider
-			}
-
-			secd, err := secondary.New(db, usr.Id, secType, secProvider)
-			if err != nil {
-				utils.AbortWithError(c, 500, err)
-				return
-			}
-
-			data, err := secd.GetData()
-			if err != nil {
-				utils.AbortWithError(c, 500, err)
-				return
-			}
-
-			c.JSON(201, data)
-			return
-		}
-	} else if secProviderId != "" {
-		secd, err := secondary.New(db, usr.Id,
-			secondary.UserManage, secProviderId)
+		secd, err := secondary.New(db, usr.Id, secType, secProvider)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
