@@ -61,6 +61,20 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminPrimaryApprove,
+		audit.Fields{
+			"method": "local",
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	deviceAuth, secProviderId, errData, err := validator.ValidateAdmin(
 		db, usr, false, c.Request)
 	if err != nil {
@@ -75,6 +89,7 @@ func authSessionPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "local",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -219,8 +234,10 @@ func authSecondaryPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
-				"error":   errData.Error,
-				"message": errData.Message,
+				"method":      "secondary",
+				"provider_id": secd.ProviderId,
+				"error":       errData.Error,
+				"message":     errData.Message,
 			},
 		)
 		if err != nil {
@@ -229,6 +246,20 @@ func authSecondaryPost(c *gin.Context) {
 		}
 
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminSecondaryApprove,
+		audit.Fields{
+			"provider_id": secd.ProviderId,
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -246,6 +277,7 @@ func authSecondaryPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "secondary",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -322,6 +354,21 @@ func logoutGet(c *gin.Context) {
 		}
 	}
 
+	usr, _ := authr.GetUser(db)
+	if usr != nil {
+		err := audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.AdminLogout,
+			audit.Fields{},
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+
 	c.Redirect(302, "/login")
 }
 
@@ -351,6 +398,20 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminPrimaryApprove,
+		audit.Fields{
+			"method": "callback",
+		},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	deviceAuth, secProviderId, errData, err := validator.ValidateAdmin(
 		db, usr, false, c.Request)
 	if err != nil {
@@ -365,6 +426,7 @@ func authCallbackGet(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "callback",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -437,7 +499,7 @@ func authCallbackGet(c *gin.Context) {
 		usr.Id,
 		audit.AdminLogin,
 		audit.Fields{
-			"method": "sso",
+			"method": "callback",
 		},
 	)
 	if err != nil {
@@ -484,6 +546,18 @@ func authU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminDeviceRegisterRequest,
+		audit.Fields{},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	resp, errData, err := secd.DeviceRegisterRequest(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -497,6 +571,7 @@ func authU2fRegisterGet(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "device_register",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -568,6 +643,7 @@ func authU2fRegisterPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "device_register",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -612,7 +688,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		db,
 		c.Request,
 		usr.Id,
-		audit.DeviceRegister,
+		audit.AdminDeviceRegister,
 		audit.Fields{
 			"device_id": devc.Id,
 		},
@@ -630,7 +706,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		usr.Id,
 		audit.AdminLogin,
 		audit.Fields{
-			"method": "secondary",
+			"method": "device_register",
 		},
 	)
 	if err != nil {
@@ -686,6 +762,7 @@ func authU2fSignGet(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "device",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -751,6 +828,7 @@ func authU2fSignPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "device",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -777,6 +855,7 @@ func authU2fSignPost(c *gin.Context) {
 			usr.Id,
 			audit.AdminLoginFailed,
 			audit.Fields{
+				"method":  "device",
 				"error":   errData.Error,
 				"message": errData.Message,
 			},
@@ -787,6 +866,18 @@ func authU2fSignPost(c *gin.Context) {
 		}
 
 		c.JSON(401, errData)
+		return
+	}
+
+	err = audit.New(
+		db,
+		c.Request,
+		usr.Id,
+		audit.AdminDeviceApprove,
+		audit.Fields{},
+	)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
@@ -813,7 +904,7 @@ func authU2fSignPost(c *gin.Context) {
 		usr.Id,
 		audit.AdminLogin,
 		audit.Fields{
-			"method": "secondary",
+			"method": "device",
 		},
 	)
 	if err != nil {
