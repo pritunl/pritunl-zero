@@ -143,7 +143,7 @@ func deviceDelete(c *gin.Context) {
 			db,
 			c.Request,
 			usr.Id,
-			audit.UserAccountDisabled,
+			audit.UserAccountDisable,
 			audit.Fields{
 				"reason": "All authentication devices removed",
 			},
