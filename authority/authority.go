@@ -722,11 +722,46 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Roles = []string{}
 	}
 
-	if a.PrivateKey == "" {
-		err = a.GenerateRsaPrivateKey()
-		if err != nil {
+	switch a.Type {
+	case Local:
+		a.HsmToken = ""
+		a.HsmSecret = ""
+		a.HsmSerial = ""
+
+		if a.PrivateKey == "" {
+			err = a.GenerateRsaPrivateKey()
+			if err != nil {
+				return
+			}
+		}
+
+		break
+	case PritunlHsm:
+		a.PublicKey = ""
+		a.PrivateKey = ""
+
+		if a.HsmSerial == "" {
+			errData = &errortypes.ErrorData{
+				Error:   "missing_hsm_serial",
+				Message: "Missing authority HSM serial",
+			}
 			return
 		}
+
+		if a.HsmToken == "" {
+			err = a.GenerateHsmToken()
+			if err != nil {
+				return
+			}
+		}
+
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "invalid_type",
+			Message: "Authority type is invalid",
+		}
+		return
 	}
 
 	if a.Expire < 1 {
