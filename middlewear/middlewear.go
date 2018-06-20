@@ -6,6 +6,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/auth"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/csrf"
 	"github.com/pritunl/pritunl-zero/database"
@@ -294,6 +295,44 @@ func CsrfToken(c *gin.Context) {
 		utils.AbortWithStatus(c, 401)
 		return
 	}
+}
+
+func AuthHsm(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	token := c.GetHeader("Auth-Token")
+	sigStr := c.GetHeader("Auth-Signature")
+	timestamp := c.GetHeader("Auth-Timestamp")
+	nonce := c.GetHeader("Auth-Nonce")
+	method := c.Request.Method
+	path := c.Request.URL.Path
+
+	authr, err := authority.GetHsmToken(db, token)
+	if err != nil {
+		switch err.(type) {
+		case *database.NotFoundError:
+			utils.AbortWithError(c, 401, err)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	err = authr.ValidateHsmSignature(db, token, sigStr, timestamp,
+		nonce, method, path)
+	if err != nil {
+		switch err.(type) {
+		case *errortypes.AuthenticationError:
+			utils.AbortWithError(c, 401, err)
+			break
+		default:
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	c.Set("authority", authr)
 }
 
 func Recovery(c *gin.Context) {
