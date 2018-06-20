@@ -275,7 +275,7 @@ func (a *Authority) HostnameValidate(hostname string, port int,
 	return true
 }
 
-func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
+func (a *Authority) createCertificateLocal(usr *user.User, sshPubKey string) (
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
@@ -356,6 +356,243 @@ func (a *Authority) CreateCertificate(usr *user.User, sshPubKey string) (
 	}
 
 	certMarshaled = string(MarshalCertificate(cert, comment))
+
+	return
+}
+
+func (a *Authority) createCertificateHsm(db *database.Database,
+	usr *user.User, sshPubKey string) (cert *ssh.Certificate,
+	certMarshaled string, err error) {
+
+	pubKey, comment, _, _, err := ssh.ParseAuthorizedKey([]byte(sshPubKey))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ssh public key"),
+		}
+		return
+	}
+
+	expire := a.Expire
+	if expire == 0 {
+		expire = 600
+	}
+	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validBefore := time.Now().Add(
+		time.Duration(expire) * time.Minute).Unix()
+
+	if len(usr.Roles) == 0 {
+		err = &errortypes.AuthenticationError{
+			errors.Wrap(err, "authority: User has no roles"),
+		}
+		return
+	}
+
+	roles := usr.Roles
+	if a.HostProxy != "" {
+		hasBastion := false
+
+		for _, role := range roles {
+			if role == "bastion" {
+				hasBastion = true
+				break
+			}
+		}
+
+		if !hasBastion {
+			roles = append(usr.Roles, "bastion")
+		}
+	}
+
+	cert = &ssh.Certificate{
+		Key:             pubKey,
+		CertType:        ssh.UserCert,
+		KeyId:           usr.Id.Hex(),
+		ValidPrincipals: roles,
+		ValidAfter:      uint64(validAfter),
+		ValidBefore:     uint64(validBefore),
+		Permissions: ssh.Permissions{
+			Extensions: map[string]string{
+				"permit-X11-forwarding":   "",
+				"permit-agent-forwarding": "",
+				"permit-port-forwarding":  "",
+				"permit-pty":              "",
+				"permit-user-rc":          "",
+			},
+		},
+	}
+
+	certData, err := utils.MarshalSshCertificate(cert)
+	if err != nil {
+		return
+	}
+
+	data := SshRequest{
+		Serial:      a.HsmSerial,
+		Certificate: certData,
+	}
+
+	cipData, err := json.Marshal(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to marshal certificate"),
+		}
+		return
+	}
+
+	pad := 16 - len(cipData)%16
+	for i := 0; i < pad; i++ {
+		cipData = append(cipData, 0)
+	}
+
+	encKeyHash := sha256.New()
+	encKeyHash.Write([]byte(a.HsmSecret))
+	cipKey := encKeyHash.Sum(nil)
+
+	cipIv, err := utils.RandBytes(aes.BlockSize)
+	if err != nil {
+		return
+	}
+
+	block, err := aes.NewCipher(cipKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to load cipher"),
+		}
+		return
+	}
+
+	mode := cipher.NewCBCEncrypter(block, cipIv)
+	mode.CryptBlocks(cipData, cipData)
+
+	hashFunc := hmac.New(sha512.New, []byte(a.HsmSecret))
+	hashFunc.Write(cipData)
+	rawSignature := hashFunc.Sum(nil)
+	sig := base64.StdEncoding.EncodeToString(rawSignature)
+
+	payloadId := bson.NewObjectId().Hex()
+	payload := &HsmPayload{
+		Id:        payloadId,
+		Token:     a.HsmToken,
+		Iv:        cipIv,
+		Signature: sig,
+		Type:      "ssh_certificate",
+		Data:      cipData,
+	}
+
+	waiter := sync.WaitGroup{}
+	waiter.Add(1)
+
+	timeout := time.Duration(settings.System.HsmResponseTimeout) * time.Second
+	start := time.Now()
+	var eventErr error
+
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": errors.New(fmt.Sprintf("%s", r)),
+				}).Error("authority: Parse hsm panic")
+
+				eventErr = &errortypes.UnknownError{
+					errors.New("authority: Parse hsm panic"),
+				}
+			}
+			waiter.Done()
+		}()
+
+		event.Subscribe([]string{"pritunl_hsm_recv"}, 5*time.Second,
+			func(msg *event.Event, e error) bool {
+				if e != nil {
+					eventErr = e
+					return false
+				}
+
+				if msg == nil {
+					if time.Since(start) < timeout {
+						return true
+					}
+
+					eventErr = &errortypes.UnknownError{
+						errors.New("authority: Timeout waiting for hsm"),
+					}
+					return false
+				}
+
+				respPayload := &HsmPayload{}
+				e = json.Unmarshal(msg.Data.([]byte), respPayload)
+				if e != nil {
+					eventErr = e
+					return false
+				}
+
+				if respPayload.Id != payloadId ||
+					respPayload.Type != "ssh_certificate" {
+
+					if time.Since(start) < timeout {
+						return true
+					}
+					eventErr = &errortypes.UnknownError{
+						errors.New("authority: Timeout waiting for hsm"),
+					}
+					return false
+				}
+
+				payloadData, e := UnmarshalPayload(
+					a.HsmToken, a.HsmSecret, respPayload)
+				if e != nil {
+					eventErr = e
+					return false
+				}
+
+				respData := &SshResponse{}
+				e = json.Unmarshal(payloadData, respData)
+				if e != nil {
+					eventErr = &errortypes.ParseError{
+						errors.Wrap(e,
+							"authority: Failed to unmarshal payload data"),
+					}
+					return false
+				}
+
+				cert, e = utils.UnmarshalSshCertificate(
+					respData.Certificate)
+				if e != nil {
+					eventErr = &errortypes.ParseError{
+						errors.Wrap(e,
+							"authority: Failed to unmarshal payload data"),
+					}
+					return false
+				}
+
+				certMarshaled = string(MarshalCertificate(cert, comment))
+
+				return false
+			})
+	}()
+
+	err = event.Publish(db, "pritunl_hsm_send", payload)
+	if err != nil {
+		return
+	}
+
+	waiter.Wait()
+	if eventErr != nil {
+		err = eventErr
+		return
+	}
+
+	return
+}
+
+func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
+	sshPubKey string) (cert *ssh.Certificate, certMarshaled string,
+	err error) {
+
+	if a.Type == PritunlHsm {
+		cert, certMarshaled, err = a.createCertificateHsm(db, usr, sshPubKey)
+	} else {
+		cert, certMarshaled, err = a.createCertificateLocal(usr, sshPubKey)
+	}
 
 	return
 }
