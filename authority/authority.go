@@ -1,9 +1,15 @@
 package authority
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
+	"crypto/sha512"
 	"crypto/subtle"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -12,6 +18,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
@@ -23,6 +30,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -58,6 +66,9 @@ type Authority struct {
 	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
 	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
 	HostTokens         []string      `bson:"host_tokens" json:"host_tokens"`
+	HsmToken           string        `bson:"hsm_token" json:"hsm_token"`
+	HsmSecret          string        `bson:"hsm_secret" json:"hsm_secret"`
+	HsmSerial          string        `bson:"hsm_serial" json:"hsm_serial"`
 }
 
 func (a *Authority) GetDomain(hostname string) string {
@@ -105,6 +116,20 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	}
 	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
+
+	return
+}
+
+func (a *Authority) GenerateHsmToken() (err error) {
+	a.HsmToken, err = utils.RandStr(32)
+	if err != nil {
+		return
+	}
+
+	a.HsmSecret, err = utils.RandStr(64)
+	if err != nil {
+		return
+	}
 
 	return
 }
