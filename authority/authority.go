@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/nonce"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
@@ -29,6 +30,7 @@ import (
 	"net"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -676,6 +678,78 @@ func (a *Authority) TokenDelete(token string) (err error) {
 				a.HostTokens[:i], a.HostTokens[i+1:]...)
 			break
 		}
+	}
+
+	return
+}
+
+func (a *Authority) ValidateHsmSignature(
+	db *database.Database, token, sig, timeStr, nonc, method,
+	path string) (err error) {
+
+	timestampInt, _ := strconv.ParseInt(timeStr, 10, 64)
+	if timestampInt == 0 {
+		err = &errortypes.AuthenticationError{
+			errors.New("authority: Invalid authentication timestamp"),
+		}
+		return
+	}
+
+	if timestampInt == 0 {
+		err = &errortypes.ApiError{
+			errors.New("authority: Invalid authentication timestamp"),
+		}
+		return
+	}
+
+	timestamp := time.Unix(timestampInt, 0)
+
+	if token == "" || token != a.HsmToken {
+		err = &errortypes.AuthenticationError{
+			errors.New("authority: Invalid authentication token"),
+		}
+		return
+	}
+
+	if len(nonc) < 16 || len(nonc) > 128 {
+		err = &errortypes.AuthenticationError{
+			errors.New("authority: Invalid authentication nonce"),
+		}
+		return
+	}
+
+	if time.Since(timestamp) > time.Duration(
+		settings.Auth.Window)*time.Second {
+
+		err = &errortypes.AuthenticationError{
+			errors.New("authority: Authentication timestamp outside window"),
+		}
+		return
+	}
+
+	authString := strings.Join([]string{
+		a.HsmToken,
+		strconv.FormatInt(timestamp.Unix(), 10),
+		nonc,
+		method,
+		path,
+	}, "&")
+
+	err = nonce.Validate(db, nonc)
+	if err != nil {
+		return
+	}
+
+	hashFunc := hmac.New(sha512.New, []byte(a.HsmSecret))
+	hashFunc.Write([]byte(authString))
+	rawSignature := hashFunc.Sum(nil)
+	testSig := base64.StdEncoding.EncodeToString(rawSignature)
+
+	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
+		err = &errortypes.AuthenticationError{
+			errors.New("signature: Invalid signature"),
+		}
+		return
 	}
 
 	return
