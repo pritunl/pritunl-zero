@@ -21,6 +21,11 @@ type Event struct {
 	Data      interface{}   `bson:"data" json:"data"`
 }
 
+type CustomEvent interface {
+	GetId() bson.ObjectId
+	GetData() interface{}
+}
+
 type Dispatch struct {
 	Type string `bson:"type" json:"type"`
 }
@@ -172,6 +177,84 @@ func Subscribe(channels []string, duration time.Duration,
 			cursorId = msg.Id
 
 			if msg.Data == nil {
+				// Blank msg for cursor
+				continue
+			}
+
+			if !onMsg(msg, nil) {
+				return
+			}
+		}
+
+		if iter.Err() != nil {
+			err := iter.Close()
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Subscribe error")
+
+			if !onMsg(nil, err) {
+				return
+			}
+
+			time.Sleep(constants.RetryDelay)
+		} else if iter.Timeout() {
+			if !onMsg(nil, nil) {
+				return
+			}
+			continue
+		}
+
+		iter.Close()
+		db.Close()
+		db = database.GetDatabase()
+		coll = db.Events()
+
+		query := &bson.M{
+			"_id": &bson.M{
+				"$gt": cursorId,
+			},
+			"channel": channelBson,
+		}
+		iter = coll.Find(query).Sort("$natural").Tail(duration)
+	}
+}
+
+func SubscribeType(channels []string, duration time.Duration,
+	newEvent func() CustomEvent, onMsg func(CustomEvent, error) bool) {
+
+	db := database.GetDatabase()
+	defer db.Close()
+	coll := db.Events()
+
+	cursorId := getCursorIdRetry(channels)
+
+	var channelBson interface{}
+	if len(channels) == 1 {
+		channelBson = channels[0]
+	} else {
+		channelBson = &bson.M{
+			"$in": channels,
+		}
+	}
+
+	query := bson.M{
+		"_id": bson.M{
+			"$gt": cursorId,
+		},
+		"channel": channelBson,
+	}
+	iter := coll.Find(query).Sort("$natural").Tail(duration)
+	defer func() {
+		iter.Close()
+	}()
+
+	for {
+		msg := newEvent()
+		for iter.Next(msg) {
+			cursorId = msg.GetId()
+
+			if msg.GetData() == nil {
 				// Blank msg for cursor
 				continue
 			}
