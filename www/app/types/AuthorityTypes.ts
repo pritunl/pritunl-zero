@@ -9,7 +9,7 @@ export interface Info {
 export interface Authority {
 	id: string;
 	name?: string;
-	type?: string[];
+	type?: string;
 	info?: Info;
 	expire?: number;
 	host_expire?: number;
