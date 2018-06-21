@@ -1,5 +1,6 @@
 package authority
 
 const (
-	Local = "local"
+	Local      = "local"
+	PritunlHsm = "pritunl_hsm"
 )
