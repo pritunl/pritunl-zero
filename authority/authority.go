@@ -71,6 +71,8 @@ type Authority struct {
 	HsmToken           string        `bson:"hsm_token" json:"hsm_token"`
 	HsmSecret          string        `bson:"hsm_secret" json:"hsm_secret"`
 	HsmSerial          string        `bson:"hsm_serial" json:"hsm_serial"`
+	HsmStatus          string        `bson:"hsm_status" json:"hsm_status"`
+	HsmTimestamp       time.Time     `bson:"hsm_timestamp" json:"hsm_timestamp"`
 }
 
 func (a *Authority) GetDomain(hostname string) string {
@@ -676,6 +678,52 @@ func (a *Authority) TokenDelete(token string) (err error) {
 				a.HostTokens[:i], a.HostTokens[i+1:]...)
 			break
 		}
+	}
+
+	return
+}
+
+func (a *Authority) HandleHsmStatus(db *database.Database,
+	payload *HsmPayload) (err error) {
+
+	payloadData, err := UnmarshalPayload(
+		a.HsmToken, a.HsmSecret, payload)
+	if err != nil {
+		return
+	}
+
+	respData := &HsmStatus{}
+	err = json.Unmarshal(payloadData, respData)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to unmarshal payload data"),
+		}
+		return
+	}
+
+	sendEvent := false
+	fields := set.NewSet("hsm_timestamp")
+	a.HsmTimestamp = time.Now()
+
+	if a.HsmStatus != respData.Status {
+		sendEvent = true
+		fields.Add("hsm_status")
+		a.HsmStatus = respData.Status
+	}
+
+	if a.PublicKey != respData.SshPublicKey {
+		sendEvent = true
+		fields.Add("public_key")
+		a.PublicKey = respData.SshPublicKey
+	}
+
+	err = a.CommitFields(db, fields)
+	if err != nil {
+		return
+	}
+
+	if sendEvent {
+		event.PublishDispatch(db, "authority.change")
 	}
 
 	return
