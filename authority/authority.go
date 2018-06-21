@@ -579,7 +579,11 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 
 	waiter.Wait()
 	if eventErr != nil {
-		err = eventErr
+		cert = nil
+		certMarshaled = ""
+		logrus.WithFields(logrus.Fields{
+			"error": eventErr,
+		}).Error("authority: Error getting hsm certificate")
 		return
 	}
 
