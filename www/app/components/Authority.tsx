@@ -5,6 +5,7 @@ import * as NodeTypes from "../types/NodeTypes";
 import * as AuthorityActions from '../actions/AuthorityActions';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
+import PageSelect from './PageSelect';
 import PageInputButton from './PageInputButton';
 import AuthorityDeploy from './AuthorityDeploy';
 import PageTextArea from './PageTextArea';
@@ -331,6 +332,17 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<PageSelect
+						label="Type"
+						help="Authority type"
+						value={authority.type}
+						onChange={(val): void => {
+							this.set('type', val);
+						}}
+					>
+						<option value="local">Local</option>
+						<option value="pritunl_hsm">Pritunl HSM</option>
+					</PageSelect>
 					<PageTextArea
 						readOnly={true}
 						label="Public Key"
@@ -422,6 +434,35 @@ export default class Authority extends React.Component<Props, State> {
 								value: info.key_alg || 'None',
 							},
 						]}
+					/>
+					<PageInput
+						label="HSM YubiKey Serial"
+						help="Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key."
+						type="text"
+						placeholder="HSM serial"
+						value={authority.hsm_serial}
+						onChange={(val): void => {
+							this.set('hsm_serial', val);
+						}}
+					/>
+					<PageInput
+						hidden={authority.type !== 'pritunl_hsm'}
+						readOnly={true}
+						label="HSM Token"
+						help="Pritunl HSM token."
+						type="text"
+						placeholder="Save to generate token"
+						value={authority.hsm_token}
+					/>
+					<PageInput
+						hidden={authority.type !== 'pritunl_hsm' ||
+							!authority.hsm_token || !authority.hsm_secret}
+						readOnly={true}
+						label="HSM Secret"
+						help="Pritunl HSM secret, will only be shown once."
+						type="text"
+						placeholder=""
+						value={authority.hsm_secret}
 					/>
 					<PageInput
 						label="Download URL"
