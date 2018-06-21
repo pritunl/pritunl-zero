@@ -502,14 +502,17 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 			waiter.Done()
 		}()
 
-		event.Subscribe([]string{"pritunl_hsm_recv"}, 5*time.Second,
-			func(msg *event.Event, e error) bool {
+		event.SubscribeType([]string{"pritunl_hsm_recv"}, 5*time.Second,
+			func() event.CustomEvent {
+				return &HsmEvent{}
+			},
+			func(msgInf event.CustomEvent, e error) bool {
 				if e != nil {
 					eventErr = e
 					return false
 				}
 
-				if msg == nil {
+				if msgInf == nil || msgInf.GetData() == nil {
 					if time.Since(start) < timeout {
 						return true
 					}
@@ -520,15 +523,10 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 					return false
 				}
 
-				respPayload := &HsmPayload{}
-				e = json.Unmarshal(msg.Data.([]byte), respPayload)
-				if e != nil {
-					eventErr = e
-					return false
-				}
+				msg := msgInf.(*HsmEvent)
 
-				if respPayload.Id != payloadId ||
-					respPayload.Type != "ssh_certificate" {
+				if msg.Data.Id != payloadId ||
+					msg.Data.Type != "ssh_certificate" {
 
 					if time.Since(start) < timeout {
 						return true
@@ -540,7 +538,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 				}
 
 				payloadData, e := UnmarshalPayload(
-					a.HsmToken, a.HsmSecret, respPayload)
+					a.HsmToken, a.HsmSecret, msg.Data)
 				if e != nil {
 					eventErr = e
 					return false
