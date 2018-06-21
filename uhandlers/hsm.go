@@ -97,8 +97,13 @@ func hsmGet(c *gin.Context) {
 			}
 
 			if payload.Type == "status" {
-				_ = authr
-				//println(payload)
+				e = authr.HandleHsmStatus(db, payload)
+				if e != nil {
+					logrus.WithFields(logrus.Fields{
+						"error": e,
+					}).Error("uhandlers: Failed to handle hsm status")
+					continue
+				}
 			} else {
 				e = event.Publish(db, "pritunl_hsm_recv", payload)
 				if e != nil {
