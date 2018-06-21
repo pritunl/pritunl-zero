@@ -23,6 +23,7 @@ type system struct {
 	AcmeKeyAlgorithm     string `bson:"acme_key_algorithm" default:"rsa"`
 	SshPubKeyLen         int    `bson:"ssh_pub_key_len" default:"5000"`
 	SshHostTokenLen      int    `bson:"ssh_host_token_len" default:"10"`
+	HsmResponseTimeout   int    `bson:"hsm_response_timeout" default:"10"`
 }
 
 func newSystem() interface{} {
