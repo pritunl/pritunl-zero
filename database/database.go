@@ -388,6 +388,16 @@ func addIndexes() (err error) {
 		}
 	}
 
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"hsm_token"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
+
 	coll = db.SshChallenges()
 	err = coll.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
