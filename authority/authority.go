@@ -949,6 +949,14 @@ func (a *Authority) Format() {
 	sort.Strings(a.HostTokens)
 }
 
+func (a *Authority) Json() {
+	if a.Type == PritunlHsm {
+		if time.Since(a.HsmTimestamp) > 45 * time.Second {
+			a.HsmStatus = Disconnected
+		}
+	}
+}
+
 func (a *Authority) Commit(db *database.Database) (err error) {
 	coll := db.Authorities()
 
