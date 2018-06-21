@@ -2,11 +2,13 @@ package uhandlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -22,6 +24,8 @@ const (
 
 func hsmGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	authr := c.MustGet("authority").(*authority.Authority)
+
 	socket := &event.WebSocket{}
 
 	defer func() {
@@ -83,12 +87,26 @@ func hsmGet(c *gin.Context) {
 				break
 			}
 
-			e = event.Publish(db, "pritunl_hsm_recv", message)
+			payload := &authority.HsmPayload{}
+			e = json.Unmarshal(message, payload)
 			if e != nil {
 				logrus.WithFields(logrus.Fields{
 					"error": e,
-				}).Error("uhandlers: Socket hsm publish event error")
+				}).Error("uhandlers: Failed to unmarshal hsm payload")
 				continue
+			}
+
+			if payload.Type == "status" {
+				_ = authr
+				//println(payload)
+			} else {
+				e = event.Publish(db, "pritunl_hsm_recv", payload)
+				if e != nil {
+					logrus.WithFields(logrus.Fields{
+						"error": e,
+					}).Error("uhandlers: Socket hsm publish event error")
+					continue
+				}
 			}
 		}
 	}()
