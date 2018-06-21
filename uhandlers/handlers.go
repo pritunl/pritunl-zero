@@ -32,6 +32,9 @@ func Register(engine *gin.Engine) {
 	csrfGroup := authGroup.Group("")
 	csrfGroup.Use(middlewear.CsrfToken)
 
+	hsmAuthGroup := dbGroup.Group("")
+	hsmAuthGroup.Use(middlewear.AuthHsm)
+
 	engine.NoRoute(middlewear.NotFound)
 
 	engine.GET("/auth/state", authStateGet)
@@ -59,6 +62,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/device/:device_id/sign", deviceU2fSignPost)
 	csrfGroup.GET("/device/:device_id/register", deviceU2fRegisterGet)
 	csrfGroup.POST("/device/:device_id/register", deviceU2fRegisterPost)
+
+	hsmAuthGroup.GET("/hsm", hsmGet)
 
 	sessGroup.GET("/ssh", sshGet)
 	csrfGroup.PUT("/ssh/validate/:ssh_token", sshValidatePut)
