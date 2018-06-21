@@ -11,6 +11,8 @@ import (
 	"encoding/base64"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type SshRequest struct {
@@ -30,10 +32,29 @@ type HsmStatus struct {
 type HsmPayload struct {
 	Id        string `bson:"id" json:"id"`
 	Token     string `bson:"token" json:"token"`
+	Nonce     string `bson:"nonce" json:"nonce"`
 	Signature string `bson:"signature" json:"signature"`
 	Iv        []byte `bson:"iv" json:"iv"`
 	Type      string `bson:"type" json:"type"`
 	Data      []byte `bson:"data" json:"data"`
+}
+
+type HsmEvent struct {
+	Id        bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Channel   string        `bson:"channel" json:"channel"`
+	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Data      *HsmPayload   `bson:"data" json:"data"`
+}
+
+func (h *HsmEvent) GetId() bson.ObjectId {
+	return h.Id
+}
+
+func (h *HsmEvent) GetData() interface{} {
+	if h.Data == nil {
+		return nil
+	}
+	return h.Data
 }
 
 func UnmarshalPayload(token, secret string, payload *HsmPayload) (
