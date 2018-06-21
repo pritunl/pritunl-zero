@@ -145,7 +145,7 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 			continue
 		}
 
-		crt, certStr, e := authr.CreateCertificate(usr, pubKey)
+		crt, certStr, e := authr.CreateCertificate(db, usr, pubKey)
 		if e != nil {
 			err = e
 			return
