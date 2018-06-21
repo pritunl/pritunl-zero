@@ -157,6 +157,22 @@ func Get(db *database.Database, authrId bson.ObjectId) (
 	return
 }
 
+func GetHsmToken(db *database.Database, token string) (
+	authr *Authority, err error) {
+
+	coll := db.Authorities()
+	authr = &Authority{}
+
+	err = coll.FindOne(&bson.M{
+		"hsm_token": token,
+	}, authr)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func GetMulti(db *database.Database, authrIds []bson.ObjectId) (
 	authrs []*Authority, err error) {
 
