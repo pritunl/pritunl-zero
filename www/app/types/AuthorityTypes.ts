@@ -21,6 +21,10 @@ export interface Authority {
 	host_certificates?: boolean;
 	strict_host_checking?: boolean;
 	host_tokens?: string[];
+	hsm_token?: string;
+	hsm_secret?: string;
+	hsm_serial?: string;
+	hsm_generate_secret?: boolean;
 }
 
 export type Authorities = Authority[];
