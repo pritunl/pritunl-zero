@@ -709,10 +709,15 @@ func (a *Authority) HandleHsmStatus(db *database.Database,
 	fields := set.NewSet("hsm_timestamp")
 	a.HsmTimestamp = time.Now()
 
-	if a.HsmStatus != respData.Status {
+	status := Disconnected
+	if respData.Status == "online" {
+		status = Connected
+	}
+
+	if a.HsmStatus != status {
 		sendEvent = true
 		fields.Add("hsm_status")
-		a.HsmStatus = respData.Status
+		a.HsmStatus = status
 	}
 
 	if a.PublicKey != respData.SshPublicKey {
