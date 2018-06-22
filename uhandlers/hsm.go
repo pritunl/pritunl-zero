@@ -88,6 +88,10 @@ func hsmGet(c *gin.Context) {
 				}).Error("uhandlers: Socket hsm panic")
 			}
 		}()
+
+		lstDb := database.GetDatabase()
+		defer lstDb.Close()
+
 		for {
 			_, message, e := conn.ReadMessage()
 			if e != nil {
@@ -108,7 +112,7 @@ func hsmGet(c *gin.Context) {
 			}
 
 			if payload.Type == "status" {
-				e = authr.HandleHsmStatus(db, payload)
+				e = authr.HandleHsmStatus(lstDb, payload)
 				if e != nil {
 					logrus.WithFields(logrus.Fields{
 						"error": e,
@@ -116,7 +120,7 @@ func hsmGet(c *gin.Context) {
 					continue
 				}
 			} else {
-				e = event.Publish(db, "pritunl_hsm_recv", payload)
+				e = event.Publish(lstDb, "pritunl_hsm_recv", payload)
 				if e != nil {
 					logrus.WithFields(logrus.Fields{
 						"error": e,
