@@ -77,7 +77,8 @@ func hsmGet(c *gin.Context) {
 	}()
 
 	authr.HsmStatus = authority.Connected
-	authr.CommitFields(db, set.NewSet("hsm_status"))
+	authr.HsmTimestamp = time.Now()
+	authr.CommitFields(db, set.NewSet("hsm_status", "hsm_timestamp"))
 	event.PublishDispatch(db, "authority.change")
 
 	go func() {
