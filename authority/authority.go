@@ -305,7 +305,7 @@ func (a *Authority) createCertificateLocal(usr *user.User, sshPubKey string) (
 	if expire == 0 {
 		expire = 600
 	}
-	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validAfter := time.Now().Add(-3 * time.Minute).Unix()
 	validBefore := time.Now().Add(
 		time.Duration(expire) * time.Minute).Unix()
 
@@ -382,7 +382,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 	if expire == 0 {
 		expire = 600
 	}
-	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validAfter := time.Now().Add(-3 * time.Minute).Unix()
 	validBefore := time.Now().Add(
 		time.Duration(expire) * time.Minute).Unix()
 
@@ -629,7 +629,7 @@ func (a *Authority) createHostCertificate(hostname string, sshPubKey string) (
 	if expire == 0 {
 		expire = 600
 	}
-	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validAfter := time.Now().Add(-3 * time.Minute).Unix()
 	validBefore := time.Now().Add(
 		time.Duration(expire) * time.Minute).Unix()
 
@@ -674,7 +674,7 @@ func (a *Authority) createHostCertificateHsm(db *database.Database,
 	if expire == 0 {
 		expire = 600
 	}
-	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validAfter := time.Now().Add(-3 * time.Minute).Unix()
 	validBefore := time.Now().Add(
 		time.Duration(expire) * time.Minute).Unix()
 
