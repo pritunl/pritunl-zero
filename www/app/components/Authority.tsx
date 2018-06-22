@@ -9,10 +9,12 @@ import PageSelect from './PageSelect';
 import PageInputButton from './PageInputButton';
 import AuthorityDeploy from './AuthorityDeploy';
 import PageTextArea from './PageTextArea';
+import * as PageInfos from './PageInfo';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 import Help from './Help';
+import * as MiscUtils from "../utils/MiscUtils";
 
 interface Props {
 	nodes: NodeTypes.NodesRo;
@@ -307,6 +309,31 @@ export default class Authority extends React.Component<Props, State> {
 			);
 		}
 
+		let fields: PageInfos.Field[] = [
+			{
+				label: 'ID',
+				value: authority.id || 'None',
+			},
+			{
+				label: 'Algorithm',
+				value: info.key_alg || 'None',
+			},
+		];
+
+		if (authority.type === 'pritunl_hsm') {
+			let hsmStatus = authority.hsm_status || 'disconnected';
+
+			fields.push({
+				valueClass: hsmStatus === 'connected' ? '' : 'pt-text-intent-danger',
+				label: 'Status',
+				value: hsmStatus.charAt(0).toUpperCase() + hsmStatus.substr(1),
+			});
+			fields.push({
+				label: 'Timestamp',
+				value: MiscUtils.formatDate(authority.hsm_timestamp) || 'Inactive',
+			});
+		}
+
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -424,16 +451,7 @@ export default class Authority extends React.Component<Props, State> {
 				</div>
 				<div style={css.group}>
 					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: authority.id || 'None',
-							},
-							{
-								label: 'Algorithm',
-								value: info.key_alg || 'None',
-							},
-						]}
+						fields={fields}
 					/>
 					<PageInput
 						label="HSM YubiKey Serial"
