@@ -70,12 +70,6 @@ func hsmGet(c *gin.Context) {
 	socket.Ticker = ticker
 	sub := lst.Listen()
 
-	defer func() {
-		authr.HsmStatus = authority.Disconnected
-		authr.CommitFields(db, set.NewSet("hsm_status"))
-		event.PublishDispatch(db, "authority.change")
-	}()
-
 	authr.HsmStatus = authority.Connected
 	authr.HsmTimestamp = time.Now()
 	authr.CommitFields(db, set.NewSet("hsm_status", "hsm_timestamp"))
@@ -99,6 +93,11 @@ func hsmGet(c *gin.Context) {
 				logrus.WithFields(logrus.Fields{
 					"error": e,
 				}).Error("uhandlers: Socket hsm listen error")
+
+				authr.HsmStatus = authority.Disconnected
+				authr.CommitFields(db, set.NewSet("hsm_status"))
+				event.PublishDispatch(db, "authority.change")
+
 				conn.Close()
 				break
 			}
