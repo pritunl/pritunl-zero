@@ -87,6 +87,16 @@ export function commit(authority: AuthorityTypes.Authority): Promise<void> {
 					return;
 				}
 
+				if (res.body && res.body.hsm_secret) {
+					Dispatcher.dispatch({
+						type: AuthorityTypes.SYNC_SECRET,
+						data: {
+							id: res.body.id,
+							secret: res.body.hsm_secret,
+						},
+					});
+				}
+
 				resolve();
 			});
 	});
@@ -114,6 +124,16 @@ export function create(authority: AuthorityTypes.Authority): Promise<void> {
 					Alert.errorRes(res, 'Failed to create authority');
 					reject(err);
 					return;
+				}
+
+				if (res.body && res.body.hsm_secret) {
+					Dispatcher.dispatch({
+						type: AuthorityTypes.SYNC_SECRET,
+						data: {
+							id: res.body.id,
+							secret: res.body.hsm_secret,
+						},
+					});
 				}
 
 				resolve();
