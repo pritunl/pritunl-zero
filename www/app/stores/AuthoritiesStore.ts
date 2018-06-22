@@ -6,6 +6,7 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class AuthoritiesStore extends EventEmitter {
 	_authorities: AuthorityTypes.AuthoritiesRo = Object.freeze([]);
+	_secrets: {[key: string]: string} = {};
 	_map: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
@@ -32,6 +33,10 @@ class AuthoritiesStore extends EventEmitter {
 		return this._authorities[i];
 	}
 
+	authoritySecret(id: string): string {
+		return this._secrets[id];
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -55,10 +60,22 @@ class AuthoritiesStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_syncSecret(id: string, secret: string): void {
+		if (!secret) {
+			delete this._secrets[id];
+		} else {
+			this._secrets[id] = secret;
+		}
+		this.emitChange();
+	}
+
 	_callback(action: AuthorityTypes.AuthorityDispatch): void {
 		switch (action.type) {
 			case AuthorityTypes.SYNC:
 				this._sync(action.data.authorities);
+				break;
+			case AuthorityTypes.SYNC_SECRET:
+				this._syncSecret(action.data.id, action.data.secret);
 				break;
 		}
 	}
