@@ -10646,7 +10646,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@16.4.1.js",
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'local', disabled: this.state.locked, label: "Password", help: "Password, leave blank to keep current password", type: "password", placeholder: "Change password", value: user.password, onChange: val => {
                     this.set('password', val);
                 } }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api', disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Token", help: "API token", type: "text", placeholder: "Save to generate token", value: user.token }), React.createElement(PageInput_1.default, { hidden: user.type !== 'api' || !user.token || !user.secret, disabled: this.state.locked, readOnly: true, autoSelect: true, label: "Secret", help: "API secret, will only be shown once", type: "text", placeholder: "", value: user.secret }), React.createElement(PageSwitch_1.default, { hidden: user.type !== 'api' || !user.token || !!user.secret, label: "Generate new token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", disabled: this.state.locked, checked: user.generate_secret, onToggle: () => {
-                    this.set('generate_secret', !this.state.user.generate_secret);
+                    this.set('generate_secret', !user.generate_secret);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
                     this.set('type', val);
                 } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"), React.createElement("option", { value: "api" }, "API")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
@@ -11739,69 +11739,6 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@16.4.1.js", "ap
     exports.default = Policies;
     
 });
-System.registerDynamic("app/stores/AuthoritiesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuthorityTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
-    const EventEmitter_1 = $__require("app/EventEmitter.js");
-    const AuthorityTypes = $__require("app/types/AuthorityTypes.js");
-    const GlobalTypes = $__require("app/types/GlobalTypes.js");
-    class AuthoritiesStore extends EventEmitter_1.default {
-        constructor() {
-            super(...arguments);
-            this._authorities = Object.freeze([]);
-            this._map = {};
-            this._token = Dispatcher_1.default.register(this._callback.bind(this));
-        }
-        get authorities() {
-            return this._authorities;
-        }
-        get authoritiesM() {
-            let authorities = [];
-            this._authorities.forEach(policy => {
-                authorities.push(Object.assign({}, policy));
-            });
-            return authorities;
-        }
-        authority(id) {
-            let i = this._map[id];
-            if (i === undefined) {
-                return null;
-            }
-            return this._authorities[i];
-        }
-        emitChange() {
-            this.emitDefer(GlobalTypes.CHANGE);
-        }
-        addChangeListener(callback) {
-            this.on(GlobalTypes.CHANGE, callback);
-        }
-        removeChangeListener(callback) {
-            this.removeListener(GlobalTypes.CHANGE, callback);
-        }
-        _sync(authorities) {
-            this._map = {};
-            for (let i = 0; i < authorities.length; i++) {
-                authorities[i] = Object.freeze(authorities[i]);
-                this._map[authorities[i].id] = i;
-            }
-            this._authorities = Object.freeze(authorities);
-            this.emitChange();
-        }
-        _callback(action) {
-            switch (action.type) {
-                case AuthorityTypes.SYNC:
-                    this._sync(action.data.authorities);
-                    break;
-            }
-        }
-    }
-    exports.default = new AuthoritiesStore();
-    
-});
 System.registerDynamic("app/stores/NodesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/NodeTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
     "use strict";
 
@@ -12162,7 +12099,85 @@ sudo service sshd restart || true`;
     exports.default = AuthorityDeploy;
     
 });
-System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "app/actions/AuthorityActions.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageInputButton.js", "app/components/AuthorityDeploy.js", "app/components/PageTextArea.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/stores/AuthoritiesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuthorityTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("app/EventEmitter.js");
+    const AuthorityTypes = $__require("app/types/AuthorityTypes.js");
+    const GlobalTypes = $__require("app/types/GlobalTypes.js");
+    class AuthoritiesStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._authorities = Object.freeze([]);
+            this._secrets = {};
+            this._map = {};
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get authorities() {
+            return this._authorities;
+        }
+        get authoritiesM() {
+            let authorities = [];
+            this._authorities.forEach(policy => {
+                authorities.push(Object.assign({}, policy));
+            });
+            return authorities;
+        }
+        authority(id) {
+            let i = this._map[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._authorities[i];
+        }
+        authoritySecret(id) {
+            return this._secrets[id];
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _sync(authorities) {
+            this._map = {};
+            for (let i = 0; i < authorities.length; i++) {
+                authorities[i] = Object.freeze(authorities[i]);
+                this._map[authorities[i].id] = i;
+            }
+            this._authorities = Object.freeze(authorities);
+            this.emitChange();
+        }
+        _syncSecret(id, secret) {
+            if (!secret) {
+                delete this._secrets[id];
+            } else {
+                this._secrets[id] = secret;
+            }
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case AuthorityTypes.SYNC:
+                    this._sync(action.data.authorities);
+                    break;
+                case AuthorityTypes.SYNC_SECRET:
+                    this._syncSecret(action.data.id, action.data.secret);
+                    break;
+            }
+        }
+    }
+    exports.default = new AuthoritiesStore();
+    
+});
+System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "app/actions/AuthorityActions.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageInputButton.js", "app/components/AuthorityDeploy.js", "app/components/PageTextArea.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js", "app/utils/MiscUtils.js", "app/stores/AuthoritiesStore.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -12172,6 +12187,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
     const AuthorityActions = $__require("app/actions/AuthorityActions.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
+    const PageSelect_1 = $__require("app/components/PageSelect.js");
     const PageInputButton_1 = $__require("app/components/PageInputButton.js");
     const AuthorityDeploy_1 = $__require("app/components/AuthorityDeploy.js");
     const PageTextArea_1 = $__require("app/components/PageTextArea.js");
@@ -12179,6 +12195,8 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
     const PageSave_1 = $__require("app/components/PageSave.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
     const Help_1 = $__require("app/components/Help.js");
+    const MiscUtils = $__require("app/utils/MiscUtils.js");
+    const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
     const css = {
         card: {
             position: 'relative',
@@ -12271,6 +12289,11 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                 addRole: null
             };
         }
+        componentWillUnmount() {
+            if (this.props.authority) {
+                AuthorityActions.clearSecret(this.props.authority.id);
+            }
+        }
         set(name, val) {
             let authority;
             if (this.state.changed) {
@@ -12311,6 +12334,8 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
             let authority = this.state.authority || this.props.authority;
             let info = authority.info || {};
             let url = window.location.protocol + '//' + window.location.host + '/ssh_public_key/' + authority.id;
+            let isHsm = authority.type === 'pritunl_hsm';
+            let hsmSecret = AuthoritiesStore_1.default.authoritySecret(authority.id);
             let roles = [];
             for (let role of authority.roles) {
                 roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: role }, role, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
@@ -12327,9 +12352,30 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                         });
                     } }));
             }
+            let fields = [{
+                label: 'ID',
+                value: authority.id || 'None'
+            }, {
+                label: 'Algorithm',
+                value: info.key_alg || 'None'
+            }];
+            if (isHsm) {
+                let hsmStatus = this.props.authority.hsm_status || 'disconnected';
+                fields.push({
+                    valueClass: hsmStatus === 'connected' ? '' : 'pt-text-intent-danger',
+                    label: 'Status',
+                    value: hsmStatus.charAt(0).toUpperCase() + hsmStatus.substr(1)
+                });
+                fields.push({
+                    label: 'Timestamp',
+                    value: MiscUtils.formatDate(this.props.authority.hsm_timestamp) || 'Inactive'
+                });
+            }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm authority remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of authority", type: "text", placeholder: "Enter name", value: authority.name, onChange: val => {
                     this.set('name', val);
-                } }), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: authority.public_key, onChange: val => {
+                } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Authority type", value: authority.type, onChange: val => {
+                    this.set('type', val);
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "pritunl_hsm" }, "Pritunl HSM")), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: this.props.authority.public_key, onChange: val => {
                     this.set('key', val);
                 } }), React.createElement(PageSwitch_1.default, { label: "Host certificates", help: "Allow servers to validate and sign SSH host keys.", checked: authority.host_certificates, onToggle: () => {
                     this.toggle('host_certificates');
@@ -12346,13 +12392,11 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                     this.setState(Object.assign({}, this.state, { changed: true, authority: authr }));
                 } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
                     this.set('host_proxy', val);
-                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
-                    label: 'ID',
-                    value: authority.id || 'None'
-                }, {
-                    label: 'Algorithm',
-                    value: info.key_alg || 'None'
-                }] }), React.createElement(PageInput_1.default, { label: "Download URL", help: "Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma.", type: "text", placeholder: "Enter download URL", readOnly: true, autoSelect: true, value: url }), React.createElement(PageInput_1.default, { label: "Certificate Expire Minutes", help: "Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440.", type: "text", placeholder: "Certificate expire minutes", value: authority.expire, onChange: val => {
+                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: fields }), React.createElement(PageInput_1.default, { hidden: authority.type !== 'pritunl_hsm', label: "HSM YubiKey Serial", help: "Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key.", type: "text", placeholder: "HSM serial", value: authority.hsm_serial, onChange: val => {
+                    this.set('hsm_serial', val);
+                } }), React.createElement(PageInput_1.default, { hidden: !isHsm, readOnly: true, label: "HSM Token", help: "Pritunl HSM token.", type: "text", placeholder: "Save to generate token", value: this.props.authority.hsm_token }), React.createElement(PageInput_1.default, { hidden: !isHsm || !this.props.authority.hsm_token || !hsmSecret, readOnly: true, label: "HSM Secret", help: "Pritunl HSM secret, will only be shown once.", type: "text", placeholder: "", value: hsmSecret }), React.createElement(PageSwitch_1.default, { hidden: !isHsm, label: "Generate new HSM token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", checked: authority.hsm_generate_secret, onToggle: () => {
+                    this.set('hsm_generate_secret', !authority.hsm_generate_secret);
+                } }), React.createElement(PageInput_1.default, { label: "Download URL", help: "Public download url for the authority public key. Can be used to wget public key onto servers. Multiple public keys can be downloaded by seperating the IDs with a comma.", type: "text", placeholder: "Enter download URL", readOnly: true, autoSelect: true, value: url }), React.createElement(PageInput_1.default, { label: "Certificate Expire Minutes", help: "Number of minutes until certificates expire. The certificate only needs to be active when initiating the SSH connection. The SSH connection will stay connected after the certificate expires. Must be greater then 1 and no more then 1440.", type: "text", placeholder: "Certificate expire minutes", value: authority.expire, onChange: val => {
                     this.set('expire', parseInt(val, 10));
                 } }), React.createElement(PageInput_1.default, { label: "Host Certificate Expire Minutes", help: "Number of minutes until host certificates expire. Must be greater then 14 and no more then 1440.", type: "text", placeholder: "Host certificate expire minutes", hidden: !authority.host_certificates, value: authority.host_expire, onChange: val => {
                     this.set('host_expire', parseInt(val, 10));
@@ -17503,6 +17547,7 @@ System.registerDynamic("app/types/AuthorityTypes.js", [], true, function ($__req
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.SYNC = 'authority.sync';
   exports.CHANGE = 'authority.change';
+  exports.SYNC_SECRET = 'authority.sync_secret';
   
 });
 System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.3.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/types/AuthorityTypes.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
@@ -17552,6 +17597,16 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.3
         });
     }
     exports.sync = sync;
+    function clearSecret(id) {
+        Dispatcher_1.default.dispatch({
+            type: AuthorityTypes.SYNC_SECRET,
+            data: {
+                id: id,
+                secret: null
+            }
+        });
+    }
+    exports.clearSecret = clearSecret;
     function commit(authority) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
@@ -17566,6 +17621,15 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.3
                     Alert.errorRes(res, 'Failed to save authority');
                     reject(err);
                     return;
+                }
+                if (res.body && res.body.hsm_secret) {
+                    Dispatcher_1.default.dispatch({
+                        type: AuthorityTypes.SYNC_SECRET,
+                        data: {
+                            id: res.body.id,
+                            secret: res.body.hsm_secret
+                        }
+                    });
                 }
                 resolve();
             });
@@ -17586,6 +17650,15 @@ System.registerDynamic("app/actions/AuthorityActions.js", ["npm:superagent@3.8.3
                     Alert.errorRes(res, 'Failed to create authority');
                     reject(err);
                     return;
+                }
+                if (res.body && res.body.hsm_secret) {
+                    Dispatcher_1.default.dispatch({
+                        type: AuthorityTypes.SYNC_SECRET,
+                        data: {
+                            id: res.body.id,
+                            secret: res.body.hsm_secret
+                        }
+                    });
                 }
                 resolve();
             });
