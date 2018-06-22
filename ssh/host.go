@@ -67,7 +67,7 @@ func NewHostCertificate(db *database.Database, hostname string, port int,
 			continue
 		}
 
-		crt, certStr, e := authr.CreateHostCertificate(hostname, pubKey)
+		crt, certStr, e := authr.CreateHostCertificate(db, hostname, pubKey)
 		if e != nil {
 			err = e
 			return
@@ -128,7 +128,7 @@ func NewBastionHostCertificate(db *database.Database, hostname,
 		CertificatesInfo: []*Info{},
 	}
 
-	crt, certStr, err := authr.CreateHostCertificate(hostname, pubKey)
+	crt, certStr, err := authr.CreateHostCertificate(db, hostname, pubKey)
 	if err != nil {
 		return
 	}
