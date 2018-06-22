@@ -53,6 +53,16 @@ export function sync(): Promise<void> {
 	});
 }
 
+export function clearSecret(id: string): void {
+	Dispatcher.dispatch({
+		type: AuthorityTypes.SYNC_SECRET,
+		data: {
+			id: id,
+			secret: null,
+		},
+	});
+}
+
 export function commit(authority: AuthorityTypes.Authority): Promise<void> {
 	let loader = new Loader().loading();
 
