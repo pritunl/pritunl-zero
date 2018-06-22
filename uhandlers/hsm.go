@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -68,6 +69,16 @@ func hsmGet(c *gin.Context) {
 	ticker := time.NewTicker(pingInterval)
 	socket.Ticker = ticker
 	sub := lst.Listen()
+
+	defer func() {
+		authr.HsmStatus = authority.Disconnected
+		authr.CommitFields(db, set.NewSet("hsm_status"))
+		event.PublishDispatch(db, "authority.change")
+	}()
+
+	authr.HsmStatus = authority.Connected
+	authr.CommitFields(db, set.NewSet("hsm_status"))
+	event.PublishDispatch(db, "authority.change")
 
 	go func() {
 		defer func() {
