@@ -1,19 +1,19 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 
-interface Field {
+export interface Field {
 	valueClass?: string;
 	label: string;
 	value: string | string[];
 }
 
-interface Bar {
+export interface Bar {
 	progressClass?: string;
 	label: string;
 	value: number;
 }
 
-interface Props {
+export interface Props {
 	style?: React.CSSProperties;
 	hidden?: boolean;
 	fields?: Field[];
