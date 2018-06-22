@@ -125,6 +125,8 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 }
 
 func (a *Authority) GenerateHsmToken() (err error) {
+	a.PublicKey = ""
+
 	a.HsmToken, err = utils.RandStr(32)
 	if err != nil {
 		return
@@ -1075,7 +1077,6 @@ func (a *Authority) Validate(db *database.Database) (
 
 		break
 	case PritunlHsm:
-		a.PublicKey = ""
 		a.PrivateKey = ""
 
 		if a.HsmSerial == "" {
