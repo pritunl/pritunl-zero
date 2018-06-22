@@ -15,6 +15,8 @@ import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 import Help from './Help';
 import * as MiscUtils from "../utils/MiscUtils";
+import AuthoritiesStore from "../stores/AuthoritiesStore";
+import NodesStore from "../stores/NodesStore";
 
 interface Props {
 	nodes: NodeTypes.NodesRo;
@@ -82,6 +84,12 @@ export default class Authority extends React.Component<Props, State> {
 			authority: null,
 			addRole: null,
 		};
+	}
+
+	componentWillUnmount(): void {
+		if (this.props.authority) {
+			AuthorityActions.clearSecret(this.props.authority.id);
+		}
 	}
 
 	set(name: string, val: any): void {
@@ -257,6 +265,8 @@ export default class Authority extends React.Component<Props, State> {
 		let info: AuthorityTypes.Info = authority.info || {};
 		let url: string = window.location.protocol + '//' +
 			window.location.host + '/ssh_public_key/' + authority.id;
+		let isHsm = authority.type === 'pritunl_hsm';
+		let hsmSecret = AuthoritiesStore.authoritySecret(authority.id);
 
 		let roles: JSX.Element[] = [];
 		for (let role of authority.roles) {
@@ -320,8 +330,8 @@ export default class Authority extends React.Component<Props, State> {
 			},
 		];
 
-		if (authority.type === 'pritunl_hsm') {
-			let hsmStatus = authority.hsm_status || 'disconnected';
+		if (isHsm) {
+			let hsmStatus = this.props.authority.hsm_status || 'disconnected';
 
 			fields.push({
 				valueClass: hsmStatus === 'connected' ? '' : 'pt-text-intent-danger',
@@ -330,7 +340,8 @@ export default class Authority extends React.Component<Props, State> {
 			});
 			fields.push({
 				label: 'Timestamp',
-				value: MiscUtils.formatDate(authority.hsm_timestamp) || 'Inactive',
+				value: MiscUtils.formatDate(
+					this.props.authority.hsm_timestamp) || 'Inactive',
 			});
 		}
 
@@ -376,7 +387,7 @@ export default class Authority extends React.Component<Props, State> {
 						help="Certificate authority public key in SSH format"
 						placeholder="Public key"
 						rows={10}
-						value={authority.public_key}
+						value={this.props.authority.public_key}
 						onChange={(val: string): void => {
 							this.set('key', val);
 						}}
@@ -454,6 +465,7 @@ export default class Authority extends React.Component<Props, State> {
 						fields={fields}
 					/>
 					<PageInput
+						hidden={authority.type !== 'pritunl_hsm'}
 						label="HSM YubiKey Serial"
 						help="Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key."
 						type="text"
@@ -464,23 +476,31 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 					/>
 					<PageInput
-						hidden={authority.type !== 'pritunl_hsm'}
+						hidden={!isHsm}
 						readOnly={true}
 						label="HSM Token"
 						help="Pritunl HSM token."
 						type="text"
 						placeholder="Save to generate token"
-						value={authority.hsm_token}
+						value={this.props.authority.hsm_token}
 					/>
 					<PageInput
-						hidden={authority.type !== 'pritunl_hsm' ||
-							!authority.hsm_token || !authority.hsm_secret}
+						hidden={!isHsm || !this.props.authority.hsm_token || !hsmSecret}
 						readOnly={true}
 						label="HSM Secret"
 						help="Pritunl HSM secret, will only be shown once."
 						type="text"
 						placeholder=""
-						value={authority.hsm_secret}
+						value={hsmSecret}
+					/>
+					<PageSwitch
+						hidden={!isHsm}
+						label="Generate new HSM token and secret"
+						help="Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials."
+						checked={authority.hsm_generate_secret}
+						onToggle={(): void => {
+							this.set('hsm_generate_secret', !authority.hsm_generate_secret);
+						}}
 					/>
 					<PageInput
 						label="Download URL"
