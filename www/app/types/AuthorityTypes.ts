@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'authority.sync';
 export const CHANGE = 'authority.change';
+export const SYNC_SECRET = 'authority.sync_secret';
 
 export interface Info {
 	key_alg?: string;
@@ -21,6 +22,8 @@ export interface Authority {
 	host_certificates?: boolean;
 	strict_host_checking?: boolean;
 	host_tokens?: string[];
+	hsm_status?: string;
+	hsm_timestamp?: string;
 	hsm_token?: string;
 	hsm_secret?: string;
 	hsm_serial?: string;
@@ -36,6 +39,7 @@ export interface AuthorityDispatch {
 	type: string;
 	data?: {
 		id?: string;
+		secret?: string;
 		authority?: Authority;
 		authorities?: Authorities;
 	};
