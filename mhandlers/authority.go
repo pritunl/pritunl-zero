@@ -139,7 +139,7 @@ func authorityPut(c *gin.Context) {
 	authr.Json()
 
 	if !showSecret {
-		//authr.HsmSecret = ""
+		authr.HsmSecret = ""
 	}
 
 	c.JSON(200, authr)
@@ -248,7 +248,7 @@ func authorityGet(c *gin.Context) {
 
 	authr.Json()
 
-	//authr.HsmSecret = ""
+	authr.HsmSecret = ""
 
 	c.JSON(200, authr)
 }
@@ -272,7 +272,7 @@ func authoritysGet(c *gin.Context) {
 
 	for _, authr := range authrs {
 		authr.Json()
-		//authr.HsmSecret = ""
+		authr.HsmSecret = ""
 	}
 
 	c.JSON(200, authrs)
