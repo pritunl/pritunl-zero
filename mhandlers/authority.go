@@ -24,6 +24,10 @@ type authorityData struct {
 	HostProxy          string        `json:"host_proxy"`
 	HostCertificates   bool          `json:"host_certificates"`
 	StrictHostChecking bool          `json:"strict_host_checking"`
+	HsmToken           string        `json:"hsm_token"`
+	HsmSecret          string        `json:"hsm_secret"`
+	HsmSerial          string        `json:"hsm_serial"`
+	HsmGenerateSecret  bool          `json:"hsm_generate_secret"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -52,6 +56,18 @@ func authorityPut(c *gin.Context) {
 		return
 	}
 
+	showSecret := false
+	if authr.Type != data.Type {
+		if data.Type == authority.PritunlHsm {
+			err = authr.GenerateHsmToken()
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+			showSecret = true
+		}
+	}
+
 	authr.Name = data.Name
 	authr.Type = data.Type
 	authr.Expire = data.Expire
@@ -70,12 +86,24 @@ func authorityPut(c *gin.Context) {
 	authr.HostProxy = data.HostProxy
 	authr.HostCertificates = data.HostCertificates
 	authr.StrictHostChecking = data.StrictHostChecking
+	authr.HsmSerial = data.HsmSerial
+
+	if authr.Type == authority.PritunlHsm && data.HsmGenerateSecret {
+		err = authr.GenerateHsmToken()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+		showSecret = true
+	}
 
 	fields := set.NewSet(
 		"name",
 		"type",
 		"expire",
 		"host_expire",
+		"public_key",
+		"private_key",
 		"info",
 		"match_roles",
 		"roles",
@@ -84,6 +112,9 @@ func authorityPut(c *gin.Context) {
 		"host_proxy",
 		"host_certificates",
 		"strict_host_checking",
+		"hsm_token",
+		"hsm_secret",
+		"hsm_serial",
 	)
 
 	errData, err := authr.Validate(db)
@@ -104,6 +135,12 @@ func authorityPut(c *gin.Context) {
 	}
 
 	event.PublishDispatch(db, "authority.change")
+
+	authr.Json()
+
+	if !showSecret {
+		//authr.HsmSecret = ""
+	}
 
 	c.JSON(200, authr)
 }
@@ -159,6 +196,8 @@ func authorityPost(c *gin.Context) {
 
 	event.PublishDispatch(db, "authority.change")
 
+	authr.Json()
+
 	c.JSON(200, authr)
 }
 
@@ -207,6 +246,10 @@ func authorityGet(c *gin.Context) {
 		}
 	}
 
+	authr.Json()
+
+	//authr.HsmSecret = ""
+
 	c.JSON(200, authr)
 }
 
@@ -225,6 +268,11 @@ func authoritysGet(c *gin.Context) {
 				authr.HostTokens[i] = "demo"
 			}
 		}
+	}
+
+	for _, authr := range authrs {
+		authr.Json()
+		//authr.HsmSecret = ""
 	}
 
 	c.JSON(200, authrs)
