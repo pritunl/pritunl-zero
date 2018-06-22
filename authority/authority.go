@@ -603,7 +603,7 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 	return
 }
 
-func (a *Authority) CreateHostCertificate(hostname string, sshPubKey string) (
+func (a *Authority) createHostCertificate(hostname string, sshPubKey string) (
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
@@ -652,6 +652,215 @@ func (a *Authority) CreateHostCertificate(hostname string, sshPubKey string) (
 	}
 
 	certMarshaled = string(MarshalCertificate(cert, comment))
+
+	return
+}
+
+func (a *Authority) createHostCertificateHsm(db *database.Database,
+	hostname string, sshPubKey string) (cert *ssh.Certificate,
+	certMarshaled string, err error) {
+
+	pubKey, comment, _, _, err := ssh.ParseAuthorizedKey([]byte(sshPubKey))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ssh public key"),
+		}
+		return
+	}
+
+	expire := a.HostExpire
+	if expire == 0 {
+		expire = 600
+	}
+	validAfter := time.Now().Add(-5 * time.Minute).Unix()
+	validBefore := time.Now().Add(
+		time.Duration(expire) * time.Minute).Unix()
+
+	cert = &ssh.Certificate{
+		Key:             pubKey,
+		CertType:        ssh.HostCert,
+		KeyId:           hostname,
+		ValidPrincipals: []string{a.GetDomain(hostname)},
+		ValidAfter:      uint64(validAfter),
+		ValidBefore:     uint64(validBefore),
+	}
+
+	certData, err := utils.MarshalSshCertificate(cert)
+	if err != nil {
+		return
+	}
+
+	data := SshRequest{
+		Serial:      a.HsmSerial,
+		Certificate: certData,
+	}
+
+	cipData, err := json.Marshal(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to marshal certificate"),
+		}
+		return
+	}
+
+	pad := 16 - len(cipData)%16
+	for i := 0; i < pad; i++ {
+		cipData = append(cipData, 0)
+	}
+
+	encKeyHash := sha256.New()
+	encKeyHash.Write([]byte(a.HsmSecret))
+	cipKey := encKeyHash.Sum(nil)
+
+	cipIv, err := utils.RandBytes(aes.BlockSize)
+	if err != nil {
+		return
+	}
+
+	block, err := aes.NewCipher(cipKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to load cipher"),
+		}
+		return
+	}
+
+	mode := cipher.NewCBCEncrypter(block, cipIv)
+	mode.CryptBlocks(cipData, cipData)
+
+	hashFunc := hmac.New(sha512.New, []byte(a.HsmSecret))
+	hashFunc.Write(cipData)
+	rawSignature := hashFunc.Sum(nil)
+	sig := base64.StdEncoding.EncodeToString(rawSignature)
+
+	payloadId := bson.NewObjectId().Hex()
+	payload := &HsmPayload{
+		Id:        payloadId,
+		Token:     a.HsmToken,
+		Iv:        cipIv,
+		Signature: sig,
+		Type:      "ssh_certificate",
+		Data:      cipData,
+	}
+
+	waiter := sync.WaitGroup{}
+	waiter.Add(1)
+
+	timeout := time.Duration(settings.System.HsmResponseTimeout) * time.Second
+	start := time.Now()
+	var eventErr error
+
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": errors.New(fmt.Sprintf("%s", r)),
+				}).Error("authority: Parse hsm panic")
+
+				eventErr = &errortypes.UnknownError{
+					errors.New("authority: Parse hsm panic"),
+				}
+			}
+			waiter.Done()
+		}()
+
+		event.SubscribeType([]string{"pritunl_hsm_recv"}, 5*time.Second,
+			func() event.CustomEvent {
+				return &HsmEvent{}
+			},
+			func(msgInf event.CustomEvent, e error) bool {
+				if e != nil {
+					eventErr = e
+					return false
+				}
+
+				if msgInf == nil || msgInf.GetData() == nil {
+					if time.Since(start) < timeout {
+						return true
+					}
+
+					eventErr = &errortypes.UnknownError{
+						errors.New("authority: Timeout waiting for hsm"),
+					}
+					return false
+				}
+
+				msg := msgInf.(*HsmEvent)
+
+				if msg.Data.Id != payloadId ||
+					msg.Data.Type != "ssh_certificate" {
+
+					if time.Since(start) < timeout {
+						return true
+					}
+					eventErr = &errortypes.UnknownError{
+						errors.New("authority: Timeout waiting for hsm"),
+					}
+					return false
+				}
+
+				payloadData, e := UnmarshalPayload(
+					a.HsmToken, a.HsmSecret, msg.Data)
+				if e != nil {
+					eventErr = e
+					return false
+				}
+
+				respData := &SshResponse{}
+				e = json.Unmarshal(payloadData, respData)
+				if e != nil {
+					eventErr = &errortypes.ParseError{
+						errors.Wrap(e,
+							"authority: Failed to unmarshal payload data"),
+					}
+					return false
+				}
+
+				cert, e = utils.UnmarshalSshCertificate(
+					respData.Certificate)
+				if e != nil {
+					eventErr = &errortypes.ParseError{
+						errors.Wrap(e,
+							"authority: Failed to unmarshal payload data"),
+					}
+					return false
+				}
+
+				certMarshaled = string(MarshalCertificate(cert, comment))
+
+				return false
+			})
+	}()
+
+	err = event.Publish(db, "pritunl_hsm_send", payload)
+	if err != nil {
+		return
+	}
+
+	waiter.Wait()
+	if eventErr != nil {
+		cert = nil
+		certMarshaled = ""
+		logrus.WithFields(logrus.Fields{
+			"error": eventErr,
+		}).Error("authority: Error getting hsm certificate")
+		return
+	}
+
+	return
+}
+
+func (a *Authority) CreateHostCertificate(db *database.Database,
+	hostname string, sshPubKey string) (
+	cert *ssh.Certificate, certMarshaled string, err error) {
+
+	if a.Type == PritunlHsm {
+		cert, certMarshaled, err = a.createHostCertificateHsm(
+			db, hostname, sshPubKey)
+	} else {
+		cert, certMarshaled, err = a.createHostCertificate(
+			hostname, sshPubKey)
+	}
 
 	return
 }
