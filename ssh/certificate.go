@@ -151,6 +151,10 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 			return
 		}
 
+		if crt == nil {
+			continue
+		}
+
 		info := &Info{
 			Expires:    time.Unix(int64(crt.ValidBefore), 0),
 			Serial:     fmt.Sprintf("%d", crt.Serial),
