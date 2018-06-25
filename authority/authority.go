@@ -917,7 +917,7 @@ func (a *Authority) HandleHsmStatus(db *database.Database,
 	}
 
 	sendEvent := false
-	fields := set.NewSet("hsm_timestamp")
+	fields := set.NewSet("hsm_timestamp", "hsm_status")
 	a.HsmTimestamp = time.Now()
 
 	status := Disconnected
@@ -927,9 +927,8 @@ func (a *Authority) HandleHsmStatus(db *database.Database,
 
 	if a.HsmStatus != status {
 		sendEvent = true
-		fields.Add("hsm_status")
-		a.HsmStatus = status
 	}
+	a.HsmStatus = status
 
 	if a.PublicKey != respData.SshPublicKey {
 		sendEvent = true
