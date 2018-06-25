@@ -311,7 +311,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						disabled={this.state.locked}
 						checked={user.generate_secret}
 						onToggle={(): void => {
-							this.set('generate_secret', !this.state.user.generate_secret);
+							this.set('generate_secret', !user.generate_secret);
 						}}
 					/>
 					<PageSelect
