@@ -37,7 +37,7 @@ func eventGet(c *gin.Context) {
 	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		err = &errortypes.RequestError{
-			errors.Wrap(err, "mhandlers: Failed to upgrade request"),
+			errors.Wrap(err, "uhandlers: Failed to upgrade request"),
 		}
 		utils.AbortWithError(c, 500, err)
 		return
