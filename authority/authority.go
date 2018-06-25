@@ -1160,7 +1160,7 @@ func (a *Authority) Format() {
 
 func (a *Authority) Json() {
 	if a.Type == PritunlHsm {
-		if time.Since(a.HsmTimestamp) > 45 * time.Second {
+		if time.Since(a.HsmTimestamp) > 45*time.Second {
 			a.HsmStatus = Disconnected
 		}
 	}
