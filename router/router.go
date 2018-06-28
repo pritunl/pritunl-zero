@@ -275,7 +275,8 @@ func (r *Router) startWeb() {
 					logrus.WithFields(logrus.Fields{
 						"error": err,
 					}).Error("router: Web server certificate error")
-					return
+					err = nil
+					continue
 				}
 
 				tlsConfig.Certificates = append(
