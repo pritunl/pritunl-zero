@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"strings"
 )
 
 type Device struct {
@@ -46,6 +47,48 @@ func (d *Device) Validate(db *database.Database) (
 			Message: "Device name is too long",
 		}
 		return
+	}
+
+	if d.Type != U2f && d.Type != SmartCard {
+		errData = &errortypes.ErrorData{
+			Error:   "device_type_invalid",
+			Message: "Device type is invalid",
+		}
+		return
+	}
+
+	if d.Mode != Ssh && d.Mode != Secondary {
+		errData = &errortypes.ErrorData{
+			Error:   "device_mode_invalid",
+			Message: "Device mode is invalid",
+		}
+		return
+	}
+
+	if d.Mode == Ssh {
+		if d.Type != SmartCard {
+			errData = &errortypes.ErrorData{
+				Error:   "device_mode_type_invalid",
+				Message: "Device mode and type is invalid",
+			}
+			return
+		}
+
+		if d.SshPublicKey == "" {
+			errData = &errortypes.ErrorData{
+				Error:   "device_ssh_key_missing",
+				Message: "Device SSH public key is required",
+			}
+			return
+		}
+
+		if !strings.Contains(d.SshPublicKey, "cardno") {
+			errData = &errortypes.ErrorData{
+				Error:   "device_ssh_key_invalid",
+				Message: "Device SSH public key is not from a Smart Card",
+			}
+			return
+		}
 	}
 
 	return
