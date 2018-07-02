@@ -447,6 +447,65 @@ func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 	return
 }
 
+func (s *Secondary) DeviceRegisterSmartCard(db *database.Database,
+	pubKey string, name string) (
+	devc *device.Device, errData *errortypes.ErrorData, err error) {
+
+	if s.Disabled {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_disabled",
+			Message: "Secondary registration has already been completed",
+		}
+		return
+	}
+
+	if s.ProviderId != DeviceProvider {
+		err = &errortypes.AuthenticationError{
+			errors.New("secondary: Device register not available"),
+		}
+		return
+	}
+
+	pubKey = strings.TrimSpace(pubKey)
+
+	usr, err := s.GetUser(db)
+	if err != nil {
+		return
+	}
+
+	devcs, err := device.GetAllMode(db, usr.Id, device.Ssh)
+	if err != nil {
+		return
+	}
+
+	for _, dvc := range devcs {
+		if dvc.SshPublicKey == pubKey {
+			errData = &errortypes.ErrorData{
+				Error:   "device_already_registered",
+				Message: "Smart Card has already been registered",
+			}
+			return
+		}
+	}
+
+	devc = device.New(usr.Id, device.SmartCard, device.Ssh)
+	devc.User = usr.Id
+	devc.Name = name
+	devc.SshPublicKey = pubKey
+
+	errData, err = devc.Validate(db)
+	if err != nil || errData != nil {
+		return
+	}
+
+	err = devc.Insert(db)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *Secondary) DeviceSignRequest(db *database.Database) (
 	jsonResp interface{}, errData *errortypes.ErrorData, err error) {
 
