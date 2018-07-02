@@ -543,6 +543,10 @@ func (s *Secondary) DeviceSignRequest(db *database.Database) (
 
 	regs := []u2flib.Registration{}
 	for _, devc := range devices {
+		if devc.Type != device.U2f {
+			continue
+		}
+
 		reg, e := devc.UnmarshalRegistration()
 		if e != nil {
 			err = e
