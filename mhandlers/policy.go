@@ -12,20 +12,21 @@ import (
 )
 
 type policyData struct {
-	Id                       bson.ObjectId           `json:"id"`
-	Name                     string                  `json:"name"`
-	Services                 []bson.ObjectId         `json:"services"`
-	Authorities              []bson.ObjectId         `json:"authorities"`
-	Roles                    []string                `json:"roles"`
-	Rules                    map[string]*policy.Rule `json:"rules"`
-	AdminSecondary           bson.ObjectId           `json:"admin_secondary"`
-	UserSecondary            bson.ObjectId           `json:"user_secondary"`
-	ProxySecondary           bson.ObjectId           `json:"proxy_secondary"`
-	AuthoritySecondary       bson.ObjectId           `json:"authority_secondary"`
-	AdminDeviceSecondary     bool                    `json:"admin_device_secondary"`
-	UserDeviceSecondary      bool                    `json:"user_device_secondary"`
-	ProxyDeviceSecondary     bool                    `json:"proxy_device_secondary"`
-	AuthorityDeviceSecondary bool                    `json:"authority_device_secondary"`
+	Id                        bson.ObjectId           `json:"id"`
+	Name                      string                  `json:"name"`
+	Services                  []bson.ObjectId         `json:"services"`
+	Authorities               []bson.ObjectId         `json:"authorities"`
+	Roles                     []string                `json:"roles"`
+	Rules                     map[string]*policy.Rule `json:"rules"`
+	AdminSecondary            bson.ObjectId           `json:"admin_secondary"`
+	UserSecondary             bson.ObjectId           `json:"user_secondary"`
+	ProxySecondary            bson.ObjectId           `json:"proxy_secondary"`
+	AuthoritySecondary        bson.ObjectId           `json:"authority_secondary"`
+	AdminDeviceSecondary      bool                    `json:"admin_device_secondary"`
+	UserDeviceSecondary       bool                    `json:"user_device_secondary"`
+	ProxyDeviceSecondary      bool                    `json:"proxy_device_secondary"`
+	AuthorityDeviceSecondary  bool                    `json:"authority_device_secondary"`
+	AuthorityRequireSmartCard bool                    `json:"authority_require_smart_card"`
 }
 
 func policyPut(c *gin.Context) {
@@ -67,6 +68,7 @@ func policyPut(c *gin.Context) {
 	polcy.UserDeviceSecondary = data.UserDeviceSecondary
 	polcy.ProxyDeviceSecondary = data.ProxyDeviceSecondary
 	polcy.AuthorityDeviceSecondary = data.AuthorityDeviceSecondary
+	polcy.AuthorityRequireSmartCard = data.AuthorityRequireSmartCard
 
 	fields := set.NewSet(
 		"name",
@@ -82,6 +84,7 @@ func policyPut(c *gin.Context) {
 		"user_device_secondary",
 		"proxy_device_secondary",
 		"authority_device_secondary",
+		"authority_require_smart_card",
 	)
 
 	errData, err := polcy.Validate(db)
