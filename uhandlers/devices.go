@@ -1,7 +1,9 @@
 package uhandlers
 
 import (
+	"encoding/base64"
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -197,6 +199,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
+	deviceType := c.Query("type")
 
 	usr, err := authr.GetUser(db)
 	if err != nil {
@@ -227,6 +230,15 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		var secProvider bson.ObjectId
 
 		if deviceCount == 0 {
+			if deviceType != device.SmartCard {
+				errData := &errortypes.ErrorData{
+					Error:   "no_devices",
+					Message: "Cannot register Smart Card without a U2F device",
+				}
+				c.JSON(401, errData)
+				return
+			}
+
 			secType = secondary.UserManage
 			secProvider = secProviderId
 		} else {
@@ -247,6 +259,15 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		}
 
 		c.JSON(201, data)
+		return
+	}
+
+	if deviceType != device.SmartCard {
+		errData := &errortypes.ErrorData{
+			Error:   "no_devices",
+			Message: "Cannot register Smart Card without a U2F device",
+		}
+		c.JSON(401, errData)
 		return
 	}
 
@@ -277,9 +298,11 @@ func deviceU2fRegisterGet(c *gin.Context) {
 }
 
 type devicesU2fRegisterData struct {
-	Token    string                   `json:"token"`
-	Name     string                   `json:"name"`
-	Response *u2flib.RegisterResponse `json:"response"`
+	Type         string                   `json:"type"`
+	Token        string                   `json:"token"`
+	Name         string                   `json:"name"`
+	Response     *u2flib.RegisterResponse `json:"response"`
+	SshPublicKey string                   `json:"ssh_public_key"`
 }
 
 func deviceU2fRegisterPost(c *gin.Context) {
@@ -319,16 +342,59 @@ func deviceU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	devc, errData, err := secd.DeviceRegisterResponse(
-		db, data.Response, data.Name)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
+	var devc *device.Device
+	if data.Type == device.SmartCard {
+		deviceCount, err := device.Count(db, usr.Id)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+		if deviceCount == 0 {
+			errData := &errortypes.ErrorData{
+				Error:   "no_devices",
+				Message: "Cannot register Smart Card without a U2F device",
+			}
+			c.JSON(401, errData)
+			return
+		}
 
-	if errData != nil {
-		c.JSON(400, errData)
-		return
+		sshPubKey, err := base64.URLEncoding.DecodeString(data.SshPublicKey)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err,
+					"uhandlers: Failed to decode SSH public key"),
+			}
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		dvc, errData, err := secd.DeviceRegisterSmartCard(
+			db, string(sshPubKey), data.Name)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if errData != nil {
+			c.JSON(400, errData)
+			return
+		}
+
+		devc = dvc
+	} else {
+		dvc, errData, err := secd.DeviceRegisterResponse(
+			db, data.Response, data.Name)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if errData != nil {
+			c.JSON(400, errData)
+			return
+		}
+
+		devc = dvc
 	}
 
 	err = audit.New(
@@ -351,6 +417,7 @@ func deviceU2fRegisterPost(c *gin.Context) {
 }
 
 type deviceU2fSecondaryData struct {
+	Type     string `json:"type"`
 	Token    string `json:"token"`
 	Factor   string `json:"factor"`
 	Passcode string `json:"passcode"`
@@ -409,15 +476,18 @@ func deviceU2fSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	jsonResp, errData, err := secd.DeviceRegisterRequest(db)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
+	var jsonResp interface{}
+	if data.Type != device.SmartCard {
+		jsonResp, errData, err = secd.DeviceRegisterRequest(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
 
-	if errData != nil {
-		c.JSON(400, errData)
-		return
+		if errData != nil {
+			c.JSON(400, errData)
+			return
+		}
 	}
 
 	resp := &devicesU2fRegisterRespData{
@@ -461,6 +531,7 @@ func deviceU2fSignGet(c *gin.Context) {
 }
 
 type deviceU2fSignData struct {
+	Type     string               `json:"type"`
 	Token    string               `json:"token"`
 	Response *u2flib.SignResponse `json:"response"`
 }
@@ -539,15 +610,18 @@ func deviceU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	jsonResp, errData, err := secd.DeviceRegisterRequest(db)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
+	var jsonResp interface{}
+	if data.Type != device.SmartCard {
+		jsonResp, errData, err = secd.DeviceRegisterRequest(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
 
-	if errData != nil {
-		c.JSON(400, errData)
-		return
+		if errData != nil {
+			c.JSON(400, errData)
+			return
+		}
 	}
 
 	resp := &devicesU2fRegisterRespData{
