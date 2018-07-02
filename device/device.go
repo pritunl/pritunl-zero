@@ -22,10 +22,11 @@ type Device struct {
 	Disabled     bool          `bson:"disabled" json:"disabled"`
 	ActiveUntil  time.Time     `bson:"activeactive_until_until" json:"active_until"`
 	LastActive   time.Time     `bson:"last_active" json:"last_active"`
-	U2fRaw       []byte        `bson:"u2f_raw"`
-	U2fCounter   uint32        `bson:"u2f_counter"`
-	U2fKeyHandle []byte        `bson:"u2f_key_handle"`
-	U2fPublicKey []byte        `bson:"u2f_public_key"`
+	SshPublicKey string        `bson:"ssh_public_key" json:"ssh_public_key"`
+	U2fRaw       []byte        `bson:"u2f_raw" json:"-"`
+	U2fCounter   uint32        `bson:"u2f_counter" json:"-"`
+	U2fKeyHandle []byte        `bson:"u2f_key_handle" json:"-"`
+	U2fPublicKey []byte        `bson:"u2f_public_key" json:"-"`
 }
 
 func (d *Device) Validate(db *database.Database) (
