@@ -1,8 +1,16 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import StateStore from '../stores/StateStore';
 import LoadingBar from './LoadingBar';
 import Session from './Session';
 import Validate from './Validate';
+import Devices from './Devices';
+
+interface State {
+	devicesOpen: boolean;
+	sshToken: string;
+	sshDevice: string;
+}
 
 const css = {
 	card: {
@@ -24,24 +32,55 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Main extends React.Component<{}, {}> {
-	render(): JSX.Element {
-		let sshToken = '';
-		let query = window.location.search.substring(1);
-		let vals = query.split('&');
-		for (let val of vals) {
-			let keyval = val.split('=');
-			if (keyval[0] === 'ssh-token') {
-				sshToken = keyval[1];
-			}
-		}
+export default class Main extends React.Component<{}, State> {
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			devicesOpen: false,
+			sshToken: StateStore.sshToken,
+			sshDevice: StateStore.sshDevice,
+		};
+	}
 
+	componentDidMount(): void {
+		StateStore.addChangeListener(this.onChange);
+	}
+
+	componentWillUnmount(): void {
+		StateStore.addChangeListener(this.onChange);
+	}
+
+	onChange = (): void => {
+		this.setState({
+			...this.state,
+			sshToken: StateStore.sshToken,
+			sshDevice: StateStore.sshDevice,
+		});
+	}
+
+	render(): JSX.Element {
 		let bodyElm: JSX.Element;
 
-		if (sshToken) {
-			bodyElm = <Validate token={sshToken}/>;
+		if (this.state.sshToken) {
+			bodyElm = <Validate token={this.state.sshToken}/>;
+		} else if (this.state.devicesOpen || this.state.sshDevice) {
+			bodyElm = <Devices
+				onClose={(): void => {
+					this.setState({
+						...this.state,
+						devicesOpen: false,
+					});
+				}}
+			/>;
 		} else {
-			bodyElm = <Session/>;
+			bodyElm = <Session
+				onDevices={(): void => {
+					this.setState({
+						...this.state,
+						devicesOpen: true,
+					});
+				}}
+			/>;
 		}
 
 		return <div className="pt-card pt-elevation-2" style={css.card}>
