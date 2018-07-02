@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as SuperAgent from 'superagent';
 import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
-import Session from './Session';
+import * as StateActions from '../actions/StateActions';
 import Loader from "../Loader";
 
 interface Secondary {
@@ -30,7 +30,6 @@ interface Props {
 
 interface State {
 	disabled: boolean;
-	answered: boolean;
 	passcode: string;
 	secondary: Secondary;
 	secondaryState: SecondaryState;
@@ -78,7 +77,6 @@ export default class Validate extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			disabled: false,
-			answered: false,
 			passcode: '',
 			secondary: null,
 			secondaryState: null,
@@ -135,12 +133,10 @@ export default class Validate extends React.Component<Props, State> {
 
 				this.setState({
 					...this.state,
-					answered: true,
 					secondary: null,
 				});
 
-				window.history.replaceState(
-					null, null, window.location.pathname);
+				StateActions.setSshToken(null);
 
 				Alert.success('Successfully approved SSH key', 0);
 			});
@@ -228,12 +224,10 @@ export default class Validate extends React.Component<Props, State> {
 
 				this.setState({
 					...this.state,
-					answered: true,
 					secondary: null,
 				});
 
-				window.history.replaceState(
-					null, null, window.location.pathname);
+				StateActions.setSshToken(null);
 			});
 	}
 
@@ -361,10 +355,6 @@ export default class Validate extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
-		if (this.state.answered) {
-			return <Session/>;
-		}
-
 		if (this.state.secondary) {
 			if (this.state.secondary.device) {
 				return this.device();
@@ -384,6 +374,43 @@ export default class Validate extends React.Component<Props, State> {
 				</span>
 			</div>
 			<div className="layout horizontal center-justified" style={css.buttons}>
+				<button
+					className="pt-button pt-large pt-intent-danger pt-icon-delete"
+					style={css.button}
+					type="button"
+					disabled={this.state.disabled}
+					onClick={(): void => {
+						this.setState({
+							...this.state,
+							disabled: true,
+						});
+
+						SuperAgent
+							.delete('/ssh/validate/' + this.props.token)
+							.set('Accept', 'application/json')
+							.set('Csrf-Token', Csrf.token)
+							.end((err: any, res: SuperAgent.Response): void => {
+								this.setState({
+									...this.state,
+									disabled: false,
+								});
+
+								if (res.status === 404) {
+									Alert.error('SSH verification request has expired', 0);
+								} else if (err) {
+									Alert.errorRes(res, 'Failed to deny SSH key', 0);
+									return;
+								} else {
+									Alert.error('Successfully denied SSH key. Report ' +
+										'this incident to an administrator.', 0);
+								}
+
+								StateActions.setSshToken(null);
+							});
+					}}
+				>
+					Deny
+				</button>
 				<button
 					className="pt-button pt-large pt-intent-success pt-icon-add"
 					style={css.button}
@@ -434,59 +461,14 @@ export default class Validate extends React.Component<Props, State> {
 
 								this.setState({
 									...this.state,
-									answered: true,
 									disabled: false,
 								});
 
-								window.history.replaceState(
-									null, null, window.location.pathname);
+								StateActions.setSshToken(null);
 							});
 					}}
 				>
 					Approve
-				</button>
-				<button
-					className="pt-button pt-large pt-intent-danger pt-icon-delete"
-					style={css.button}
-					type="button"
-					disabled={this.state.disabled}
-					onClick={(): void => {
-						this.setState({
-							...this.state,
-							disabled: true,
-						});
-
-						SuperAgent
-							.delete('/ssh/validate/' + this.props.token)
-							.set('Accept', 'application/json')
-							.set('Csrf-Token', Csrf.token)
-							.end((err: any, res: SuperAgent.Response): void => {
-								this.setState({
-									...this.state,
-									disabled: false,
-								});
-
-								if (res.status === 404) {
-									Alert.error('SSH verification request has expired', 0);
-								} else if (err) {
-									Alert.errorRes(res, 'Failed to deny SSH key', 0);
-									return;
-								} else {
-									Alert.error('Successfully denied SSH key. Report ' +
-										'this incident to an administrator.', 0);
-								}
-
-								this.setState({
-									...this.state,
-									answered: true,
-								});
-
-								window.history.replaceState(
-									null, null, window.location.pathname);
-							});
-					}}
-				>
-					Deny
 				</button>
 			</div>
 		</div>;
