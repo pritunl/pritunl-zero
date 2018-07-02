@@ -4,7 +4,9 @@ import * as Blueprint from '@blueprintjs/core';
 import * as SuperAgent from 'superagent';
 import * as DeviceTypes from '../types/DeviceTypes';
 import DevicesStore from '../stores/DevicesStore';
+import StateStore from '../stores/StateStore';
 import * as DeviceActions from '../actions/DeviceActions';
+import * as StateActions from '../actions/StateActions';
 import * as Alert from "../Alert";
 import * as Csrf from "../Csrf";
 import Device from './Device';
@@ -35,6 +37,7 @@ interface Props {
 
 interface State {
 	devices: DeviceTypes.DevicesRo;
+	sshDevice: string;
 	deviceName: string;
 	disabled: boolean;
 	passcode: string;
@@ -111,6 +114,7 @@ export default class Devices extends React.Component<Props, State> {
 		super(props, context);
 		this.state = {
 			devices: DevicesStore.devices,
+			sshDevice: StateStore.sshDevice,
 			deviceName: '',
 			disabled: false,
 			initialized: false,
@@ -123,6 +127,7 @@ export default class Devices extends React.Component<Props, State> {
 
 	componentDidMount(): void {
 		DevicesStore.addChangeListener(this.onChange);
+		StateStore.addChangeListener(this.onChange);
 		DeviceActions.sync();
 
 		this.timeout = window.setTimeout((): void => {
@@ -135,6 +140,7 @@ export default class Devices extends React.Component<Props, State> {
 
 	componentWillUnmount(): void {
 		DevicesStore.removeChangeListener(this.onChange);
+		StateStore.addChangeListener(this.onChange);
 
 		if (this.timeout) {
 			window.clearTimeout(this.timeout);
@@ -145,6 +151,7 @@ export default class Devices extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			devices: DevicesStore.devices,
+			sshDevice: StateStore.sshDevice,
 		});
 	}
 
@@ -172,8 +179,9 @@ export default class Devices extends React.Component<Props, State> {
 		let loader = new Loader().loading();
 
 		SuperAgent
-			.post('/device/u2f/register')
+			.post('/device/manage/register')
 			.send({
+				type: 'u2f',
 				token: this.state.register.token,
 				name: this.state.deviceName,
 				response: resp,
@@ -202,18 +210,59 @@ export default class Devices extends React.Component<Props, State> {
 			});
 	}
 
-	registerSign = (): void => {
+	smartCardRegistered = (): void => {
+		let loader = new Loader().loading();
+
+		SuperAgent
+			.post('/device/manage/register')
+			.send({
+				type: 'smart_card',
+				token: this.state.register.token,
+				name: this.state.deviceName,
+				ssh_public_key: this.state.sshDevice,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				StateActions.setSshDevice(null);
+
+				this.setState({
+					...this.state,
+					disabled: false,
+					deviceName: '',
+					secondary: null,
+					register: null,
+				});
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to register device');
+					return;
+				}
+
+				DeviceActions.sync();
+
+				this.alertKey = Alert.success('Successfully registered device');
+			});
+	}
+
+	onRegister = (): void => {
 		this.setState({
 			disabled: true,
 		});
 
-		this.alertKey = Alert.info(
-			'Insert your security key and tap the button', 30000);
+		if (this.state.sshDevice) {
+			this.smartCardRegistered();
+		} else {
+			this.alertKey = Alert.info(
+				'Insert your security key and tap the button', 30000);
 
-		(window as any).u2f.register(this.state.register.request.appId,
-			this.state.register.request.registerRequests,
-			this.state.register.request.registeredKeys,
-			this.u2fRegistered, 30);
+			(window as any).u2f.register(this.state.register.request.appId,
+				this.state.register.request.registerRequests,
+				this.state.register.request.registeredKeys,
+				this.u2fRegistered, 30);
+		}
 	}
 
 	register(): JSX.Element {
@@ -223,7 +272,7 @@ export default class Devices extends React.Component<Props, State> {
 					<span className="pt-icon pt-icon-key"/>
 				</div>
 				<h4 className="pt-non-ideal-state-title">
-					Register U2F Device
+					Register Security Device
 				</h4>
 				<span style={css.description}>
 					Enter a name for your new security device.
@@ -247,7 +296,7 @@ export default class Devices extends React.Component<Props, State> {
 							}}
 							onKeyPress={(evt): void => {
 								if (evt.key === 'Enter') {
-									this.registerSign();
+									this.onRegister();
 								}
 							}}
 						/>
@@ -256,7 +305,7 @@ export default class Devices extends React.Component<Props, State> {
 						<button
 							className="pt-button pt-intent-success pt-icon-add"
 							disabled={this.state.disabled}
-							onClick={this.registerSign}
+							onClick={this.onRegister}
 						>Add Device</button>
 					</div>
 				</div>
@@ -287,9 +336,15 @@ export default class Devices extends React.Component<Props, State> {
 
 		let loader = new Loader().loading();
 
+		let deviceType = 'u2f';
+		if (this.state.sshDevice) {
+			deviceType = 'smart_card';
+		}
+
 		SuperAgent
-			.post('/device/u2f/sign')
+			.post('/device/manage/sign')
 			.send({
+				type: deviceType,
 				token: this.state.secondary.token,
 				response: resp,
 			})
@@ -336,7 +391,7 @@ export default class Devices extends React.Component<Props, State> {
 		});
 
 		SuperAgent
-			.get('/device/u2f/sign')
+			.get('/device/manage/sign')
 			.query({
 				token: this.state.secondary.token,
 			})
@@ -380,15 +435,62 @@ export default class Devices extends React.Component<Props, State> {
 		</div>;
 	}
 
+	smartCard(): JSX.Element {
+		let cardSplit = this.state.sshDevice.split('cardno:');
+		let cardSerial = 'unknown';
+		if (cardSplit.length > 1) {
+			cardSerial = cardSplit[1];
+		}
+
+		return <div>
+			<div className="pt-non-ideal-state" style={css.body}>
+				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
+					<span className="pt-icon pt-icon-sim-card"/>
+				</div>
+				<h4 className="pt-non-ideal-state-title">
+					Register Smart Card
+				</h4>
+				<span style={css.description}>
+					Registering Smart Card <b>{cardSerial}</b>
+				</span>
+				<div
+					className="layout horizontal center-justified"
+					style={css.buttons}
+				>
+					<button
+						className="pt-button pt-large pt-intent-danger pt-icon-cross"
+						style={css.button}
+						disabled={this.state.disabled}
+						onClick={(): void => {
+							StateActions.setSshDevice(null);
+						}}
+					>Cancel</button>
+					<button
+						className="pt-button pt-large pt-intent-success pt-icon-tick"
+						style={css.button}
+						disabled={this.state.disabled}
+						onClick={this.initRegister}
+					>Continue</button>
+				</div>
+			</div>
+		</div>;
+	}
+
 	secondarySubmit(factor: string): void {
 		let passcode = '';
 		if (factor === 'passcode') {
 			passcode = this.state.passcode;
 		}
 
+		let deviceType = 'u2f';
+		if (this.state.sshDevice) {
+			deviceType = 'smart_card';
+		}
+
 		SuperAgent
-			.put('/device/u2f/secondary')
+			.put('/device/manage/secondary')
 			.send({
+				type: deviceType,
 				token: this.state.secondary.token,
 				factor: factor,
 				passcode: passcode
@@ -406,6 +508,7 @@ export default class Devices extends React.Component<Props, State> {
 				});
 
 				if (res && res.status === 404) {
+					StateActions.setSshDevice(null);
 					Alert.error('Device registration request has expired', 0);
 					this.setState({
 						...this.state,
@@ -550,7 +653,7 @@ export default class Devices extends React.Component<Props, State> {
 		</div>;
 	}
 
-	onRegister = (): void => {
+	initRegister = (): void => {
 		this.setState({
 			...this.state,
 			disabled: true,
@@ -559,14 +662,23 @@ export default class Devices extends React.Component<Props, State> {
 		Alert.dismiss(this.alertKey);
 		let loader = new Loader().loading();
 
+		let deviceType = 'u2f';
+		if (this.state.sshDevice) {
+			deviceType = 'smart_card';
+		}
+
 		SuperAgent
-			.get('/device/u2f/register')
+			.get('/device/manage/register')
+			.query({
+				type: deviceType,
+			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
 				if (err) {
+					StateActions.setSshDevice(null);
 					Alert.errorRes(res, 'Failed to request device registration');
 					return;
 				}
@@ -604,6 +716,8 @@ export default class Devices extends React.Component<Props, State> {
 			} else {
 				return this.secondary();
 			}
+		} else if (this.state.sshDevice) {
+			return this.smartCard();
 		}
 
 		let devicesDom: JSX.Element[] = [];
@@ -624,7 +738,7 @@ export default class Devices extends React.Component<Props, State> {
 				<Blueprint.Icon icon="cross" iconSize={26}/>
 			</button>
 			<h4 style={css.title}>
-				U2F Devices
+				Security Devices
 			</h4>
 			<div
 				className="layout vertical center-justified wrap"
@@ -649,8 +763,8 @@ export default class Devices extends React.Component<Props, State> {
 				<button
 					className="pt-button pt-intent-success pt-icon-add"
 					disabled={this.state.disabled}
-					onClick={this.onRegister}
-				>Add Device</button>
+					onClick={this.initRegister}
+				>Add U2F Device</button>
 			</div>
 		</div>;
 	}
