@@ -62,6 +62,32 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
+func GetAllMode(db *database.Database, userId bson.ObjectId,
+	mode string) (devices []*Device, err error) {
+
+	coll := db.Devices()
+	devices = []*Device{}
+
+	cursor := coll.Find(&bson.M{
+		"user": userId,
+		"mode": mode,
+	}).Iter()
+
+	devc := &Device{}
+	for cursor.Next(devc) {
+		devices = append(devices, devc)
+		devc = &Device{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func Count(db *database.Database, userId bson.ObjectId) (
 	count int, err error) {
 
@@ -69,6 +95,7 @@ func Count(db *database.Database, userId bson.ObjectId) (
 
 	count, err = coll.Find(&bson.M{
 		"user": userId,
+		"mode": Secondary,
 	}).Count()
 	if err != nil {
 		err = database.ParseError(err)
