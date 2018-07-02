@@ -131,7 +131,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		errData = &errortypes.ErrorData{
 			Error:   "smart_card_device_required",
 			Message: "Smart Card device is required for this account. " +
-				"Run \"pritunl-ssh register-smart-card\"",
+				"Run \"pritunl-ssh config\"",
 		}
 		return
 	}
