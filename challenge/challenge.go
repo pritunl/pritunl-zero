@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -27,7 +28,7 @@ type Challenge struct {
 }
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
-	r *http.Request, device, secondary bool) (deviceAuth bool,
+	r *http.Request, deviceSec, secondary bool) (deviceAuth bool,
 	secProvider bson.ObjectId, err error, errData *errortypes.ErrorData) {
 
 	allAuthrs, err := authority.GetAll(db)
@@ -60,6 +61,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		}
 	}
 
+	requireSmartCard := false
 	for _, polcy := range policies {
 		if polcy.UserDeviceSecondary {
 			deviceAuth = true
@@ -68,9 +70,13 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		if polcy.AuthoritySecondary != "" && secProvider == "" {
 			secProvider = polcy.AuthoritySecondary
 		}
+
+		if polcy.AuthorityRequireSmartCard {
+			requireSmartCard = true
+		}
 	}
 
-	if (deviceAuth && !device && !secondary) ||
+	if (deviceAuth && !deviceSec && !secondary) ||
 		(secProvider != "" && !secondary) {
 
 		return
@@ -81,6 +87,72 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 			errors.New("sshcert: Challenge has already been answered"),
 		}
 		return
+	}
+
+	var sshDevice *device.Device
+	if strings.Contains(c.PubKey, "cardno:") {
+		cardSerial := "cardno:" + strings.TrimSpace(
+			strings.Split(c.PubKey, "cardno:")[1])
+
+		devcs, e := device.GetAllMode(db, usr.Id, device.Ssh)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for _, devc := range devcs {
+			if strings.Contains(devc.SshPublicKey, cardSerial) {
+				sshDevice = devc
+				break
+			}
+		}
+
+		if sshDevice == nil {
+			err = c.Deny(db, usr)
+			if err != nil {
+				return
+			}
+
+			errData = &errortypes.ErrorData{
+				Error:   "smart_card_device_unregistered",
+				Message: "Smart Card is not registered with this account. " +
+					"Run \"pritunl-ssh register-smart-card\"",
+			}
+			return
+		}
+	}
+
+	if requireSmartCard && sshDevice == nil {
+		err = c.Deny(db, usr)
+		if err != nil {
+			return
+		}
+
+		errData = &errortypes.ErrorData{
+			Error:   "smart_card_device_required",
+			Message: "Smart Card device is required for this account. " +
+				"Run \"pritunl-ssh register-smart-card\"",
+		}
+		return
+	}
+
+	if sshDevice != nil {
+		pubKey := strings.TrimSpace(c.PubKey)
+		cardPubKey := strings.TrimSpace(sshDevice.SshPublicKey)
+
+		if pubKey != cardPubKey {
+			err = c.Deny(db, usr)
+			if err != nil {
+				return
+			}
+
+			errData = &errortypes.ErrorData{
+				Error: "smart_card_device_mismatch",
+				Message: "Smart Card device key does not match, " +
+					"try registering device again",
+			}
+			return
+		}
 	}
 
 	agnt, err := agent.Parse(db, r)
