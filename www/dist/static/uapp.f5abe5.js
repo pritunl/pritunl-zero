@@ -298,7 +298,21 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
                 }
                 return this.secondary();
             }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        if (res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
+                        } else if (err) {
+                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
+                            return;
+                        } else {
+                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
+                        }
+                        StateActions.setSshToken(null);
+                    });
+                } }, "Deny"), React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
                     SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
@@ -323,21 +337,7 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                         StateActions.setSshToken(null);
                     });
-                } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                        this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
-                        } else if (err) {
-                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
-                            return;
-                        } else {
-                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
-                        }
-                        StateActions.setSshToken(null);
-                    });
-                } }, "Deny")));
+                } }, "Approve")));
         }
     }
     exports.default = Validate;
@@ -2991,9 +2991,9 @@ System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "np
             if (cardSplit.length > 1) {
                 cardSerial = cardSplit[1];
             }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-sim-card" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Register Smart Card"), React.createElement("span", { style: css.description }, "Registering Smart Card ", React.createElement("b", null, cardSerial)), React.createElement("button", { className: "pt-button pt-intent-danger pt-icon-cross", disabled: this.state.disabled, onClick: () => {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-sim-card" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Register Smart Card"), React.createElement("span", { style: css.description }, "Registering Smart Card ", React.createElement("b", null, cardSerial)), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-cross", style: css.button, disabled: this.state.disabled, onClick: () => {
                     StateActions.setSshDevice(null);
-                } }, "Cancel"), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-tick", disabled: this.state.disabled, onClick: this.initRegister }, "Continue")));
+                } }, "Cancel"), React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-tick", style: css.button, disabled: this.state.disabled, onClick: this.initRegister }, "Continue"))));
         }
         secondarySubmit(factor) {
             let passcode = '';
