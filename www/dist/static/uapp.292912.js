@@ -105,6 +105,307 @@ System.registerDynamic("uapp/components/LoadingBar.js", ["npm:react@16.4.1.js", 
     exports.default = LoadingBar;
     
 });
+System.registerDynamic("uapp/components/Session.js", ["npm:react@16.4.1.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.4.1.js");
+    const css = {
+        body: {
+            padding: 0
+        },
+        description: {
+            opacity: 0.7,
+            padding: '0 10px'
+        },
+        buttons: {
+            marginTop: '15px'
+        },
+        button: {
+            margin: '5px',
+            width: '182px'
+        }
+    };
+    class Session extends React.Component {
+        render() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Pritunl Zero User Console"), React.createElement("span", { style: css.description }, "To validate an SSH key install the client and run \"pritunl-ssh\"")), React.createElement("div", { className: "layout horizontal center-justified wrap", style: css.buttons }, React.createElement("a", { className: "pt-button pt-large pt-intent-primary pt-icon-download", style: css.button, href: "https://docs.pritunl.com/v1/docs/ssh-client" }, "Install SSH Client"), React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-id-number", style: css.button, onClick: this.props.onDevices }, "Security Devices"), React.createElement("a", { className: "pt-button pt-large pt-intent-warning pt-icon-delete", style: css.button, href: "/logout" }, "Logout"), React.createElement("a", { className: "pt-button pt-large pt-intent-danger pt-icon-trash", style: css.button, href: "/logout_all" }, "End All Sessions")));
+        }
+    }
+    exports.default = Session;
+    
+});
+System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "npm:superagent@3.8.3.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/actions/StateActions.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.4.1.js");
+    const SuperAgent = $__require("npm:superagent@3.8.3.js");
+    const Csrf = $__require("uapp/Csrf.js");
+    const Alert = $__require("uapp/Alert.js");
+    const StateActions = $__require("uapp/actions/StateActions.js");
+    const Loader_1 = $__require("uapp/Loader.js");
+    const css = {
+        body: {
+            padding: 0
+        },
+        description: {
+            opacity: 0.7,
+            padding: '0 10px'
+        },
+        buttons: {
+            marginTop: '15px'
+        },
+        button: {
+            margin: '5px',
+            width: '116px'
+        },
+        secondaryButton: {
+            margin: '5px auto',
+            padding: '8px 15px',
+            width: '75%'
+        },
+        secondaryInput: {
+            margin: '5px auto',
+            width: '75%'
+        }
+    };
+    const u2fErrorCodes = {
+        0: 'ok',
+        1: 'other',
+        2: 'bad request',
+        3: 'configuration unsupported',
+        4: 'device ineligible',
+        5: 'timed out'
+    };
+    class Validate extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.u2fSigned = resp => {
+                Alert.dismiss(this.alertKey);
+                if (resp.errorCode) {
+                    let errorMsg = 'U2F error code ' + resp.errorCode;
+                    let u2fMsg = u2fErrorCodes[resp.errorCode];
+                    if (u2fMsg) {
+                        errorMsg += ': ' + u2fMsg;
+                    }
+                    Alert.error(errorMsg);
+                    return;
+                }
+                let loader = new Loader_1.default().loading();
+                SuperAgent.post('/ssh/u2f/sign').send({
+                    token: this.state.secondary.token,
+                    response: resp
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    if (err) {
+                        Alert.errorRes(res, 'Failed to complete device sign');
+                        return;
+                    }
+                    if (res.status === 201) {
+                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                push: true,
+                                phone: true,
+                                passcode: true,
+                                sms: true
+                            }, disabled: false }));
+                        return;
+                    }
+                    this.setState(Object.assign({}, this.state, { secondary: null }));
+                    StateActions.setSshToken(null);
+                    Alert.success('Successfully approved SSH key', 0);
+                });
+            };
+            this.state = {
+                disabled: false,
+                passcode: '',
+                secondary: null,
+                secondaryState: null
+            };
+        }
+        deviceSign(token) {
+            let loader = new Loader_1.default().loading();
+            SuperAgent.get('/ssh/u2f/sign').query({
+                token: token
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (err) {
+                    Alert.errorRes(res, 'Failed to request device sign');
+                    return;
+                }
+                this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
+                window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
+            });
+        }
+        device() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Insert your security key and tap the button")));
+        }
+        secondarySubmit(factor) {
+            let passcode = '';
+            if (factor === 'passcode') {
+                passcode = this.state.passcode;
+            }
+            SuperAgent.put('/ssh/secondary').send({
+                token: this.state.secondary.token,
+                factor: factor,
+                passcode: passcode
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
+                if (res && res.status === 404) {
+                    Alert.error('SSH verification request has expired', 0);
+                } else if (err) {
+                    Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                    return;
+                } else if (res.status === 206 && factor === 'sms') {
+                    Alert.info('Text message sent', 0);
+                    return;
+                } else {
+                    Alert.success('Successfully approved SSH key', 0);
+                }
+                this.setState(Object.assign({}, this.state, { secondary: null }));
+                StateActions.setSshToken(null);
+            });
+        }
+        secondary() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Secondary authentication required")), React.createElement("div", { className: "layout vertical center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.push, disabled: !this.state.secondaryState.push, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { push: false }) }));
+                    this.secondarySubmit('push');
+                } }, "Push"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.phone, disabled: !this.state.secondaryState.phone, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { phone: false }) }));
+                    this.secondarySubmit('phone');
+                } }, "Call Me"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.sms, disabled: !this.state.secondaryState.sms, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { sms: false }) }));
+                    this.secondarySubmit('sms');
+                } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
+                }, onKeyPress: evt => {
+                    if (evt.key === 'Enter') {
+                        this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                        this.secondarySubmit('passcode');
+                    }
+                } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
+                    this.secondarySubmit('passcode');
+                } }, "Submit")));
+        }
+        render() {
+            if (this.state.secondary) {
+                if (this.state.secondary.device) {
+                    return this.device();
+                }
+                return this.secondary();
+            }
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        if (res && res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
+                        } else if (err) {
+                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
+                        } else if (res.status === 201) {
+                            this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                    push: true,
+                                    phone: true,
+                                    passcode: true,
+                                    sms: true
+                                }, disabled: false }));
+                            if (res.body.device) {
+                                this.deviceSign(res.body.token);
+                            }
+                            return;
+                        } else {
+                            Alert.success('Successfully approved SSH key', 0);
+                        }
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        StateActions.setSshToken(null);
+                    });
+                } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
+                    this.setState(Object.assign({}, this.state, { disabled: true }));
+                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                        if (res.status === 404) {
+                            Alert.error('SSH verification request has expired', 0);
+                        } else if (err) {
+                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
+                            return;
+                        } else {
+                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
+                        }
+                        StateActions.setSshToken(null);
+                    });
+                } }, "Deny")));
+        }
+    }
+    exports.default = Validate;
+    
+});
+System.registerDynamic("uapp/stores/DevicesStore.js", ["uapp/dispatcher/Dispatcher.js", "uapp/EventEmitter.js", "uapp/types/DeviceTypes.js", "uapp/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("uapp/EventEmitter.js");
+    const DeviceTypes = $__require("uapp/types/DeviceTypes.js");
+    const GlobalTypes = $__require("uapp/types/GlobalTypes.js");
+    class DevicesStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._devices = Object.freeze([]);
+            this._map = {};
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get devices() {
+            return this._devices;
+        }
+        get devicesM() {
+            let devices = [];
+            this._devices.forEach(device => {
+                devices.push(Object.assign({}, device));
+            });
+            return devices;
+        }
+        device(id) {
+            let i = this._map[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._devices[i];
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _sync(devices) {
+            this._map = {};
+            for (let i = 0; i < devices.length; i++) {
+                devices[i] = Object.freeze(devices[i]);
+                this._map[devices[i].id] = i;
+            }
+            this._devices = Object.freeze(devices);
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case DeviceTypes.SYNC:
+                    this._sync(action.data.devices);
+                    break;
+            }
+        }
+    }
+    exports.default = new DevicesStore();
+    
+});
 System.registerDynamic('npm:events@3.0.0/events.js', [], true, function ($__require, exports, module) {
   // Copyright Joyent, Inc. and other Node contributors.
   //
@@ -548,7 +849,7 @@ System.registerDynamic("uapp/types/GlobalTypes.js", [], true, function ($__requi
   exports.CHANGE = 'change';
   
 });
-System.registerDynamic("uapp/stores/DevicesStore.js", ["uapp/dispatcher/Dispatcher.js", "uapp/EventEmitter.js", "uapp/types/DeviceTypes.js", "uapp/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/stores/StateStore.js", ["uapp/dispatcher/Dispatcher.js", "uapp/EventEmitter.js", "uapp/types/StateTypes.js", "uapp/types/GlobalTypes.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -556,31 +857,18 @@ System.registerDynamic("uapp/stores/DevicesStore.js", ["uapp/dispatcher/Dispatch
     Object.defineProperty(exports, "__esModule", { value: true });
     const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
     const EventEmitter_1 = $__require("uapp/EventEmitter.js");
-    const DeviceTypes = $__require("uapp/types/DeviceTypes.js");
+    const StateTypes = $__require("uapp/types/StateTypes.js");
     const GlobalTypes = $__require("uapp/types/GlobalTypes.js");
-    class DevicesStore extends EventEmitter_1.default {
+    class StateStore extends EventEmitter_1.default {
         constructor() {
             super(...arguments);
-            this._devices = Object.freeze([]);
-            this._map = {};
             this._token = Dispatcher_1.default.register(this._callback.bind(this));
         }
-        get devices() {
-            return this._devices;
+        get sshToken() {
+            return this._sshToken;
         }
-        get devicesM() {
-            let devices = [];
-            this._devices.forEach(device => {
-                devices.push(Object.assign({}, device));
-            });
-            return devices;
-        }
-        device(id) {
-            let i = this._map[id];
-            if (i === undefined) {
-                return null;
-            }
-            return this._devices[i];
+        get sshDevice() {
+            return this._sshDevice;
         }
         emitChange() {
             this.emitDefer(GlobalTypes.CHANGE);
@@ -591,24 +879,60 @@ System.registerDynamic("uapp/stores/DevicesStore.js", ["uapp/dispatcher/Dispatch
         removeChangeListener(callback) {
             this.removeListener(GlobalTypes.CHANGE, callback);
         }
-        _sync(devices) {
-            this._map = {};
-            for (let i = 0; i < devices.length; i++) {
-                devices[i] = Object.freeze(devices[i]);
-                this._map[devices[i].id] = i;
-            }
-            this._devices = Object.freeze(devices);
-            this.emitChange();
-        }
         _callback(action) {
             switch (action.type) {
-                case DeviceTypes.SYNC:
-                    this._sync(action.data.devices);
+                case StateTypes.SSH_TOKEN:
+                    this._sshToken = action.data;
+                    this.emitChange();
+                    break;
+                case StateTypes.SSH_DEVICE:
+                    this._sshDevice = action.data;
+                    this.emitChange();
                     break;
             }
         }
     }
-    exports.default = new DevicesStore();
+    exports.default = new StateStore();
+    
+});
+System.registerDynamic("uapp/types/StateTypes.js", [], true, function ($__require, exports, module) {
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.SSH_TOKEN = 'state.ssh_token';
+  exports.SSH_DEVICE = 'state.ssh_device';
+  
+});
+System.registerDynamic("uapp/actions/StateActions.js", ["uapp/dispatcher/Dispatcher.js", "uapp/types/StateTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("uapp/dispatcher/Dispatcher.js");
+    const StateTypes = $__require("uapp/types/StateTypes.js");
+    function setSshToken(sshToken) {
+        if (sshToken === null) {
+            window.history.replaceState(null, null, window.location.pathname);
+        }
+        Dispatcher_1.default.dispatch({
+            type: StateTypes.SSH_TOKEN,
+            data: sshToken
+        });
+    }
+    exports.setSshToken = setSshToken;
+    function setSshDevice(sshDevice) {
+        if (sshDevice === null) {
+            window.history.replaceState(null, null, window.location.pathname);
+        }
+        Dispatcher_1.default.dispatch({
+            type: StateTypes.SSH_DEVICE,
+            data: sshDevice
+        });
+    }
+    exports.setSshDevice = setSshDevice;
     
 });
 System.registerDynamic("uapp/dispatcher/EventDispatcher.js", ["npm:flux@3.1.3.js"], true, function ($__require, exports, module) {
@@ -934,13 +1258,31 @@ System.registerDynamic("uapp/components/Device.js", ["npm:react@16.4.1.js", "npm
         }
         render() {
             let device = this.state.device || this.props.device;
+            let deviceType = 'Unknown';
+            switch (device.type) {
+                case 'u2f':
+                    deviceType = 'U2F';
+                    break;
+                case 'smart_card':
+                    deviceType = 'Smart Card';
+                    break;
+            }
+            let deviceMode = 'Unknown';
+            switch (device.mode) {
+                case 'secondary':
+                    deviceMode = 'Secondary';
+                    break;
+                case 'ssh':
+                    deviceMode = 'SSH';
+                    break;
+            }
             return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal" }, React.createElement(Blueprint.Icon, { icon: "id-number", iconSize: 20, style: css.icon }), React.createElement("div", { className: "pt-input-group flex", style: css.group }, React.createElement("input", { className: "pt-input", type: "text", placeholder: "Device name", value: device.name, onChange: evt => {
                     this.set('name', evt.target.value);
                 }, onKeyPress: evt => {
                     if (evt.key === 'Enter') {
                         this.onSave();
                     }
-                } }), React.createElement("button", { className: "pt-button pt-minimal pt-intent-primary pt-icon-tick", hidden: !this.state.device, disabled: this.state.disabled, onClick: this.onSave })), React.createElement("div", null, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm device remove", disabled: this.state.disabled, onConfirm: this.onDelete }))), React.createElement("div", { className: "layout vertical", style: css.info }, React.createElement("div", { style: css.item }, "ID: ", React.createElement("span", { className: "pt-text-muted" }, device.id)), React.createElement("div", { style: css.item }, "Registered: ", React.createElement("span", { className: "pt-text-muted" }, MiscUtils.formatDateMid(device.timestamp))), React.createElement("div", { style: css.item }, "Last Active: ", React.createElement("span", { className: "pt-text-muted" }, MiscUtils.formatDateMid(device.last_active)))));
+                } }), React.createElement("button", { className: "pt-button pt-minimal pt-intent-primary pt-icon-tick", hidden: !this.state.device, disabled: this.state.disabled, onClick: this.onSave })), React.createElement("div", null, React.createElement(ConfirmButton_1.default, { className: "pt-minimal pt-intent-danger pt-icon-trash", progressClassName: "pt-intent-danger", confirmMsg: "Confirm device remove", disabled: this.state.disabled, onConfirm: this.onDelete }))), React.createElement("div", { className: "layout vertical", style: css.info }, React.createElement("div", { style: css.item }, "ID: ", React.createElement("span", { className: "pt-text-muted" }, device.id)), React.createElement("div", { style: css.item }, "Type: ", React.createElement("span", { className: "pt-text-muted" }, deviceType)), React.createElement("div", { style: css.item }, "Mode: ", React.createElement("span", { className: "pt-text-muted" }, deviceMode)), React.createElement("div", { style: css.item }, "Registered: ", React.createElement("span", { className: "pt-text-muted" }, MiscUtils.formatDateMid(device.timestamp))), React.createElement("div", { style: css.item }, "Last Active: ", React.createElement("span", { className: "pt-text-muted" }, MiscUtils.formatDateMid(device.last_active)))));
         }
     }
     exports.default = Device;
@@ -1932,337 +2274,6 @@ System.registerDynamic("uapp/Constants.js", ["npm:mobile-detect@1.4.2.js"], true
   exports.loadDelay = 700;
   
 });
-System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "npm:@blueprintjs/core@2.3.1.js", "npm:superagent@3.8.3.js", "uapp/stores/DevicesStore.js", "uapp/actions/DeviceActions.js", "uapp/Alert.js", "uapp/Csrf.js", "uapp/components/Device.js", "uapp/Constants.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const React = $__require("npm:react@16.4.1.js");
-    const Blueprint = $__require("npm:@blueprintjs/core@2.3.1.js");
-    const SuperAgent = $__require("npm:superagent@3.8.3.js");
-    const DevicesStore_1 = $__require("uapp/stores/DevicesStore.js");
-    const DeviceActions = $__require("uapp/actions/DeviceActions.js");
-    const Alert = $__require("uapp/Alert.js");
-    const Csrf = $__require("uapp/Csrf.js");
-    const Device_1 = $__require("uapp/components/Device.js");
-    const Constants = $__require("uapp/Constants.js");
-    const Loader_1 = $__require("uapp/Loader.js");
-    const css = {
-        body: {
-            padding: 0
-        },
-        description: {
-            opacity: 0.7,
-            padding: '0 10px'
-        },
-        buttons: {
-            marginTop: '15px'
-        },
-        button: {
-            margin: '5px',
-            width: '116px'
-        },
-        secondaryButton: {
-            margin: '5px auto',
-            padding: '8px 15px',
-            width: '75%'
-        },
-        secondaryInput: {
-            margin: '5px auto',
-            width: '75%'
-        },
-        state: {
-            marginBottom: '5px'
-        },
-        stateIcon: {
-            marginBottom: '10px'
-        },
-        title: {
-            textAlign: 'center'
-        },
-        group: {
-            width: '100%'
-        },
-        input: {
-            width: '100%'
-        },
-        inputBox: {
-            flex: '1'
-        },
-        close: {
-            position: 'absolute',
-            top: '7px',
-            right: '7px',
-            width: '36px'
-        }
-    };
-    const u2fErrorCodes = {
-        0: 'ok',
-        1: 'other',
-        2: 'bad request',
-        3: 'configuration unsupported',
-        4: 'device ineligible',
-        5: 'timed out'
-    };
-    class Devices extends React.Component {
-        constructor(props, context) {
-            super(props, context);
-            this.onChange = () => {
-                this.setState(Object.assign({}, this.state, { devices: DevicesStore_1.default.devices }));
-            };
-            this.u2fRegistered = resp => {
-                Alert.dismiss(this.alertKey);
-                if (resp.errorCode) {
-                    let errorMsg = 'U2F error code ' + resp.errorCode;
-                    let u2fMsg = u2fErrorCodes[resp.errorCode];
-                    if (u2fMsg) {
-                        errorMsg += ': ' + u2fMsg;
-                    }
-                    Alert.error(errorMsg);
-                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: null }));
-                    return;
-                }
-                let loader = new Loader_1.default().loading();
-                SuperAgent.post('/device/u2f/register').send({
-                    token: this.state.register.token,
-                    name: this.state.deviceName,
-                    response: resp
-                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                    loader.done();
-                    this.setState(Object.assign({}, this.state, { disabled: false, deviceName: '', secondary: null, register: null }));
-                    if (err) {
-                        Alert.errorRes(res, 'Failed to register device');
-                        return;
-                    }
-                    DeviceActions.sync();
-                    this.alertKey = Alert.success('Successfully registered device');
-                });
-            };
-            this.registerSign = () => {
-                this.setState({
-                    disabled: true
-                });
-                this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
-                window.u2f.register(this.state.register.request.appId, this.state.register.request.registerRequests, this.state.register.request.registeredKeys, this.u2fRegistered, 30);
-            };
-            this.u2fSigned = resp => {
-                Alert.dismiss(this.alertKey);
-                if (resp.errorCode) {
-                    let errorMsg = 'U2F error code ' + resp.errorCode;
-                    let u2fMsg = u2fErrorCodes[resp.errorCode];
-                    if (u2fMsg) {
-                        errorMsg += ': ' + u2fMsg;
-                    }
-                    Alert.error(errorMsg);
-                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: false }));
-                    return;
-                }
-                let loader = new Loader_1.default().loading();
-                SuperAgent.post('/device/u2f/sign').send({
-                    token: this.state.secondary.token,
-                    response: resp
-                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                    loader.done();
-                    if (err) {
-                        Alert.errorRes(res, 'Failed to complete device sign');
-                        return;
-                    }
-                    if (res.status === 201) {
-                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
-                                push: true,
-                                phone: true,
-                                passcode: true,
-                                sms: true
-                            }, disabled: false }));
-                        return;
-                    }
-                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
-                });
-            };
-            this.deviceSign = () => {
-                let loader = new Loader_1.default().loading();
-                this.setState(Object.assign({}, this.state, { disabled: true }));
-                SuperAgent.get('/device/u2f/sign').query({
-                    token: this.state.secondary.token
-                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                    loader.done();
-                    if (err) {
-                        Alert.errorRes(res, 'Failed to request device sign');
-                        return;
-                    }
-                    this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
-                    window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
-                });
-            };
-            this.onRegister = () => {
-                this.setState(Object.assign({}, this.state, { disabled: true }));
-                Alert.dismiss(this.alertKey);
-                let loader = new Loader_1.default().loading();
-                SuperAgent.get('/device/u2f/register').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                    loader.done();
-                    if (err) {
-                        Alert.errorRes(res, 'Failed to request device registration');
-                        return;
-                    }
-                    if (res.status === 201) {
-                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
-                                push: true,
-                                phone: true,
-                                passcode: true,
-                                sms: true
-                            }, disabled: false }));
-                        return;
-                    }
-                    this.setState(Object.assign({}, this.state, { register: res.body, disabled: false }));
-                });
-            };
-            this.state = {
-                devices: DevicesStore_1.default.devices,
-                deviceName: '',
-                disabled: false,
-                initialized: false,
-                passcode: '',
-                secondary: null,
-                secondaryState: null,
-                register: null
-            };
-        }
-        componentDidMount() {
-            DevicesStore_1.default.addChangeListener(this.onChange);
-            DeviceActions.sync();
-            this.timeout = window.setTimeout(() => {
-                this.setState(Object.assign({}, this.state, { initialized: true }));
-            }, Constants.loadDelay);
-        }
-        componentWillUnmount() {
-            DevicesStore_1.default.removeChangeListener(this.onChange);
-            if (this.timeout) {
-                window.clearTimeout(this.timeout);
-            }
-        }
-        register() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Register U2F Device"), React.createElement("span", { style: css.description }, "Enter a name for your new security device."), React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: "text", placeholder: "Device name", value: this.state.deviceName, onChange: evt => {
-                    this.setState(Object.assign({}, this.state, { deviceName: evt.target.value }));
-                }, onKeyPress: evt => {
-                    if (evt.key === 'Enter') {
-                        this.registerSign();
-                    }
-                } })), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.registerSign }, "Add Device")))));
-        }
-        device() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "A current security device is required to add new devices"), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-id-number", disabled: this.state.disabled, onClick: this.deviceSign }, "Authenticate")));
-        }
-        secondarySubmit(factor) {
-            let passcode = '';
-            if (factor === 'passcode') {
-                passcode = this.state.passcode;
-            }
-            SuperAgent.put('/device/u2f/secondary').send({
-                token: this.state.secondary.token,
-                factor: factor,
-                passcode: passcode
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
-                if (res && res.status === 404) {
-                    Alert.error('Device registration request has expired', 0);
-                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: null }));
-                } else if (err) {
-                    Alert.errorRes(res, 'Failed to register device', 0);
-                } else if (res.status === 206 && factor === 'sms') {
-                    Alert.info('Text message sent', 0);
-                } else {
-                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
-                }
-            });
-        }
-        secondary() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Secondary authentication required")), React.createElement("div", { className: "layout vertical center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.push, disabled: !this.state.secondaryState.push, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { push: false }) }));
-                    this.secondarySubmit('push');
-                } }, "Push"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.phone, disabled: !this.state.secondaryState.phone, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { phone: false }) }));
-                    this.secondarySubmit('phone');
-                } }, "Call Me"), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.sms, disabled: !this.state.secondaryState.sms, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { sms: false }) }));
-                    this.secondarySubmit('sms');
-                } }, "Text Me"), React.createElement("input", { className: "pt-input", style: css.secondaryInput, hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Passcode", value: this.state.passcode || '', onChange: evt => {
-                    this.setState(Object.assign({}, this.state, { passcode: evt.target.value }));
-                }, onKeyPress: evt => {
-                    if (evt.key === 'Enter') {
-                        this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
-                        this.secondarySubmit('passcode');
-                    }
-                } }), React.createElement("button", { className: "pt-button", style: css.secondaryButton, type: "button", hidden: !this.state.secondary.passcode, disabled: !this.state.secondaryState.passcode, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { secondaryState: Object.assign({}, this.state.secondaryState, { passcode: false }) }));
-                    this.secondarySubmit('passcode');
-                } }, "Submit")));
-        }
-        render() {
-            if (this.state.register) {
-                return this.register();
-            } else if (this.state.secondary) {
-                if (this.state.secondary.device) {
-                    return this.device();
-                } else {
-                    return this.secondary();
-                }
-            }
-            let devicesDom = [];
-            this.state.devices.forEach(device => {
-                devicesDom.push(React.createElement(Device_1.default, { key: device.id, device: device }));
-            });
-            return React.createElement("div", null, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger", style: css.close, onClick: this.props.onClose }, React.createElement(Blueprint.Icon, { icon: "cross", iconSize: 26 })), React.createElement("h4", { style: css.title }, "U2F Devices"), React.createElement("div", { className: "layout vertical center-justified wrap", style: css.buttons }, devicesDom, React.createElement("div", { className: "pt-non-ideal-state", style: css.state, hidden: !!devicesDom.length || !this.state.initialized }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon", style: css.stateIcon }, React.createElement(Blueprint.Icon, { icon: "id-number", iconSize: 80 })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No devices registered")), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.onRegister }, "Add Device")));
-        }
-    }
-    exports.default = Devices;
-    
-});
-System.registerDynamic("uapp/components/Session.js", ["npm:react@16.4.1.js", "uapp/components/Devices.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const React = $__require("npm:react@16.4.1.js");
-    const Devices_1 = $__require("uapp/components/Devices.js");
-    const css = {
-        body: {
-            padding: 0
-        },
-        description: {
-            opacity: 0.7,
-            padding: '0 10px'
-        },
-        buttons: {
-            marginTop: '15px'
-        },
-        button: {
-            margin: '5px',
-            width: '182px'
-        }
-    };
-    class Session extends React.Component {
-        constructor(props, context) {
-            super(props, context);
-            this.state = {
-                devicesOpen: false
-            };
-        }
-        render() {
-            if (this.state.devicesOpen) {
-                return React.createElement(Devices_1.default, { onClose: () => {
-                        this.setState(Object.assign({}, this.state, { devicesOpen: false }));
-                    } });
-            }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Pritunl Zero User Console"), React.createElement("span", { style: css.description }, "To validate an SSH key install the client and run \"pritunl-ssh\"")), React.createElement("div", { className: "layout horizontal center-justified wrap", style: css.buttons }, React.createElement("a", { className: "pt-button pt-large pt-intent-primary pt-icon-download", style: css.button, href: "https://docs.pritunl.com/v1/docs/ssh-client" }, "Install SSH Client"), React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-id-number", style: css.button, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { devicesOpen: true }));
-                } }, "U2F Devices"), React.createElement("a", { className: "pt-button pt-large pt-intent-warning pt-icon-delete", style: css.button, href: "/logout" }, "Logout"), React.createElement("a", { className: "pt-button pt-large pt-intent-danger pt-icon-trash", style: css.button, href: "/logout_all" }, "End All Sessions")));
-        }
-    }
-    exports.default = Session;
-    
-});
 System.registerDynamic('npm:flux@3.1.3/lib/Dispatcher.js', ['npm:fbjs@0.8.17/lib/invariant.js', 'github:jspm/nodelibs-process@0.1.2.js'], true, function ($__require, exports, module) {
   var global = this || self,
       GLOBAL = global;
@@ -2712,17 +2723,23 @@ System.registerDynamic("uapp/Loader.js", ["uapp/dispatcher/Dispatcher.js", "uapp
     exports.default = Loader;
     
 });
-System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "npm:superagent@3.8.3.js", "uapp/Csrf.js", "uapp/Alert.js", "uapp/components/Session.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "npm:@blueprintjs/core@2.3.1.js", "npm:superagent@3.8.3.js", "uapp/stores/DevicesStore.js", "uapp/stores/StateStore.js", "uapp/actions/DeviceActions.js", "uapp/actions/StateActions.js", "uapp/Alert.js", "uapp/Csrf.js", "uapp/components/Device.js", "uapp/Constants.js", "uapp/Loader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@16.4.1.js");
+    const Blueprint = $__require("npm:@blueprintjs/core@2.3.1.js");
     const SuperAgent = $__require("npm:superagent@3.8.3.js");
-    const Csrf = $__require("uapp/Csrf.js");
+    const DevicesStore_1 = $__require("uapp/stores/DevicesStore.js");
+    const StateStore_1 = $__require("uapp/stores/StateStore.js");
+    const DeviceActions = $__require("uapp/actions/DeviceActions.js");
+    const StateActions = $__require("uapp/actions/StateActions.js");
     const Alert = $__require("uapp/Alert.js");
-    const Session_1 = $__require("uapp/components/Session.js");
+    const Csrf = $__require("uapp/Csrf.js");
+    const Device_1 = $__require("uapp/components/Device.js");
+    const Constants = $__require("uapp/Constants.js");
     const Loader_1 = $__require("uapp/Loader.js");
     const css = {
         body: {
@@ -2747,6 +2764,30 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
         secondaryInput: {
             margin: '5px auto',
             width: '75%'
+        },
+        state: {
+            marginBottom: '5px'
+        },
+        stateIcon: {
+            marginBottom: '10px'
+        },
+        title: {
+            textAlign: 'center'
+        },
+        group: {
+            width: '100%'
+        },
+        input: {
+            width: '100%'
+        },
+        inputBox: {
+            flex: '1'
+        },
+        close: {
+            position: 'absolute',
+            top: '7px',
+            right: '7px',
+            width: '36px'
         }
     };
     const u2fErrorCodes = {
@@ -2757,9 +2798,71 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
         4: 'device ineligible',
         5: 'timed out'
     };
-    class Validate extends React.Component {
+    class Devices extends React.Component {
         constructor(props, context) {
             super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign({}, this.state, { devices: DevicesStore_1.default.devices, sshDevice: StateStore_1.default.sshDevice }));
+            };
+            this.u2fRegistered = resp => {
+                Alert.dismiss(this.alertKey);
+                if (resp.errorCode) {
+                    let errorMsg = 'U2F error code ' + resp.errorCode;
+                    let u2fMsg = u2fErrorCodes[resp.errorCode];
+                    if (u2fMsg) {
+                        errorMsg += ': ' + u2fMsg;
+                    }
+                    Alert.error(errorMsg);
+                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: null }));
+                    return;
+                }
+                let loader = new Loader_1.default().loading();
+                SuperAgent.post('/device/manage/register').send({
+                    type: 'u2f',
+                    token: this.state.register.token,
+                    name: this.state.deviceName,
+                    response: resp
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    this.setState(Object.assign({}, this.state, { disabled: false, deviceName: '', secondary: null, register: null }));
+                    if (err) {
+                        Alert.errorRes(res, 'Failed to register device');
+                        return;
+                    }
+                    DeviceActions.sync();
+                    this.alertKey = Alert.success('Successfully registered device');
+                });
+            };
+            this.smartCardRegistered = () => {
+                let loader = new Loader_1.default().loading();
+                SuperAgent.post('/device/manage/register').send({
+                    type: 'smart_card',
+                    token: this.state.register.token,
+                    name: this.state.deviceName,
+                    ssh_public_key: this.state.sshDevice
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    StateActions.setSshDevice(null);
+                    this.setState(Object.assign({}, this.state, { disabled: false, deviceName: '', secondary: null, register: null }));
+                    if (err) {
+                        Alert.errorRes(res, 'Failed to register device');
+                        return;
+                    }
+                    DeviceActions.sync();
+                    this.alertKey = Alert.success('Successfully registered device');
+                });
+            };
+            this.onRegister = () => {
+                this.setState({
+                    disabled: true
+                });
+                if (this.state.sshDevice) {
+                    this.smartCardRegistered();
+                } else {
+                    this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
+                    window.u2f.register(this.state.register.request.appId, this.state.register.request.registerRequests, this.state.register.request.registeredKeys, this.u2fRegistered, 30);
+                }
+            };
             this.u2fSigned = resp => {
                 Alert.dismiss(this.alertKey);
                 if (resp.errorCode) {
@@ -2769,10 +2872,16 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
                         errorMsg += ': ' + u2fMsg;
                     }
                     Alert.error(errorMsg);
+                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: false }));
                     return;
                 }
                 let loader = new Loader_1.default().loading();
-                SuperAgent.post('/ssh/u2f/sign').send({
+                let deviceType = 'u2f';
+                if (this.state.sshDevice) {
+                    deviceType = 'smart_card';
+                }
+                SuperAgent.post('/device/manage/sign').send({
+                    type: deviceType,
                     token: this.state.secondary.token,
                     response: resp
                 }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
@@ -2790,60 +2899,129 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
                             }, disabled: false }));
                         return;
                     }
-                    this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
-                    window.history.replaceState(null, null, window.location.pathname);
-                    Alert.success('Successfully approved SSH key', 0);
+                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
+                });
+            };
+            this.deviceSign = () => {
+                let loader = new Loader_1.default().loading();
+                this.setState(Object.assign({}, this.state, { disabled: true }));
+                SuperAgent.get('/device/manage/sign').query({
+                    token: this.state.secondary.token
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    if (err) {
+                        Alert.errorRes(res, 'Failed to request device sign');
+                        return;
+                    }
+                    this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
+                    window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
+                });
+            };
+            this.initRegister = () => {
+                this.setState(Object.assign({}, this.state, { disabled: true }));
+                Alert.dismiss(this.alertKey);
+                let loader = new Loader_1.default().loading();
+                let deviceType = 'u2f';
+                if (this.state.sshDevice) {
+                    deviceType = 'smart_card';
+                }
+                SuperAgent.get('/device/manage/register').query({
+                    type: deviceType
+                }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                    loader.done();
+                    if (err) {
+                        StateActions.setSshDevice(null);
+                        Alert.errorRes(res, 'Failed to request device registration');
+                        return;
+                    }
+                    if (res.status === 201) {
+                        this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
+                                push: true,
+                                phone: true,
+                                passcode: true,
+                                sms: true
+                            }, disabled: false }));
+                        return;
+                    }
+                    this.setState(Object.assign({}, this.state, { register: res.body, disabled: false }));
                 });
             };
             this.state = {
+                devices: DevicesStore_1.default.devices,
+                sshDevice: StateStore_1.default.sshDevice,
+                deviceName: '',
                 disabled: false,
-                answered: false,
+                initialized: false,
                 passcode: '',
                 secondary: null,
-                secondaryState: null
+                secondaryState: null,
+                register: null
             };
         }
-        deviceSign(token) {
-            let loader = new Loader_1.default().loading();
-            SuperAgent.get('/ssh/u2f/sign').query({
-                token: token
-            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                loader.done();
-                if (err) {
-                    Alert.errorRes(res, 'Failed to request device sign');
-                    return;
-                }
-                this.alertKey = Alert.info('Insert your security key and tap the button', 30000);
-                window.u2f.sign(res.body.appId, res.body.challenge, res.body.registeredKeys, this.u2fSigned, 30);
-            });
+        componentDidMount() {
+            DevicesStore_1.default.addChangeListener(this.onChange);
+            StateStore_1.default.addChangeListener(this.onChange);
+            DeviceActions.sync();
+            this.timeout = window.setTimeout(() => {
+                this.setState(Object.assign({}, this.state, { initialized: true }));
+            }, Constants.loadDelay);
+        }
+        componentWillUnmount() {
+            DevicesStore_1.default.removeChangeListener(this.onChange);
+            StateStore_1.default.addChangeListener(this.onChange);
+            if (this.timeout) {
+                window.clearTimeout(this.timeout);
+            }
+        }
+        register() {
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Register Security Device"), React.createElement("span", { style: css.description }, "Enter a name for your new security device."), React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: "text", placeholder: "Device name", value: this.state.deviceName, onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { deviceName: evt.target.value }));
+                }, onKeyPress: evt => {
+                    if (evt.key === 'Enter') {
+                        this.onRegister();
+                    }
+                } })), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.onRegister }, "Add Device")))));
         }
         device() {
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "Insert your security key and tap the button")));
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "A current security device is required to add new devices"), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-id-number", disabled: this.state.disabled, onClick: this.deviceSign }, "Authenticate")));
+        }
+        smartCard() {
+            let cardSplit = this.state.sshDevice.split('cardno:');
+            let cardSerial = 'unknown';
+            if (cardSplit.length > 1) {
+                cardSerial = cardSplit[1];
+            }
+            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-sim-card" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Register Smart Card"), React.createElement("span", { style: css.description }, "Registering Smart Card ", React.createElement("b", null, cardSerial)), React.createElement("button", { className: "pt-button pt-intent-danger pt-icon-cross", disabled: this.state.disabled, onClick: () => {
+                    StateActions.setSshDevice(null);
+                } }, "Cancel"), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-tick", disabled: this.state.disabled, onClick: this.initRegister }, "Continue")));
         }
         secondarySubmit(factor) {
             let passcode = '';
             if (factor === 'passcode') {
                 passcode = this.state.passcode;
             }
-            SuperAgent.put('/ssh/secondary').send({
+            let deviceType = 'u2f';
+            if (this.state.sshDevice) {
+                deviceType = 'smart_card';
+            }
+            SuperAgent.put('/device/manage/secondary').send({
+                type: deviceType,
                 token: this.state.secondary.token,
                 factor: factor,
                 passcode: passcode
             }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 this.setState(Object.assign({}, this.state, { passcode: '', secondaryState: Object.assign({}, this.state.secondaryState, { passcode: true }) }));
                 if (res && res.status === 404) {
-                    Alert.error('SSH verification request has expired', 0);
+                    StateActions.setSshDevice(null);
+                    Alert.error('Device registration request has expired', 0);
+                    this.setState(Object.assign({}, this.state, { disabled: false, secondary: null, register: null }));
                 } else if (err) {
-                    Alert.errorRes(res, 'Failed to approve SSH key', 0);
-                    return;
+                    Alert.errorRes(res, 'Failed to register device', 0);
                 } else if (res.status === 206 && factor === 'sms') {
                     Alert.info('Text message sent', 0);
-                    return;
                 } else {
-                    Alert.success('Successfully approved SSH key', 0);
+                    this.setState(Object.assign({}, this.state, { disabled: false, register: res.body }));
                 }
-                this.setState(Object.assign({}, this.state, { answered: true, secondary: null }));
-                window.history.replaceState(null, null, window.location.pathname);
             });
         }
         secondary() {
@@ -2869,71 +3047,39 @@ System.registerDynamic("uapp/components/Validate.js", ["npm:react@16.4.1.js", "n
                 } }, "Submit")));
         }
         render() {
-            if (this.state.answered) {
-                return React.createElement(Session_1.default, null);
-            }
-            if (this.state.secondary) {
+            if (this.state.register) {
+                return this.register();
+            } else if (this.state.secondary) {
                 if (this.state.secondary.device) {
                     return this.device();
+                } else {
+                    return this.secondary();
                 }
-                return this.secondary();
+            } else if (this.state.sshDevice) {
+                return this.smartCard();
             }
-            return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-endorsed" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "Validate SSH Key"), React.createElement("span", { style: css.description }, "If you did not initiate this validation deny the request and report the incident to an administrator")), React.createElement("div", { className: "layout horizontal center-justified", style: css.buttons }, React.createElement("button", { className: "pt-button pt-large pt-intent-success pt-icon-add", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.put('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                        this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res && res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
-                        } else if (err) {
-                            Alert.errorRes(res, 'Failed to approve SSH key', 0);
-                        } else if (res.status === 201) {
-                            this.setState(Object.assign({}, this.state, { secondary: res.body, secondaryState: {
-                                    push: true,
-                                    phone: true,
-                                    passcode: true,
-                                    sms: true
-                                }, disabled: false }));
-                            if (res.body.device) {
-                                this.deviceSign(res.body.token);
-                            }
-                            return;
-                        } else {
-                            Alert.success('Successfully approved SSH key', 0);
-                        }
-                        this.setState(Object.assign({}, this.state, { answered: true, disabled: false }));
-                        window.history.replaceState(null, null, window.location.pathname);
-                    });
-                } }, "Approve"), React.createElement("button", { className: "pt-button pt-large pt-intent-danger pt-icon-delete", style: css.button, type: "button", disabled: this.state.disabled, onClick: () => {
-                    this.setState(Object.assign({}, this.state, { disabled: true }));
-                    SuperAgent.delete('/ssh/validate/' + this.props.token).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                        this.setState(Object.assign({}, this.state, { disabled: false }));
-                        if (res.status === 404) {
-                            Alert.error('SSH verification request has expired', 0);
-                        } else if (err) {
-                            Alert.errorRes(res, 'Failed to deny SSH key', 0);
-                            return;
-                        } else {
-                            Alert.error('Successfully denied SSH key. Report ' + 'this incident to an administrator.', 0);
-                        }
-                        this.setState(Object.assign({}, this.state, { answered: true }));
-                        window.history.replaceState(null, null, window.location.pathname);
-                    });
-                } }, "Deny")));
+            let devicesDom = [];
+            this.state.devices.forEach(device => {
+                devicesDom.push(React.createElement(Device_1.default, { key: device.id, device: device }));
+            });
+            return React.createElement("div", null, React.createElement("button", { className: "pt-button pt-minimal pt-intent-danger", style: css.close, onClick: this.props.onClose }, React.createElement(Blueprint.Icon, { icon: "cross", iconSize: 26 })), React.createElement("h4", { style: css.title }, "Security Devices"), React.createElement("div", { className: "layout vertical center-justified wrap", style: css.buttons }, devicesDom, React.createElement("div", { className: "pt-non-ideal-state", style: css.state, hidden: !!devicesDom.length || !this.state.initialized }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon", style: css.stateIcon }, React.createElement(Blueprint.Icon, { icon: "id-number", iconSize: 80 })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, "No devices registered")), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.initRegister }, "Add U2F Device")));
         }
     }
-    exports.default = Validate;
+    exports.default = Devices;
     
 });
-System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/components/LoadingBar.js", "uapp/components/Session.js", "uapp/components/Validate.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/stores/StateStore.js", "uapp/components/LoadingBar.js", "uapp/components/Session.js", "uapp/components/Validate.js", "uapp/components/Devices.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@16.4.1.js");
+    const StateStore_1 = $__require("uapp/stores/StateStore.js");
     const LoadingBar_1 = $__require("uapp/components/LoadingBar.js");
     const Session_1 = $__require("uapp/components/Session.js");
     const Validate_1 = $__require("uapp/components/Validate.js");
+    const Devices_1 = $__require("uapp/components/Devices.js");
     const css = {
         card: {
             padding: '20px 15px',
@@ -2954,21 +3100,35 @@ System.registerDynamic("uapp/components/Main.js", ["npm:react@16.4.1.js", "uapp/
         }
     };
     class Main extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign({}, this.state, { sshToken: StateStore_1.default.sshToken, sshDevice: StateStore_1.default.sshDevice }));
+            };
+            this.state = {
+                devicesOpen: false,
+                sshToken: StateStore_1.default.sshToken,
+                sshDevice: StateStore_1.default.sshDevice
+            };
+        }
+        componentDidMount() {
+            StateStore_1.default.addChangeListener(this.onChange);
+        }
+        componentWillUnmount() {
+            StateStore_1.default.addChangeListener(this.onChange);
+        }
         render() {
-            let sshToken = '';
-            let query = window.location.search.substring(1);
-            let vals = query.split('&');
-            for (let val of vals) {
-                let keyval = val.split('=');
-                if (keyval[0] === 'ssh-token') {
-                    sshToken = keyval[1];
-                }
-            }
             let bodyElm;
-            if (sshToken) {
-                bodyElm = React.createElement(Validate_1.default, { token: sshToken });
+            if (this.state.sshToken) {
+                bodyElm = React.createElement(Validate_1.default, { token: this.state.sshToken });
+            } else if (this.state.devicesOpen || this.state.sshDevice) {
+                bodyElm = React.createElement(Devices_1.default, { onClose: () => {
+                        this.setState(Object.assign({}, this.state, { devicesOpen: false }));
+                    } });
             } else {
-                bodyElm = React.createElement(Session_1.default, null);
+                bodyElm = React.createElement(Session_1.default, { onDevices: () => {
+                        this.setState(Object.assign({}, this.state, { devicesOpen: true }));
+                    } });
             }
             return React.createElement("div", { className: "pt-card pt-elevation-2", style: css.card }, React.createElement(LoadingBar_1.default, { style: css.loading, intent: "primary" }), bodyElm);
         }
@@ -36808,7 +36968,7 @@ System.registerDynamic("uapp/Csrf.js", ["npm:superagent@3.8.3.js"], true, functi
     exports.load = load;
     
 });
-System.registerDynamic("uapp/App.js", ["npm:react@16.4.1.js", "npm:react-dom@16.4.1.js", "npm:@blueprintjs/core@2.3.1.js", "uapp/components/Main.js", "uapp/Alert.js", "uapp/Csrf.js"], true, function ($__require, exports, module) {
+System.registerDynamic("uapp/App.js", ["npm:react@16.4.1.js", "npm:react-dom@16.4.1.js", "npm:@blueprintjs/core@2.3.1.js", "uapp/actions/StateActions.js", "uapp/components/Main.js", "uapp/Alert.js", "uapp/Csrf.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -36817,6 +36977,7 @@ System.registerDynamic("uapp/App.js", ["npm:react@16.4.1.js", "npm:react-dom@16.
     const React = $__require("npm:react@16.4.1.js");
     const ReactDOM = $__require("npm:react-dom@16.4.1.js");
     const Blueprint = $__require("npm:@blueprintjs/core@2.3.1.js");
+    const StateActions = $__require("uapp/actions/StateActions.js");
     const Main_1 = $__require("uapp/components/Main.js");
     const Alert = $__require("uapp/Alert.js");
     const Csrf = $__require("uapp/Csrf.js");
@@ -36824,6 +36985,16 @@ System.registerDynamic("uapp/App.js", ["npm:react@16.4.1.js", "npm:react-dom@16.
     Csrf.load().then(() => {
         Blueprint.FocusStyleManager.onlyShowFocusOnTabs();
         Alert.init();
+        let query = window.location.search.substring(1);
+        let vals = query.split('&');
+        for (let val of vals) {
+            let keyval = val.split('=');
+            if (keyval[0] === 'ssh-token') {
+                StateActions.setSshToken(keyval[1]);
+            } else if (keyval[0] === 'device') {
+                StateActions.setSshDevice(keyval[1]);
+            }
+        }
         ReactDOM.render(React.createElement("div", null, React.createElement(Main_1.default, null)), document.getElementById('app'));
     });
     

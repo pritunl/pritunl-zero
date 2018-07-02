@@ -4767,6 +4767,31 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.4.1.js", "app/
         }
         render() {
             let device = this.state.device || this.props.device;
+            let deviceType = 'Unknown';
+            switch (device.type) {
+                case 'u2f':
+                    deviceType = 'U2F';
+                    break;
+                case 'smart_card':
+                    deviceType = 'Smart Card';
+                    break;
+            }
+            let deviceMode = 'Unknown';
+            switch (device.mode) {
+                case 'secondary':
+                    deviceMode = 'Secondary';
+                    break;
+                case 'ssh':
+                    deviceMode = 'SSH';
+                    break;
+            }
+            let deviceSshKey;
+            if (device.type === 'smart_card') {
+                deviceSshKey = {
+                    label: 'SSH Public Key',
+                    value: device.ssh_public_key
+                };
+            }
             let cardStyle = Object.assign({}, css.card);
             if (device.disabled) {
                 cardStyle.opacity = 0.6;
@@ -4780,12 +4805,18 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.4.1.js", "app/
                 } }), React.createElement("button", { className: "pt-button pt-minimal pt-intent-primary pt-icon-tick", hidden: !this.state.device, disabled: this.state.disabled, onClick: this.onSave })), React.createElement(PageInfo_1.default, { style: css.info, fields: [{
                     label: 'ID',
                     value: device.id || 'None'
-                }] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
+                }, {
+                    label: 'Type',
+                    value: deviceType
+                }, deviceSshKey] })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { style: css.info, fields: [{
                     label: 'Registered',
                     value: MiscUtils.formatDate(device.timestamp) || 'Unknown'
                 }, {
                     label: 'Last Active',
                     value: MiscUtils.formatDate(device.last_active) || 'Unknown'
+                }, {
+                    label: 'Mode',
+                    value: deviceMode
                 }] }))));
         }
     }
@@ -4820,12 +4851,9 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
             margin: '15px 0 -5px 0'
         },
         group: {
-            marginTop: '18px',
-            width: '100%'
+            marginTop: '18px'
         },
-        input: {
-            width: '100%'
-        },
+        groupBox: {},
         inputBox: {
             flex: '1'
         }
@@ -4883,9 +4911,32 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
                     window.u2f.register(res.body.request.appId, res.body.request.registerRequests, res.body.request.registeredKeys, this.u2fRegistered, 30);
                 });
             };
+            this.addDevice = () => {
+                if (this.state.deviceType === 'smart_card') {
+                    this.setState({
+                        disabled: true
+                    });
+                    DeviceActions.create({
+                        id: null,
+                        user: this.props.userId,
+                        name: this.state.deviceName,
+                        type: this.state.deviceType,
+                        ssh_public_key: this.state.devicePubKey
+                    }).then(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false, deviceName: '', devicePubKey: '' }));
+                        Alert.success('Successfully registered device');
+                    }).catch(() => {
+                        this.setState(Object.assign({}, this.state, { disabled: false }));
+                    });
+                } else {
+                    this.registerSign();
+                }
+            };
             this.state = {
                 devices: DevicesStore_1.default.devices,
                 deviceName: '',
+                deviceType: '',
+                devicePubKey: '',
                 showEnded: false,
                 disabled: false
             };
@@ -4907,13 +4958,21 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
             this.state.devices.forEach(device => {
                 devices.push(React.createElement(Device_1.default, { key: device.id, device: device }));
             });
-            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User U2F Devices"), React.createElement("div", { className: "flex" }), React.createElement("div", null, React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { style: css.inputBox }, React.createElement("input", { className: "pt-input", style: css.input, type: "text", placeholder: "Device name", value: this.state.deviceName, onChange: evt => {
+            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Securtiy Devices"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.groupBox, className: "layout horizontal" }, React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { className: "pt-select" }, React.createElement("select", { value: this.state.deviceType, onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { deviceType: evt.target.value, devicePubKey: '' }));
+                } }, React.createElement("option", { value: "u2f" }, "U2F"), React.createElement("option", { value: "smart_card" }, "Smart Card"))), React.createElement("div", { className: "layout horizontal", style: css.inputBox }, React.createElement("input", { className: "pt-input", type: "text", placeholder: "Device name", value: this.state.deviceName, onChange: evt => {
                     this.setState(Object.assign({}, this.state, { deviceName: evt.target.value }));
                 }, onKeyPress: evt => {
-                    if (evt.key === 'Enter') {
-                        this.registerSign();
+                    if (this.state.deviceType !== 'smart_card' && evt.key === 'Enter') {
+                        this.addDevice();
                     }
-                } })), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.registerSign }, "Add Device")))))), React.createElement("div", null, devices), React.createElement(NonState_1.default, { hidden: !!devices.length, iconClass: "pt-icon-id-number", title: "No devices" }));
+                } }), React.createElement("input", { className: "pt-input", hidden: this.state.deviceType !== 'smart_card', type: "text", placeholder: "Device SSH public key", value: this.state.devicePubKey, onChange: evt => {
+                    this.setState(Object.assign({}, this.state, { devicePubKey: evt.target.value }));
+                }, onKeyPress: evt => {
+                    if (evt.key === 'Enter') {
+                        this.addDevice();
+                    }
+                } })), React.createElement("div", null, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", disabled: this.state.disabled, onClick: this.addDevice }, "Add Device")))))), React.createElement("div", null, devices), React.createElement(NonState_1.default, { hidden: !!devices.length, iconClass: "pt-icon-id-number", title: "No devices" }));
         }
     }
     exports.default = Devices;
@@ -11650,6 +11709,8 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@16.4.1.js", "app/
                     this.set('proxy_device_secondary', !policy.proxy_device_secondary);
                 } }), React.createElement(PageSwitch_1.default, { label: "Authority U2F device authentication", help: "Require users retrieving SSH certificates from an authority to use U2F device authentication.", checked: policy.authority_device_secondary, onToggle: () => {
                     this.set('authority_device_secondary', !policy.authority_device_secondary);
+                } }), React.createElement(PageSwitch_1.default, { label: "Authority require Smart Card", help: "Require users retrieving SSH certificates to use a Smart Card.", checked: policy.authority_require_smart_card, onToggle: () => {
+                    this.set('authority_require_smart_card', !policy.authority_require_smart_card);
                 } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.policy, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign({}, this.state, { changed: false, policy: null }));
                 }, onSave: this.onSave }));
@@ -14551,6 +14612,9 @@ System.registerDynamic("app/components/PageInfo.js", ["npm:react@16.4.1.js"], tr
             let fields = [];
             let bars = [];
             for (let field of this.props.fields || []) {
+                if (field == null) {
+                    continue;
+                }
                 let value;
                 if (typeof field.value === 'string') {
                     value = field.value;
@@ -16904,10 +16968,30 @@ System.registerDynamic("app/actions/DeviceActions.js", ["npm:superagent@3.8.3.js
         return load(DevicesStore_1.default.userId);
     }
     exports.reload = reload;
+    function create(device) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.post('/device').send(device).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to create device');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.create = create;
     function commit(device) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.put('/device/' + device.id).send(device).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.put('/device/' + device.user + '/' + device.id).send(device).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
                 if (res && res.status === 401) {
                     window.location.href = '/login';
