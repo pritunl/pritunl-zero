@@ -424,7 +424,10 @@ func addIndexes() (err error) {
 
 	coll = db.Devices()
 	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"user"},
+		Key: []string{
+			"user",
+			"mode",
+		},
 		Background: true,
 	})
 	if err != nil {
