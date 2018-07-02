@@ -1,9 +1,8 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import Devices from './Devices';
 
-interface State {
-	devicesOpen: boolean;
+interface Props {
+	onDevices: () => void;
 }
 
 const css = {
@@ -23,26 +22,8 @@ const css = {
 	} as React.CSSProperties,
 };
 
-export default class Session extends React.Component<{}, State> {
-	constructor(props: any, context: any) {
-		super(props, context);
-		this.state = {
-			devicesOpen: false,
-		};
-	}
-
+export default class Session extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		if (this.state.devicesOpen) {
-			return <Devices
-				onClose={(): void => {
-					this.setState({
-						...this.state,
-						devicesOpen: false,
-					});
-				}}
-			/>;
-		}
-
 		return <div>
 			<div className="pt-non-ideal-state" style={css.body}>
 				<h4 className="pt-non-ideal-state-title">
@@ -66,14 +47,9 @@ export default class Session extends React.Component<{}, State> {
 				<button
 					className="pt-button pt-large pt-intent-success pt-icon-id-number"
 					style={css.button}
-					onClick={(): void => {
-						this.setState({
-							...this.state,
-							devicesOpen: true,
-						});
-					}}
+					onClick={this.props.onDevices}
 				>
-					U2F Devices
+					Security Devices
 				</button>
 				<a
 					className="pt-button pt-large pt-intent-warning pt-icon-delete"
