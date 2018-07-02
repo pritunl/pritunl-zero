@@ -13,10 +13,14 @@ import (
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type deviceData struct {
-	Name string `json:"name"`
+	User         bson.ObjectId `json:"user"`
+	Name         string        `json:"name"`
+	Type         string        `json:"type"`
+	SshPublicKey string        `json:"ssh_public_key"`
 }
 
 func devicePut(c *gin.Context) {
@@ -63,6 +67,47 @@ func devicePut(c *gin.Context) {
 	}
 
 	err = devc.CommitFields(db, fields)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "device.change")
+
+	c.JSON(200, devc)
+}
+
+func devicePost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &deviceData{}
+
+	err := c.Bind(data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	devc := device.New(data.User, data.Type, device.Ssh)
+
+	devc.Name = data.Name
+	devc.SshPublicKey = data.SshPublicKey
+
+	errData, err := devc.Validate(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	err = devc.Insert(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
