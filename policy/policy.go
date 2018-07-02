@@ -23,20 +23,21 @@ type Rule struct {
 }
 
 type Policy struct {
-	Id                       bson.ObjectId    `bson:"_id,omitempty" json:"id"`
-	Name                     string           `bson:"name" json:"name"`
-	Services                 []bson.ObjectId  `bson:"services" json:"services"`
-	Authorities              []bson.ObjectId  `bson:"authorities" json:"authorities"`
-	Roles                    []string         `bson:"roles" json:"roles"`
-	Rules                    map[string]*Rule `bson:"rules" json:"rules"`
-	AdminSecondary           bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
-	UserSecondary            bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
-	ProxySecondary           bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
-	AuthoritySecondary       bson.ObjectId    `bson:"authority_secondary,omitempty" json:"authority_secondary"`
-	AdminDeviceSecondary     bool             `bson:"admin_device_secondary" json:"admin_device_secondary"`
-	UserDeviceSecondary      bool             `bson:"user_device_secondary" json:"user_device_secondary"`
-	ProxyDeviceSecondary     bool             `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
-	AuthorityDeviceSecondary bool             `bson:"authority_device_secondary" json:"authority_device_secondary"`
+	Id                        bson.ObjectId    `bson:"_id,omitempty" json:"id"`
+	Name                      string           `bson:"name" json:"name"`
+	Services                  []bson.ObjectId  `bson:"services" json:"services"`
+	Authorities               []bson.ObjectId  `bson:"authorities" json:"authorities"`
+	Roles                     []string         `bson:"roles" json:"roles"`
+	Rules                     map[string]*Rule `bson:"rules" json:"rules"`
+	AdminSecondary            bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
+	UserSecondary             bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
+	ProxySecondary            bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
+	AuthoritySecondary        bson.ObjectId    `bson:"authority_secondary,omitempty" json:"authority_secondary"`
+	AdminDeviceSecondary      bool             `bson:"admin_device_secondary" json:"admin_device_secondary"`
+	UserDeviceSecondary       bool             `bson:"user_device_secondary" json:"user_device_secondary"`
+	ProxyDeviceSecondary      bool             `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
+	AuthorityDeviceSecondary  bool             `bson:"authority_device_secondary" json:"authority_device_secondary"`
+	AuthorityRequireSmartCard bool             `bson:"authority_require_smart_card" json:"authority_require_smart_card"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
