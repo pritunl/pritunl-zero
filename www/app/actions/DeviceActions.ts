@@ -8,6 +8,7 @@ import Loader from '../Loader';
 import * as DeviceTypes from '../types/DeviceTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import DevicesStore from '../stores/DevicesStore';
+import * as PolicyTypes from "../types/PolicyTypes";
 
 let syncId: string;
 
@@ -63,12 +64,41 @@ export function reload(): Promise<void> {
 	return load(DevicesStore.userId);
 }
 
+export function create(device: DeviceTypes.Device): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.post('/device')
+			.send(device)
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to create device');
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
+	});
+}
+
 export function commit(device: DeviceTypes.Device): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.put('/device/' + device.id)
+			.put('/device/' + device.user + '/' + device.id)
 			.send(device)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
