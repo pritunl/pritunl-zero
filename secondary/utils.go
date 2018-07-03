@@ -5,6 +5,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
+	"math/rand"
 	"time"
 )
 
@@ -66,6 +67,8 @@ func Get(db *database.Database, token string, typ string) (
 
 	timestamp := time.Now().Add(
 		-time.Duration(settings.Auth.SecondaryExpire) * time.Second)
+
+	time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
 
 	err = coll.FindOne(&bson.M{
 		"_id":  token,
