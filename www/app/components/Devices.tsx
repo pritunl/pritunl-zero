@@ -18,7 +18,9 @@ interface Props {
 
 interface State {
 	devices: DeviceTypes.DevicesRo;
+	deviceType: string;
 	deviceName: string;
+	devicePubKey: string;
 	showEnded: boolean;
 	disabled: boolean;
 }
@@ -35,10 +37,8 @@ const css = {
 	} as React.CSSProperties,
 	group: {
 		marginTop: '18px',
-		width: '100%',
 	} as React.CSSProperties,
-	input: {
-		width: '100%',
+	groupBox: {
 	} as React.CSSProperties,
 	inputBox: {
 		flex: '1',
@@ -54,6 +54,8 @@ export default class Devices extends React.Component<Props, State> {
 		this.state = {
 			devices: DevicesStore.devices,
 			deviceName: '',
+			deviceType: '',
+			devicePubKey: '',
 			showEnded: false,
 			disabled: false,
 		};
@@ -156,6 +158,38 @@ export default class Devices extends React.Component<Props, State> {
 			});
 	}
 
+	addDevice = (): void => {
+		if (this.state.deviceType === 'smart_card') {
+			this.setState({
+				disabled: true,
+			});
+
+			DeviceActions.create({
+				id: null,
+				user: this.props.userId,
+				name: this.state.deviceName,
+				type: this.state.deviceType,
+				ssh_public_key: this.state.devicePubKey,
+			}).then((): void => {
+				this.setState({
+					...this.state,
+					disabled: false,
+					deviceName: '',
+					devicePubKey: '',
+				});
+
+				Alert.success('Successfully registered device');
+			}).catch((): void => {
+				this.setState({
+					...this.state,
+					disabled: false,
+				});
+			});
+		} else {
+			this.registerSign();
+		}
+	}
+
 	render(): JSX.Element {
 		if (!this.props.userId) {
 			return <div/>;
@@ -173,17 +207,31 @@ export default class Devices extends React.Component<Props, State> {
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
-					<h2 style={css.heading}>User U2F Devices</h2>
+					<h2 style={css.heading}>User Securtiy Devices</h2>
 					<div className="flex"/>
-					<div>
+					<div style={css.groupBox} className="layout horizontal">
 						<div
 							className="pt-control-group"
 							style={css.group}
 						>
-							<div style={css.inputBox}>
+							<div className="pt-select">
+								<select
+									value={this.state.deviceType}
+									onChange={(evt): void => {
+										this.setState({
+											...this.state,
+											deviceType: evt.target.value,
+											devicePubKey: '',
+										});
+									}}
+								>
+									<option value="u2f">U2F</option>
+									<option value="smart_card">Smart Card</option>
+								</select>
+							</div>
+							<div className="layout horizontal" style={css.inputBox}>
 								<input
 									className="pt-input"
-									style={css.input}
 									type="text"
 									placeholder="Device name"
 									value={this.state.deviceName}
@@ -194,8 +242,27 @@ export default class Devices extends React.Component<Props, State> {
 										});
 									}}
 									onKeyPress={(evt): void => {
+										if (this.state.deviceType !== 'smart_card' &&
+												evt.key === 'Enter') {
+											this.addDevice();
+										}
+									}}
+								/>
+								<input
+									className="pt-input"
+									hidden={this.state.deviceType !== 'smart_card'}
+									type="text"
+									placeholder="Device SSH public key"
+									value={this.state.devicePubKey}
+									onChange={(evt): void => {
+										this.setState({
+											...this.state,
+											devicePubKey: evt.target.value,
+										});
+									}}
+									onKeyPress={(evt): void => {
 										if (evt.key === 'Enter') {
-											this.registerSign();
+											this.addDevice();
 										}
 									}}
 								/>
@@ -204,7 +271,7 @@ export default class Devices extends React.Component<Props, State> {
 								<button
 									className="pt-button pt-intent-success pt-icon-add"
 									disabled={this.state.disabled}
-									onClick={this.registerSign}
+									onClick={this.addDevice}
 								>Add Device</button>
 							</div>
 						</div>
