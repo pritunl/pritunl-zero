@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as DeviceTypes from '../types/DeviceTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as DeviceActions from '../actions/DeviceActions';
+import * as PageInfos from './PageInfo';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import * as Alert from '../Alert';
@@ -127,6 +128,34 @@ export default class Device extends React.Component<Props, State> {
 		let device: DeviceTypes.Device = this.state.device ||
 			this.props.device;
 
+		let deviceType = 'Unknown';
+		switch (device.type) {
+			case 'u2f':
+				deviceType = 'U2F';
+				break;
+			case 'smart_card':
+				deviceType = 'Smart Card';
+				break;
+		}
+
+		let deviceMode = 'Unknown';
+		switch (device.mode) {
+			case 'secondary':
+				deviceMode = 'Secondary';
+				break;
+			case 'ssh':
+				deviceMode = 'SSH';
+				break;
+		}
+
+		let deviceSshKey: PageInfos.Field;
+		if (device.type === 'smart_card') {
+			deviceSshKey = {
+				label: 'SSH Public Key',
+				value: device.ssh_public_key,
+			};
+		}
+
 		let cardStyle = {
 			...css.card,
 		};
@@ -181,6 +210,11 @@ export default class Device extends React.Component<Props, State> {
 								label: 'ID',
 								value: device.id || 'None',
 							},
+							{
+								label: 'Type',
+								value: deviceType,
+							},
+							deviceSshKey,
 						]}
 					/>
 				</div>
@@ -195,6 +229,10 @@ export default class Device extends React.Component<Props, State> {
 							{
 								label: 'Last Active',
 								value: MiscUtils.formatDate(device.last_active) || 'Unknown',
+							},
+							{
+								label: 'Mode',
+								value: deviceMode,
 							},
 						]}
 					/>
