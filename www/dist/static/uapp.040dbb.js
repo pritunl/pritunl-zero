@@ -1259,12 +1259,15 @@ System.registerDynamic("uapp/components/Device.js", ["npm:react@16.4.1.js", "npm
         render() {
             let device = this.state.device || this.props.device;
             let deviceType = 'Unknown';
+            let deviceIcon;
             switch (device.type) {
                 case 'u2f':
                     deviceType = 'U2F';
+                    deviceIcon = React.createElement(Blueprint.Icon, { icon: "id-number", iconSize: 20, style: css.icon });
                     break;
                 case 'smart_card':
                     deviceType = 'Smart Card';
+                    deviceIcon = React.createElement(Blueprint.Icon, { icon: "sim-card", iconSize: 20, style: css.icon });
                     break;
             }
             let deviceMode = 'Unknown';
@@ -1276,7 +1279,7 @@ System.registerDynamic("uapp/components/Device.js", ["npm:react@16.4.1.js", "npm
                     deviceMode = 'SSH';
                     break;
             }
-            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal" }, React.createElement(Blueprint.Icon, { icon: "id-number", iconSize: 20, style: css.icon }), React.createElement("div", { className: "pt-input-group flex", style: css.group }, React.createElement("input", { className: "pt-input", type: "text", placeholder: "Device name", value: device.name, onChange: evt => {
+            return React.createElement("div", { className: "pt-card", style: css.card }, React.createElement("div", { className: "layout horizontal" }, deviceIcon, React.createElement("div", { className: "pt-input-group flex", style: css.group }, React.createElement("input", { className: "pt-input", type: "text", placeholder: "Device name", value: device.name, onChange: evt => {
                     this.set('name', evt.target.value);
                 }, onKeyPress: evt => {
                     if (evt.key === 'Enter') {
@@ -2986,7 +2989,13 @@ System.registerDynamic("uapp/components/Devices.js", ["npm:react@16.4.1.js", "np
             return React.createElement("div", null, React.createElement("div", { className: "pt-non-ideal-state", style: css.body }, React.createElement("div", { className: "pt-non-ideal-state-visual pt-non-ideal-state-icon" }, React.createElement("span", { className: "pt-icon pt-icon-key" })), React.createElement("h4", { className: "pt-non-ideal-state-title" }, this.state.secondary.label), React.createElement("span", { style: css.description }, "A current security device is required to add new devices"), React.createElement("button", { className: "pt-button pt-intent-success pt-icon-id-number", disabled: this.state.disabled, onClick: this.deviceSign }, "Authenticate")));
         }
         smartCard() {
-            let cardSplit = this.state.sshDevice.split('cardno:');
+            let sshDevice = this.state.sshDevice;
+            sshDevice = sshDevice.replace(/-/g, '+').replace(/_/g, '/');
+            while (sshDevice.length % 4) {
+                sshDevice += '=';
+            }
+            sshDevice = atob(sshDevice);
+            let cardSplit = sshDevice.split('cardno:');
             let cardSerial = 'unknown';
             if (cardSplit.length > 1) {
                 cardSerial = cardSplit[1];
@@ -36990,9 +36999,9 @@ System.registerDynamic("uapp/App.js", ["npm:react@16.4.1.js", "npm:react-dom@16.
         for (let val of vals) {
             let keyval = val.split('=');
             if (keyval[0] === 'ssh-token') {
-                StateActions.setSshToken(keyval[1]);
+                StateActions.setSshToken(decodeURIComponent(keyval[1]));
             } else if (keyval[0] === 'device') {
-                StateActions.setSshDevice(keyval[1]);
+                StateActions.setSshDevice(decodeURIComponent(keyval[1]));
             }
         }
         ReactDOM.render(React.createElement("div", null, React.createElement(Main_1.default, null)), document.getElementById('app'));
