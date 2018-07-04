@@ -7,10 +7,12 @@ export interface Device {
 	user?: string;
 	name?: string;
 	type?: string;
+	mode?: string;
 	timestamp?: string;
 	disabled?: boolean;
 	active_until?: string;
 	last_active?: string;
+	ssh_public_key?: string;
 }
 
 export type Devices = Device[];
