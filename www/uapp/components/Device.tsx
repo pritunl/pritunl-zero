@@ -124,12 +124,23 @@ export default class Device extends React.Component<Props, State> {
 			this.props.device;
 
 		let deviceType = 'Unknown';
+		let deviceIcon: JSX.Element;
 		switch (device.type) {
 			case 'u2f':
 				deviceType = 'U2F';
+				deviceIcon = <Blueprint.Icon
+					icon="id-number"
+					iconSize={20}
+					style={css.icon}
+				/>;
 				break;
 			case 'smart_card':
 				deviceType = 'Smart Card';
+				deviceIcon = <Blueprint.Icon
+					icon="sim-card"
+					iconSize={20}
+					style={css.icon}
+				/>;
 				break;
 		}
 
@@ -148,7 +159,7 @@ export default class Device extends React.Component<Props, State> {
 			style={css.card}
 		>
 			<div className="layout horizontal">
-				<Blueprint.Icon icon="id-number" iconSize={20} style={css.icon}/>
+				{deviceIcon}
 				<div
 					className="pt-input-group flex"
 					style={css.group}
