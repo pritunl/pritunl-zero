@@ -123,6 +123,26 @@ export default class Device extends React.Component<Props, State> {
 		let device: DeviceTypes.Device = this.state.device ||
 			this.props.device;
 
+		let deviceType = 'Unknown';
+		switch (device.type) {
+			case 'u2f':
+				deviceType = 'U2F';
+				break;
+			case 'smart_card':
+				deviceType = 'Smart Card';
+				break;
+		}
+
+		let deviceMode = 'Unknown';
+		switch (device.mode) {
+			case 'secondary':
+				deviceMode = 'Secondary';
+				break;
+			case 'ssh':
+				deviceMode = 'SSH';
+				break;
+		}
+
 		return <div
 			className="pt-card"
 			style={css.card}
@@ -168,6 +188,16 @@ export default class Device extends React.Component<Props, State> {
 				<div style={css.item}>
 					ID: <span className="pt-text-muted">
 						{device.id}
+					</span>
+				</div>
+				<div style={css.item}>
+					Type: <span className="pt-text-muted">
+						{deviceType}
+					</span>
+				</div>
+				<div style={css.item}>
+					Mode: <span className="pt-text-muted">
+						{deviceMode}
 					</span>
 				</div>
 				<div style={css.item}>
