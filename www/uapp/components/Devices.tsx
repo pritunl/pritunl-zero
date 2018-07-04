@@ -436,7 +436,14 @@ export default class Devices extends React.Component<Props, State> {
 	}
 
 	smartCard(): JSX.Element {
-		let cardSplit = this.state.sshDevice.split('cardno:');
+		let sshDevice = this.state.sshDevice;
+		sshDevice = sshDevice.replace(/-/g, '+').replace(/_/g, '/');
+		while (sshDevice.length % 4) {
+			sshDevice += '=';
+		}
+		sshDevice = atob(sshDevice);
+
+		let cardSplit = sshDevice.split('cardno:');
 		let cardSerial = 'unknown';
 		if (cardSplit.length > 1) {
 			cardSerial = cardSplit[1];
