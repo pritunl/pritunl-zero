@@ -7,6 +7,7 @@ export interface Device {
 	user?: string;
 	name?: string;
 	type?: string;
+	mode?: string;
 	timestamp?: string;
 	disabled?: boolean;
 	active_until?: string;
