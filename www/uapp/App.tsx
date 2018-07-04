@@ -19,9 +19,9 @@ Csrf.load().then((): void => {
 	for (let val of vals) {
 		let keyval = val.split('=');
 		if (keyval[0] === 'ssh-token') {
-			StateActions.setSshToken(keyval[1]);
+			StateActions.setSshToken(decodeURIComponent(keyval[1]));
 		} else if (keyval[0] === 'device') {
-			StateActions.setSshDevice(keyval[1]);
+			StateActions.setSshDevice(decodeURIComponent(keyval[1]));
 		}
 	}
 
