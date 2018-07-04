@@ -83,9 +83,11 @@ func hsmGet(c *gin.Context) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": errors.New(fmt.Sprintf("%s", r)),
-				}).Error("uhandlers: Socket hsm panic")
+				if !socket.Closed {
+					logrus.WithFields(logrus.Fields{
+						"error": errors.New(fmt.Sprintf("%s", r)),
+					}).Error("uhandlers: Socket hsm panic")
+				}
 			}
 		}()
 
