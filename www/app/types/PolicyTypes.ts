@@ -23,6 +23,7 @@ export interface Policy {
 	user_device_secondary?: boolean;
 	proxy_device_secondary?: boolean;
 	authority_device_secondary?: boolean;
+	authority_require_smart_card?: boolean;
 }
 
 export type Policies = Policy[];
