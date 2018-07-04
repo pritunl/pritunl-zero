@@ -27,9 +27,11 @@ type WebSocket struct {
 	Ticker   *time.Ticker
 	Listener *Listener
 	Cancel   context.CancelFunc
+	Closed   bool
 }
 
 func (w *WebSocket) Close() {
+	w.Closed = true
 	func() {
 		defer func() {
 			recover()
