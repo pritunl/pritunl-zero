@@ -137,6 +137,12 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	}
 
 	if sshDevice != nil {
+		sshDevice.LastActive = time.Now()
+		err = sshDevice.CommitFields(db, set.NewSet("last_active"))
+		if err != nil {
+			return
+		}
+
 		pubKey := strings.TrimSpace(c.PubKey)
 		cardPubKey := strings.TrimSpace(sshDevice.SshPublicKey)
 
