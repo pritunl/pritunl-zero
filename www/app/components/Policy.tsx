@@ -877,6 +877,15 @@ export default class Policy extends React.Component<Props, State> {
 								!policy.authority_device_secondary)
 						}}
 					/>
+					<PageSwitch
+						label="Authority require Smart Card"
+						help="Require users retrieving SSH certificates to use a Smart Card."
+						checked={policy.authority_require_smart_card}
+						onToggle={(): void => {
+							this.set('authority_require_smart_card',
+								!policy.authority_require_smart_card)
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
