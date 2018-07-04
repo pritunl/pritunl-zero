@@ -624,8 +624,10 @@ func (s *Secondary) DeviceSignResponse(db *database.Database,
 			continue
 		}
 
+		devc.LastActive = time.Now()
 		devc.U2fCounter = counter
-		err = devc.CommitFields(db, set.NewSet("u2f_counter"))
+
+		err = devc.CommitFields(db, set.NewSet("last_active", "u2f_counter"))
 		if err != nil {
 			return
 		}
