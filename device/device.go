@@ -9,8 +9,8 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 	"strings"
+	"time"
 )
 
 type Device struct {
