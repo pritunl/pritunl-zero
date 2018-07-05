@@ -39,6 +39,10 @@ export default class PageInfo extends React.Component<Props, {}> {
 		let bars: JSX.Element[] = [];
 
 		for (let field of this.props.fields || []) {
+			if (field == null) {
+				continue;
+			}
+
 			let value: string | JSX.Element[];
 
 			if (typeof field.value === 'string') {
