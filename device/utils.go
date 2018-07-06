@@ -62,6 +62,31 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
+func GetAllSorted(db *database.Database, userId bson.ObjectId) (
+	devices []*Device, err error) {
+
+	coll := db.Devices()
+	devices = []*Device{}
+
+	cursor := coll.Find(&bson.M{
+		"user": userId,
+	}).Sort("mode", "name").Iter()
+
+	devc := &Device{}
+	for cursor.Next(devc) {
+		devices = append(devices, devc)
+		devc = &Device{}
+	}
+
+	err = cursor.Close()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAllMode(db *database.Database, userId bson.ObjectId,
 	mode string) (devices []*Device, err error) {
 
