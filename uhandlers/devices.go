@@ -178,7 +178,7 @@ func devicesGet(c *gin.Context) {
 		return
 	}
 
-	devices, err := device.GetAll(db, usr.Id)
+	devices, err := device.GetAllSorted(db, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
