@@ -439,7 +439,7 @@
         }
       };
 
-      var loadState = function() {
+      var loadState = function(redirect) {
         var xmlhttp = new XMLHttpRequest();
 
         xmlhttp.onreadystatechange = function() {
@@ -448,8 +448,6 @@
               state = JSON.parse(xmlhttp.responseText);
 
               var buttons = '';
-              buttons += '<button id="auth-local-btn" ' +
-                'class="pt-button auth-button">Username/Password</button>';
 
               var provider;
               for (i = 0; i < state.providers.length; i++) {
@@ -461,6 +459,12 @@
                   continue;
                 }
 
+                if (provider.type === 'local') {
+                  buttons += '<button id="auth-local-btn" ' +
+                    'class="pt-button auth-button">Username/Password</button>';
+                  continue;
+                }
+
                 buttons += '<button id="' + provider.id + '" ' +
                   'class="pt-button auth-button auth-' + provider.type + '"' +
                   '>' + provider.label + '</button>';
@@ -469,6 +473,16 @@
               authButtons.innerHTML = buttons;
 
               bindState();
+
+              // if (redirect && state.providers.length === 1) {
+              //   provider = state.providers[0];
+              //
+              //   if (provider.type === 'local') {
+              //     onAuthLocal();
+              //   } else {
+              //     onAuthProvider(provider.id);
+              //   }
+              // }
             } else {
               var errorMsg;
 
@@ -489,26 +503,35 @@
         return false;
       };
 
-      var bindState = function() {
-        document.getElementById('auth-local-btn').onclick = function() {
-          authButtons.style.display = 'none';
-          authLocal.style.display = 'block';
-        };
+      var onAuthLocal = function () {
+        authButtons.style.display = 'none';
+        authLocal.style.display = 'block';
+      };
 
+      var onAuthProvider = function (providerId) {
+        var location = '/auth/request';
+
+        if (window.location.search !== '') {
+          location += window.location.search + '&';
+        } else {
+          location += '?';
+        }
+
+        location += 'id=' + providerId;
+
+        window.location = location;
+      };
+
+      var bindState = function() {
         for (i = 0; i < state.providers.length; i++) {
+          if (state.providers[i].type === 'local') {
+            document.getElementById('auth-local-btn').onclick = onAuthLocal;
+            continue;
+          }
+
           (function(provider) {
             document.getElementById(provider.id).onclick = function() {
-              var location = '/auth/request';
-
-              if (window.location.search !== '') {
-                location += window.location.search + '&';
-              } else {
-                location += '?';
-              }
-
-              location += 'id=' + provider.id;
-
-              window.location = location;
+              onAuthProvider(provider.id);
             };
           })(state.providers[i]);
         }
@@ -840,6 +863,7 @@
       }
 
       if (secondaryToken) {
+        primary = false;
         secondaryLabel.innerText = secondaryLabl;
         deviceLabelElm.innerText = secondaryLabl;
         secondaryPush.style.display = secondaryFactors.push ?
@@ -863,9 +887,11 @@
             deviceAuth();
           }
         }
-      }
 
-      loadState();
+        loadState(false);
+      } else {
+        loadState(true);
+      }
     </script>
   </body>
 </html>
