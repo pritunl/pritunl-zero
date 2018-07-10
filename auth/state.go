@@ -34,6 +34,14 @@ func GetState() (state *State) {
 		Providers: StateProviders{},
 	}
 
+	if settings.Local.HasLocalAuth {
+		prv := &StateProvider{
+			Type: "local",
+		}
+
+		state.Providers = append(state.Providers, prv)
+	}
+
 	google := false
 
 	for _, provider := range settings.Auth.Providers {
