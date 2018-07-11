@@ -34,7 +34,7 @@ func GetState() (state *State) {
 		Providers: StateProviders{},
 	}
 
-	if settings.Local.HasLocalAuth {
+	if !settings.Local.NoLocalAuth {
 		prv := &StateProvider{
 			Type: "local",
 		}
