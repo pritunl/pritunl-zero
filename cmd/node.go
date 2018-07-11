@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/router"
+	"github.com/pritunl/pritunl-zero/sync"
 	"gopkg.in/mgo.v2/bson"
 	"os"
 	"os/signal"
@@ -24,6 +25,8 @@ func Node() (err error) {
 	if err != nil {
 		return
 	}
+
+	sync.Init()
 
 	routr := &router.Router{}
 
