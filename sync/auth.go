@@ -23,7 +23,7 @@ func authSync() (err error) {
 		return
 	}
 
-	settings.Local.HasLocalAuth = count > 0
+	settings.Local.NoLocalAuth = count == 0
 
 	return
 }
