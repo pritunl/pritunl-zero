@@ -4,16 +4,35 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/user"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"time"
 )
 
 func ValidateAdmin(db *database.Database, usr *user.User,
 	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
 	errData *errortypes.ErrorData, err error) {
+
+	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
+		usr.ActiveUntil = time.Time{}
+		usr.Disabled = true
+		err = usr.CommitFields(db, set.NewSet("active_until", "disabled"))
+		if err != nil {
+			return
+		}
+
+		event.PublishDispatch(db, "user.change")
+
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
 
 	if usr.Disabled || usr.Administrator != "super" {
 		errData = &errortypes.ErrorData{
@@ -47,6 +66,23 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 func ValidateUser(db *database.Database, usr *user.User,
 	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
 	errData *errortypes.ErrorData, err error) {
+
+	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
+		usr.ActiveUntil = time.Time{}
+		usr.Disabled = true
+		err = usr.CommitFields(db, set.NewSet("active_until", "disabled"))
+		if err != nil {
+			return
+		}
+
+		event.PublishDispatch(db, "user.change")
+
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
@@ -88,6 +124,23 @@ func ValidateProxy(db *database.Database, usr *user.User,
 	isApi bool, srvc *service.Service, r *http.Request) (
 	deviceAuth bool, secProvider bson.ObjectId,
 	errData *errortypes.ErrorData, err error) {
+
+	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
+		usr.ActiveUntil = time.Time{}
+		usr.Disabled = true
+		err = usr.CommitFields(db, set.NewSet("active_until", "disabled"))
+		if err != nil {
+			return
+		}
+
+		event.PublishDispatch(db, "user.change")
+
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
 
 	if usr.Disabled {
 		errData = &errortypes.ErrorData{
