@@ -86,6 +86,49 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		</div>;
 	}
 
+	authzero(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Auth0 Sub-Domain"
+				help="Subdomain of Auth0 application. Enter subdomain portion only such as 'pritunl' for pritunl.auth0.com"
+				type="text"
+				placeholder="Auth0 sub-domain"
+				value={provider.domain}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.domain = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Client ID"
+				help="Auth0 application client ID"
+				type="text"
+				placeholder="Auth0 client ID"
+				value={provider.client_id}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.client_id = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Client Secret"
+				help="Auth0 application client secret"
+				type="text"
+				placeholder="Auth0 client secret"
+				value={provider.client_secret}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.client_secret = val;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	google(): JSX.Element {
 		let provider = this.props.provider;
 
@@ -224,6 +267,10 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			case 'azure':
 				label = 'Azure';
 				options = this.azure();
+				break;
+			case 'authzero':
+				label = 'Auth0';
+				options = this.authzero();
 				break;
 			case 'google':
 				label = 'Google';
