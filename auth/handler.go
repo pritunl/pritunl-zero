@@ -95,6 +95,15 @@ func Request(c *gin.Context) {
 
 			c.Redirect(302, redirect)
 			return
+		case AuthZero:
+			redirect, err := AuthZeroRequest(db, loc, query, provider)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
+			c.Redirect(302, redirect)
+			return
 		case OneLogin, Okta:
 			body, err := SamlRequest(db, loc, query, provider)
 			if err != nil {
@@ -231,7 +240,8 @@ func Callback(db *database.Database, sig, query string) (
 		}
 	}
 
-	if provider.Type == Google {
+	switch provider.Type {
+	case Google:
 		googleRoles, e := GoogleRoles(provider, username)
 		if e != nil {
 			err = e
@@ -241,6 +251,18 @@ func Callback(db *database.Database, sig, query string) (
 		for _, role := range googleRoles {
 			roles = append(roles, role)
 		}
+		break
+	case AuthZero:
+		authZeroRoles, e := AuthZeroRoles(provider, username)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for _, role := range authZeroRoles {
+			roles = append(roles, role)
+		}
+		break
 	}
 
 	usr, err = user.GetUsername(db, provider.Type, username)
