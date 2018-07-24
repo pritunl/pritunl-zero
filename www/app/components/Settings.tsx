@@ -201,6 +201,7 @@ export default class Settings extends React.Component<{}, State> {
 							this.set('auth_providers', authProviders);
 						}}
 					>
+						<option value="authzero">Auth0</option>
 						<option value="azure">Azure</option>
 						<option value="google">Google</option>
 						<option value="onelogin">OneLogin</option>
