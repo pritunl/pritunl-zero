@@ -8,6 +8,7 @@ const (
 	Local    = "local"
 	Api      = "api"
 	Azure    = "azure"
+	AuthZero = "authzero"
 	Google   = "google"
 	OneLogin = "onelogin"
 	Okta     = "okta"
@@ -18,6 +19,7 @@ var (
 		Local,
 		Api,
 		Azure,
+		AuthZero,
 		Google,
 		OneLogin,
 		Okta,
