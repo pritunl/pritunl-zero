@@ -48,6 +48,9 @@ func AzureRequest(db *database.Database, location, query string,
 		AppId:       provider.ClientId,
 		AppSecret:   provider.ClientSecret,
 	})
+	if err != nil {
+		return
+	}
 
 	req, err := http.NewRequest(
 		"POST",

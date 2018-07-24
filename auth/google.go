@@ -45,6 +45,9 @@ func GoogleRequest(db *database.Database, location, query string) (
 		State:    state,
 		Secret:   secret,
 	})
+	if err != nil {
+		return
+	}
 
 	req, err := http.NewRequest(
 		"POST",
