@@ -82,7 +82,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	deviceAuth, secProviderId, errData, err := validator.ValidateProxy(
+	devAuth, secProviderId, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -90,16 +90,20 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "local"
+
 		err = audit.New(
 			db,
 			c.Request,
 			usr.Id,
 			audit.ProxyLoginFailed,
-			audit.Fields{
-				"method":  "local",
-				"error":   errData.Error,
-				"message": errData.Message,
-			},
+			errAudit,
 		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -110,7 +114,7 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	if deviceAuth {
+	if devAuth {
 		deviceCount, err := device.Count(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -271,7 +275,7 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	deviceAuth, _, errData, err := validator.ValidateProxy(
+	deviceAuth, _, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -279,17 +283,21 @@ func authSecondaryPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "secondary"
+		errAudit["provider_id"] = secd.ProviderId
+
 		err = audit.New(
 			db,
 			c.Request,
 			usr.Id,
 			audit.ProxyLoginFailed,
-			audit.Fields{
-				"method":      "secondary",
-				"provider_id": secd.ProviderId,
-				"error":       errData.Error,
-				"message":     errData.Message,
-			},
+			errAudit,
 		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -397,7 +405,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	usr, tokn, errData, err := auth.Callback(db, sig, query)
+	usr, tokn, errAudit, errData, err := auth.Callback(db, sig, query)
 	if err != nil {
 		switch err.(type) {
 		case *auth.InvalidState:
@@ -410,6 +418,28 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if usr != nil {
+			if errAudit == nil {
+				errAudit = audit.Fields{
+					"error":   errData.Error,
+					"message": errData.Message,
+				}
+			}
+			errAudit["method"] = "callback"
+
+			err = audit.New(
+				db,
+				c.Request,
+				usr.Id,
+				audit.ProxyLoginFailed,
+				errAudit,
+			)
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+		}
+
 		c.JSON(401, errData)
 		return
 	}
@@ -428,7 +458,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	deviceAuth, secProviderId, errData, err := validator.ValidateProxy(
+	devAuth, secProviderId, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -436,16 +466,20 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "callback"
+
 		err = audit.New(
 			db,
 			c.Request,
 			usr.Id,
 			audit.ProxyLoginFailed,
-			audit.Fields{
-				"method":  "callback",
-				"error":   errData.Error,
-				"message": errData.Message,
-			},
+			errAudit,
 		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -456,7 +490,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	if deviceAuth {
+	if devAuth {
 		deviceCount, err := device.Count(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -654,7 +688,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	_, _, errData, err := validator.ValidateProxy(
+	_, _, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -662,16 +696,20 @@ func authU2fRegisterPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "device_register"
+
 		err = audit.New(
 			db,
 			c.Request,
 			usr.Id,
 			audit.ProxyLoginFailed,
-			audit.Fields{
-				"method":  "device_register",
-				"error":   errData.Error,
-				"message": errData.Message,
-			},
+			errAudit,
 		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
@@ -840,7 +878,7 @@ func authU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	_, secProviderId, errData, err := validator.ValidateProxy(
+	_, secProviderId, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, false, srvc, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -848,16 +886,20 @@ func authU2fSignPost(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "device"
+
 		err = audit.New(
 			db,
 			c.Request,
 			usr.Id,
 			audit.ProxyLoginFailed,
-			audit.Fields{
-				"method":  "device",
-				"error":   errData.Error,
-				"message": errData.Message,
-			},
+			errAudit,
 		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
