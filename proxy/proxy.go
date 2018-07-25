@@ -5,6 +5,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
@@ -145,7 +146,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	_, _, errData, err := validator.ValidateProxy(
+	_, _, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, authr.IsApi(), host.Service, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
@@ -154,6 +155,26 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	if errData != nil {
 		err = authr.Clear(db, w, r)
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
+		}
+
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "check"
+
+		err = audit.New(
+			db,
+			r,
+			usr.Id,
+			audit.ProxyAuthFailed,
+			errAudit,
+		)
 		if err != nil {
 			WriteError(w, r, 500, err)
 			return true
