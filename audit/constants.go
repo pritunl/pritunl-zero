@@ -3,6 +3,7 @@ package audit
 const (
 	AdminLogin                 = "admin_login"
 	AdminLoginFailed           = "admin_login_failed"
+	AdminAuthFailed            = "admin_auth_failed"
 	AdminLogout                = "admin_logout"
 	AdminPrimaryApprove        = "admin_primary_approve"
 	AdminSecondaryApprove      = "admin_secondary_approve"
@@ -12,6 +13,7 @@ const (
 
 	ProxyLogin                 = "proxy_login"
 	ProxyLoginFailed           = "proxy_login_failed"
+	ProxyAuthFailed            = "proxy_auth_failed"
 	ProxyLogout                = "proxy_logout"
 	ProxyPrimaryApprove        = "proxy_primary_approve"
 	ProxySecondaryApprove      = "proxy_secondary_approve"
@@ -21,6 +23,7 @@ const (
 
 	UserLogin                 = "user_login"
 	UserLoginFailed           = "user_login_failed"
+	UserAuthFailed            = "user_auth_failed"
 	UserLogout                = "user_logout"
 	UserLogoutAll             = "user_logout_all"
 	UserPrimaryApprove        = "user_primary_approve"
