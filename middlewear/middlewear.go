@@ -5,6 +5,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -201,7 +202,7 @@ func AuthAdmin(c *gin.Context) {
 		return
 	}
 
-	_, _, errData, err := validator.ValidateAdmin(
+	_, _, errAudit, errData, err := validator.ValidateAdmin(
 		db, usr, authr.IsApi(), c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -210,6 +211,26 @@ func AuthAdmin(c *gin.Context) {
 
 	if errData != nil {
 		err = authr.Clear(db, c.Writer, c.Request)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "check"
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.AdminAuthFailed,
+			errAudit,
+		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -240,7 +261,7 @@ func AuthUser(c *gin.Context) {
 		return
 	}
 
-	_, _, errData, err := validator.ValidateUser(
+	_, _, errAudit, errData, err := validator.ValidateUser(
 		db, usr, authr.IsApi(), c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -249,6 +270,26 @@ func AuthUser(c *gin.Context) {
 
 	if errData != nil {
 		err = authr.Clear(db, c.Writer, c.Request)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "check"
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.UserAuthFailed,
+			errAudit,
+		)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
