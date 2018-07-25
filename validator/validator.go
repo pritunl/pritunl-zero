@@ -2,6 +2,7 @@ package validator
 
 import (
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -15,7 +16,7 @@ import (
 
 func ValidateAdmin(db *database.Database, usr *user.User,
 	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
-	errData *errortypes.ErrorData, err error) {
+	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
 		usr.ActiveUntil = time.Time{}
@@ -27,6 +28,10 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 
 		event.PublishDispatch(db, "user.change")
 
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled from expired active time",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -34,7 +39,23 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 		return
 	}
 
-	if usr.Disabled || usr.Administrator != "super" {
+	if usr.Disabled {
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled",
+		}
+		errData = &errortypes.ErrorData{
+			Error:   "unauthorized",
+			Message: "Not authorized",
+		}
+		return
+	}
+
+	if usr.Administrator != "super" {
+		errAudit = audit.Fields{
+			"error":   "user_not_super",
+			"message": "User is not super user",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -65,7 +86,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 
 func ValidateUser(db *database.Database, usr *user.User,
 	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
-	errData *errortypes.ErrorData, err error) {
+	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
 		usr.ActiveUntil = time.Time{}
@@ -77,6 +98,10 @@ func ValidateUser(db *database.Database, usr *user.User,
 
 		event.PublishDispatch(db, "user.change")
 
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled from expired active time",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -85,6 +110,10 @@ func ValidateUser(db *database.Database, usr *user.User,
 	}
 
 	if usr.Disabled {
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -123,7 +152,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 func ValidateProxy(db *database.Database, usr *user.User,
 	isApi bool, srvc *service.Service, r *http.Request) (
 	deviceAuth bool, secProvider bson.ObjectId,
-	errData *errortypes.ErrorData, err error) {
+	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
 		usr.ActiveUntil = time.Time{}
@@ -135,6 +164,10 @@ func ValidateProxy(db *database.Database, usr *user.User,
 
 		event.PublishDispatch(db, "user.change")
 
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled from expired active time",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -143,6 +176,10 @@ func ValidateProxy(db *database.Database, usr *user.User,
 	}
 
 	if usr.Disabled {
+		errAudit = audit.Fields{
+			"error":   "user_disabled",
+			"message": "User is disabled",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "unauthorized",
 			Message: "Not authorized",
@@ -164,6 +201,10 @@ func ValidateProxy(db *database.Database, usr *user.User,
 	}
 
 	if !roleMatch {
+		errAudit = audit.Fields{
+			"error":   "service_unauthorized",
+			"message": "User does not have roles required to access service",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "service_unauthorized",
 			Message: "Not authorized for service",
