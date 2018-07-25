@@ -207,7 +207,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	_, secProviderId, errData, err := validator.ValidateUser(
+	_, secProviderId, errAudit, errData, err := validator.ValidateUser(
 		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -215,6 +215,26 @@ func deviceU2fRegisterGet(c *gin.Context) {
 	}
 
 	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "add_device_register"
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.UserAuthFailed,
+			errAudit,
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		c.JSON(400, errData)
 		return
 	}
@@ -578,10 +598,35 @@ func deviceU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	_, secProviderId, errData, err := validator.ValidateUser(
+	_, secProviderId, errAudit, errData, err := validator.ValidateUser(
 		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "add_device_register"
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.UserAuthFailed,
+			errAudit,
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(400, errData)
 		return
 	}
 
