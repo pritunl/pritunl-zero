@@ -8,6 +8,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -120,7 +121,8 @@ func Request(c *gin.Context) {
 }
 
 func Callback(db *database.Database, sig, query string) (
-	usr *user.User, tokn *Token, errData *errortypes.ErrorData, err error) {
+	usr *user.User, tokn *Token, errAudit audit.Fields,
+	errData *errortypes.ErrorData, err error) {
 
 	params, err := url.ParseQuery(query)
 	if err != nil {
@@ -150,6 +152,10 @@ func Callback(db *database.Database, sig, query string) (
 	testSig := base64.URLEncoding.EncodeToString(rawSignature)
 
 	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
+		errAudit = audit.Fields{
+			"error":   "signature_mismatch",
+			"message": "Signature hash does not match",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "authentication_error",
 			Message: "Authentication error occurred",
@@ -160,6 +166,10 @@ func Callback(db *database.Database, sig, query string) (
 	username := params.Get("username")
 
 	if username == "" {
+		errAudit = audit.Fields{
+			"error":   "invalid_username",
+			"message": "Invalid username",
+		}
 		errData = &errortypes.ErrorData{
 			Error:   "invalid_username",
 			Message: "Invalid username",
@@ -183,6 +193,10 @@ func Callback(db *database.Database, sig, query string) (
 		}
 
 		if provider == nil {
+			errAudit = audit.Fields{
+				"error":   "provider_unavailable",
+				"message": "Google provider is unavailable",
+			}
 			errData = &errortypes.ErrorData{
 				Error:   "unauthorized",
 				Message: "Not authorized",
@@ -202,6 +216,10 @@ func Callback(db *database.Database, sig, query string) (
 	if provider.Type == Azure {
 		usernameSpl := strings.SplitN(username, "/", 2)
 		if len(usernameSpl) != 2 {
+			errAudit = audit.Fields{
+				"error":   "invalid_username",
+				"message": "Azure username missing tenant",
+			}
 			errData = &errortypes.ErrorData{
 				Error:   "invalid_username",
 				Message: "Invalid username",
@@ -213,6 +231,10 @@ func Callback(db *database.Database, sig, query string) (
 		username = usernameSpl[1]
 
 		if tenant != provider.Tenant {
+			errAudit = audit.Fields{
+				"error":   "invalid_tenant",
+				"message": "Azure tenant mismatch",
+			}
 			errData = &errortypes.ErrorData{
 				Error:   "invalid_tenant",
 				Message: "Invalid tenant",
@@ -285,10 +307,6 @@ func Callback(db *database.Database, sig, query string) (
 				Roles:    roles,
 			}
 
-			if errData != nil {
-				return
-			}
-
 			err = usr.Upsert(db)
 			if err != nil {
 				return
@@ -300,9 +318,17 @@ func Callback(db *database.Database, sig, query string) (
 			if err != nil {
 				return
 			}
+
+			if errData != nil {
+				return
+			}
 		} else {
+			errAudit = audit.Fields{
+				"error":   "user_unavailable",
+				"message": "User does not exist with auto create false",
+			}
 			errData = &errortypes.ErrorData{
-				Error:   "unauthorized",
+				Error:   "user_unavailable",
 				Message: "Not authorized",
 			}
 			return
