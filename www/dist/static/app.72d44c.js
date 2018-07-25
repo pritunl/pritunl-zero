@@ -4181,6 +4181,9 @@ System.registerDynamic("app/components/User.js", ["npm:react@16.4.1.js", "npm:re
                 case 'okta':
                     userType = 'Okta';
                     break;
+                case 'authzero':
+                    userType = 'Auth0';
+                    break;
                 case 'azure':
                     userType = 'Azure';
                     break;
@@ -10708,7 +10711,7 @@ System.registerDynamic("app/components/UserDetailed.js", ["npm:react@16.4.1.js",
                     this.set('generate_secret', !user.generate_secret);
                 } }), React.createElement(PageSelect_1.default, { disabled: this.state.locked, label: "Type", help: "A local user is a user that is created on the Pritunl Zero database that has a username and password. The other user types can be used to create users for single sign-on services. Generally single sign-on users will be created automatically when the user authenticates for the first time. It can sometimes be desired to manaully create a single sign-on user to provide roles in advanced of the first login.", value: user.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"), React.createElement("option", { value: "api" }, "API")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "authzero" }, "Auth0"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"), React.createElement("option", { value: "api" }, "API")), React.createElement("label", { className: "pt-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "User roles will be used to match with service roles. A user must have a matching role to access a service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { disabled: this.state.locked, buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement(PageSwitch_1.default, { label: "Administrator", help: "Enable to give user administrator access to the management console", disabled: this.state.locked, checked: user.administrator === 'super', onToggle: () => {
                     if (this.state.user.administrator === 'super') {
@@ -14317,6 +14320,22 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@16.4.1.
                     this.props.onChange(state);
                 } }));
         }
+        authzero() {
+            let provider = this.props.provider;
+            return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Auth0 Sub-Domain", help: "Subdomain of Auth0 application. Enter subdomain portion only such as 'pritunl' for pritunl.auth0.com", type: "text", placeholder: "Auth0 sub-domain", value: provider.domain, onChange: val => {
+                    let state = this.clone();
+                    state.domain = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageInput_1.default, { label: "Client ID", help: "Auth0 application client ID", type: "text", placeholder: "Auth0 client ID", value: provider.client_id, onChange: val => {
+                    let state = this.clone();
+                    state.client_id = val;
+                    this.props.onChange(state);
+                } }), React.createElement(PageInput_1.default, { label: "Client Secret", help: "Auth0 application client secret", type: "text", placeholder: "Auth0 client secret", value: provider.client_secret, onChange: val => {
+                    let state = this.clone();
+                    state.client_secret = val;
+                    this.props.onChange(state);
+                } }));
+        }
         google() {
             let provider = this.props.provider;
             return React.createElement("div", null, React.createElement(PageInput_1.default, { label: "Domain", help: "Domain segment of email address to match", type: "text", placeholder: "Google domain to match", value: provider.domain, onChange: val => {
@@ -14373,6 +14392,10 @@ System.registerDynamic("app/components/SettingsProvider.js", ["npm:react@16.4.1.
                 case 'azure':
                     label = 'Azure';
                     options = this.azure();
+                    break;
+                case 'authzero':
+                    label = 'Auth0';
+                    options = this.authzero();
                     break;
                 case 'google':
                     label = 'Google';
@@ -16277,7 +16300,7 @@ System.registerDynamic("app/components/Settings.js", ["npm:react@16.4.1.js", "ap
                         role_management: 'set_on_insert'
                     }];
                     this.set('auth_providers', authProviders);
-                } }, React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement("div", { className: "pt-border", style: css.secondaryProviders }, React.createElement("h5", { style: css.providersLabel }, "Two-Factor Providers")), secondaryProviders, React.createElement(PageSelectButton_1.default, { label: "Add Secondary Provider", value: this.state.secondaryProvider, buttonClass: "pt-intent-success", onChange: val => {
+                } }, React.createElement("option", { value: "authzero" }, "Auth0"), React.createElement("option", { value: "azure" }, "Azure"), React.createElement("option", { value: "google" }, "Google"), React.createElement("option", { value: "onelogin" }, "OneLogin"), React.createElement("option", { value: "okta" }, "Okta"))), React.createElement(PagePanel_1.default, null, React.createElement("div", { className: "pt-border", style: css.secondaryProviders }, React.createElement("h5", { style: css.providersLabel }, "Two-Factor Providers")), secondaryProviders, React.createElement(PageSelectButton_1.default, { label: "Add Secondary Provider", value: this.state.secondaryProvider, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { secondaryProvider: val }));
                 }, onSubmit: () => {
                     let authProviders = [...settings.auth_secondary_providers, {
