@@ -188,14 +188,17 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
-	if host.Service.LogoutPath != "" && r.URL.Path == host.Service.LogoutPath {
+	if host.Service.LogoutPath != "" &&
+		r.URL.Path == host.Service.LogoutPath {
+
 		err = authr.Clear(db, w, r)
 		if err != nil {
 			WriteError(w, r, 500, err)
 			return true
 		}
 
-		return false
+		http.Redirect(w, r, "/", 302)
+		return true
 	}
 
 	wProxies[rand.Intn(wLen)].ServeHTTP(w, r, authr)
