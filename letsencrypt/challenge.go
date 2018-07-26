@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/pritunl/pritunl-zero/letsencrypt/internal/base64"
-	"github.com/square/go-jose"
+	"gopkg.in/square/go-jose.v1"
 )
 
 const (

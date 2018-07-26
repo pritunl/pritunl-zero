@@ -3,7 +3,7 @@ package letsencrypt
 import (
 	"time"
 
-	"github.com/square/go-jose"
+	"gopkg.in/square/go-jose.v1"
 )
 
 const (
