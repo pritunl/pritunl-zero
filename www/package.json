@@ -1,5 +1,5 @@
 {
-  "name": "pritunl-cloud",
+  "name": "pritunl-zero",
   "dependencies": {
     "@blueprintjs/core": "2.3.1",
     "@blueprintjs/datetime": "2.0.3",
