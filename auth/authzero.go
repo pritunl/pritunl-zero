@@ -9,7 +9,6 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/square/go-jose.v2"
 	"net/http"
 	"net/url"
 	"time"
@@ -157,148 +156,148 @@ type authZeroUser struct {
 	AppMetadata authZeroAppMetadata `json:"app_metadata"`
 }
 
-func authZeroGetJwk(provider *settings.Provider) (
-	jwk *jose.JSONWebKey, err error) {
-
-	req, err := http.NewRequest(
-		"GET",
-		fmt.Sprintf(
-			"https://%s.auth0.com/.well-known/jwks.json",
-			provider.Domain,
-		),
-		nil,
-	)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Failed to create auth0 request"),
-		}
-		return
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: auth0 request failed"),
-		}
-		return
-	}
-	defer resp.Body.Close()
-
-	data := &authZeroJwks{}
-	err = json.NewDecoder(resp.Body).Decode(data)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse response"),
-		}
-		return
-	}
-
-	if len(data.Keys) < 1 {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: No JWK keys available"),
-		}
-		return
-	}
-
-	jwk = &jose.JSONWebKey{}
-
-	err = jwk.UnmarshalJSON(data.Keys[0])
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse jwt key"),
-		}
-		return
-	}
-
-	return
-}
-
-func authZeroGetJwkToken(provider *settings.Provider) (
-	accessToken string, token *authZeroToken, err error) {
-
-	reqData := &authZeroTokenReq{
-		GrantType:    "client_credentials",
-		ClientId:     provider.ClientId,
-		ClientSecret: provider.ClientSecret,
-		Audience: fmt.Sprintf(
-			"https://%s.auth0.com/api/v2/", provider.Domain),
-	}
-
-	reqDataBuf := &bytes.Buffer{}
-	err = json.NewEncoder(reqDataBuf).Encode(reqData)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse request data"),
-		}
-		return
-	}
-
-	req, err := http.NewRequest(
-		"POST",
-		fmt.Sprintf("https://%s.auth0.com/oauth/token", provider.Domain),
-		reqDataBuf,
-	)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Failed to create auth0 request"),
-		}
-		return
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: auth0 request failed"),
-		}
-		return
-	}
-	defer resp.Body.Close()
-
-	tokenData := &authZeroTokenData{}
-	err = json.NewDecoder(resp.Body).Decode(tokenData)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse response"),
-		}
-		return
-	}
-
-	accessToken = tokenData.AccessToken
-
-	object, err := jose.ParseSigned(tokenData.AccessToken)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse jwt data"),
-		}
-		return
-	}
-
-	jwt, err := authZeroGetJwk(provider)
-	if err != nil {
-		return
-	}
-
-	data, err := object.Verify(jwt)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to verify jwt data"),
-		}
-		return
-	}
-
-	token = &authZeroToken{}
-	err = json.Unmarshal(data, token)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse jwt token"),
-		}
-		return
-	}
-
-	return
-}
+//func authZeroGetJwk(provider *settings.Provider) (
+//	jwk *jose.JSONWebKey, err error) {
+//
+//	req, err := http.NewRequest(
+//		"GET",
+//		fmt.Sprintf(
+//			"https://%s.auth0.com/.well-known/jwks.json",
+//			provider.Domain,
+//		),
+//		nil,
+//	)
+//	if err != nil {
+//		err = &errortypes.RequestError{
+//			errors.Wrap(err, "auth: Failed to create auth0 request"),
+//		}
+//		return
+//	}
+//
+//	resp, err := client.Do(req)
+//	if err != nil {
+//		err = &errortypes.RequestError{
+//			errors.Wrap(err, "auth: auth0 request failed"),
+//		}
+//		return
+//	}
+//	defer resp.Body.Close()
+//
+//	data := &authZeroJwks{}
+//	err = json.NewDecoder(resp.Body).Decode(data)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse response"),
+//		}
+//		return
+//	}
+//
+//	if len(data.Keys) < 1 {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: No JWK keys available"),
+//		}
+//		return
+//	}
+//
+//	jwk = &jose.JSONWebKey{}
+//
+//	err = jwk.UnmarshalJSON(data.Keys[0])
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse jwt key"),
+//		}
+//		return
+//	}
+//
+//	return
+//}
+//
+//func authZeroGetJwkToken(provider *settings.Provider) (
+//	accessToken string, token *authZeroToken, err error) {
+//
+//	reqData := &authZeroTokenReq{
+//		GrantType:    "client_credentials",
+//		ClientId:     provider.ClientId,
+//		ClientSecret: provider.ClientSecret,
+//		Audience: fmt.Sprintf(
+//			"https://%s.auth0.com/api/v2/", provider.Domain),
+//	}
+//
+//	reqDataBuf := &bytes.Buffer{}
+//	err = json.NewEncoder(reqDataBuf).Encode(reqData)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse request data"),
+//		}
+//		return
+//	}
+//
+//	req, err := http.NewRequest(
+//		"POST",
+//		fmt.Sprintf("https://%s.auth0.com/oauth/token", provider.Domain),
+//		reqDataBuf,
+//	)
+//	if err != nil {
+//		err = &errortypes.RequestError{
+//			errors.Wrap(err, "auth: Failed to create auth0 request"),
+//		}
+//		return
+//	}
+//
+//	req.Header.Add("Content-Type", "application/json")
+//
+//	resp, err := client.Do(req)
+//	if err != nil {
+//		err = &errortypes.RequestError{
+//			errors.Wrap(err, "auth: auth0 request failed"),
+//		}
+//		return
+//	}
+//	defer resp.Body.Close()
+//
+//	tokenData := &authZeroTokenData{}
+//	err = json.NewDecoder(resp.Body).Decode(tokenData)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse response"),
+//		}
+//		return
+//	}
+//
+//	accessToken = tokenData.AccessToken
+//
+//	object, err := jose.ParseSigned(tokenData.AccessToken)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse jwt data"),
+//		}
+//		return
+//	}
+//
+//	jwt, err := authZeroGetJwk(provider)
+//	if err != nil {
+//		return
+//	}
+//
+//	data, err := object.Verify(jwt)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to verify jwt data"),
+//		}
+//		return
+//	}
+//
+//	token = &authZeroToken{}
+//	err = json.Unmarshal(data, token)
+//	if err != nil {
+//		err = &errortypes.ParseError{
+//			errors.Wrap(err, "auth: Failed to parse jwt token"),
+//		}
+//		return
+//	}
+//
+//	return
+//}
 
 func authZeroGetToken(provider *settings.Provider) (token string, err error) {
 	reqData := &authZeroTokenReq{
