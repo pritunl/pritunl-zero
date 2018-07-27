@@ -285,6 +285,17 @@ func Callback(db *database.Database, sig, query string) (
 			roles = append(roles, role)
 		}
 		break
+	case Azure:
+		azureRoles, e := AzureRoles(provider, username)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for _, role := range azureRoles {
+			roles = append(roles, role)
+		}
+		break
 	}
 
 	usr, err = user.GetUsername(db, provider.Type, username)
