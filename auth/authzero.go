@@ -340,6 +340,13 @@ func authZeroGetToken(provider *settings.Provider) (token string, err error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
+		}
+		return
+	}
+
 	tokenData := &authZeroTokenData{}
 	err = json.NewDecoder(resp.Body).Decode(tokenData)
 	if err != nil {
@@ -402,6 +409,13 @@ func AuthZeroRoles(provider *settings.Provider, username string) (
 		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
+		}
+		return
+	}
 
 	data := []*authZeroUser{}
 	err = json.NewDecoder(resp.Body).Decode(&data)
