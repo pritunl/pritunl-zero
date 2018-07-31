@@ -701,7 +701,7 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 			return
 		}
 
-		if verify.Status.Type != "success" || verify.Status.Code != 200 &&
+		if verify.Status.Type != "success" || verify.Status.Code != 200 ||
 			verify.Status.Error {
 
 			err = &errortypes.UnknownError{
