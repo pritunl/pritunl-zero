@@ -250,7 +250,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		var secProvider bson.ObjectId
 
 		if deviceCount == 0 {
-			if deviceType != device.SmartCard {
+			if deviceType == device.SmartCard {
 				errData := &errortypes.ErrorData{
 					Error:   "no_devices",
 					Message: "Cannot register Smart Card without a U2F device",
@@ -282,7 +282,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	if deviceType != device.SmartCard {
+	if deviceType == device.SmartCard {
 		errData := &errortypes.ErrorData{
 			Error:   "no_devices",
 			Message: "Cannot register Smart Card without a U2F device",
