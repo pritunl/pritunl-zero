@@ -80,7 +80,9 @@ func (s *Signature) Validate(db *database.Database) (err error) {
 		}
 	}
 
-	if usr == nil || usr.Token == "" || usr.Secret == "" {
+	if usr == nil || usr.Type != user.Api ||
+		usr.Token == "" || usr.Secret == "" {
+
 		err = &errortypes.AuthenticationError{
 			errors.New("signature: User not found"),
 		}
