@@ -17,6 +17,7 @@ var (
 
 type Request struct {
 	User      string      `json:"user"`
+	Username  string      `json:"username"`
 	Session   string      `json:"session"`
 	Address   string      `json:"address"`
 	Timestamp time.Time   `json:"timestamp"`
