@@ -162,6 +162,13 @@ func update(addrs []string) (err error) {
 	})
 
 	mappings = append(mappings, mapping{
+		Field: "username",
+		Type:  "keyword",
+		Store: false,
+		Index: true,
+	})
+
+	mappings = append(mappings, mapping{
 		Field: "session",
 		Type:  "keyword",
 		Store: false,
