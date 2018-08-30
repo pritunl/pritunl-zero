@@ -122,6 +122,8 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 	if settings.Router.SkipVerify || net.ParseIP(server.Hostname) != nil {
 		tlsConfig = &tls.Config{
 			InsecureSkipVerify: true,
+			MinVersion:         tls.VersionTLS12,
+			MaxVersion:         tls.VersionTLS12,
 		}
 	}
 
