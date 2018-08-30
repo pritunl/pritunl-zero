@@ -30,7 +30,7 @@ type mapping struct {
 	Field string
 	Type  string
 	Store bool
-	Index string
+	Index bool
 }
 
 func Index(index, typ string, data interface{}) {
@@ -79,7 +79,7 @@ func putIndex(clnt *elastic.Client, index string, typ string,
 			properties[mapping.Field] = struct {
 				Type  string `json:"type"`
 				Store bool   `json:"store"`
-				Index string `json:"index"`
+				Index bool   `json:"index"`
 			}{
 				Type:  mapping.Type,
 				Store: mapping.Store,
@@ -158,66 +158,68 @@ func update(addrs []string) (err error) {
 		Field: "user",
 		Type:  "keyword",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "session",
 		Type:  "keyword",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "address",
 		Type:  "ip",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "timestamp",
 		Type:  "date",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "scheme",
 		Type:  "keyword",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "host",
 		Type:  "keyword",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "path",
 		Type:  "keyword",
 		Store: false,
-		Index: "analyzed",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "query",
 		Type:  "object",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "header",
 		Type:  "object",
+		Index: true,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "body",
 		Type:  "text",
 		Store: false,
-		Index: "no",
+		Index: false,
 	})
 
 	err = putIndex(clnt, "zero-requests", "request", mappings)
