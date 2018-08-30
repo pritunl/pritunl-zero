@@ -75,6 +75,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 
 					if usr != nil {
 						index.User = usr.Id.Hex()
+						index.Username = usr.Username
 						index.Session = authr.SessionId()
 					}
 				}
