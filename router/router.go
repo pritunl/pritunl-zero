@@ -256,7 +256,10 @@ func (r *Router) startWeb() {
 			}
 		}
 	} else {
-		tlsConfig := &tls.Config{}
+		tlsConfig := &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			MaxVersion: tls.VersionTLS12,
+		}
 		tlsConfig.Certificates = []tls.Certificate{}
 
 		if r.certificates != nil {
