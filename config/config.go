@@ -175,7 +175,7 @@ func init() {
 		if nodeId != "" {
 			Config.NodeId = nodeId
 		}
-		if mongoUri == "" {
+		if mongoUri != "" {
 			Config.MongoUri = mongoUri
 		}
 
