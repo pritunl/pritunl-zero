@@ -159,7 +159,6 @@ func init() {
 			save = true
 			Config.NodeId = bson.NewObjectId().Hex()
 		}
-
 		if Config.MongoUri == "" && mongoUri == "" {
 			save = true
 			Config.MongoUri = "mongodb://localhost:27017/pritunl-zero"
