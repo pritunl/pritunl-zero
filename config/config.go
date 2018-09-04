@@ -152,13 +152,15 @@ func init() {
 		}
 
 		save := false
+		nodeId := os.Getenv("NODE_ID")
+		mongoUri := os.Getenv("MONGO_URI")
 
-		if Config.NodeId == "" {
+		if Config.NodeId == "" && nodeId == "" {
 			save = true
 			Config.NodeId = bson.NewObjectId().Hex()
 		}
 
-		if Config.MongoUri == "" {
+		if Config.MongoUri == "" && mongoUri == "" {
 			save = true
 			Config.MongoUri = "mongodb://localhost:27017/pritunl-zero"
 		}
@@ -168,6 +170,13 @@ func init() {
 			if err != nil {
 				return
 			}
+		}
+
+		if nodeId != "" {
+			Config.NodeId = nodeId
+		}
+		if mongoUri == "" {
+			Config.MongoUri = mongoUri
 		}
 
 		return
