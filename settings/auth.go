@@ -57,6 +57,7 @@ type auth struct {
 	ProxyMaxDuration   int                  `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
 	UserExpire         int                  `bson:"user_expire" json:"user_expire" default:"1440"`
 	UserMaxDuration    int                  `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
+	DisaleGeo          bool                 `bson:"disable_geo" json:"disable_geo"`
 }
 
 func (a *auth) GetProvider(id bson.ObjectId) *Provider {
