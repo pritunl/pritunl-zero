@@ -38,7 +38,7 @@ type geoData struct {
 }
 
 func get(addr string) (ge *Geo, err error) {
-	if settings.System.License == "" {
+	if settings.System.License == "" || settings.Auth.DisaleGeo {
 		return
 	}
 
