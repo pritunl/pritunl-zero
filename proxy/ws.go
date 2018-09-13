@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
@@ -16,6 +17,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -28,6 +30,14 @@ var (
 	webSocketConns     = set.NewSet()
 	webSocketConnsLock = sync.Mutex{}
 )
+
+var InsecureDialer = &websocket.Dialer{
+	Proxy:            http.ProxyFromEnvironment,
+	HandshakeTimeout: 45 * time.Second,
+	TLSClientConfig: &tls.Config{
+		InsecureSkipVerify: true,
+	},
+}
 
 type webSocket struct {
 	serverHost  string
@@ -269,7 +279,17 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		index.Index()
 	}
 
-	backConn, backResp, err := websocket.DefaultDialer.Dial(u.String(), header)
+	var backConn *websocket.Conn
+	var backResp *http.Response
+	var err error
+
+	if settings.Router.SkipVerify || net.ParseIP(w.serverHost) != nil {
+		backConn, backResp, err = InsecureDialer.Dial(
+			u.String(), header)
+	} else {
+		backConn, backResp, err = websocket.DefaultDialer.Dial(
+			u.String(), header)
+	}
 	if err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "proxy: WebSocket dial error"),
