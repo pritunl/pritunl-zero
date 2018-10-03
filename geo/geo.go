@@ -79,7 +79,8 @@ func get(addr string) (ge *Geo, err error) {
 
 	if resp.StatusCode != 200 {
 		err = &errortypes.ParseError{
-			errors.Newf("geo: Request failed with status %d", resp.StatusCode),
+			errors.Newf(
+				"geo: Request failed with status %d", resp.StatusCode),
 		}
 		return
 	}
