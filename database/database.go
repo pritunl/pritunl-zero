@@ -309,6 +309,15 @@ func addIndexes() (err error) {
 			errors.Wrap(err, "database: Index error"),
 		}
 	}
+	err = coll.EnsureIndex(mgo.Index{
+		Key:        []string{"token"},
+		Background: true,
+	})
+	if err != nil {
+		err = &IndexError{
+			errors.Wrap(err, "database: Index error"),
+		}
+	}
 
 	coll = db.Policies()
 	err = coll.EnsureIndex(mgo.Index{
