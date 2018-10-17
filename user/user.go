@@ -67,6 +67,14 @@ func (u *User) Validate(db *database.Database) (
 		return
 	}
 
+	u.Format()
+
+	return
+}
+
+func (u *User) SuperExists(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
 	if u.Administrator != "super" && u.Id != "" {
 		exists, e := hasSuperSkip(db, u.Id)
 		if e != nil {
@@ -82,8 +90,6 @@ func (u *User) Validate(db *database.Database) (
 			return
 		}
 	}
-
-	u.Format()
 
 	return
 }
