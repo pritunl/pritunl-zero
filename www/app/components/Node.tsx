@@ -2,10 +2,12 @@
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from '../types/AuthorityTypes';
 import * as CertificateTypes from '../types/CertificateTypes';
 import * as NodeActions from '../actions/NodeActions';
 import * as MiscUtils from '../utils/MiscUtils';
 import CertificatesStore from '../stores/CertificatesStore';
+import AuthoritiesStore from '../stores/AuthoritiesStore';
 import ServicesStore from '../stores/ServicesStore';
 import PageInput from './PageInput';
 import PageSwitch from './PageSwitch';
@@ -19,6 +21,7 @@ import Help from './Help';
 interface Props {
 	node: NodeTypes.NodeRo;
 	services: ServiceTypes.ServicesRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 	certificates: CertificateTypes.CertificatesRo;
 }
 
@@ -29,6 +32,7 @@ interface State {
 	node: NodeTypes.Node;
 	addService: string;
 	addCert: string;
+	addAuthority: string;
 	forwardedChecked: boolean;
 }
 
@@ -84,6 +88,7 @@ export default class Node extends React.Component<Props, State> {
 			message: '',
 			node: null,
 			addService: null,
+			addAuthority: null,
 			addCert: null,
 			forwardedChecked: false,
 		};
@@ -258,6 +263,77 @@ export default class Node extends React.Component<Props, State> {
 		});
 	}
 
+	onAddAuthority = (): void => {
+		let node: NodeTypes.Node;
+
+		if (!this.state.addAuthority && !this.props.authorities.length) {
+			return;
+		}
+
+		let authorityId = this.state.addAuthority || this.props.authorities[0].id;
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let authorities = [
+			...(node.authorities || []),
+		];
+
+		if (authorities.indexOf(authorityId) === -1) {
+			authorities.push(authorityId);
+		}
+
+		authorities.sort();
+
+		node.authorities = authorities;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			node: node,
+		});
+	}
+
+	onRemoveAuthority = (authority: string): void => {
+		let node: NodeTypes.Node;
+
+		if (this.state.changed) {
+			node = {
+				...this.state.node,
+			};
+		} else {
+			node = {
+				...this.props.node,
+			};
+		}
+
+		let authorities = [
+			...(node.authorities || []),
+		];
+
+		let i = authorities.indexOf(authority);
+		if (i === -1) {
+			return;
+		}
+
+		authorities.splice(i, 1);
+
+		node.authorities = authorities;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			node: node,
+		});
+	}
+
 	onAddCert = (): void => {
 		let node: NodeTypes.Node;
 
@@ -367,6 +443,44 @@ export default class Node extends React.Component<Props, State> {
 			}
 		} else {
 			servicesSelect.push(<option key="null" value="">None</option>);
+		}
+
+		let authorities: JSX.Element[] = [];
+		for (let authorityId of (node.authorities || [])) {
+			let authority = AuthoritiesStore.authority(authorityId);
+			if (!authority) {
+				continue;
+			}
+
+			authorities.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={authority.id}
+				>
+					{authority.name}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveAuthority(authority.id);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let authoritiesSelect: JSX.Element[] = [];
+		if (this.props.authorities.length) {
+			for (let authority of this.props.authorities) {
+				authoritiesSelect.push(
+					<option
+						key={authority.id}
+						value={authority.id}
+					>{authority.name}</option>,
+				);
+			}
+		} else {
+			authoritiesSelect.push(<option key="null" value="">None</option>);
 		}
 
 		let certificates: JSX.Element[] = [];
@@ -534,6 +648,34 @@ export default class Node extends React.Component<Props, State> {
 						onSubmit={this.onAddService}
 					>
 						{servicesSelect}
+					</PageSelectButton>
+					<label
+						className="pt-label"
+						style={css.label}
+					>
+						Authority Bastions
+						<Help
+							title="Authority Bastions"
+							content="Authorities that will be served with a bastion server."
+						/>
+						<div>
+							{authorities}
+						</div>
+					</label>
+					<PageSelectButton
+						label="Add Authority"
+						value={this.state.addAuthority}
+						disabled={!this.props.authorities.length}
+						buttonClass="pt-intent-success"
+						onChange={(val: string): void => {
+							this.setState({
+								...this.state,
+								addAuthority: val,
+							});
+						}}
+						onSubmit={this.onAddAuthority}
+					>
+						{authoritiesSelect}
 					</PageSelectButton>
 				</div>
 				<div style={css.group}>
