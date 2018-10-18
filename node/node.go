@@ -35,6 +35,7 @@ type Node struct {
 	ManagementDomain   string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain         string                     `bson:"user_domain" json:"user_domain"`
 	Services           []bson.ObjectId            `bson:"services" json:"services"`
+	Authorities        []bson.ObjectId            `bson:"authorities" json:"authorities"`
 	RequestsMin        int64                      `bson:"requests_min" json:"requests_min"`
 	ForwardedForHeader string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
 	Memory             float64                    `bson:"memory" json:"memory"`
