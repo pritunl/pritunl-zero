@@ -63,6 +63,10 @@ func (n *Node) Validate(db *database.Database) (
 		n.Services = []bson.ObjectId{}
 	}
 
+	if n.Authorities == nil {
+		n.Authorities = []bson.ObjectId{}
+	}
+
 	if n.Protocol != "http" && n.Protocol != "https" {
 		errData = &errortypes.ErrorData{
 			Error:   "node_protocol_invalid",
