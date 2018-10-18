@@ -1117,6 +1117,14 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostExpire = 15
 	}
 
+	if a.ProxyPort < 0 || a.ProxyPort > 65535 {
+		errData = &errortypes.ErrorData{
+			Error:   "proxy_port_invalid",
+			Message: "Bastion hosting port is invalid",
+		}
+		return
+	}
+
 	if a.HostCertificates && a.HostDomain == "" {
 		errData = &errortypes.ErrorData{
 			Error:   "host_domain_required",
