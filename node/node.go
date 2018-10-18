@@ -200,6 +200,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.ManagementDomain = nde.ManagementDomain
 	n.UserDomain = nde.UserDomain
 	n.Services = nde.Services
+	n.Authorities = nde.Authorities
 	n.ForwardedForHeader = nde.ForwardedForHeader
 
 	return
@@ -354,6 +355,10 @@ func (n *Node) Init() (err error) {
 		n.Services = []bson.ObjectId{}
 	}
 
+	if n.Authorities == nil {
+		n.Authorities = []bson.ObjectId{}
+	}
+
 	_, err = coll.UpsertId(n.Id, &bson.M{
 		"$set": &bson.M{
 			"_id":              n.Id,
@@ -363,6 +368,7 @@ func (n *Node) Init() (err error) {
 			"protocol":         n.Protocol,
 			"port":             n.Port,
 			"services":         n.Services,
+			"authorities":      n.Authorities,
 			"software_version": n.SoftwareVersion,
 		},
 	})
