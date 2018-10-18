@@ -532,6 +532,16 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('host_expire', parseInt(val, 10));
 						}}
 					/>
+					<PageInput
+						label="Bastion Hosting Port"
+						help="Port number to use when hosting a bastion server on nodes. Must be unique to other authorities and cannot conflict with ports in use on nodes."
+						type="text"
+						placeholder="Bastion hosting port"
+						value={authority.proxy_port}
+						onChange={(val): void => {
+							this.set('proxy_port', parseInt(val, 10));
+						}}
+					/>
 					<PageSwitch
 						label="Match roles"
 						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
