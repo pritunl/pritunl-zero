@@ -151,6 +151,17 @@ func userPut(c *gin.Context) {
 		return
 	}
 
+	errData, err = usr.SuperExists(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
 	err = usr.CommitFields(db, fields)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
