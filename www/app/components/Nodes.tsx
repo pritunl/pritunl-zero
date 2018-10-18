@@ -2,12 +2,15 @@
 import * as React from 'react';
 import * as NodeTypes from '../types/NodeTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from '../types/AuthorityTypes';
 import * as CertificateTypes from '../types/CertificateTypes';
 import NodesStore from '../stores/NodesStore';
 import ServicesStore from '../stores/ServicesStore';
+import AuthoritiesStore from '../stores/AuthoritiesStore';
 import CertificatesStore from '../stores/CertificatesStore';
 import * as NodeActions from '../actions/NodeActions';
 import * as ServiceActions from '../actions/ServiceActions';
+import * as AuthorityActions from '../actions/AuthorityActions';
 import * as CertificateActions from '../actions/CertificateActions';
 import Node from './Node';
 import Page from './Page';
@@ -16,6 +19,7 @@ import PageHeader from './PageHeader';
 interface State {
 	nodes: NodeTypes.NodesRo;
 	services: ServiceTypes.ServicesRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 	certificates: CertificateTypes.CertificatesRo;
 	disabled: boolean;
 }
@@ -35,6 +39,7 @@ export default class Nodes extends React.Component<{}, State> {
 		this.state = {
 			nodes: NodesStore.nodes,
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 			certificates: CertificatesStore.certificates,
 			disabled: false,
 		};
@@ -43,15 +48,18 @@ export default class Nodes extends React.Component<{}, State> {
 	componentDidMount(): void {
 		NodesStore.addChangeListener(this.onChange);
 		ServicesStore.addChangeListener(this.onChange);
+		AuthoritiesStore.addChangeListener(this.onChange);
 		CertificatesStore.addChangeListener(this.onChange);
 		NodeActions.sync();
 		ServiceActions.sync();
+		AuthorityActions.sync();
 		CertificateActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		NodesStore.removeChangeListener(this.onChange);
 		ServicesStore.removeChangeListener(this.onChange);
+		AuthoritiesStore.removeChangeListener(this.onChange);
 		CertificatesStore.removeChangeListener(this.onChange);
 	}
 
@@ -60,6 +68,7 @@ export default class Nodes extends React.Component<{}, State> {
 			...this.state,
 			nodes: NodesStore.nodes,
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 			certificates: CertificatesStore.certificates,
 		});
 	}
@@ -72,6 +81,7 @@ export default class Nodes extends React.Component<{}, State> {
 				key={node.id}
 				node={node}
 				services={this.state.services}
+				authorities={this.state.authorities}
 				certificates={this.state.certificates}
 			/>);
 		});
