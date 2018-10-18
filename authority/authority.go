@@ -1131,6 +1131,14 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostProxy = ""
 	}
 
+	if !a.HostCertificates {
+		a.StrictHostChecking = false
+
+		if a.HostTokens == nil {
+			a.HostTokens = []string{}
+		}
+	}
+
 	if a.HostTokens == nil || !a.HostCertificates {
 		a.HostTokens = []string{}
 	}
