@@ -21,6 +21,7 @@ type nodeData struct {
 	ManagementDomain   string          `json:"management_domain"`
 	UserDomain         string          `json:"user_domain"`
 	Services           []bson.ObjectId `json:"services"`
+	Authorities        []bson.ObjectId `json:"authorities"`
 	ForwardedForHeader string          `json:"forwarded_for_header"`
 }
 
@@ -58,6 +59,7 @@ func nodePut(c *gin.Context) {
 	nde.ManagementDomain = data.ManagementDomain
 	nde.UserDomain = data.UserDomain
 	nde.Services = data.Services
+	nde.Authorities = data.Authorities
 	nde.ForwardedForHeader = data.ForwardedForHeader
 
 	fields := set.NewSet(
@@ -69,6 +71,7 @@ func nodePut(c *gin.Context) {
 		"management_domain",
 		"user_domain",
 		"services",
+		"authorities",
 		"forwarded_for_header",
 	)
 
