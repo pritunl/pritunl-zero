@@ -63,6 +63,7 @@ type Authority struct {
 	PublicKey          string        `bson:"public_key" json:"public_key"`
 	ProxyPrivateKey    string        `bson:"proxy_private_key" json:"-"`
 	ProxyPublicKey     string        `bson:"proxy_public_key" json:"proxy_public_key"`
+	ProxyPort          int           `bson:"proxy_port" json:"proxy_port"`
 	HostDomain         string        `bson:"host_domain" json:"host_domain"`
 	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
 	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
