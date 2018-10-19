@@ -2,6 +2,7 @@ package sync
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/bastion"
 	"github.com/pritunl/pritunl-zero/database"
@@ -43,12 +44,27 @@ func bastionSync() (err error) {
 		}
 	}
 
+	curAuthrs := set.NewSet()
+
 	for _, authr := range authrs {
+		curAuthrs.Add(authr.Id)
+
 		bast := bastion.Get(authr.Id)
 		if bast == nil || !bast.State() {
 			bast = bastion.New(authr.Id)
 
 			e := bast.Start(db, authr)
+			if e != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": e,
+				}).Error("sync: Failed to start bastion")
+			}
+		}
+	}
+
+	for _, bast := range bastion.GetAll() {
+		if !curAuthrs.Contains(bast.Authority) {
+			e := bast.Stop()
 			if e != nil {
 				logrus.WithFields(logrus.Fields{
 					"error": e,
