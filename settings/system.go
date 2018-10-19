@@ -24,6 +24,7 @@ type system struct {
 	SshPubKeyLen         int    `bson:"ssh_pub_key_len" default:"5000"`
 	SshHostTokenLen      int    `bson:"ssh_host_token_len" default:"10"`
 	HsmResponseTimeout   int    `bson:"hsm_response_timeout" default:"10"`
+	BastionDockerImage   string `bson:"bastion_docker_image" default:"pritunl/pritunl-bastion"`
 }
 
 func newSystem() interface{} {
