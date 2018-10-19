@@ -59,6 +59,13 @@ func bastionSync() (err error) {
 					"error": e,
 				}).Error("sync: Failed to start bastion")
 			}
+		} else if bast.Diff(authr) {
+			e := bast.Stop()
+			if e != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": e,
+				}).Error("sync: Failed to stop bastion")
+			}
 		}
 	}
 
