@@ -149,3 +149,15 @@ func (b *Bastion) Stop() (err error) {
 func (b *Bastion) State() bool {
 	return b.state
 }
+
+func (b *Bastion) Diff(authr *authority.Authority) bool {
+	if b.authr.ProxyPublicKey != authr.ProxyPublicKey ||
+		b.authr.ProxyPrivateKey != authr.ProxyPrivateKey ||
+		b.authr.HostCertificates != authr.HostCertificates ||
+		b.authr.ProxyPort != authr.ProxyPort ||
+		b.authr.PublicKey != authr.PublicKey {
+
+		return true
+	}
+	return false
+}
