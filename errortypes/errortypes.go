@@ -40,6 +40,10 @@ type RequestError struct {
 	errors.DropboxError
 }
 
+type ExecError struct {
+	errors.DropboxError
+}
+
 type ErrorData struct {
 	Error   string `json:"error"`
 	Message string `json:"error_msg"`
