@@ -176,11 +176,11 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 		}
 
 		if authr.HostDomain != "" && (authr.StrictHostChecking ||
-			authr.HostProxy != "") {
+			authr.JumpProxy() != "") {
 
 			hst := &Host{
 				Domain:             authr.GetHostDomain(),
-				ProxyHost:          authr.HostProxy,
+				ProxyHost:          authr.JumpProxy(),
 				StrictHostChecking: authr.StrictHostChecking,
 			}
 			cert.Hosts = append(cert.Hosts, hst)
