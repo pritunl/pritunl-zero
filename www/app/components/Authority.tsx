@@ -66,11 +66,13 @@ const css = {
 	inputGroup: {
 		width: '100%',
 	} as React.CSSProperties,
-	protocol: {
-		flex: '0 1 auto',
+	hostname: {
+		flex: '1',
+		minWidth: '160px',
 	} as React.CSSProperties,
 	port: {
-		flex: '1',
+		width: '60px',
+		flex: '0 1 auto',
 	} as React.CSSProperties,
 };
 
@@ -437,7 +439,52 @@ export default class Authority extends React.Component<Props, State> {
 							});
 						}}
 					/>
+					<PageSwitch
+						label="Automatic bastion server"
+						help="Enable automatic bastion servers on nodes using Docker containers."
+						checked={authority.proxy_hosting}
+						onToggle={(): void => {
+							this.toggle('proxy_hosting');
+						}}
+					/>
+					<label className="pt-label"
+						style={css.label}
+						hidden={!authority.proxy_hosting}
+					>
+						Bastion Hostname and Port
+						<div className="pt-control-group" style={css.inputGroup}>
+							<input
+								className="pt-input"
+								style={css.hostname}
+								type="text"
+								autoCapitalize="off"
+								spellCheck={false}
+								placeholder="Hostname"
+								value={authority.proxy_hostname}
+								onChange={(evt): void => {
+									this.set('proxy_hostname', evt.target.value);
+								}}
+							/>
+							<input
+								className="pt-input"
+								style={css.port}
+								type="text"
+								autoCapitalize="off"
+								spellCheck={false}
+								placeholder="Port"
+								value={authority.proxy_port || ''}
+								onChange={(evt): void => {
+									if (evt.target.value) {
+										this.set('proxy_port', parseInt(evt.target.value, 10));
+									} else {
+										this.set('proxy_port', '');
+									}
+								}}
+							/>
+						</div>
+					</label>
 					<PageInput
+						hidden={authority.proxy_hosting}
 						label="Bastion Host"
 						help="Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
 						type="text"
@@ -530,16 +577,6 @@ export default class Authority extends React.Component<Props, State> {
 						value={authority.host_expire}
 						onChange={(val): void => {
 							this.set('host_expire', parseInt(val, 10));
-						}}
-					/>
-					<PageInput
-						label="Bastion Hosting Port"
-						help="Port number to use when hosting a bastion server on nodes. Must be unique to other authorities and cannot conflict with ports in use on nodes."
-						type="text"
-						placeholder="Bastion hosting port"
-						value={authority.proxy_port}
-						onChange={(val): void => {
-							this.set('proxy_port', parseInt(val, 10));
 						}}
 					/>
 					<PageSwitch
