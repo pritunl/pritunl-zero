@@ -110,6 +110,15 @@ func NewBastionHostCertificate(db *database.Database, hostname,
 	pubKey string, authr *authority.Authority) (
 	cert *Certificate, err error) {
 
+	if !strings.HasSuffix(hostname, "."+authr.HostDomain) {
+		err = errortypes.ParseError{
+			errors.New("ssh: Authority bastion hostname not " +
+				"subdomain of host domain"),
+		}
+		return
+	}
+	hostname = hostname[:len(hostname)-len(authr.HostDomain)-1]
+
 	pubKey = strings.TrimSpace(pubKey)
 
 	if len(pubKey) > settings.System.SshPubKeyLen {
