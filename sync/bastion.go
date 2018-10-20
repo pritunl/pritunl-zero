@@ -45,18 +45,50 @@ func bastionSync() (err error) {
 	}
 
 	curAuthrs := set.NewSet()
+	curContainers := []string{}
 
 	for _, authr := range authrs {
 		curAuthrs.Add(authr.Id)
 	}
 
 	for _, bast := range bastion.GetAll() {
+		curContainers = append(curContainers, bast.Container)
+
 		if !curAuthrs.Contains(bast.Authority) {
 			e := bast.Stop()
 			if e != nil {
 				logrus.WithFields(logrus.Fields{
 					"error": e,
 				}).Error("sync: Failed to stop bastion server")
+			}
+		}
+	}
+
+	containers, err := bastion.DockerGetRunning()
+	if err != nil {
+		return
+	}
+
+	for containerId, authrId := range containers {
+		match := false
+		for _, containerId2 := range curContainers {
+			if bastion.DockerMatchContainer(containerId, containerId2) {
+				match = true
+				break
+			}
+		}
+
+		if !match {
+			logrus.WithFields(logrus.Fields{
+				"authority_id": authrId.Hex(),
+				"container_id": containerId,
+			}).Info("sync: Removing unknown bastion server")
+
+			e := bastion.DockerRemove(containerId)
+			if e != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": e,
+				}).Error("sync: Failed to remove bastion server")
 			}
 		}
 	}
