@@ -18,8 +18,8 @@ import (
 
 type Bastion struct {
 	Authority bson.ObjectId
+	Container string
 	authr     *authority.Authority
-	container string
 	state     bool
 	kill      bool
 	path      string
@@ -32,7 +32,7 @@ func (b *Bastion) wait() {
 		delete(state, b.Authority)
 	}()
 
-	output, err := utils.ExecOutput("", "docker", "wait", b.container)
+	output, err := utils.ExecOutput("", "docker", "wait", b.Container)
 	if b.state && err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrapf(err, "utils: Failed to exec docker"),
@@ -113,7 +113,7 @@ func (b *Bastion) Start(db *database.Database,
 		return
 	}
 
-	b.container = strings.TrimSpace(output)
+	b.Container = strings.TrimSpace(output)
 
 	go b.wait()
 
@@ -131,7 +131,7 @@ func (b *Bastion) Stop() (err error) {
 	}).Info("bastion: Stopping bastion server")
 
 	_, err = utils.ExecOutputLogged(nil,
-		"docker", "stop", "-t", "3", b.container)
+		"docker", "stop", "-t", "3", b.Container)
 	if err != nil {
 		return
 	}
@@ -140,7 +140,7 @@ func (b *Bastion) Stop() (err error) {
 		time.Sleep(15 * time.Second)
 
 		if b.state {
-			utils.ExecOutputLogged(nil, "docker", "kill", b.container)
+			utils.ExecOutputLogged(nil, "docker", "kill", b.Container)
 		}
 	}()
 
