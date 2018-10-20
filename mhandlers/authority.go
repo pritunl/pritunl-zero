@@ -20,6 +20,8 @@ type authorityData struct {
 	HostExpire         int           `json:"host_expire"`
 	MatchRoles         bool          `json:"match_roles"`
 	Roles              []string      `json:"roles"`
+	ProxyHosting       bool          `json:"proxy_hosting"`
+	ProxyHostname      string        `json:"proxy_hostname"`
 	ProxyPort          int           `json:"proxy_port"`
 	HostDomain         string        `json:"host_domain"`
 	HostProxy          string        `json:"host_proxy"`
@@ -83,6 +85,8 @@ func authorityPut(c *gin.Context) {
 			return
 		}
 	}
+	authr.ProxyHosting = data.ProxyHosting
+	authr.ProxyHostname = data.ProxyHostname
 	authr.ProxyPort = data.ProxyPort
 	authr.HostDomain = data.HostDomain
 	authr.HostProxy = data.HostProxy
@@ -109,6 +113,8 @@ func authorityPut(c *gin.Context) {
 		"info",
 		"match_roles",
 		"roles",
+		"proxy_hosting",
+		"proxy_hostname",
 		"proxy_port",
 		"host_domain",
 		"host_tokens",
@@ -171,6 +177,8 @@ func authorityPost(c *gin.Context) {
 		HostExpire:         data.HostExpire,
 		MatchRoles:         data.MatchRoles,
 		Roles:              data.Roles,
+		ProxyHosting:       data.ProxyHosting,
+		ProxyHostname:      data.ProxyHostname,
 		ProxyPort:          data.ProxyPort,
 		HostDomain:         data.HostDomain,
 		StrictHostChecking: data.StrictHostChecking,
