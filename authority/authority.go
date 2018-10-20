@@ -1053,6 +1053,18 @@ func (a *Authority) Export(passphrase string) (encKey string, err error) {
 	return
 }
 
+func (a *Authority) JumpProxy() string {
+	if a.ProxyHosting {
+		return fmt.Sprintf(
+			"bastion@%s:%d",
+			a.ProxyHostname,
+			a.ProxyPort,
+		)
+	} else {
+		return a.HostProxy
+	}
+}
+
 func (a *Authority) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
