@@ -1153,6 +1153,17 @@ func (a *Authority) Validate(db *database.Database) (
 			return
 		}
 
+		if a.HostCertificates && !strings.HasSuffix(
+			a.ProxyHostname, "."+a.HostDomain) {
+
+			errData = &errortypes.ErrorData{
+				Error: "proxy_hostname_invalid",
+				Message: "Bastion hostname must be a subdomain of " +
+					"authority host domain when using host certificates",
+			}
+			return
+		}
+
 		if a.ProxyPort < 1 || a.ProxyPort > 65535 {
 			errData = &errortypes.ErrorData{
 				Error:   "proxy_port_invalid",
