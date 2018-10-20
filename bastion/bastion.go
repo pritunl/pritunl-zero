@@ -9,9 +9,11 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -87,6 +89,35 @@ func (b *Bastion) Start(db *database.Database,
 		b.state = false
 		os.Remove(b.path)
 		return
+	}
+
+	if authr.HostCertificates {
+		cert, e := ssh.NewBastionHostCertificate(db,
+			authr.ProxyHostname, authr.ProxyPublicKey, authr)
+		if e != nil {
+			b.state = false
+			os.Remove(b.path)
+			err = e
+			return
+		}
+
+		hostCertPath := filepath.Join(b.path, "ssh_host_rsa_key-cert.pub")
+
+		if len(cert.Certificates) == 0 {
+			b.state = false
+			os.Remove(b.path)
+			err = &errortypes.UnknownError{
+				errors.Wrapf(err, "bastion: Missing host certificate"),
+			}
+			return
+		}
+
+		err = utils.CreateWrite(hostCertPath, cert.Certificates[0], 0644)
+		if err != nil {
+			b.state = false
+			os.Remove(b.path)
+			return
+		}
 	}
 
 	output, err := utils.ExecOutput("",
