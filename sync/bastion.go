@@ -48,7 +48,20 @@ func bastionSync() (err error) {
 
 	for _, authr := range authrs {
 		curAuthrs.Add(authr.Id)
+	}
 
+	for _, bast := range bastion.GetAll() {
+		if !curAuthrs.Contains(bast.Authority) {
+			e := bast.Stop()
+			if e != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": e,
+				}).Error("sync: Failed to stop bastion server")
+			}
+		}
+	}
+
+	for _, authr := range authrs {
 		bast := bastion.Get(authr.Id)
 		if bast == nil || !bast.State() {
 			bast = bastion.New(authr.Id)
@@ -65,17 +78,6 @@ func bastionSync() (err error) {
 				logrus.WithFields(logrus.Fields{
 					"error": e,
 				}).Error("sync: Failed to stop bastion")
-			}
-		}
-	}
-
-	for _, bast := range bastion.GetAll() {
-		if !curAuthrs.Contains(bast.Authority) {
-			e := bast.Stop()
-			if e != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": e,
-				}).Error("sync: Failed to start bastion")
 			}
 		}
 	}
