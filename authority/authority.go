@@ -61,6 +61,7 @@ type Authority struct {
 	HostExpire         int           `bson:"host_expire" json:"host_expire"`
 	PrivateKey         string        `bson:"private_key" json:"-"`
 	PublicKey          string        `bson:"public_key" json:"public_key"`
+	ProxyJump          string        `bson:"-" json:"proxy_jump"`
 	ProxyPrivateKey    string        `bson:"proxy_private_key" json:"-"`
 	ProxyPublicKey     string        `bson:"proxy_public_key" json:"proxy_public_key"`
 	ProxyHosting       bool          `bson:"proxy_hosting" json:"proxy_hosting"`
@@ -1195,6 +1196,8 @@ func (a *Authority) Json() {
 			a.HsmStatus = Disconnected
 		}
 	}
+
+	a.ProxyJump = a.JumpProxy()
 }
 
 func (a *Authority) Commit(db *database.Database) (err error) {
