@@ -323,7 +323,7 @@ func (a *Authority) createCertificateLocal(usr *user.User, sshPubKey string) (
 	}
 
 	roles := usr.Roles
-	if a.HostProxy != "" {
+	if a.JumpProxy() != "" {
 		hasBastion := false
 
 		for _, role := range roles {
@@ -400,7 +400,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 	}
 
 	roles := usr.Roles
-	if a.HostProxy != "" {
+	if a.JumpProxy() != "" {
 		hasBastion := false
 
 		for _, role := range roles {
