@@ -448,7 +448,7 @@ export default class Node extends React.Component<Props, State> {
 		let authorities: JSX.Element[] = [];
 		for (let authorityId of (node.authorities || [])) {
 			let authority = AuthoritiesStore.authority(authorityId);
-			if (!authority) {
+			if (!authority || !authority.proxy_hosting) {
 				continue;
 			}
 
@@ -472,6 +472,10 @@ export default class Node extends React.Component<Props, State> {
 		let authoritiesSelect: JSX.Element[] = [];
 		if (this.props.authorities.length) {
 			for (let authority of this.props.authorities) {
+				if (!authority.proxy_hosting) {
+					continue;
+				}
+
 				authoritiesSelect.push(
 					<option
 						key={authority.id}
@@ -479,7 +483,8 @@ export default class Node extends React.Component<Props, State> {
 					>{authority.name}</option>,
 				);
 			}
-		} else {
+		}
+		if (!authoritiesSelect.length) {
 			authoritiesSelect.push(<option key="null" value="">None</option>);
 		}
 
