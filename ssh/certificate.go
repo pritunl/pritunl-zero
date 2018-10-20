@@ -20,9 +20,10 @@ type Info struct {
 }
 
 type Host struct {
-	Domain             string `bson:"domain" json:"domain"`
-	ProxyHost          string `bson:"proxy_host" json:"proxy_host"`
-	StrictHostChecking bool   `bson:"strict_host_checking" json:"strict_host_checking"`
+	Domain                string `bson:"domain" json:"domain"`
+	ProxyHost             string `bson:"proxy_host" json:"proxy_host"`
+	StrictHostChecking    bool   `bson:"strict_host_checking" json:"strict_host_checking"`
+	StrictBastionChecking bool   `bson:"strict_bastion_checking" json:"strict_bastion_checking"`
 }
 
 type Certificate struct {
