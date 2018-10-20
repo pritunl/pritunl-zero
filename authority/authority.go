@@ -1170,12 +1170,6 @@ func (a *Authority) Validate(db *database.Database) (
 		return
 	}
 
-	if a.HostDomain == "" {
-		a.HostCertificates = false
-		a.StrictHostChecking = false
-		a.HostProxy = ""
-	}
-
 	if !a.HostCertificates {
 		a.StrictHostChecking = false
 
