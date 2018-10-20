@@ -95,6 +95,7 @@ func (b *Bastion) Start(db *database.Database,
 		"--rm",
 		"-d",
 		"-u", "bastion",
+		"--name", DockerGetName(authr.Id),
 		"-p", fmt.Sprintf("%d:9722", authr.ProxyPort),
 		"-v", fmt.Sprintf("%s:/ssh_mount", b.path),
 		"-e", fmt.Sprintf(
