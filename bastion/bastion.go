@@ -37,7 +37,7 @@ func (b *Bastion) wait() {
 	output, err := utils.ExecOutput("", "docker", "wait", b.Container)
 	if b.state && err != nil {
 		err = &errortypes.RequestError{
-			errors.Wrapf(err, "utils: Failed to exec docker"),
+			errors.Wrapf(err, "bastion: Failed to exec docker"),
 		}
 		return
 	}
