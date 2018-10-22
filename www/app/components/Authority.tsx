@@ -332,6 +332,13 @@ export default class Authority extends React.Component<Props, State> {
 			},
 		];
 
+		if (authority.proxy_hosting) {
+			fields.push({
+				label: 'Bastion Host',
+				value: this.props.authority.proxy_jump,
+			});
+		}
+
 		if (isHsm) {
 			let hsmStatus = this.props.authority.hsm_status || 'disconnected';
 
