@@ -29,7 +29,7 @@ type Bastion struct {
 
 func (b *Bastion) wait() {
 	defer func() {
-		os.Remove(b.path)
+		os.RemoveAll(b.path)
 		b.state = false
 		delete(state, b.Authority)
 	}()
@@ -87,7 +87,7 @@ func (b *Bastion) Start(db *database.Database,
 	err = utils.ExistsMkdir(b.path, 0755)
 	if err != nil {
 		b.state = false
-		os.Remove(b.path)
+		os.RemoveAll(b.path)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (b *Bastion) Start(db *database.Database,
 			authr.ProxyHostname, authr.ProxyPublicKey, authr)
 		if e != nil {
 			b.state = false
-			os.Remove(b.path)
+			os.RemoveAll(b.path)
 			err = e
 			return
 		}
@@ -105,7 +105,7 @@ func (b *Bastion) Start(db *database.Database,
 
 		if len(cert.Certificates) == 0 {
 			b.state = false
-			os.Remove(b.path)
+			os.RemoveAll(b.path)
 			err = &errortypes.UnknownError{
 				errors.Wrapf(err, "bastion: Missing host certificate"),
 			}
@@ -115,7 +115,7 @@ func (b *Bastion) Start(db *database.Database,
 		err = utils.CreateWrite(hostCertPath, cert.Certificates[0], 0644)
 		if err != nil {
 			b.state = false
-			os.Remove(b.path)
+			os.RemoveAll(b.path)
 			return
 		}
 	}
@@ -139,7 +139,7 @@ func (b *Bastion) Start(db *database.Database,
 	)
 	if err != nil {
 		b.state = false
-		os.Remove(b.path)
+		os.RemoveAll(b.path)
 
 		return
 	}
