@@ -182,6 +182,8 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 				Domain:             authr.GetHostDomain(),
 				ProxyHost:          authr.JumpProxy(),
 				StrictHostChecking: authr.StrictHostChecking,
+				StrictBastionChecking: authr.HostCertificates &&
+					authr.ProxyHosting,
 			}
 			cert.Hosts = append(cert.Hosts, hst)
 		}
