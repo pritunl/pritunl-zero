@@ -6,6 +6,7 @@ import (
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"gopkg.in/mgo.v2/bson"
@@ -176,6 +177,14 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 			)
 		}
 
+		certAuthr = authr.GetBastionCertAuthority()
+		if certAuthr != "" {
+			cert.CertificateAuthorities = append(
+				cert.CertificateAuthorities,
+				certAuthr,
+			)
+		}
+
 		matches, e := authr.GetMatches()
 		if e != nil {
 			err = e
@@ -190,8 +199,8 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 				ProxyHost:          authr.JumpProxy(),
 				Matches:            matches,
 				StrictHostChecking: authr.StrictHostChecking,
-				StrictBastionChecking: authr.HostCertificates &&
-					authr.ProxyHosting,
+				StrictBastionChecking: authr.ProxyHosting &&
+					!settings.System.DisableBastionHostCertificates,
 			}
 			cert.Hosts = append(cert.Hosts, hst)
 		}
