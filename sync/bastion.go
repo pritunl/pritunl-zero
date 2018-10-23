@@ -121,26 +121,22 @@ func bastionRunner() {
 	time.Sleep(1 * time.Second)
 
 	for {
-		time.Sleep(1 * time.Second)
-
 		if bastionEnabled() {
+			err := bastionInit()
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("sync: Failed to init bastion host")
+
+				time.Sleep(10 * time.Second)
+
+				continue
+			}
+
 			break
 		}
-	}
 
-	for {
-		err := bastionInit()
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("sync: Failed to init bastion host")
-
-			time.Sleep(10 * time.Second)
-
-			continue
-		}
-
-		break
+		time.Sleep(1 * time.Second)
 	}
 
 	for {
