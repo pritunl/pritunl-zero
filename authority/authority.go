@@ -152,11 +152,9 @@ func (a *Authority) GetHostDomain() string {
 
 	domain := "*." + a.HostDomain
 
-	jumpProxy := a.JumpProxy()
-	if jumpProxy != "" {
-		hostProxy := strings.SplitN(jumpProxy, "@", 2)
-		hostProxy = strings.SplitN(hostProxy[len(hostProxy)-1], ":", 2)
-		domain += " !" + hostProxy[0]
+	bastionDomain := a.GetBastionDomain()
+	if bastionDomain != "" {
+		domain += " !" + bastionDomain
 	}
 
 	return domain
