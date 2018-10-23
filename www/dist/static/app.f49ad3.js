@@ -12368,7 +12368,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
             minWidth: '160px'
         },
         port: {
-            width: '70px',
+            width: '60px',
             flex: '0 1 auto'
         }
     };
@@ -12594,7 +12594,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                     this.toggle('match_roles');
                 } }), React.createElement("label", { className: "pt-label", hidden: !authority.match_roles }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", hidden: !authority.match_roles, value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Match Subnets", React.createElement(Help_1.default, { title: "Match Subnets", content: "Subnets that will be proxied through bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16 and /24 subnets are supported." }), React.createElement("div", null, subnets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add subnet", value: this.state.addSubnet, onChange: val => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Match Subnets", React.createElement(Help_1.default, { title: "Match Subnets", content: "Subnets that will be proxied through bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported." }), React.createElement("div", null, subnets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add subnet", value: this.state.addSubnet, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addSubnet: val }));
                 }, onSubmit: this.onAddSubnet }), React.createElement("label", { style: css.itemsLabel, hidden: !authority.host_certificates }, "Host Tokens", React.createElement(Help_1.default, { title: "Host Tokens", content: "Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens." })), tokens, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", disabled: this.state.changed, hidden: !authority.host_certificates, onClick: () => {
                     AuthorityActions.createToken(this.props.authority.id).then(() => {
