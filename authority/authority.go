@@ -162,6 +162,17 @@ func (a *Authority) GetHostDomain() string {
 	return domain
 }
 
+func (a *Authority) GetBastionDomain() string {
+	jumpProxy := a.JumpProxy()
+	if jumpProxy == "" {
+		return ""
+	}
+
+	hostProxy := strings.SplitN(jumpProxy, "@", 2)
+	hostProxy = strings.SplitN(hostProxy[len(hostProxy)-1], ":", 2)
+	return hostProxy[0]
+}
+
 func (a *Authority) GetCertAuthority() string {
 	if a.HostDomain == "" {
 		return ""
