@@ -28,6 +28,31 @@ type Bastion struct {
 	path       string
 }
 
+func (b *Bastion) syncCert() {
+	defer func() {
+		os.RemoveAll(b.path)
+	}()
+
+	for {
+		if !b.state {
+			return
+		}
+
+		if time.Now().After(b.certExpire.Add(-10 * time.Minute)) {
+			err := b.renewHost(nil)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("bastion: Bastion certificate renew error")
+
+				time.Sleep(10 * time.Second)
+			}
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
 func (b *Bastion) wait() {
 	defer func() {
 		os.RemoveAll(b.path)
@@ -164,6 +189,10 @@ func (b *Bastion) Start(db *database.Database,
 	}
 
 	b.Container = strings.TrimSpace(output)
+
+	if authr.HostCertificates {
+		go b.syncCert()
+	}
 
 	go b.wait()
 
