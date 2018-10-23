@@ -178,6 +178,15 @@ func (a *Authority) GetCertAuthority() string {
 	return fmt.Sprintf("@cert-authority *.%s %s", a.HostDomain, a.PublicKey)
 }
 
+func (a *Authority) GetBastionCertAuthority() string {
+	bastionDomain := a.GetBastionDomain()
+	if bastionDomain == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("@cert-authority %s %s", bastionDomain, a.PublicKey)
+}
+
 func (a *Authority) UserHasAccess(usr *user.User) bool {
 	if !a.MatchRoles {
 		return true
