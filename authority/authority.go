@@ -1069,6 +1069,70 @@ func (a *Authority) JumpProxy() string {
 	}
 }
 
+func (a *Authority) GetMatches() (matches []string, err error) {
+	matches = []string{}
+
+	hostDomain := a.GetHostDomain()
+	if hostDomain != "" {
+		matches = append(matches, hostDomain)
+	}
+
+	if a.HostSubnets == nil || len(a.HostSubnets) == 0 {
+		return
+	}
+
+	for _, hostSubnet := range a.HostSubnets {
+		_, subnet, e := net.ParseCIDR(hostSubnet)
+		if e != nil {
+			err = e
+			return
+		}
+
+		cidr, _ := subnet.Mask.Size()
+
+		hostSubnet = strings.SplitN(subnet.String(), "/", 2)[0]
+		parts := strings.Split(hostSubnet, ".")
+
+		if len(parts) != 4 {
+			err = &errortypes.ParseError{
+				errors.New("authority: Failed to split subnet parts"),
+			}
+			return
+		}
+
+		switch cidr {
+		case 8:
+			matches = append(matches, fmt.Sprintf(
+				"%s.*.*.*",
+				parts[0],
+			))
+			break
+		case 16:
+			matches = append(matches, fmt.Sprintf(
+				"%s.%s.*.*",
+				parts[0],
+				parts[1],
+			))
+			break
+		case 24:
+			matches = append(matches, fmt.Sprintf(
+				"%s.%s.%s.*",
+				parts[0],
+				parts[1],
+				parts[2],
+			))
+			break
+		default:
+			err = &errortypes.ParseError{
+				errors.New("authority: Unsupported subnet size"),
+			}
+			return
+		}
+	}
+
+	return
+}
+
 func (a *Authority) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
