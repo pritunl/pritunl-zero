@@ -630,7 +630,9 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 	return
 }
 
-func (a *Authority) createHostCertificate(hostname string, sshPubKey string) (
+func (a *Authority) createHostCertificate(
+	hostname, domain string, sshPubKey string) (
+
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
@@ -663,7 +665,7 @@ func (a *Authority) createHostCertificate(hostname string, sshPubKey string) (
 		Serial:          serial,
 		CertType:        ssh.HostCert,
 		KeyId:           hostname,
-		ValidPrincipals: []string{a.GetDomain(hostname)},
+		ValidPrincipals: []string{domain},
 		ValidAfter:      uint64(validAfter),
 		ValidBefore:     uint64(validBefore),
 	}
@@ -684,7 +686,7 @@ func (a *Authority) createHostCertificate(hostname string, sshPubKey string) (
 }
 
 func (a *Authority) createHostCertificateHsm(db *database.Database,
-	hostname string, sshPubKey string) (cert *ssh.Certificate,
+	hostname, domain string, sshPubKey string) (cert *ssh.Certificate,
 	certMarshaled string, err error) {
 
 	pubKey, comment, _, _, err := ssh.ParseAuthorizedKey([]byte(sshPubKey))
@@ -707,7 +709,7 @@ func (a *Authority) createHostCertificateHsm(db *database.Database,
 		Key:             pubKey,
 		CertType:        ssh.HostCert,
 		KeyId:           hostname,
-		ValidPrincipals: []string{a.GetDomain(hostname)},
+		ValidPrincipals: []string{domain},
 		ValidAfter:      uint64(validAfter),
 		ValidBefore:     uint64(validBefore),
 	}
@@ -883,10 +885,25 @@ func (a *Authority) CreateHostCertificate(db *database.Database,
 
 	if a.Type == PritunlHsm {
 		cert, certMarshaled, err = a.createHostCertificateHsm(
-			db, hostname, sshPubKey)
+			db, hostname, a.GetDomain(hostname), sshPubKey)
 	} else {
 		cert, certMarshaled, err = a.createHostCertificate(
-			hostname, sshPubKey)
+			hostname, a.GetDomain(hostname), sshPubKey)
+	}
+
+	return
+}
+
+func (a *Authority) CreateBastionHostCertificate(db *database.Database,
+	hostname string, sshPubKey string) (
+	cert *ssh.Certificate, certMarshaled string, err error) {
+
+	if a.Type == PritunlHsm {
+		cert, certMarshaled, err = a.createHostCertificateHsm(
+			db, hostname, hostname, sshPubKey)
+	} else {
+		cert, certMarshaled, err = a.createHostCertificate(
+			hostname, hostname, sshPubKey)
 	}
 
 	return
