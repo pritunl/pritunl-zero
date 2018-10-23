@@ -19,12 +19,13 @@ import (
 )
 
 type Bastion struct {
-	Authority bson.ObjectId
-	Container string
-	authr     *authority.Authority
-	state     bool
-	kill      bool
-	path      string
+	Authority  bson.ObjectId
+	Container  string
+	authr      *authority.Authority
+	certExpire time.Time
+	state      bool
+	kill       bool
+	path       string
 }
 
 func (b *Bastion) wait() {
@@ -48,6 +49,44 @@ func (b *Bastion) wait() {
 			"exit_code": output,
 		}).Error("bastion: Bastion process error")
 	}
+}
+
+func (b *Bastion) renewHost(db *database.Database) (err error) {
+	if db == nil {
+		db = database.GetDatabase()
+		defer db.Close()
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"authority_id": b.Authority.Hex(),
+	}).Info("bastion: Renewing bastion host certificate")
+
+	cert, e := ssh.NewBastionHostCertificate(db,
+		b.authr.ProxyHostname, b.authr.ProxyPublicKey, b.authr)
+	if e != nil {
+		b.state = false
+		os.RemoveAll(b.path)
+		err = e
+		return
+	}
+
+	hostCertPath := filepath.Join(b.path, "ssh_host_rsa_key-cert.pub")
+
+	if len(cert.Certificates) == 0 || len(cert.CertificatesInfo) == 0 {
+		err = &errortypes.UnknownError{
+			errors.Wrapf(err, "bastion: Missing host certificate"),
+		}
+		return
+	}
+
+	err = utils.CreateWrite(hostCertPath, cert.Certificates[0], 0644)
+	if err != nil {
+		return
+	}
+
+	b.certExpire = cert.CertificatesInfo[0].Expires
+
+	return
 }
 
 func (b *Bastion) Start(db *database.Database,
@@ -92,27 +131,7 @@ func (b *Bastion) Start(db *database.Database,
 	}
 
 	if authr.HostCertificates {
-		cert, e := ssh.NewBastionHostCertificate(db,
-			authr.ProxyHostname, authr.ProxyPublicKey, authr)
-		if e != nil {
-			b.state = false
-			os.RemoveAll(b.path)
-			err = e
-			return
-		}
-
-		hostCertPath := filepath.Join(b.path, "ssh_host_rsa_key-cert.pub")
-
-		if len(cert.Certificates) == 0 {
-			b.state = false
-			os.RemoveAll(b.path)
-			err = &errortypes.UnknownError{
-				errors.Wrapf(err, "bastion: Missing host certificate"),
-			}
-			return
-		}
-
-		err = utils.CreateWrite(hostCertPath, cert.Certificates[0], 0644)
+		err = b.renewHost(db)
 		if err != nil {
 			b.state = false
 			os.RemoveAll(b.path)
