@@ -610,7 +610,7 @@ System.registerDynamic("app/components/Subscription.js", ["npm:react@16.4.1.js",
                     }).catch(() => {
                         this.setState(Object.assign({}, this.state, { disabled: false }));
                     });
-                } }, "Activate License"), React.createElement(react_stripe_checkout_1.default, { label: "Pritunl Zero", image: "//s3.amazonaws.com/pritunl-static/logo_stripe.png", allowRememberMe: false, zipCode: true, amount: 5000, name: "Pritunl Zero - 7 Day Trial", description: "Subscribe to Zero ($50/month)", panelLabel: "Subscribe", token: token => {
+                } }, "Activate License"), React.createElement(react_stripe_checkout_1.default, { label: "Pritunl Zero", image: "//s3.amazonaws.com/pritunl-static/logo_stripe.png", allowRememberMe: false, zipCode: true, amount: 5000, name: "Pritunl Zero", description: "Subscribe to Zero ($50/month)", panelLabel: "Subscribe", token: token => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
                     SubscriptionActions.checkout('zero', token.id, token.email).then(message => {
                         this.setState(Object.assign({}, this.state, { disabled: false, message: message }));
@@ -10774,7 +10774,7 @@ System.registerDynamic("app/components/PageInputSwitch.js", ["npm:react@16.4.1.j
     exports.default = PageInputSwitch;
     
 });
-System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/CertificatesStore.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageInputSwitch.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/actions/NodeActions.js", "app/utils/MiscUtils.js", "app/stores/CertificatesStore.js", "app/stores/AuthoritiesStore.js", "app/stores/ServicesStore.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageInputSwitch.js", "app/components/PageSelectButton.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -10784,6 +10784,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
     const NodeActions = $__require("app/actions/NodeActions.js");
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     const CertificatesStore_1 = $__require("app/stores/CertificatesStore.js");
+    const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
@@ -10894,6 +10895,41 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
                 node.services = services;
                 this.setState(Object.assign({}, this.state, { changed: true, node: node }));
             };
+            this.onAddAuthority = () => {
+                let node;
+                if (!this.state.addAuthority && !this.props.authorities.length) {
+                    return;
+                }
+                let authorityId = this.state.addAuthority || this.props.authorities[0].id;
+                if (this.state.changed) {
+                    node = Object.assign({}, this.state.node);
+                } else {
+                    node = Object.assign({}, this.props.node);
+                }
+                let authorities = [...(node.authorities || [])];
+                if (authorities.indexOf(authorityId) === -1) {
+                    authorities.push(authorityId);
+                }
+                authorities.sort();
+                node.authorities = authorities;
+                this.setState(Object.assign({}, this.state, { changed: true, node: node }));
+            };
+            this.onRemoveAuthority = authority => {
+                let node;
+                if (this.state.changed) {
+                    node = Object.assign({}, this.state.node);
+                } else {
+                    node = Object.assign({}, this.props.node);
+                }
+                let authorities = [...(node.authorities || [])];
+                let i = authorities.indexOf(authority);
+                if (i === -1) {
+                    return;
+                }
+                authorities.splice(i, 1);
+                node.authorities = authorities;
+                this.setState(Object.assign({}, this.state, { changed: true, node: node }));
+            };
             this.onAddCert = () => {
                 let node;
                 if (!this.state.addCert && !this.props.certificates.length) {
@@ -10935,6 +10971,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
                 message: '',
                 node: null,
                 addService: null,
+                addAuthority: null,
                 addCert: null,
                 forwardedChecked: false
             };
@@ -10989,6 +11026,28 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
             } else {
                 servicesSelect.push(React.createElement("option", { key: "null", value: "" }, "None"));
             }
+            let authorities = [];
+            for (let authorityId of node.authorities || []) {
+                let authority = AuthoritiesStore_1.default.authority(authorityId);
+                if (!authority || !authority.proxy_hosting) {
+                    continue;
+                }
+                authorities.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: authority.id }, authority.name, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                        this.onRemoveAuthority(authority.id);
+                    } })));
+            }
+            let authoritiesSelect = [];
+            if (this.props.authorities.length) {
+                for (let authority of this.props.authorities) {
+                    if (!authority.proxy_hosting) {
+                        continue;
+                    }
+                    authoritiesSelect.push(React.createElement("option", { key: authority.id, value: authority.id }, authority.name));
+                }
+            }
+            if (!authoritiesSelect.length) {
+                authoritiesSelect.push(React.createElement("option", { key: "null", value: "" }, "None"));
+            }
             let certificates = [];
             for (let certId of node.certificates || []) {
                 let cert = CertificatesStore_1.default.certificate(certId);
@@ -11023,7 +11082,9 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
                     this.set('port', parseInt(evt.target.value, 10));
                 } }))), React.createElement("label", { className: "pt-label", style: css.label, hidden: node.type.indexOf('proxy') === -1 }, "Services", React.createElement(Help_1.default, { title: "Services", content: "Services that can be accessed from this node. The nodes certificate must be valid for all the service domains. The node also needs to be able to access all the interal servers of the services." }), React.createElement("div", null, services)), React.createElement(PageSelectButton_1.default, { hidden: node.type.indexOf('proxy') === -1, label: "Add Service", value: this.state.addService, disabled: !this.props.services.length, buttonClass: "pt-intent-success", onChange: val => {
                     this.setState(Object.assign({}, this.state, { addService: val }));
-                }, onSubmit: this.onAddService }, servicesSelect)), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                }, onSubmit: this.onAddService }, servicesSelect), React.createElement("label", { className: "pt-label", style: css.label }, "Authority Bastions", React.createElement(Help_1.default, { title: "Authority Bastions", content: "Authorities that will be served with a bastion server." }), React.createElement("div", null, authorities)), React.createElement(PageSelectButton_1.default, { label: "Add Authority", value: this.state.addAuthority, disabled: !this.props.authorities.length, buttonClass: "pt-intent-success", onChange: val => {
+                    this.setState(Object.assign({}, this.state, { addAuthority: val }));
+                }, onSubmit: this.onAddAuthority }, authoritiesSelect)), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
                     value: node.id || 'None'
                 }, {
@@ -11071,7 +11132,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
     exports.default = Node;
     
 });
-System.registerDynamic("app/components/Nodes.js", ["npm:react@16.4.1.js", "app/stores/NodesStore.js", "app/stores/ServicesStore.js", "app/stores/CertificatesStore.js", "app/actions/NodeActions.js", "app/actions/ServiceActions.js", "app/actions/CertificateActions.js", "app/components/Node.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Nodes.js", ["npm:react@16.4.1.js", "app/stores/NodesStore.js", "app/stores/ServicesStore.js", "app/stores/AuthoritiesStore.js", "app/stores/CertificatesStore.js", "app/actions/NodeActions.js", "app/actions/ServiceActions.js", "app/actions/AuthorityActions.js", "app/actions/CertificateActions.js", "app/components/Node.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -11080,9 +11141,11 @@ System.registerDynamic("app/components/Nodes.js", ["npm:react@16.4.1.js", "app/s
     const React = $__require("npm:react@16.4.1.js");
     const NodesStore_1 = $__require("app/stores/NodesStore.js");
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
+    const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
     const CertificatesStore_1 = $__require("app/stores/CertificatesStore.js");
     const NodeActions = $__require("app/actions/NodeActions.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
+    const AuthorityActions = $__require("app/actions/AuthorityActions.js");
     const CertificateActions = $__require("app/actions/CertificateActions.js");
     const Node_1 = $__require("app/components/Node.js");
     const Page_1 = $__require("app/components/Page.js");
@@ -11099,11 +11162,12 @@ System.registerDynamic("app/components/Nodes.js", ["npm:react@16.4.1.js", "app/s
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
-                this.setState(Object.assign({}, this.state, { nodes: NodesStore_1.default.nodes, services: ServicesStore_1.default.services, certificates: CertificatesStore_1.default.certificates }));
+                this.setState(Object.assign({}, this.state, { nodes: NodesStore_1.default.nodes, services: ServicesStore_1.default.services, authorities: AuthoritiesStore_1.default.authorities, certificates: CertificatesStore_1.default.certificates }));
             };
             this.state = {
                 nodes: NodesStore_1.default.nodes,
                 services: ServicesStore_1.default.services,
+                authorities: AuthoritiesStore_1.default.authorities,
                 certificates: CertificatesStore_1.default.certificates,
                 disabled: false
             };
@@ -11111,20 +11175,23 @@ System.registerDynamic("app/components/Nodes.js", ["npm:react@16.4.1.js", "app/s
         componentDidMount() {
             NodesStore_1.default.addChangeListener(this.onChange);
             ServicesStore_1.default.addChangeListener(this.onChange);
+            AuthoritiesStore_1.default.addChangeListener(this.onChange);
             CertificatesStore_1.default.addChangeListener(this.onChange);
             NodeActions.sync();
             ServiceActions.sync();
+            AuthorityActions.sync();
             CertificateActions.sync();
         }
         componentWillUnmount() {
             NodesStore_1.default.removeChangeListener(this.onChange);
             ServicesStore_1.default.removeChangeListener(this.onChange);
+            AuthoritiesStore_1.default.removeChangeListener(this.onChange);
             CertificatesStore_1.default.removeChangeListener(this.onChange);
         }
         render() {
             let nodesDom = [];
             this.state.nodes.forEach(node => {
-                nodesDom.push(React.createElement(Node_1.default, { key: node.id, node: node, services: this.state.services, certificates: this.state.certificates }));
+                nodesDom.push(React.createElement(Node_1.default, { key: node.id, node: node, services: this.state.services, authorities: this.state.authorities, certificates: this.state.certificates }));
             });
             return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Nodes"), React.createElement("div", { className: "flex" }))), React.createElement("div", null, nodesDom));
         }
@@ -12296,11 +12363,13 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
         inputGroup: {
             width: '100%'
         },
-        protocol: {
-            flex: '0 1 auto'
+        hostname: {
+            flex: '1',
+            minWidth: '160px'
         },
         port: {
-            flex: '1'
+            width: '60px',
+            flex: '0 1 auto'
         }
     };
     class Authority extends React.Component {
@@ -12423,6 +12492,12 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                 label: 'Algorithm',
                 value: info.key_alg || 'None'
             }];
+            if (authority.proxy_hosting) {
+                fields.push({
+                    label: 'Bastion Host',
+                    value: this.props.authority.proxy_jump
+                });
+            }
             if (isHsm) {
                 let hsmStatus = this.props.authority.hsm_status || 'disconnected';
                 fields.push({
@@ -12454,7 +12529,17 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                     }
                     authr.host_domain = val;
                     this.setState(Object.assign({}, this.state, { changed: true, authority: authr }));
-                } }), React.createElement(PageInput_1.default, { label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
+                } }), React.createElement(PageSwitch_1.default, { label: "Automatic bastion server", help: "Enable automatic bastion servers on nodes using Docker containers.", checked: authority.proxy_hosting, onToggle: () => {
+                    this.toggle('proxy_hosting');
+                } }), React.createElement("label", { className: "pt-label", style: css.label, hidden: !authority.proxy_hosting }, "Bastion Hostname and Port", React.createElement("div", { className: "pt-control-group", style: css.inputGroup }, React.createElement("input", { className: "pt-input", style: css.hostname, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Hostname", value: authority.proxy_hostname, onChange: evt => {
+                    this.set('proxy_hostname', evt.target.value);
+                } }), React.createElement("input", { className: "pt-input", style: css.port, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Port", value: authority.proxy_port || '', onChange: evt => {
+                    if (evt.target.value) {
+                        this.set('proxy_port', parseInt(evt.target.value, 10));
+                    } else {
+                        this.set('proxy_port', '');
+                    }
+                } }))), React.createElement(PageInput_1.default, { hidden: authority.proxy_hosting, label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
                     this.set('host_proxy', val);
                 } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: fields }), React.createElement(PageInput_1.default, { hidden: authority.type !== 'pritunl_hsm', label: "HSM YubiKey Serial", help: "Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key.", type: "text", placeholder: "HSM serial", value: authority.hsm_serial, onChange: val => {
                     this.set('hsm_serial', val);
