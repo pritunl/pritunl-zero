@@ -155,7 +155,7 @@ func (b *Bastion) Start(db *database.Database,
 		return
 	}
 
-	if authr.HostCertificates {
+	if !settings.System.DisableBastionHostCertificates {
 		err = b.renewHost(db)
 		if err != nil {
 			b.state = false
@@ -190,7 +190,7 @@ func (b *Bastion) Start(db *database.Database,
 
 	b.Container = strings.TrimSpace(output)
 
-	if authr.HostCertificates {
+	if !settings.System.DisableBastionHostCertificates {
 		go b.syncCert()
 	}
 
