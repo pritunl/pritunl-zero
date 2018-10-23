@@ -29,6 +29,7 @@ interface State {
 	message: string;
 	authority: AuthorityTypes.Authority;
 	addRole: string;
+	addSubnet: string;
 }
 
 const css = {
@@ -85,6 +86,7 @@ export default class Authority extends React.Component<Props, State> {
 			message: '',
 			authority: null,
 			addRole: null,
+			addSubnet: null,
 		};
 	}
 
@@ -261,6 +263,79 @@ export default class Authority extends React.Component<Props, State> {
 		});
 	}
 
+	onAddSubnet = (): void => {
+		let authority: AuthorityTypes.Authority;
+
+		if (this.state.changed) {
+			authority = {
+				...this.state.authority,
+			};
+		} else {
+			authority = {
+				...this.props.authority,
+			};
+		}
+
+		let subnets = [
+			...(authority.host_subnets || []),
+		];
+
+		if (!this.state.addSubnet) {
+			return;
+		}
+
+		if (subnets.indexOf(this.state.addSubnet) === -1) {
+			subnets.push(this.state.addSubnet);
+		}
+
+		subnets.sort();
+
+		authority.host_subnets = subnets;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addSubnet: '',
+			authority: authority,
+		});
+	}
+
+	onRemoveSubnet(subnet: string): void {
+		let authority: AuthorityTypes.Authority;
+
+		if (this.state.changed) {
+			authority = {
+				...this.state.authority,
+			};
+		} else {
+			authority = {
+				...this.props.authority,
+			};
+		}
+
+		let subnets = [
+			...authority.host_subnets,
+		];
+
+		let i = subnets.indexOf(subnet);
+		if (i === -1) {
+			return;
+		}
+
+		subnets.splice(i, 1);
+
+		authority.host_subnets = subnets;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addSubnet: '',
+			authority: authority,
+		});
+	}
+
 	render(): JSX.Element {
 		let authority: AuthorityTypes.Authority = this.state.authority ||
 			this.props.authority;
@@ -283,6 +358,25 @@ export default class Authority extends React.Component<Props, State> {
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let subnets: JSX.Element[] = [];
+		for (let subnet of authority.host_subnets || []) {
+			subnets.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={subnet}
+				>
+					{subnet}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveRole(subnet);
 						}}
 					/>
 				</div>,
@@ -618,6 +712,30 @@ export default class Authority extends React.Component<Props, State> {
 							});
 						}}
 						onSubmit={this.onAddRole}
+					/>
+					<label className="pt-label">
+						Match Subnets
+						<Help
+							title="Match Subnets"
+							content="Subnets that will be proxied through bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported."
+						/>
+						<div>
+							{subnets}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success pt-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add subnet"
+						value={this.state.addSubnet}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addSubnet: val,
+							});
+						}}
+						onSubmit={this.onAddSubnet}
 					/>
 					<label
 						style={css.itemsLabel}
