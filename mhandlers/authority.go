@@ -24,6 +24,7 @@ type authorityData struct {
 	ProxyHostname      string        `json:"proxy_hostname"`
 	ProxyPort          int           `json:"proxy_port"`
 	HostDomain         string        `json:"host_domain"`
+	HostSubnets        []string      `json:"host_subnets"`
 	HostProxy          string        `json:"host_proxy"`
 	HostCertificates   bool          `json:"host_certificates"`
 	StrictHostChecking bool          `json:"strict_host_checking"`
@@ -88,6 +89,7 @@ func authorityPut(c *gin.Context) {
 	authr.ProxyHosting = data.ProxyHosting
 	authr.ProxyHostname = data.ProxyHostname
 	authr.ProxyPort = data.ProxyPort
+	authr.HostSubnets = data.HostSubnets
 	authr.HostDomain = data.HostDomain
 	authr.HostProxy = data.HostProxy
 	authr.HostCertificates = data.HostCertificates
@@ -117,6 +119,7 @@ func authorityPut(c *gin.Context) {
 		"proxy_hostname",
 		"proxy_port",
 		"host_domain",
+		"host_subnets",
 		"host_tokens",
 		"host_proxy",
 		"host_certificates",
@@ -181,6 +184,7 @@ func authorityPost(c *gin.Context) {
 		ProxyHostname:      data.ProxyHostname,
 		ProxyPort:          data.ProxyPort,
 		HostDomain:         data.HostDomain,
+		HostSubnets:        data.HostSubnets,
 		StrictHostChecking: data.StrictHostChecking,
 	}
 
