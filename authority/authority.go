@@ -68,6 +68,7 @@ type Authority struct {
 	ProxyHostname      string        `bson:"proxy_hostname" json:"proxy_hostname"`
 	ProxyPort          int           `bson:"proxy_port" json:"proxy_port"`
 	HostDomain         string        `bson:"host_domain" json:"host_domain"`
+	HostSubnets        []string      `bson:"host_subnets" json:"host_subnets"`
 	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
 	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
 	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
