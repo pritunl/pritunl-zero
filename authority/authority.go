@@ -1157,6 +1157,15 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 				parts[2],
 			))
 			break
+		case 32:
+			matches = append(matches, fmt.Sprintf(
+				"%s.%s.%s.%s",
+				parts[0],
+				parts[1],
+				parts[2],
+				parts[3],
+			))
+			break
 		default:
 			err = &errortypes.ParseError{
 				errors.New("authority: Unsupported subnet size"),
