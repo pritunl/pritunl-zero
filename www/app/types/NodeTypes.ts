@@ -18,6 +18,7 @@ export interface Node {
 	load5?: number;
 	load15?: number;
 	services?: string[];
+	authorities?: string[];
 	forwarded_for_header?: string;
 	software_version?: string;
 }
