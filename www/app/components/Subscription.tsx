@@ -217,7 +217,7 @@ export default class Subscription extends React.Component<{}, State> {
 						allowRememberMe={false}
 						zipCode={true}
 						amount={5000}
-						name="Pritunl Zero - 7 Day Trial"
+						name="Pritunl Zero"
 						description="Subscribe to Zero ($50/month)"
 						panelLabel="Subscribe"
 						token={(token): void => {
