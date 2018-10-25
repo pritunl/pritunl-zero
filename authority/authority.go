@@ -1244,10 +1244,7 @@ func (a *Authority) Validate(db *database.Database) (
 
 	if !a.HostCertificates {
 		a.StrictHostChecking = false
-
-		if a.HostTokens == nil {
-			a.HostTokens = []string{}
-		}
+		a.HostTokens = []string{}
 	}
 
 	if a.HostTokens == nil || !a.HostCertificates {
