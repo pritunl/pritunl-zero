@@ -10,12 +10,79 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"fmt"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
+	"net"
+	"strings"
 )
+
+func parseSubnetMatch(subnetMatch string) (
+	match string, err error) {
+
+	_, subnet, err := net.ParseCIDR(subnetMatch)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse cidr"),
+		}
+		return
+	}
+
+	cidr, _ := subnet.Mask.Size()
+
+	subnetNet := strings.SplitN(subnet.String(), "/", 2)[0]
+	parts := strings.Split(subnetNet, ".")
+
+	if len(parts) != 4 {
+		err = &errortypes.ParseError{
+			errors.New("authority: Failed to split subnet parts"),
+		}
+		return
+	}
+
+	switch cidr {
+	case 8:
+		match = fmt.Sprintf(
+			"%s.*.*.*",
+			parts[0],
+		)
+		break
+	case 16:
+		match = fmt.Sprintf(
+			"%s.%s.*.*",
+			parts[0],
+			parts[1],
+		)
+		break
+	case 24:
+		match = fmt.Sprintf(
+			"%s.%s.%s.*",
+			parts[0],
+			parts[1],
+			parts[2],
+		)
+		break
+	case 32:
+		match = fmt.Sprintf(
+			"%s.%s.%s.%s",
+			parts[0],
+			parts[1],
+			parts[2],
+			parts[3],
+		)
+		break
+	default:
+		err = &errortypes.ParseError{
+			errors.New("authority: Unsupported subnet size"),
+		}
+		return
+	}
+
+	return
+}
 
 func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
 	b := &bytes.Buffer{}
