@@ -40,7 +40,7 @@ func bastionSync() (err error) {
 	authrs := []*authority.Authority{}
 	nodeAuthrs := node.Self.Authorities
 
-	if nodeAuthrs != nil && len(nodeAuthrs) > 0 {
+	if bastionEnabled() {
 		authrs, err = authority.GetMulti(db, nodeAuthrs)
 		if err != nil {
 			return
