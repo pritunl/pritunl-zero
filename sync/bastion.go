@@ -9,11 +9,14 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"strings"
 	"time"
 )
 
 func bastionEnabled() bool {
-	return node.Self.Authorities != nil && len(node.Self.Authorities) != 0
+	return node.Self.Authorities != nil &&
+		len(node.Self.Authorities) != 0 &&
+		strings.Contains(node.Self.Type, node.Bastion)
 }
 
 func bastionInit() (err error) {
