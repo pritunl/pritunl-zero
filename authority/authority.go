@@ -1144,6 +1144,10 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Roles = []string{}
 	}
 
+	if a.HostSubnets == nil {
+		a.HostSubnets = []string{}
+	}
+
 	switch a.Type {
 	case Local:
 		a.HsmToken = ""
