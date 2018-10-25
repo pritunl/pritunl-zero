@@ -1203,10 +1203,13 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostExpire = 15
 	}
 
-	if a.HostDomain == "" {
+	if a.HostDomain == "" && len(a.HostSubnets) == 0 {
 		a.HostCertificates = false
-		a.StrictHostChecking = false
 		a.HostProxy = ""
+	}
+
+	if a.HostDomain == "" {
+		a.StrictHostChecking = false
 	}
 
 	if !a.ProxyHosting {
