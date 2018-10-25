@@ -107,6 +107,10 @@ func (n *Node) Validate(db *database.Database) (
 		n.Services = []bson.ObjectId{}
 	}
 
+	if !strings.Contains(n.Type, Bastion) {
+		n.Authorities = []bson.ObjectId{}
+	}
+
 	n.Format()
 
 	return
