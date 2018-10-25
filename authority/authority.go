@@ -1117,71 +1117,17 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 	}
 
 	for _, hostSubnet := range a.HostSubnets {
-		_, subnet, e := net.ParseCIDR(hostSubnet)
+		match, e := parseSubnetMatch(hostSubnet)
 		if e != nil {
 			logrus.WithFields(logrus.Fields{
-				"subnet": hostSubnet,
-				"error":  e,
-			}).Error("authority: Failed to parse subnet")
+				"authority_id": a.Id.Hex(),
+				"subnet":       hostSubnet,
+				"error":        e,
+			}).Error("authority: Failed to parse subnet match")
 			continue
 		}
 
-		cidr, _ := subnet.Mask.Size()
-
-		hostSubnet = strings.SplitN(subnet.String(), "/", 2)[0]
-		parts := strings.Split(hostSubnet, ".")
-
-		if len(parts) != 4 {
-			e := &errortypes.ParseError{
-				errors.New("authority: Failed to split subnet parts"),
-			}
-			logrus.WithFields(logrus.Fields{
-				"subnet": hostSubnet,
-				"error":  e,
-			}).Error("authority: Failed to parse subnet")
-			continue
-		}
-
-		switch cidr {
-		case 8:
-			matches = append(matches, fmt.Sprintf(
-				"%s.*.*.*",
-				parts[0],
-			))
-			break
-		case 16:
-			matches = append(matches, fmt.Sprintf(
-				"%s.%s.*.*",
-				parts[0],
-				parts[1],
-			))
-			break
-		case 24:
-			matches = append(matches, fmt.Sprintf(
-				"%s.%s.%s.*",
-				parts[0],
-				parts[1],
-				parts[2],
-			))
-			break
-		case 32:
-			matches = append(matches, fmt.Sprintf(
-				"%s.%s.%s.%s",
-				parts[0],
-				parts[1],
-				parts[2],
-				parts[3],
-			))
-			break
-		default:
-			e := &errortypes.ParseError{
-				errors.New("authority: Unsupported subnet size"),
-			}
-			logrus.WithFields(logrus.Fields{
-				"subnet": hostSubnet,
-				"error":  e,
-			}).Error("authority: Failed to parse subnet")
-		}
+		matches = append(matches, match)
 	}
 
 	return
