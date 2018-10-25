@@ -1119,8 +1119,11 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 	for _, hostSubnet := range a.HostSubnets {
 		_, subnet, e := net.ParseCIDR(hostSubnet)
 		if e != nil {
-			err = e
-			return
+			logrus.WithFields(logrus.Fields{
+				"subnet": hostSubnet,
+				"error":  e,
+			}).Error("authority: Failed to parse subnet")
+			continue
 		}
 
 		cidr, _ := subnet.Mask.Size()
@@ -1129,10 +1132,14 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 		parts := strings.Split(hostSubnet, ".")
 
 		if len(parts) != 4 {
-			err = &errortypes.ParseError{
+			e := &errortypes.ParseError{
 				errors.New("authority: Failed to split subnet parts"),
 			}
-			return
+			logrus.WithFields(logrus.Fields{
+				"subnet": hostSubnet,
+				"error":  e,
+			}).Error("authority: Failed to parse subnet")
+			continue
 		}
 
 		switch cidr {
@@ -1167,10 +1174,13 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 			))
 			break
 		default:
-			err = &errortypes.ParseError{
+			e := &errortypes.ParseError{
 				errors.New("authority: Unsupported subnet size"),
 			}
-			return
+			logrus.WithFields(logrus.Fields{
+				"subnet": hostSubnet,
+				"error":  e,
+			}).Error("authority: Failed to parse subnet")
 		}
 	}
 
