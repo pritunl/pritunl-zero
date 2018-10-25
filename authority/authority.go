@@ -1251,6 +1251,17 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostTokens = []string{}
 	}
 
+	for _, hostSubnet := range a.HostSubnets {
+		_, e := parseSubnetMatch(hostSubnet)
+		if e != nil {
+			errData = &errortypes.ErrorData{
+				Error:   "subnet_invalid",
+				Message: "Match subnet is invalid",
+			}
+			return
+		}
+	}
+
 	a.Format()
 
 	return
