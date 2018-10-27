@@ -122,7 +122,8 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 
 		if (this.state.popover) {
 			let content = '';
-			let callout = '';
+			let callout = 'Use the startup script below to provision a ' +
+				'Pritunl Zero host.';
 			let errorMsg = '';
 			let errorMsgElem: JSX.Element;
 			let hostCertificate = this.state.hostCertificate;
@@ -217,8 +218,9 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 			}
 
 			if (this.props.proxy) {
-				callout = ' Provisioning may take several minutes if the servers ' +
-					'DNS record was created recently.';
+				callout = 'Open port 9748 and use the startup script below to ' +
+					'provision a Pritunl Zero host. Provisioning may take several ' +
+					'minutes if the servers DNS record was created recently.';
 				content = `#!/bin/bash
 sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
@@ -267,8 +269,9 @@ sudo useradd ${bastionUsername} || true
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
 			} else if (hostCertificate) {
-				callout = ' Provisioning may take several minutes if the servers ' +
-					'DNS record was created recently.';
+				callout = 'Open port 9748 and use the startup script below to ' +
+					'provision a Pritunl Zero host. Provisioning may take several ' +
+					'minutes if the servers DNS record was created recently.';
 				content = `#!/bin/bash
 sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
@@ -361,8 +364,7 @@ sudo service sshd restart || true`;
 						className="pt-callout pt-intent-primary pt-icon-info-sign"
 						style={css.callout}
 					>
-						Open port 9748 and use the startup script below to provision
-						a Pritunl Zero host.{callout}
+						{callout}
 					</div>
 					<PageSwitch
 						label="Host certificate"
