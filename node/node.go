@@ -207,6 +207,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Services = nde.Services
 	n.Authorities = nde.Authorities
 	n.ForwardedForHeader = nde.ForwardedForHeader
+	n.ForwardedProtoHeader = nde.ForwardedProtoHeader
 
 	return
 }
