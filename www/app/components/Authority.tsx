@@ -29,6 +29,7 @@ interface State {
 	message: string;
 	authority: AuthorityTypes.Authority;
 	addRole: string;
+	addMatch: string;
 	addSubnet: string;
 }
 
@@ -86,6 +87,7 @@ export default class Authority extends React.Component<Props, State> {
 			message: '',
 			authority: null,
 			addRole: null,
+			addMatch: null,
 			addSubnet: null,
 		};
 	}
@@ -263,6 +265,79 @@ export default class Authority extends React.Component<Props, State> {
 		});
 	}
 
+	onAddMatch = (): void => {
+		let authority: AuthorityTypes.Authority;
+
+		if (this.state.changed) {
+			authority = {
+				...this.state.authority,
+			};
+		} else {
+			authority = {
+				...this.props.authority,
+			};
+		}
+
+		let matches = [
+			...(authority.host_matches || []),
+		];
+
+		if (!this.state.addMatch) {
+			return;
+		}
+
+		if (matches.indexOf(this.state.addMatch) === -1) {
+			matches.push(this.state.addMatch);
+		}
+
+		matches.sort();
+
+		authority.host_matches = matches;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addMatch: '',
+			authority: authority,
+		});
+	}
+
+	onRemoveMatch(match: string): void {
+		let authority: AuthorityTypes.Authority;
+
+		if (this.state.changed) {
+			authority = {
+				...this.state.authority,
+			};
+		} else {
+			authority = {
+				...this.props.authority,
+			};
+		}
+
+		let matches = [
+			...authority.host_matches,
+		];
+
+		let i = matches.indexOf(match);
+		if (i === -1) {
+			return;
+		}
+
+		matches.splice(i, 1);
+
+		authority.host_matches = matches;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addMatch: '',
+			authority: authority,
+		});
+	}
+
 	onAddSubnet = (): void => {
 		let authority: AuthorityTypes.Authority;
 
@@ -358,6 +433,25 @@ export default class Authority extends React.Component<Props, State> {
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
+						}}
+					/>
+				</div>,
+			);
+		}
+
+		let matches: JSX.Element[] = [];
+		for (let match of authority.host_matches || []) {
+			matches.push(
+				<div
+					className="pt-tag pt-tag-removable pt-intent-primary"
+					style={css.item}
+					key={match}
+				>
+					{match}
+					<button
+						className="pt-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveMatch(match);
 						}}
 					/>
 				</div>,
@@ -716,6 +810,30 @@ export default class Authority extends React.Component<Props, State> {
 							});
 						}}
 						onSubmit={this.onAddRole}
+					/>
+					<label className="pt-label">
+						Custom Matches
+						<Help
+							title="Custom Matches"
+							content="Custom domains that will be proxied through the bastion host."
+						/>
+						<div>
+							{matches}
+						</div>
+					</label>
+					<PageInputButton
+						buttonClass="pt-intent-success pt-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add match"
+						value={this.state.addMatch}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addMatch: val,
+							});
+						}}
+						onSubmit={this.onAddMatch}
 					/>
 					<label className="pt-label">
 						Match Subnets
