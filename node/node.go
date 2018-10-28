@@ -24,29 +24,30 @@ var (
 )
 
 type Node struct {
-	Id                 bson.ObjectId              `bson:"_id" json:"id"`
-	Name               string                     `bson:"name" json:"name"`
-	Type               string                     `bson:"type" json:"type"`
-	Timestamp          time.Time                  `bson:"timestamp" json:"timestamp"`
-	Port               int                        `bson:"port" json:"port"`
-	Protocol           string                     `bson:"protocol" json:"protocol"`
-	Certificate        bson.ObjectId              `bson:"certificate" json:"certificate"`
-	Certificates       []bson.ObjectId            `bson:"certificates" json:"certificates"`
-	ManagementDomain   string                     `bson:"management_domain" json:"management_domain"`
-	UserDomain         string                     `bson:"user_domain" json:"user_domain"`
-	Services           []bson.ObjectId            `bson:"services" json:"services"`
-	Authorities        []bson.ObjectId            `bson:"authorities" json:"authorities"`
-	RequestsMin        int64                      `bson:"requests_min" json:"requests_min"`
-	ForwardedForHeader string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
-	Memory             float64                    `bson:"memory" json:"memory"`
-	Load1              float64                    `bson:"load1" json:"load1"`
-	Load5              float64                    `bson:"load5" json:"load5"`
-	Load15             float64                    `bson:"load15" json:"load15"`
-	SoftwareVersion    string                     `bson:"software_version" json:"software_version"`
-	Version            int                        `bson:"version" json:"-"`
-	CertificateObjs    []*certificate.Certificate `bson:"-" json:"-"`
-	reqLock            sync.Mutex                 `bson:"-" json:"-"`
-	reqCount           *list.List                 `bson:"-" json:"-"`
+	Id                   bson.ObjectId              `bson:"_id" json:"id"`
+	Name                 string                     `bson:"name" json:"name"`
+	Type                 string                     `bson:"type" json:"type"`
+	Timestamp            time.Time                  `bson:"timestamp" json:"timestamp"`
+	Port                 int                        `bson:"port" json:"port"`
+	Protocol             string                     `bson:"protocol" json:"protocol"`
+	Certificate          bson.ObjectId              `bson:"certificate" json:"certificate"`
+	Certificates         []bson.ObjectId            `bson:"certificates" json:"certificates"`
+	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
+	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
+	Services             []bson.ObjectId            `bson:"services" json:"services"`
+	Authorities          []bson.ObjectId            `bson:"authorities" json:"authorities"`
+	RequestsMin          int64                      `bson:"requests_min" json:"requests_min"`
+	ForwardedForHeader   string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
+	ForwardedProtoHeader string                     `bson:"forwarded_proto_header" json:"forwarded_proto_header"`
+	Memory               float64                    `bson:"memory" json:"memory"`
+	Load1                float64                    `bson:"load1" json:"load1"`
+	Load5                float64                    `bson:"load5" json:"load5"`
+	Load15               float64                    `bson:"load15" json:"load15"`
+	SoftwareVersion      string                     `bson:"software_version" json:"software_version"`
+	Version              int                        `bson:"version" json:"-"`
+	CertificateObjs      []*certificate.Certificate `bson:"-" json:"-"`
+	reqLock              sync.Mutex                 `bson:"-" json:"-"`
+	reqCount             *list.List                 `bson:"-" json:"-"`
 }
 
 func (n *Node) AddRequest() {
