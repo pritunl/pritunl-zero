@@ -20,6 +20,7 @@ export interface Node {
 	services?: string[];
 	authorities?: string[];
 	forwarded_for_header?: string;
+	forwarded_proto_header?: string;
 	software_version?: string;
 }
 
