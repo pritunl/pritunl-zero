@@ -1150,6 +1150,10 @@ func (a *Authority) Validate(db *database.Database) (
 		a.Roles = []string{}
 	}
 
+	if a.HostMatches == nil {
+		a.HostMatches = []string{}
+	}
+
 	if a.HostSubnets == nil {
 		a.HostSubnets = []string{}
 	}
@@ -1209,7 +1213,9 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostExpire = 15
 	}
 
-	if a.HostDomain == "" && len(a.HostSubnets) == 0 {
+	if a.HostDomain == "" && len(a.HostSubnets) == 0 &&
+		len(a.HostMatches) == 0 {
+
 		a.HostCertificates = false
 		a.HostProxy = ""
 	}
