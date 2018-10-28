@@ -12428,6 +12428,24 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                 authority.roles = roles;
                 this.setState(Object.assign({}, this.state, { changed: true, message: '', addRole: '', authority: authority }));
             };
+            this.onAddMatch = () => {
+                let authority;
+                if (this.state.changed) {
+                    authority = Object.assign({}, this.state.authority);
+                } else {
+                    authority = Object.assign({}, this.props.authority);
+                }
+                let matches = [...(authority.host_matches || [])];
+                if (!this.state.addMatch) {
+                    return;
+                }
+                if (matches.indexOf(this.state.addMatch) === -1) {
+                    matches.push(this.state.addMatch);
+                }
+                matches.sort();
+                authority.host_matches = matches;
+                this.setState(Object.assign({}, this.state, { changed: true, message: '', addMatch: '', authority: authority }));
+            };
             this.onAddSubnet = () => {
                 let authority;
                 if (this.state.changed) {
@@ -12452,6 +12470,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                 message: '',
                 authority: null,
                 addRole: null,
+                addMatch: null,
                 addSubnet: null
             };
         }
@@ -12496,6 +12515,22 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
             authority.roles = roles;
             this.setState(Object.assign({}, this.state, { changed: true, message: '', addRole: '', authority: authority }));
         }
+        onRemoveMatch(match) {
+            let authority;
+            if (this.state.changed) {
+                authority = Object.assign({}, this.state.authority);
+            } else {
+                authority = Object.assign({}, this.props.authority);
+            }
+            let matches = [...authority.host_matches];
+            let i = matches.indexOf(match);
+            if (i === -1) {
+                return;
+            }
+            matches.splice(i, 1);
+            authority.host_matches = matches;
+            this.setState(Object.assign({}, this.state, { changed: true, message: '', addMatch: '', authority: authority }));
+        }
         onRemoveSubnet(subnet) {
             let authority;
             if (this.state.changed) {
@@ -12522,6 +12557,12 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
             for (let role of authority.roles) {
                 roles.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: role }, role, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
                         this.onRemoveRole(role);
+                    } })));
+            }
+            let matches = [];
+            for (let match of authority.host_matches || []) {
+                matches.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: match }, match, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
+                        this.onRemoveMatch(match);
                     } })));
             }
             let subnets = [];
@@ -12608,7 +12649,9 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                     this.toggle('match_roles');
                 } }), React.createElement("label", { className: "pt-label", hidden: !authority.match_roles }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "Roles associated with this authority. If at least one role matches the user will be given a certificate from this authority. The certificate principles will only contain the users roles." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add role", hidden: !authority.match_roles, value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Match Subnets", React.createElement(Help_1.default, { title: "Match Subnets", content: "Subnets that will be proxied through bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported." }), React.createElement("div", null, subnets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add subnet", value: this.state.addSubnet, onChange: val => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "pt-label" }, "Custom Matches", React.createElement(Help_1.default, { title: "Custom Matches", content: "Custom domains that will be proxied through the bastion host." }), React.createElement("div", null, matches)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add match", value: this.state.addMatch, onChange: val => {
+                    this.setState(Object.assign({}, this.state, { addMatch: val }));
+                }, onSubmit: this.onAddMatch }), React.createElement("label", { className: "pt-label" }, "Match Subnets", React.createElement(Help_1.default, { title: "Match Subnets", content: "Subnets that will be proxied through the bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported." }), React.createElement("div", null, subnets)), React.createElement(PageInputButton_1.default, { buttonClass: "pt-intent-success pt-icon-add", label: "Add", type: "text", placeholder: "Add subnet", value: this.state.addSubnet, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addSubnet: val }));
                 }, onSubmit: this.onAddSubnet }), React.createElement("label", { style: css.itemsLabel, hidden: !authority.host_certificates }, "Host Tokens", React.createElement(Help_1.default, { title: "Host Tokens", content: "Tokens that servers can use to validate and sign SSH host keys. Changes must be saved before modifying tokens." })), tokens, React.createElement("button", { className: "pt-button pt-intent-success pt-icon-add", style: css.itemsAdd, type: "button", disabled: this.state.changed, hidden: !authority.host_certificates, onClick: () => {
                     AuthorityActions.createToken(this.props.authority.id).then(() => {
