@@ -10830,9 +10830,11 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
             width: '100%'
         },
         protocol: {
+            minWidth: '90px',
             flex: '0 1 auto'
         },
         port: {
+            minWidth: '120px',
             flex: '1'
         }
     };
@@ -12017,7 +12019,7 @@ System.registerDynamic("app/components/AuthorityDeploy.js", ["npm:react@16.4.1.j
             let popoverElem;
             if (this.state.popover) {
                 let content = '';
-                let callout = '';
+                let callout = 'Use the startup script below to provision a ' + 'Pritunl Zero host.';
                 let errorMsg = '';
                 let errorMsgElem;
                 let hostCertificate = this.state.hostCertificate;
@@ -12085,7 +12087,7 @@ System.registerDynamic("app/components/AuthorityDeploy.js", ["npm:react@16.4.1.j
                         } })));
                 }
                 if (this.props.proxy) {
-                    callout = ' Provisioning may take several minutes if the servers ' + 'DNS record was created recently.';
+                    callout = 'Open port 9748 and use the startup script below to ' + 'provision a Pritunl Zero host. Provisioning may take several ' + 'minutes if the servers DNS record was created recently.';
                     content = `#!/bin/bash
 sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
@@ -12132,7 +12134,7 @@ sudo useradd ${bastionUsername} || true
 sudo systemctl restart sshd || true
 sudo service sshd restart || true`;
                 } else if (hostCertificate) {
-                    callout = ' Provisioning may take several minutes if the servers ' + 'DNS record was created recently.';
+                    callout = 'Open port 9748 and use the startup script below to ' + 'provision a Pritunl Zero host. Provisioning may take several ' + 'minutes if the servers DNS record was created recently.';
                     content = `#!/bin/bash
 sudo sed -i '/^TrustedUserCAKeys/d' /etc/ssh/sshd_config
 sudo sed -i '/^AuthorizedPrincipalsFile/d' /etc/ssh/sshd_config
@@ -12198,7 +12200,7 @@ sudo service sshd restart || true`;
                 }
                 popoverElem = React.createElement(Blueprint.Dialog, { title: title, style: css.dialog, isOpen: this.state.popover, onClose: () => {
                         this.setState(Object.assign({}, this.state, { popover: false }));
-                    } }, errorMsgElem, React.createElement("div", { className: "pt-dialog-body", hidden: !!errorMsgElem }, React.createElement("div", { className: "pt-callout pt-intent-primary pt-icon-info-sign", style: css.callout }, "Open port 9748 and use the startup script below to provision a Pritunl Zero host.", callout), React.createElement(PageSwitch_1.default, { label: "Host certificate", hidden: !this.props.authority.host_certificates || this.props.proxy, disabled: hostCertificateDisabled, help: "Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain.", checked: hostCertificate, onToggle: () => {
+                    } }, errorMsgElem, React.createElement("div", { className: "pt-dialog-body", hidden: !!errorMsgElem }, React.createElement("div", { className: "pt-callout pt-intent-primary pt-icon-info-sign", style: css.callout }, callout), React.createElement(PageSwitch_1.default, { label: "Host certificate", hidden: !this.props.authority.host_certificates || this.props.proxy, disabled: hostCertificateDisabled, help: "Provision a host certificate to this server, requires installing Pritunl Zero host client. Authority must have at least one host token and at least one node must have a user domain.", checked: hostCertificate, onToggle: () => {
                         this.setState(Object.assign({}, this.state, { hostCertificate: !hostCertificate }));
                     } }), React.createElement(PageSelect_1.default, { hidden: !hostCertificate || serversElm.length === 0 || this.props.proxy, label: "Pritunl Zero Server", help: "The Pritunl Zero server hostname that the client will authenticate from.", value: this.state.server || serverDefault, onChange: val => {
                         this.setState(Object.assign({}, this.state, { server: val }));
@@ -12224,7 +12226,7 @@ sudo service sshd restart || true`;
             } else {
                 buttonLabel = 'Generate Deploy Script';
             }
-            return React.createElement("div", { style: css.box }, React.createElement("button", { className: "pt-button pt-icon-cloud-upload pt-intent-primary", style: css.button, type: "button", disabled: this.props.disabled || this.props.proxy && (!this.props.authority.host_proxy || !this.props.authority.host_certificates), onClick: () => {
+            return React.createElement("div", { hidden: this.props.hidden, style: css.box }, React.createElement("button", { className: "pt-button pt-icon-cloud-upload pt-intent-primary", style: css.button, type: "button", disabled: this.props.disabled || this.props.proxy && (!this.props.authority.host_proxy || !this.props.authority.host_certificates), onClick: () => {
                     this.setState(Object.assign({}, this.state, { popover: !this.state.popover }));
                 } }, buttonLabel), popoverElem);
         }
@@ -12584,7 +12586,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
                     }
                 } }))), React.createElement(PageInput_1.default, { hidden: authority.proxy_hosting, label: "Bastion Host", help: "Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate.", type: "text", placeholder: "Bastion host", value: authority.host_proxy, onChange: val => {
                     this.set('host_proxy', val);
-                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: fields }), React.createElement(PageInput_1.default, { hidden: authority.type !== 'pritunl_hsm', label: "HSM YubiKey Serial", help: "Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key.", type: "text", placeholder: "HSM serial", value: authority.hsm_serial, onChange: val => {
+                } }), React.createElement(AuthorityDeploy_1.default, { disabled: this.state.disabled, nodes: this.props.nodes, authority: authority, proxy: false }), React.createElement(AuthorityDeploy_1.default, { hidden: authority.proxy_hosting, disabled: this.state.disabled || !authority.host_proxy, nodes: this.props.nodes, authority: authority, proxy: true })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: fields }), React.createElement(PageInput_1.default, { hidden: authority.type !== 'pritunl_hsm', label: "HSM YubiKey Serial", help: "Serial number of YubiKey that will be used to sign certificates. This number can be found on the back of the key.", type: "text", placeholder: "HSM serial", value: authority.hsm_serial, onChange: val => {
                     this.set('hsm_serial', val);
                 } }), React.createElement(PageInput_1.default, { hidden: !isHsm, readOnly: true, label: "HSM Token", help: "Pritunl HSM token.", type: "text", placeholder: "Save to generate token", value: this.props.authority.hsm_token }), React.createElement(PageInput_1.default, { hidden: !isHsm || !this.props.authority.hsm_token || !hsmSecret, readOnly: true, label: "HSM Secret", help: "Pritunl HSM secret, will only be shown once.", type: "text", placeholder: "", value: hsmSecret }), React.createElement(PageSwitch_1.default, { hidden: !isHsm, label: "Generate new HSM token and secret", help: "Enable to generate a new token and secret on save. Secret can only be shown by generating new credentials.", checked: authority.hsm_generate_secret, onToggle: () => {
                     this.set('hsm_generate_secret', !authority.hsm_generate_secret);
