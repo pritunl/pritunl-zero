@@ -50,8 +50,9 @@ type Router struct {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
-	if re.URL.Scheme != "http" && r.protocol == "http" &&
-		node.Self.ForwardedForHeader != "" {
+	if node.Self.ForwardedProtoHeader != "" &&
+		strings.ToLower(re.Header.Get(
+			node.Self.ForwardedProtoHeader)) == "http" {
 
 		re.URL.Host = utils.StripPort(re.Host)
 		re.URL.Scheme = "https"
