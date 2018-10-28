@@ -34,6 +34,7 @@ interface State {
 	addCert: string;
 	addAuthority: string;
 	forwardedChecked: boolean;
+	forwardedProtoChecked: boolean;
 }
 
 const css = {
@@ -91,6 +92,7 @@ export default class Node extends React.Component<Props, State> {
 			addAuthority: null,
 			addCert: null,
 			forwardedChecked: false,
+			forwardedProtoChecked: false,
 		};
 	}
 
@@ -788,6 +790,37 @@ export default class Node extends React.Component<Props, State> {
 							});
 						}}
 					/>
+					<PageInputSwitch
+						label="Forwarded proto header"
+						help="Enable when using a load balancer. This header value will be used to get the users protocol. This will redirect users to https when the forwarded protocol is http."
+						type="text"
+						placeholder="Forwarded proto header"
+						value={node.forwarded_proto_header}
+						checked={this.state.forwardedProtoChecked}
+						defaultValue="X-Forwarded-Proto"
+						onChange={(state: boolean, val: string): void => {
+							let nde: NodeTypes.Node;
+
+							if (this.state.changed) {
+								nde = {
+									...this.state.node,
+								};
+							} else {
+								nde = {
+									...this.props.node,
+								};
+							}
+
+							nde.forwarded_proto_header = val;
+
+							this.setState({
+								...this.state,
+								changed: true,
+								forwardedProtoChecked: state,
+								node: nde,
+							});
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
@@ -802,6 +835,7 @@ export default class Node extends React.Component<Props, State> {
 						...this.state,
 						changed: false,
 						forwardedChecked: false,
+						forwardedProtoChecked: false,
 						node: null,
 					});
 				}}
