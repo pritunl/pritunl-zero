@@ -12,17 +12,18 @@ import (
 )
 
 type nodeData struct {
-	Id                 bson.ObjectId   `json:"id"`
-	Name               string          `json:"name"`
-	Type               string          `json:"type"`
-	Port               int             `json:"port"`
-	Protocol           string          `json:"protocol"`
-	Certificates       []bson.ObjectId `json:"certificates"`
-	ManagementDomain   string          `json:"management_domain"`
-	UserDomain         string          `json:"user_domain"`
-	Services           []bson.ObjectId `json:"services"`
-	Authorities        []bson.ObjectId `json:"authorities"`
-	ForwardedForHeader string          `json:"forwarded_for_header"`
+	Id                   bson.ObjectId   `json:"id"`
+	Name                 string          `json:"name"`
+	Type                 string          `json:"type"`
+	Port                 int             `json:"port"`
+	Protocol             string          `json:"protocol"`
+	Certificates         []bson.ObjectId `json:"certificates"`
+	ManagementDomain     string          `json:"management_domain"`
+	UserDomain           string          `json:"user_domain"`
+	Services             []bson.ObjectId `json:"services"`
+	Authorities          []bson.ObjectId `json:"authorities"`
+	ForwardedForHeader   string          `json:"forwarded_for_header"`
+	ForwardedProtoHeader string          `json:"forwarded_proto_header"`
 }
 
 func nodePut(c *gin.Context) {
@@ -61,6 +62,7 @@ func nodePut(c *gin.Context) {
 	nde.Services = data.Services
 	nde.Authorities = data.Authorities
 	nde.ForwardedForHeader = data.ForwardedForHeader
+	nde.ForwardedProtoHeader = data.ForwardedProtoHeader
 
 	fields := set.NewSet(
 		"name",
@@ -73,6 +75,7 @@ func nodePut(c *gin.Context) {
 		"services",
 		"authorities",
 		"forwarded_for_header",
+		"forwarded_proto_header",
 	)
 
 	errData, err := nde.Validate(db)
