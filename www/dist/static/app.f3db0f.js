@@ -10975,7 +10975,8 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
                 addService: null,
                 addAuthority: null,
                 addCert: null,
-                forwardedChecked: false
+                forwardedChecked: false,
+                forwardedProtoChecked: false
             };
         }
         set(name, val) {
@@ -11128,8 +11129,17 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.4.1.js", "app/ac
                     }
                     nde.forwarded_for_header = val;
                     this.setState(Object.assign({}, this.state, { changed: true, forwardedChecked: state, node: nde }));
+                } }), React.createElement(PageInputSwitch_1.default, { label: "Forwarded proto header", help: "Enable when using a load balancer. This header value will be used to get the users protocol. This will redirect users to https when the forwarded protocol is http.", type: "text", placeholder: "Forwarded proto header", value: node.forwarded_proto_header, checked: this.state.forwardedProtoChecked, defaultValue: "X-Forwarded-Proto", onChange: (state, val) => {
+                    let nde;
+                    if (this.state.changed) {
+                        nde = Object.assign({}, this.state.node);
+                    } else {
+                        nde = Object.assign({}, this.props.node);
+                    }
+                    nde.forwarded_proto_header = val;
+                    this.setState(Object.assign({}, this.state, { changed: true, forwardedProtoChecked: state, node: nde }));
                 } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.node, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
-                    this.setState(Object.assign({}, this.state, { changed: false, forwardedChecked: false, node: null }));
+                    this.setState(Object.assign({}, this.state, { changed: false, forwardedChecked: false, forwardedProtoChecked: false, node: null }));
                 }, onSave: this.onSave }));
         }
     }
