@@ -1113,22 +1113,27 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 		matches = append(matches, hostDomain)
 	}
 
-	if a.HostSubnets == nil || len(a.HostSubnets) == 0 {
-		return
+	if a.HostMatches != nil {
+		for _, match := range a.HostMatches {
+			matches = append(matches, match)
+		}
 	}
 
-	for _, hostSubnet := range a.HostSubnets {
-		match, e := parseSubnetMatch(hostSubnet)
-		if e != nil {
-			logrus.WithFields(logrus.Fields{
-				"authority_id": a.Id.Hex(),
-				"subnet":       hostSubnet,
-				"error":        e,
-			}).Error("authority: Failed to parse subnet match")
-			continue
+	if a.HostSubnets != nil {
+		for _, hostSubnet := range a.HostSubnets {
+			match, e := parseSubnetMatch(hostSubnet)
+			if e != nil {
+				logrus.WithFields(logrus.Fields{
+					"authority_id": a.Id.Hex(),
+					"subnet":       hostSubnet,
+					"error":        e,
+				}).Error("authority: Failed to parse subnet match")
+				continue
+			}
+
+			matches = append(matches, match)
 		}
 
-		matches = append(matches, match)
 	}
 
 	return
