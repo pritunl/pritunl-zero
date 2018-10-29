@@ -839,7 +839,7 @@ export default class Authority extends React.Component<Props, State> {
 						Match Subnets
 						<Help
 							title="Match Subnets"
-							content="Subnets that will be proxied through bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported."
+							content="Subnets that will be proxied through the bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported."
 						/>
 						<div>
 							{subnets}
