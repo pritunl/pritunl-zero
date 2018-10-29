@@ -36,49 +36,85 @@ func parseSubnetMatch(subnetMatch string) (
 	subnetNet := strings.SplitN(subnet.String(), "/", 2)[0]
 	parts := strings.Split(subnetNet, ".")
 
-	if len(parts) != 4 {
-		err = &errortypes.ParseError{
-			errors.New("authority: Failed to split subnet parts"),
+	if strings.Contains(subnetMatch, ":") {
+		if !strings.HasSuffix(subnetNet, "::") {
+			err = &errortypes.ParseError{
+				errors.New("authority: IPv6 subnet suffix invalid"),
+			}
+			return
 		}
-		return
-	}
 
-	switch cidr {
-	case 8:
-		match = fmt.Sprintf(
-			"%s.*.*.*",
-			parts[0],
-		)
-		break
-	case 16:
-		match = fmt.Sprintf(
-			"%s.%s.*.*",
-			parts[0],
-			parts[1],
-		)
-		break
-	case 24:
-		match = fmt.Sprintf(
-			"%s.%s.%s.*",
-			parts[0],
-			parts[1],
-			parts[2],
-		)
-		break
-	case 32:
-		match = fmt.Sprintf(
-			"%s.%s.%s.%s",
-			parts[0],
-			parts[1],
-			parts[2],
-			parts[3],
-		)
-		break
-	default:
-		err = &errortypes.ParseError{
-			errors.New("authority: Unsupported subnet size"),
+		if len(subnetNet) < 6 {
+			err = &errortypes.ParseError{
+				errors.New("authority: IPv6 subnet length invalid"),
+			}
+			return
 		}
-		return
+
+		switch cidr {
+		case 56:
+			match = fmt.Sprintf(
+				"%s*",
+				subnetNet[:len(subnetNet)-4],
+			)
+			break
+		case 64:
+			match = fmt.Sprintf(
+				"%s*",
+				subnetNet[:len(subnetNet)-2],
+			)
+			break
+		default:
+			err = &errortypes.ParseError{
+				errors.New("authority: Unsupported subnet size"),
+			}
+			return
+		}
+	} else {
+		if len(parts) != 4 {
+			err = &errortypes.ParseError{
+				errors.New("authority: Failed to split subnet parts"),
+			}
+			return
+		}
+
+		switch cidr {
+		case 8:
+			match = fmt.Sprintf(
+				"%s.*.*.*",
+				parts[0],
+			)
+			break
+		case 16:
+			match = fmt.Sprintf(
+				"%s.%s.*.*",
+				parts[0],
+				parts[1],
+			)
+			break
+		case 24:
+			match = fmt.Sprintf(
+				"%s.%s.%s.*",
+				parts[0],
+				parts[1],
+				parts[2],
+			)
+			break
+		case 32:
+			match = fmt.Sprintf(
+				"%s.%s.%s.%s",
+				parts[0],
+				parts[1],
+				parts[2],
+				parts[3],
+			)
+			break
+		default:
+			err = &errortypes.ParseError{
+				errors.New("authority: Unsupported subnet size"),
+			}
+			return
+		}
 	}
 
 	return
