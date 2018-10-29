@@ -23,6 +23,7 @@ export interface Authority {
 	proxy_port?: number;
 	host_domain?: string;
 	host_subnets?: string[];
+	host_matches?: string[];
 	host_proxy?: string;
 	host_certificates?: boolean;
 	strict_host_checking?: boolean;
