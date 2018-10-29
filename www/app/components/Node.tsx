@@ -574,6 +574,14 @@ export default class Node extends React.Component<Props, State> {
 							this.toggleType('proxy');
 						}}
 					/>
+					<PageSwitch
+						label="Bastion"
+						help="Host bastion servers on this node."
+						checked={node.type.indexOf('bastion') !== -1}
+						onToggle={(): void => {
+							this.toggleType('bastion');
+						}}
+					/>
 					<PageInput
 						hidden={node.type.indexOf('_') === -1 ||
 							node.type.indexOf('management') === -1}
