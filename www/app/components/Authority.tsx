@@ -16,7 +16,6 @@ import ConfirmButton from './ConfirmButton';
 import Help from './Help';
 import * as MiscUtils from "../utils/MiscUtils";
 import AuthoritiesStore from "../stores/AuthoritiesStore";
-import NodesStore from "../stores/NodesStore";
 
 interface Props {
 	nodes: NodeTypes.NodesRo;
