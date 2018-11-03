@@ -10,6 +10,7 @@ import PageSelect from './PageSelect';
 import * as NodeTypes from "../types/NodeTypes";
 
 interface Props {
+	hidden?: boolean;
 	disabled?: boolean;
 	nodes: NodeTypes.NodesRo;
 	authority: AuthorityTypes.AuthorityRo;
@@ -514,7 +515,7 @@ sudo service sshd restart || true`;
 			buttonLabel = 'Generate Deploy Script';
 		}
 
-		return <div style={css.box}>
+		return <div hidden={this.props.hidden} style={css.box}>
 			<button
 				className="pt-button pt-icon-cloud-upload pt-intent-primary"
 				style={css.button}
