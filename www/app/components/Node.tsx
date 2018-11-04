@@ -73,9 +73,11 @@ const css = {
 		width: '100%',
 	} as React.CSSProperties,
 	protocol: {
+		minWidth: '90px',
 		flex: '0 1 auto',
 	} as React.CSSProperties,
 	port: {
+		minWidth: '120px',
 		flex: '1',
 	} as React.CSSProperties,
 };
