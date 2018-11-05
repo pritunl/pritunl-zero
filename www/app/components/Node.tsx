@@ -669,6 +669,7 @@ export default class Node extends React.Component<Props, State> {
 					<label
 						className="pt-label"
 						style={css.label}
+						hidden={node.type.indexOf('bastion') === -1}
 					>
 						Authority Bastions
 						<Help
@@ -681,6 +682,7 @@ export default class Node extends React.Component<Props, State> {
 					</label>
 					<PageSelectButton
 						label="Add Authority"
+						hidden={node.type.indexOf('bastion') === -1}
 						value={this.state.addAuthority}
 						disabled={!this.props.authorities.length}
 						buttonClass="pt-intent-success"
