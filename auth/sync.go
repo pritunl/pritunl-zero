@@ -66,6 +66,52 @@ func SyncUser(db *database.Database, usr *user.User) (
 				"status_code": resp.StatusCode,
 			}).Info("session: User single sign-on sync failed")
 		}
+	} else if usr.Type == user.Azure {
+		reqVals := url.Values{}
+		reqVals.Set("user", usr.Username)
+		reqVals.Set("directory_id", usr.Username)
+		reqVals.Set("app_id", usr.Username)
+		reqVals.Set("app_secret", usr.Username)
+		reqVals.Set("license", settings.System.License)
+
+		reqUrl, _ := url.Parse(settings.Auth.Server + "/update/azure")
+		reqUrl.RawQuery = reqVals.Encode()
+
+		req, e := http.NewRequest(
+			"GET",
+			reqUrl.String(),
+			nil,
+		)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "auth: Auth request failed"),
+			}
+			return
+		}
+
+		resp, e := client.Do(req)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "auth: Auth request failed"),
+			}
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode == 200 {
+			active = true
+
+			usr.LastSync = time.Now()
+			err = usr.CommitFields(db, set.NewSet("last_sync"))
+			if err != nil {
+				return
+			}
+		} else {
+			logrus.WithFields(logrus.Fields{
+				"username":    usr.Username,
+				"status_code": resp.StatusCode,
+			}).Info("session: User single sign-on sync failed")
+		}
 	} else {
 		active = true
 	}
