@@ -14826,6 +14826,8 @@ System.registerDynamic("app/components/PageInfo.js", ["npm:react@16.4.1.js"], tr
                 let value;
                 if (typeof field.value === 'string') {
                     value = field.value;
+                } else if (typeof field.value === 'number') {
+                    value = field.value.toString();
                 } else {
                     value = [];
                     for (let i = 0; i < field.value.length; i++) {
