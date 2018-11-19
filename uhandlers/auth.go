@@ -13,6 +13,7 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/session"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
@@ -624,6 +625,16 @@ func authU2fRegisterGet(c *gin.Context) {
 
 	db := c.MustGet("db").(*database.Database)
 	token := c.Query("token")
+
+	if settings.Local.AppId == "" {
+		errData := &errortypes.ErrorData{
+			Error: "user_node_unavailable",
+			Message: "At least one node must have a user domain configured " +
+				"to use secondary device authentication",
+		}
+		c.JSON(400, errData)
+		return
+	}
 
 	secd, err := secondary.Get(db, token, secondary.UserDeviceRegister)
 	if err != nil {
