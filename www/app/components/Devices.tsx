@@ -207,7 +207,7 @@ export default class Devices extends React.Component<Props, State> {
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
-					<h2 style={css.heading}>User Securtiy Devices</h2>
+					<h2 style={css.heading}>User Security Devices</h2>
 					<div className="flex"/>
 					<div style={css.groupBox} className="layout horizontal">
 						<div
