@@ -193,6 +193,7 @@ func (n *Node) update(db *database.Database) (err error) {
 		"_id": n.Id,
 	}).Apply(change, nde)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
