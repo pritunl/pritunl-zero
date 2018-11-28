@@ -170,6 +170,7 @@ func (u *User) Upsert(db *database.Database) (err error) {
 		"username": u.Username,
 	}).Apply(change, u)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
