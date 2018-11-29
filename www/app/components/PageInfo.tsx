@@ -4,7 +4,7 @@ import * as React from 'react';
 export interface Field {
 	valueClass?: string;
 	label: string;
-	value: string | string[];
+	value: string | number | string[];
 }
 
 export interface Bar {
@@ -47,6 +47,8 @@ export default class PageInfo extends React.Component<Props, {}> {
 
 			if (typeof field.value === 'string') {
 				value = field.value;
+			} else if (typeof field.value === 'number') {
+				value = field.value.toString();
 			} else {
 				value = [];
 				for (let i = 0; i < field.value.length; i++) {
