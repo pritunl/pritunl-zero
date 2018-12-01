@@ -469,7 +469,7 @@ export default class Authority extends React.Component<Props, State> {
 					<button
 						className="pt-tag-remove"
 						onMouseUp={(): void => {
-							this.onRemoveRole(subnet);
+							this.onRemoveSubnet(subnet);
 						}}
 					/>
 				</div>,
