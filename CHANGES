@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with authority web interface
+
 Version 1.0.1091.35 2018-11-19
 ------------------------------
 
