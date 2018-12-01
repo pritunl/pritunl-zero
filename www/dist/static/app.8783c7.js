@@ -4961,7 +4961,7 @@ System.registerDynamic("app/components/Devices.js", ["npm:react@16.4.1.js", "npm
             this.state.devices.forEach(device => {
                 devices.push(React.createElement(Device_1.default, { key: device.id, device: device }));
             });
-            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Securtiy Devices"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.groupBox, className: "layout horizontal" }, React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { className: "pt-select" }, React.createElement("select", { value: this.state.deviceType, onChange: evt => {
+            return React.createElement("div", null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "User Security Devices"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.groupBox, className: "layout horizontal" }, React.createElement("div", { className: "pt-control-group", style: css.group }, React.createElement("div", { className: "pt-select" }, React.createElement("select", { value: this.state.deviceType, onChange: evt => {
                     this.setState(Object.assign({}, this.state, { deviceType: evt.target.value, devicePubKey: '' }));
                 } }, React.createElement("option", { value: "u2f" }, "U2F"), React.createElement("option", { value: "smart_card" }, "Smart Card"))), React.createElement("div", { className: "layout horizontal", style: css.inputBox }, React.createElement("input", { className: "pt-input", type: "text", placeholder: "Device name", value: this.state.deviceName, onChange: evt => {
                     this.setState(Object.assign({}, this.state, { deviceName: evt.target.value }));
@@ -12568,7 +12568,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.4.1.js", "a
             let subnets = [];
             for (let subnet of authority.host_subnets || []) {
                 subnets.push(React.createElement("div", { className: "pt-tag pt-tag-removable pt-intent-primary", style: css.item, key: subnet }, subnet, React.createElement("button", { className: "pt-tag-remove", onMouseUp: () => {
-                        this.onRemoveRole(subnet);
+                        this.onRemoveSubnet(subnet);
                     } })));
             }
             let tokens = [];
