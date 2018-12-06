@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with web socket proxy
+
 Version 1.0.1103.24 2018-12-01
 ------------------------------
 
