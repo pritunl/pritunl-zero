@@ -294,9 +294,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "proxy: WebSocket dial error"),
 		}
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("proxy: WebSocket dial error")
+		WriteError(rw, r, 500, err)
 		return
 	}
 	defer backConn.Close()
@@ -307,9 +305,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "proxy: WebSocket upgrade error"),
 		}
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("proxy: WebSocket upgrade error")
+		WriteError(rw, r, 500, err)
 		return
 	}
 	defer frontConn.Close()
