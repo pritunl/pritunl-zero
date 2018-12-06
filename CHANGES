@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1108.97 2018-12-06
+------------------------------
 
 Fix issue with Azure single sign-on
 
