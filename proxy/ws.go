@@ -299,6 +299,15 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	}
 	defer backConn.Close()
 
+	if backResp.StatusCode != http.StatusSwitchingProtocols {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err,
+				"proxy: WebSocket error status %d", backResp.StatusCode),
+		}
+		WriteError(rw, r, 500, err)
+		return
+	}
+
 	upgradeHeaders := getUpgradeHeaders(backResp)
 	frontConn, err := w.upgrader.Upgrade(rw, r, upgradeHeaders)
 	if err != nil {
