@@ -5,9 +5,8 @@
 
 [Pritunl-Zero](https://zero.pritunl.com) is a zero trust system
 that provides secure authenticated access to internal services from untrusted
-networks without the use of a VPN. Documentation and more
-information can be found at
-[docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
+networks without the use of a VPN. Documentation and more information can be
+found at [docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
 
 [![pritunl](img/logo_code.png)](https://docs.pritunl.com/docs/pritunl-zero)
 
