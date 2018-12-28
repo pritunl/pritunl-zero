@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1130.30 2018-12-28
+------------------------------
 
 Improve IPv6 support for internal services
 Fix connection issue with websockets
