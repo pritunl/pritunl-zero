@@ -284,9 +284,26 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	var backResp *http.Response
 	var err error
 
-	if settings.Router.SkipVerify || net.ParseIP(
-		utils.StripPort(w.serverHost)) != nil {
+	skipVerify := settings.Router.SkipVerify || net.ParseIP(
+		utils.StripPort(w.serverHost)) != nil
 
+	if w.reqHost != "" {
+		dialer := &websocket.Dialer{
+			Proxy: func(req *http.Request) (url *url.URL, err error) {
+				req.Host = w.reqHost
+				return
+			},
+			HandshakeTimeout: 45 * time.Second,
+		}
+
+		if skipVerify {
+			dialer.TLSClientConfig = &tls.Config{
+				InsecureSkipVerify: true,
+			}
+		}
+
+		backConn, backResp, err = dialer.Dial(u.String(), header)
+	} else if skipVerify {
 		backConn, backResp, err = InsecureDialer.Dial(
 			u.String(), header)
 	} else {
