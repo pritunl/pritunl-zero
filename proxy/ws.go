@@ -283,7 +283,9 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	var backResp *http.Response
 	var err error
 
-	if settings.Router.SkipVerify || net.ParseIP(w.serverHost) != nil {
+	if settings.Router.SkipVerify || net.ParseIP(
+		utils.StripPort(w.serverHost)) != nil {
+
 		backConn, backResp, err = InsecureDialer.Dial(
 			u.String(), header)
 	} else {
