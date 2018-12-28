@@ -71,6 +71,13 @@ func StripPort(hostport string) string {
 	return hostport[:colon]
 }
 
+func FormatHostPort(hostname string, port int) string {
+	if strings.Contains(hostname, ":") {
+		hostname = "[" + hostname + "]"
+	}
+	return fmt.Sprintf("%s:%d", hostname, port)
+}
+
 func ParseObjectId(strId string) (objId bson.ObjectId, ok bool) {
 	bytId, err := hex.DecodeString(strId)
 	if err != nil {
