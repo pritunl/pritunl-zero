@@ -40,6 +40,7 @@ var InsecureDialer = &websocket.Dialer{
 }
 
 type webSocket struct {
+	reqHost     string
 	serverHost  string
 	serverProto string
 	proxyProto  string
@@ -342,6 +343,7 @@ func newWebSocket(proxyProto string, proxyPort int, host *Host,
 	server *service.Server) (ws *webSocket) {
 
 	ws = &webSocket{
+		reqHost:    host.Domain.Host,
 		serverHost: utils.FormatHostPort(server.Hostname, server.Port),
 		proxyProto: proxyProto,
 		proxyPort:  proxyPort,
