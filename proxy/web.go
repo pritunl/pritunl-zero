@@ -146,7 +146,7 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 	w = &web{
 		reqHost:     host.Domain.Host,
 		serverProto: server.Protocol,
-		serverHost:  fmt.Sprintf("%s:%d", server.Hostname, server.Port),
+		serverHost:  utils.FormatHostPort(server.Hostname, server.Port),
 		proxyProto:  proxyProto,
 		proxyPort:   proxyPort,
 		Transport: &http.Transport{

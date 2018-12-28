@@ -342,7 +342,7 @@ func newWebSocket(proxyProto string, proxyPort int, host *Host,
 	server *service.Server) (ws *webSocket) {
 
 	ws = &webSocket{
-		serverHost: fmt.Sprintf("%s:%d", server.Hostname, server.Port),
+		serverHost: utils.FormatHostPort(server.Hostname, server.Port),
 		proxyProto: proxyProto,
 		proxyPort:  proxyPort,
 		upgrader: &websocket.Upgrader{
