@@ -311,8 +311,15 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			u.String(), header)
 	}
 	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "proxy: WebSocket dial error"),
+		if backResp != nil {
+			err = &errortypes.RequestError{
+				errors.Wrapf(err, "proxy: WebSocket dial error %d",
+					backResp.StatusCode),
+			}
+		} else {
+			err = &errortypes.RequestError{
+				errors.Wrap(err, "proxy: WebSocket dial error"),
+			}
 		}
 		WriteError(rw, r, 500, err)
 		return
