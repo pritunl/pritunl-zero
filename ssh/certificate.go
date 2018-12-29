@@ -107,7 +107,11 @@ func GetCertificates(db *database.Database, userId bson.ObjectId,
 		return
 	}
 
-	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
+	if page*pageCount == count && page > 0 {
+		page -= 1
+	}
+
+	skip := utils.Min(page*pageCount, count)
 
 	cursor := qury.Sort("-timestamp").Skip(skip).Limit(pageCount).Iter()
 

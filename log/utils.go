@@ -35,7 +35,11 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
 		return
 	}
 
-	skip := utils.Min(page*pageCount, utils.Max(0, count-pageCount))
+	if page*pageCount == count && page > 0 {
+		page -= 1
+	}
+
+	skip := utils.Min(page*pageCount, count)
 
 	cursor := qury.Sort("-$natural").Skip(skip).Limit(pageCount).Iter()
 
