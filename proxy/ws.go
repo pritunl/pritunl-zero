@@ -287,29 +287,25 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	skipVerify := settings.Router.SkipVerify || net.ParseIP(
 		utils.StripPort(w.serverHost)) != nil
 
-	if w.reqHost != "" {
-		dialer := &websocket.Dialer{
-			Proxy: func(req *http.Request) (url *url.URL, err error) {
+	dialer := &websocket.Dialer{
+		Proxy: func(req *http.Request) (url *url.URL, err error) {
+			if w.reqHost != "" {
 				req.Host = w.reqHost
-				return
-			},
-			HandshakeTimeout: 45 * time.Second,
-		}
-
-		if skipVerify {
-			dialer.TLSClientConfig = &tls.Config{
-				InsecureSkipVerify: true,
+			} else {
+				req.Host = r.Host
 			}
-		}
-
-		backConn, backResp, err = dialer.Dial(u.String(), header)
-	} else if skipVerify {
-		backConn, backResp, err = InsecureDialer.Dial(
-			u.String(), header)
-	} else {
-		backConn, backResp, err = websocket.DefaultDialer.Dial(
-			u.String(), header)
+			return
+		},
+		HandshakeTimeout: 45 * time.Second,
 	}
+
+	if skipVerify {
+		dialer.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
+	}
+
+	backConn, backResp, err = dialer.Dial(u.String(), header)
 	if err != nil {
 		if backResp != nil {
 			err = &errortypes.RequestError{
