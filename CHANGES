@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Certificate management improvements
+WebSocket improvements
 
 Version 1.0.1130.30 2018-12-28
 ------------------------------
