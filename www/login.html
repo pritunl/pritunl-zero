@@ -105,7 +105,7 @@
       <button id="secondary-phone" class="pt-button auth-button">Call Me</button>
       <button id="secondary-sms" class="pt-button auth-button">Text Me</button>
       <input id="secondary-passcode" class="pt-input"
-        autocapitalize="off" spellcheck="false"
+        autocapitalize="off" spellcheck="false" autocomplete="off"
         type="text" placeholder="Passcode"/>
       <button id="secondary-submit" class="pt-button auth-button">Submit</button>
       <button id="secondary-cancel" class="pt-button auth-button">Cancel</button>
@@ -115,7 +115,7 @@
       <div id="device-alert" class="pt-callout"></div>
       <form id="device-form">
         <label class="pt-label">
-          <input id="device-name" class="pt-input"
+          <input id="device-name" class="pt-input" autocomplete="off"
             type="text" placeholder="Device name" autofocus/>
         </label>
         <input id="device-submit" class="pt-button" disabled
@@ -127,11 +127,11 @@
       <form id="login-form">
         <label class="pt-label">
           <input id="username" class="pt-input"
-            autocapitalize="off" spellcheck="false"
+            autocapitalize="off" spellcheck="false" autocomplete="off"
             type="text" placeholder="Username" autofocus/>
         </label>
         <label class="pt-label">
-          <input id="password" class="pt-input"
+          <input id="password" class="pt-input" autocomplete="off"
             type="password" placeholder="Password"/>
         </label>
         <input id="submit" class="pt-button" type="submit" value="Login"/>
