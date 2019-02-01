@@ -132,13 +132,13 @@ export default class PolicyRule extends React.Component<Props, State> {
 		for (let value of rule.values || []) {
 			values.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={value}
 				>
 					{options ? options[value] || value : value}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveValue(value);
 						}}
@@ -151,7 +151,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 		if (options) {
 			inputElem = <PageSelectButton
 				hidden={rule.values == null}
-				buttonClass="pt-intent-success pt-icon-add"
+				buttonClass="bp3-intent-success bp3-icon-add"
 				label="Add"
 				value={this.state.addValue}
 				onChange={(val): void => {
@@ -169,7 +169,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 		} else {
 			inputElem = <PageInputButton
 				hidden={rule.values == null}
-				buttonClass="pt-intent-success pt-icon-add"
+				buttonClass="bp3-intent-success bp3-icon-add"
 				label="Add"
 				type="text"
 				placeholder={selectPlaceholder}
@@ -213,7 +213,7 @@ export default class PolicyRule extends React.Component<Props, State> {
 				}}
 			/>
 			<label
-				className="pt-label"
+				className="bp3-label"
 				hidden={rule.values == null}
 			>
 				{label}

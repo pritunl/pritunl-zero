@@ -203,13 +203,13 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 			for (let role of this.state.roles) {
 				roles.push(
 					<div
-						className="pt-tag pt-tag-removable pt-intent-primary"
+						className="bp3-tag bp3-tag-removable bp3-intent-primary"
 						style={css.item}
 						key={role}
 					>
 						{role}
 						<button
-							className="pt-tag-remove"
+							className="bp3-tag-remove"
 							onMouseUp={(): void => {
 								this.onRemoveRole(role);
 							}}
@@ -331,9 +331,9 @@ sudo service sshd restart || true`;
 			}
 
 			if (errorMsg) {
-				errorMsgElem = <div className="pt-dialog-body">
+				errorMsgElem = <div className="bp3-dialog-body">
 					<div
-						className="pt-callout pt-intent-danger pt-icon-ban-circle"
+						className="bp3-callout bp3-intent-danger bp3-icon-ban-circle"
 						style={css.callout}
 					>
 						{errorMsg}
@@ -360,9 +360,9 @@ sudo service sshd restart || true`;
 				}}
 			>
 				{errorMsgElem}
-				<div className="pt-dialog-body" hidden={!!errorMsgElem}>
+				<div className="bp3-dialog-body" hidden={!!errorMsgElem}>
 					<div
-						className="pt-callout pt-intent-primary pt-icon-info-sign"
+						className="bp3-callout bp3-intent-primary bp3-icon-info-sign"
 						style={css.callout}
 					>
 						{callout}
@@ -451,7 +451,7 @@ sudo service sshd restart || true`;
 						}}
 					/>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						hidden={this.props.proxy}
 					>
 						Roles
@@ -464,7 +464,7 @@ sudo service sshd restart || true`;
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						hidden={this.props.proxy}
 						label="Add"
 						type="text"
@@ -479,7 +479,7 @@ sudo service sshd restart || true`;
 						onSubmit={this.onAddRole}
 					/>
 					<textarea
-						className="pt-input"
+						className="bp3-input"
 						style={css.textarea}
 						readOnly={true}
 						autoCapitalize="off"
@@ -491,10 +491,10 @@ sudo service sshd restart || true`;
 						}}
 					/>
 				</div>
-				<div className="pt-dialog-footer">
-					<div className="pt-dialog-footer-actions">
+				<div className="bp3-dialog-footer">
+					<div className="bp3-dialog-footer-actions">
 						<button
-							className="pt-button"
+							className="bp3-button"
 							type="button"
 							onClick={(): void => {
 								this.setState({
@@ -517,7 +517,7 @@ sudo service sshd restart || true`;
 
 		return <div hidden={this.props.hidden} style={css.box}>
 			<button
-				className="pt-button pt-icon-cloud-upload pt-intent-primary"
+				className="bp3-button bp3-icon-cloud-upload bp3-intent-primary"
 				style={css.button}
 				type="button"
 				disabled={this.props.disabled ||

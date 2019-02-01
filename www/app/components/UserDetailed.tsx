@@ -223,13 +223,13 @@ export default class UserDetailed extends React.Component<Props, State> {
 		for (let role of user.roles) {
 			roles.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.role}
 					key={role}
 				>
 					{role}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						disabled={this.state.locked}
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
@@ -247,8 +247,8 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<div>
 						<ConfirmButton
 							label="Delete"
-							className="pt-intent-danger pt-icon-delete"
-							progressClassName="pt-intent-danger"
+							className="bp3-intent-danger bp3-icon-delete"
+							progressClassName="bp3-intent-danger"
 							style={css.button}
 							disabled={this.state.disabled || this.state.locked}
 							hidden={!userId}
@@ -331,7 +331,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						<option value="okta">Okta</option>
 						<option value="api">API</option>
 					</PageSelect>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Roles
 						<Help
 							title="Roles"
@@ -343,7 +343,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					</label>
 					<PageInputButton
 						disabled={this.state.locked}
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"

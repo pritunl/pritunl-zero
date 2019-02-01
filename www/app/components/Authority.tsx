@@ -423,13 +423,13 @@ export default class Authority extends React.Component<Props, State> {
 		for (let role of authority.roles) {
 			roles.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -442,13 +442,13 @@ export default class Authority extends React.Component<Props, State> {
 		for (let match of authority.host_matches || []) {
 			matches.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={match}
 				>
 					{match}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveMatch(match);
 						}}
@@ -461,13 +461,13 @@ export default class Authority extends React.Component<Props, State> {
 		for (let subnet of authority.host_subnets || []) {
 			subnets.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={subnet}
 				>
 					{subnet}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveSubnet(subnet);
 						}}
@@ -481,7 +481,7 @@ export default class Authority extends React.Component<Props, State> {
 			tokens.push(
 				<PageInputButton
 					key={token}
-					buttonClass="pt-minimal pt-intent-danger pt-icon-remove"
+					buttonClass="bp3-minimal bp3-intent-danger bp3-icon-remove"
 					type="text"
 					hidden={!authority.host_certificates}
 					readOnly={true}
@@ -530,7 +530,7 @@ export default class Authority extends React.Component<Props, State> {
 			let hsmStatus = this.props.authority.hsm_status || 'disconnected';
 
 			fields.push({
-				valueClass: hsmStatus === 'connected' ? '' : 'pt-text-intent-danger',
+				valueClass: hsmStatus === 'connected' ? '' : 'bp3-text-intent-danger',
 				label: 'Status',
 				value: hsmStatus.charAt(0).toUpperCase() + hsmStatus.substr(1),
 			});
@@ -542,15 +542,15 @@ export default class Authority extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm authority remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
@@ -641,7 +641,7 @@ export default class Authority extends React.Component<Props, State> {
 							this.toggle('proxy_hosting');
 						}}
 					/>
-					<label className="pt-label"
+					<label className="bp3-label"
 						style={css.label}
 						hidden={!authority.proxy_hosting}
 					>
@@ -650,9 +650,9 @@ export default class Authority extends React.Component<Props, State> {
 							title="Bastion Hostname and Port"
 							content="Hostname of bastion server and port that SSH nodes will run on. This port cannot be 22 or conflict with existing services on the Pritunl Zero node. Each authority must have a unquie bastion port. The bastion hostname will need to point to a Pritunl Zero bastion node or network load balancer in front of Pritunl Zero bastion nodes."
 						/>
-						<div className="pt-control-group" style={css.inputGroup}>
+						<div className="bp3-control-group" style={css.inputGroup}>
 							<input
-								className="pt-input"
+								className="bp3-input"
 								style={css.hostname}
 								type="text"
 								autoCapitalize="off"
@@ -664,7 +664,7 @@ export default class Authority extends React.Component<Props, State> {
 								}}
 							/>
 							<input
-								className="pt-input"
+								className="bp3-input"
 								style={css.port}
 								type="text"
 								autoCapitalize="off"
@@ -786,7 +786,7 @@ export default class Authority extends React.Component<Props, State> {
 							this.toggle('match_roles');
 						}}
 					/>
-					<label className="pt-label" hidden={!authority.match_roles}>
+					<label className="bp3-label" hidden={!authority.match_roles}>
 						Roles
 						<Help
 							title="Roles"
@@ -797,7 +797,7 @@ export default class Authority extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -811,7 +811,7 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Custom Matches
 						<Help
 							title="Custom Matches"
@@ -822,7 +822,7 @@ export default class Authority extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add match"
@@ -835,7 +835,7 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddMatch}
 					/>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Match Subnets
 						<Help
 							title="Match Subnets"
@@ -846,7 +846,7 @@ export default class Authority extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add subnet"
@@ -871,7 +871,7 @@ export default class Authority extends React.Component<Props, State> {
 					</label>
 					{tokens}
 					<button
-						className="pt-button pt-intent-success pt-icon-add"
+						className="bp3-button bp3-intent-success bp3-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						disabled={this.state.changed}

@@ -20,13 +20,13 @@ const css = {
 export default class PageSelect extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div hidden={this.props.hidden}>
-			<label className="pt-label" style={css.label}>
+			<label className="bp3-label" style={css.label}>
 				{this.props.label}
 				<Help
 					title={this.props.label}
 					content={this.props.help}
 				/>
-				<div className="pt-select">
+				<div className="bp3-select">
 					<select
 						disabled={this.props.disabled}
 						value={this.props.value || ''}

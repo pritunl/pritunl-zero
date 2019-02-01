@@ -25,8 +25,8 @@ const css = {
 export default class Session extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<h4 className="pt-non-ideal-state-title">
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<h4 className="bp3-non-ideal-state-title">
 					Pritunl Zero User Console
 				</h4>
 				<span style={css.description}>
@@ -38,28 +38,28 @@ export default class Session extends React.Component<Props, {}> {
 				style={css.buttons}
 			>
 				<a
-					className="pt-button pt-large pt-intent-primary pt-icon-download"
+					className="bp3-button bp3-large bp3-intent-primary bp3-icon-download"
 					style={css.button}
 					href="https://docs.pritunl.com/v1/docs/ssh-client"
 				>
 					Install SSH Client
 				</a>
 				<button
-					className="pt-button pt-large pt-intent-success pt-icon-id-number"
+					className="bp3-button bp3-large bp3-intent-success bp3-icon-id-number"
 					style={css.button}
 					onClick={this.props.onDevices}
 				>
 					Security Devices
 				</button>
 				<a
-					className="pt-button pt-large pt-intent-warning pt-icon-delete"
+					className="bp3-button bp3-large bp3-intent-warning bp3-icon-delete"
 					style={css.button}
 					href="/logout"
 				>
 					Logout
 				</a>
 				<a
-					className="pt-button pt-large pt-intent-danger pt-icon-trash"
+					className="bp3-button bp3-large bp3-intent-danger bp3-icon-trash"
 					style={css.button}
 					href="/logout_all"
 				>

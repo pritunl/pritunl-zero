@@ -290,13 +290,13 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		for (let role of provider.default_roles) {
 			roles.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.role}
 					key={role}
 				>
 					{role}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							let rls = [
 								...this.props.provider.default_roles,
@@ -318,7 +318,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			);
 		}
 
-		return <div className="pt-card" style={css.card}>
+		return <div className="bp3-card" style={css.card}>
 			<h6>{label}</h6>
 			<PageInfo
 				fields={[
@@ -340,7 +340,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 					this.props.onChange(state);
 				}}
 			/>
-			<label className="pt-label" hidden={!provider.auto_create}>
+			<label className="bp3-label" hidden={!provider.auto_create}>
 				Default Roles
 				<Help
 					title="Default Roles"
@@ -351,7 +351,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				</div>
 			</label>
 			<PageInputButton
-				buttonClass="pt-intent-success pt-icon-add"
+				buttonClass="bp3-intent-success bp3-icon-add"
 				label="Add"
 				type="text"
 				placeholder="Add default role"
@@ -423,7 +423,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			</PageSelect>
 			{options}
 			<button
-				className="pt-button pt-intent-danger"
+				className="bp3-button bp3-intent-danger"
 				onClick={(): void => {
 					this.props.onRemove();
 				}}

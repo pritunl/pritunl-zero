@@ -31,7 +31,7 @@ const css = {
 export default class PageInputSwitch extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div hidden={this.props.hidden}>
-			<label className="pt-control pt-switch" style={css.switchLabel}>
+			<label className="bp3-control bp3-switch" style={css.switchLabel}>
 				<input
 					type="checkbox"
 					checked={!!this.props.value || this.props.checked}
@@ -43,16 +43,16 @@ export default class PageInputSwitch extends React.Component<Props, {}> {
 						}
 					}}
 				/>
-				<span className="pt-control-indicator"/>
+				<span className="bp3-control-indicator"/>
 				{this.props.label}
 			</label>
 			<Help
 				title={this.props.label}
 				content={this.props.help}
 			/>
-			<label className="pt-label" style={css.inputLabel}>
+			<label className="bp3-label" style={css.inputLabel}>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.input}
 					hidden={!this.props.value && !this.props.checked}
 					type={this.props.type}

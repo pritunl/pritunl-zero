@@ -24,7 +24,7 @@ export default class PageHeader extends React.Component<Props, {}> {
 			label = <h2 style={css.label}>{this.props.label}</h2>;
 		}
 
-		return <div className="pt-border" style={css.header}>
+		return <div className="bp3-border" style={css.header}>
 			{label}
 			{this.props.children}
 		</div>;

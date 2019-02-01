@@ -60,7 +60,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 				<div key={field.label} style={css.item}>
 					{field.label}
 					<div
-						className={field.valueClass || 'pt-text-muted'}
+						className={field.valueClass || 'bp3-text-muted'}
 						style={css.value}
 					>
 						{value}
@@ -77,8 +77,8 @@ export default class PageInfo extends React.Component<Props, {}> {
 			bars.push(
 				<div key={bar.label} style={css.item}>
 					{bar.label}
-					<div className={'pt-progress-bar ' + (bar.progressClass || '')}>
-						<div className="pt-progress-meter" style={style}/>
+					<div className={'bp3-progress-bar ' + (bar.progressClass || '')}>
+						<div className="bp3-progress-meter" style={style}/>
 					</div>
 				</div>,
 			);
@@ -95,7 +95,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 		}
 
 		return <label
-			className="pt-label"
+			className="bp3-label"
 			style={labelStyle}
 			hidden={this.props.hidden}
 		>

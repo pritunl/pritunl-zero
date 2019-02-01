@@ -47,20 +47,20 @@ export default class NonState extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let description: JSX.Element;
 		if (this.props.description) {
-			description = <div className="pt-non-ideal-state-description">
+			description = <div className="bp3-non-ideal-state-description">
 				{this.props.description}
 			</div>;
 		}
 
 		return <div
-			className="pt-non-ideal-state"
+			className="bp3-non-ideal-state"
 			style={css.state}
 			hidden={this.props.hidden || !this.state.initialized}
 		>
-			<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-				<span className={'pt-icon ' + this.props.iconClass}/>
+			<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+				<span className={'bp3-icon ' + this.props.iconClass}/>
 			</div>
-			<h4 className="pt-non-ideal-state-title">{this.props.title}</h4>
+			<h4 className="bp3-non-ideal-state-title">{this.props.title}</h4>
 			{description}
 		</div>;
 	}

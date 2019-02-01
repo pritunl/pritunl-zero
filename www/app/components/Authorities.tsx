@@ -81,7 +81,7 @@ export default class Authorities extends React.Component<{}, State> {
 					<div className="flex"/>
 					<div style={css.buttons}>
 						<button
-							className="pt-button pt-intent-success pt-icon-add"
+							className="bp3-button bp3-intent-success bp3-icon-add"
 							style={css.button}
 							disabled={this.state.disabled}
 							type="button"
@@ -111,7 +111,7 @@ export default class Authorities extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!authoritiesDom.length}
-				iconClass="pt-icon-office"
+				iconClass="bp3-icon-office"
 				title="No authorities"
 				description="Add a new authority to get started."
 			/>

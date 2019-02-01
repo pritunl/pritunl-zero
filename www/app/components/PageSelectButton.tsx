@@ -32,18 +32,18 @@ const css = {
 
 export default class PageSelectButton extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		let buttonClass = 'pt-button';
+		let buttonClass = 'bp3-button';
 		if (this.props.buttonClass) {
 			buttonClass += ' ' + this.props.buttonClass;
 		}
 
 		return <div
-			className="pt-control-group"
+			className="bp3-control-group"
 			style={css.group}
 			hidden={this.props.hidden}
 		>
 			<div style={css.selectBox}>
-				<div className="pt-select" style={css.select}>
+				<div className="bp3-select" style={css.select}>
 					<select
 						style={css.selectInner}
 						disabled={this.props.disabled}

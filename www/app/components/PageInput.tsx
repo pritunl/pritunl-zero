@@ -35,7 +35,7 @@ export default class PageInput extends React.Component<Props, {}> {
 		value = isNaN(value) ? this.props.value || '' : this.props.value;
 
 		return <label
-			className="pt-label"
+			className="bp3-label"
 			style={css.label}
 			hidden={this.props.hidden}
 		>
@@ -45,7 +45,7 @@ export default class PageInput extends React.Component<Props, {}> {
 				content={this.props.help}
 			/>
 			<input
-				className="pt-input"
+				className="bp3-input"
 				style={css.input}
 				type={this.props.type}
 				disabled={this.props.disabled}

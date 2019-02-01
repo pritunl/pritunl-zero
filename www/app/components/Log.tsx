@@ -77,25 +77,25 @@ export default class Log extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let log = this.props.log;
 
-		let className = 'pt-cell ';
+		let className = 'bp3-cell ';
 		switch (log.level) {
 			case 'debug':
-				className += 'pt-text-intent-success';
+				className += 'bp3-text-intent-success';
 				break;
 			case 'info':
-				className += 'pt-text-intent-primary';
+				className += 'bp3-text-intent-primary';
 				break;
 			case 'warning':
-				className += 'pt-text-intent-warning';
+				className += 'bp3-text-intent-warning';
 				break;
 			case 'error':
-				className += 'pt-text-intent-danger';
+				className += 'bp3-text-intent-danger';
 				break;
 			case 'fatal':
-				className += 'pt-text-intent-danger';
+				className += 'bp3-text-intent-danger';
 				break;
 			case 'panic':
-				className += 'pt-text-intent-danger';
+				className += 'bp3-text-intent-danger';
 				break;
 		}
 
@@ -118,7 +118,7 @@ export default class Log extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card pt-row"
+			className="bp3-card bp3-row"
 			style={css.card}
 		>
 			<div className={className} style={css.timestamp}>
@@ -130,12 +130,12 @@ export default class Log extends React.Component<Props, State> {
 			<div className={className} style={css.message}>
 				{log.message}
 			</div>
-			<div className="pt-cell" style={css.fields}>
+			<div className="bp3-cell" style={css.fields}>
 				{fields}
 			</div>
-			<div className="pt-cell" style={css.buttons}>
+			<div className="bp3-cell" style={css.buttons}>
 				<button
-					className="pt-button pt-minimal pt-icon-document-open"
+					className="bp3-button bp3-minimal bp3-icon-document-open"
 					hidden={!log.stack}
 					onClick={(): void => {
 						this.setState({
@@ -157,7 +157,7 @@ export default class Log extends React.Component<Props, State> {
 				}}
 			>
 				<textarea
-					className="pt-dialog-body pt-input"
+					className="bp3-dialog-body bp3-input"
 					style={css.textarea}
 					autoCapitalize="off"
 					spellCheck={false}

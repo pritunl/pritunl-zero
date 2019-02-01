@@ -82,7 +82,7 @@ export default class Sessions extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div>
 						<button
-							className="pt-button pt-minimal"
+							className="bp3-button bp3-minimal"
 							style={css.button}
 							type="button"
 							onClick={(): void => {
@@ -103,7 +103,7 @@ export default class Sessions extends React.Component<Props, State> {
 			</div>
 			<NonState
 				hidden={!!sessions.length}
-				iconClass="pt-icon-user"
+				iconClass="bp3-icon-user"
 				title="No sessions"
 			/>
 		</div>;

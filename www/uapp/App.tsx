@@ -7,7 +7,7 @@ import Main from './components/Main';
 import * as Alert from './Alert';
 import * as Csrf from './Csrf';
 
-document.body.className = 'pt-dark';
+document.body.className = 'bp3-dark';
 
 Csrf.load().then((): void => {
 	Blueprint.FocusStyleManager.onlyShowFocusOnTabs();

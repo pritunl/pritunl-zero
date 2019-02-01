@@ -40,8 +40,8 @@ export default class ServiceServer extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		let server = this.props.server;
 
-		return <div className="pt-control-group" style={css.group}>
-			<div className="pt-select" style={css.protocol}>
+		return <div className="bp3-control-group" style={css.group}>
+			<div className="bp3-select" style={css.protocol}>
 				<select
 					value={server.protocol}
 					onChange={(evt): void => {
@@ -56,7 +56,7 @@ export default class ServiceServer extends React.Component<Props, {}> {
 			</div>
 			<div style={css.hostnameBox}>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.hostname}
 					type="text"
 					autoCapitalize="off"
@@ -71,7 +71,7 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				/>
 			</div>
 			<input
-				className="pt-input"
+				className="bp3-input"
 				style={css.port}
 				type="text"
 				autoCapitalize="off"
@@ -85,7 +85,7 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				}}
 			/>
 			<button
-				className="pt-button pt-minimal pt-intent-danger pt-icon-remove"
+				className="bp3-button bp3-minimal bp3-intent-danger bp3-icon-remove"
 				onClick={(): void => {
 					this.props.onRemove();
 				}}

@@ -211,10 +211,10 @@ export default class Devices extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div style={css.groupBox} className="layout horizontal">
 						<div
-							className="pt-control-group"
+							className="bp3-control-group"
 							style={css.group}
 						>
-							<div className="pt-select">
+							<div className="bp3-select">
 								<select
 									value={this.state.deviceType}
 									onChange={(evt): void => {
@@ -231,7 +231,7 @@ export default class Devices extends React.Component<Props, State> {
 							</div>
 							<div className="layout horizontal" style={css.inputBox}>
 								<input
-									className="pt-input"
+									className="bp3-input"
 									type="text"
 									placeholder="Device name"
 									value={this.state.deviceName}
@@ -249,7 +249,7 @@ export default class Devices extends React.Component<Props, State> {
 									}}
 								/>
 								<input
-									className="pt-input"
+									className="bp3-input"
 									hidden={this.state.deviceType !== 'smart_card'}
 									type="text"
 									placeholder="Device SSH public key"
@@ -269,7 +269,7 @@ export default class Devices extends React.Component<Props, State> {
 							</div>
 							<div>
 								<button
-									className="pt-button pt-intent-success pt-icon-add"
+									className="bp3-button bp3-intent-success bp3-icon-add"
 									disabled={this.state.disabled}
 									onClick={this.addDevice}
 								>Add Device</button>
@@ -283,7 +283,7 @@ export default class Devices extends React.Component<Props, State> {
 			</div>
 			<NonState
 				hidden={!!devices.length}
-				iconClass="pt-icon-id-number"
+				iconClass="bp3-icon-id-number"
 				title="No devices"
 			/>
 		</div>;

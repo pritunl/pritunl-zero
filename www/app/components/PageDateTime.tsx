@@ -36,7 +36,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 
 		return <div hidden={this.props.hidden}>
 			<div style={css.group}>
-				<label className="pt-label" style={css.label}>
+				<label className="bp3-label" style={css.label}>
 					{this.props.label}
 					<Help
 						title={this.props.label}

@@ -155,17 +155,17 @@ export default class Device extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal">
 				{deviceIcon}
 				<div
-					className="pt-input-group flex"
+					className="bp3-input-group flex"
 					style={css.group}
 				>
 					<input
-						className="pt-input"
+						className="bp3-input"
 						type="text"
 						placeholder="Device name"
 						value={device.name}
@@ -179,7 +179,7 @@ export default class Device extends React.Component<Props, State> {
 						}}
 					/>
 					<button
-						className="pt-button pt-minimal pt-intent-primary pt-icon-tick"
+						className="bp3-button bp3-minimal bp3-intent-primary bp3-icon-tick"
 						hidden={!this.state.device}
 						disabled={this.state.disabled}
 						onClick={this.onSave}
@@ -187,8 +187,8 @@ export default class Device extends React.Component<Props, State> {
 				</div>
 				<div>
 					<ConfirmButton
-						className="pt-minimal pt-intent-danger pt-icon-trash"
-						progressClassName="pt-intent-danger"
+						className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+						progressClassName="bp3-intent-danger"
 						confirmMsg="Confirm device remove"
 						disabled={this.state.disabled}
 						onConfirm={this.onDelete}
@@ -197,27 +197,27 @@ export default class Device extends React.Component<Props, State> {
 			</div>
 			<div className="layout vertical" style={css.info}>
 				<div style={css.item}>
-					ID: <span className="pt-text-muted">
+					ID: <span className="bp3-text-muted">
 						{device.id}
 					</span>
 				</div>
 				<div style={css.item}>
-					Type: <span className="pt-text-muted">
+					Type: <span className="bp3-text-muted">
 						{deviceType}
 					</span>
 				</div>
 				<div style={css.item}>
-					Mode: <span className="pt-text-muted">
+					Mode: <span className="bp3-text-muted">
 						{deviceMode}
 					</span>
 				</div>
 				<div style={css.item}>
-					Registered: <span className="pt-text-muted">
+					Registered: <span className="bp3-text-muted">
 						{MiscUtils.formatDateMid(device.timestamp)}
 					</span>
 				</div>
 				<div style={css.item}>
-					Last Active: <span className="pt-text-muted">
+					Last Active: <span className="bp3-text-muted">
 						{MiscUtils.formatDateMid(device.last_active)}
 					</span>
 				</div>

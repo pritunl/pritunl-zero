@@ -423,13 +423,13 @@ export default class Node extends React.Component<Props, State> {
 
 			services.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={service.id}
 				>
 					{service.name}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveService(service.id);
 						}}
@@ -458,13 +458,13 @@ export default class Node extends React.Component<Props, State> {
 
 			authorities.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={authority.id}
 				>
 					{authority.name}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveAuthority(authority.id);
 						}}
@@ -501,13 +501,13 @@ export default class Node extends React.Component<Props, State> {
 
 			certificates.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={cert.id}
 				>
 					{cert.name}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveCert(cert.id);
 						}}
@@ -528,15 +528,15 @@ export default class Node extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm node remove"
 							disabled={active || this.state.disabled}
 							onConfirm={this.onDelete}
@@ -608,10 +608,10 @@ export default class Node extends React.Component<Props, State> {
 							this.set('user_domain', val);
 						}}
 					/>
-					<label className="pt-label" style={css.label}>
+					<label className="bp3-label" style={css.label}>
 						Protocol and Port
-						<div className="pt-control-group" style={css.inputGroup}>
-							<div className="pt-select" style={css.protocol}>
+						<div className="bp3-control-group" style={css.inputGroup}>
+							<div className="bp3-select" style={css.protocol}>
 								<select
 									value={node.protocol || 'https'}
 									onChange={(evt): void => {
@@ -623,7 +623,7 @@ export default class Node extends React.Component<Props, State> {
 								</select>
 							</div>
 							<input
-								className="pt-input"
+								className="bp3-input"
 								style={css.port}
 								type="text"
 								autoCapitalize="off"
@@ -637,7 +637,7 @@ export default class Node extends React.Component<Props, State> {
 						</div>
 					</label>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						style={css.label}
 						hidden={node.type.indexOf('proxy') === -1}
 					>
@@ -655,7 +655,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Add Service"
 						value={this.state.addService}
 						disabled={!this.props.services.length}
-						buttonClass="pt-intent-success"
+						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -667,7 +667,7 @@ export default class Node extends React.Component<Props, State> {
 						{servicesSelect}
 					</PageSelectButton>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						style={css.label}
 						hidden={node.type.indexOf('bastion') === -1}
 					>
@@ -685,7 +685,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('bastion') === -1}
 						value={this.state.addAuthority}
 						disabled={!this.props.authorities.length}
-						buttonClass="pt-intent-success"
+						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -709,7 +709,7 @@ export default class Node extends React.Component<Props, State> {
 								value: node.software_version || 'Unknown',
 							},
 							{
-								valueClass: active ? '' : 'pt-text-intent-danger',
+								valueClass: active ? '' : 'bp3-text-intent-danger',
 								label: 'Timestamp',
 								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
@@ -720,29 +720,29 @@ export default class Node extends React.Component<Props, State> {
 						]}
 						bars={[
 							{
-								progressClass: 'pt-no-stripes pt-intent-primary',
+								progressClass: 'bp3-no-stripes bp3-intent-primary',
 								label: 'Memory',
 								value: node.memory,
 							},
 							{
-								progressClass: 'pt-no-stripes pt-intent-success',
+								progressClass: 'bp3-no-stripes bp3-intent-success',
 								label: 'Load1',
 								value: node.load1,
 							},
 							{
-								progressClass: 'pt-no-stripes pt-intent-warning',
+								progressClass: 'bp3-no-stripes bp3-intent-warning',
 								label: 'Load5',
 								value: node.load5,
 							},
 							{
-								progressClass: 'pt-no-stripes pt-intent-danger',
+								progressClass: 'bp3-no-stripes bp3-intent-danger',
 								label: 'Load15',
 								value: node.load15,
 							},
 						]}
 					/>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						style={css.label}
 						hidden={node.protocol === 'http'}
 					>
@@ -760,7 +760,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Add Certificate"
 						value={this.state.addCert}
 						disabled={!this.props.certificates.length}
-						buttonClass="pt-intent-success"
+						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,

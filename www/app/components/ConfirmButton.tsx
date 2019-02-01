@@ -154,7 +154,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 
 		let className = this.props.className || '';
 		if (!this.props.label) {
-			className += ' pt-button-empty';
+			className += ' bp3-button-empty';
 		}
 
 		if (Constants.mobile) {
@@ -163,7 +163,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 
 			return <div style={css.box}>
 				<button
-					className={'pt-button ' + className}
+					className={'bp3-button ' + className}
 					style={style}
 					type="button"
 					hidden={this.props.hidden}
@@ -181,18 +181,18 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					isOpen={this.state.dialog}
 					onClose={this.closeDialog}
 				>
-					<div className="pt-dialog-body">
+					<div className="bp3-dialog-body">
 						{confirmMsg}
 					</div>
-					<div className="pt-dialog-footer">
-						<div className="pt-dialog-footer-actions">
+					<div className="bp3-dialog-footer">
+						<div className="bp3-dialog-footer-actions">
 							<button
-								className="pt-button"
+								className="bp3-button"
 								type="button"
 								onClick={this.closeDialog}
 							>Cancel</button>
 							<button
-								className="pt-button pt-intent-primary"
+								className="bp3-button bp3-intent-primary"
 								type="button"
 								onClick={this.closeDialogConfirm}
 							>Ok</button>
@@ -219,16 +219,16 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				}
 
 				confirmElem = <div
-					className={'pt-progress-bar pt-no-stripes ' + (
+					className={'bp3-progress-bar bp3-no-stripes ' + (
 						this.props.progressClassName || '')}
 					style={progressStyle}
 				>
-					<div className="pt-progress-meter" style={confirmStyle}/>
+					<div className="bp3-progress-meter" style={confirmStyle}/>
 				</div>;
 			}
 
 			return <button
-				className={'pt-button ' + className}
+				className={'bp3-button ' + className}
 				style={style}
 				type="button"
 				hidden={this.props.hidden}

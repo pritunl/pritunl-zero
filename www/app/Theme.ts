@@ -39,7 +39,7 @@ export function light(): void {
 
 export function dark(): void {
 	theme = 'dark';
-	document.body.className = 'pt-dark';
+	document.body.className = 'bp3-dark';
 }
 
 export function toggle(): void {

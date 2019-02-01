@@ -83,7 +83,7 @@ export default class Sshcertificates extends React.Component<Props, State> {
 			</div>
 			<NonState
 				hidden={!!sshcertificates.length}
-				iconClass="pt-icon-endorsed"
+				iconClass="bp3-icon-endorsed"
 				title="No SSH certificates"
 			/>
 			<SshcertificatesPage/>

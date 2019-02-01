@@ -267,23 +267,23 @@ export default class Devices extends React.Component<Props, State> {
 
 	register(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-key"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					Register Security Device
 				</h4>
 				<span style={css.description}>
 					Enter a name for your new security device.
 				</span>
 				<div
-					className="pt-control-group"
+					className="bp3-control-group"
 					style={css.group}
 				>
 					<div style={css.inputBox}>
 						<input
-							className="pt-input"
+							className="bp3-input"
 							style={css.input}
 							type="text"
 							placeholder="Device name"
@@ -303,7 +303,7 @@ export default class Devices extends React.Component<Props, State> {
 					</div>
 					<div>
 						<button
-							className="pt-button pt-intent-success pt-icon-add"
+							className="bp3-button bp3-intent-success bp3-icon-add"
 							disabled={this.state.disabled}
 							onClick={this.onRegister}
 						>Add Device</button>
@@ -416,18 +416,18 @@ export default class Devices extends React.Component<Props, State> {
 
 	device(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-key"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
 					A current security device is required to add new devices
 				</span>
 				<button
-					className="pt-button pt-intent-success pt-icon-id-number"
+					className="bp3-button bp3-intent-success bp3-icon-id-number"
 					disabled={this.state.disabled}
 					onClick={this.deviceSign}
 				>Authenticate</button>
@@ -450,11 +450,11 @@ export default class Devices extends React.Component<Props, State> {
 		}
 
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-sim-card"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-sim-card"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					Register Smart Card
 				</h4>
 				<span style={css.description}>
@@ -465,7 +465,7 @@ export default class Devices extends React.Component<Props, State> {
 					style={css.buttons}
 				>
 					<button
-						className="pt-button pt-large pt-intent-danger pt-icon-cross"
+						className="bp3-button bp3-large bp3-intent-danger bp3-icon-cross"
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
@@ -473,7 +473,7 @@ export default class Devices extends React.Component<Props, State> {
 						}}
 					>Cancel</button>
 					<button
-						className="pt-button pt-large pt-intent-success pt-icon-tick"
+						className="bp3-button bp3-large bp3-intent-success bp3-icon-tick"
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={this.initRegister}
@@ -539,11 +539,11 @@ export default class Devices extends React.Component<Props, State> {
 
 	secondary(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-key"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -552,7 +552,7 @@ export default class Devices extends React.Component<Props, State> {
 			</div>
 			<div className="layout vertical center-justified" style={css.buttons}>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.push}
@@ -571,7 +571,7 @@ export default class Devices extends React.Component<Props, State> {
 					Push
 				</button>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.phone}
@@ -590,7 +590,7 @@ export default class Devices extends React.Component<Props, State> {
 					Call Me
 				</button>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.sms}
@@ -609,7 +609,7 @@ export default class Devices extends React.Component<Props, State> {
 					Text Me
 				</button>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.secondaryInput}
 					hidden={!this.state.secondary.passcode}
 					disabled={!this.state.secondaryState.passcode}
@@ -638,7 +638,7 @@ export default class Devices extends React.Component<Props, State> {
 					}}
 				/>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.passcode}
@@ -738,7 +738,7 @@ export default class Devices extends React.Component<Props, State> {
 
 		return <div>
 			<button
-				className="pt-button pt-minimal pt-intent-danger"
+				className="bp3-button bp3-minimal bp3-intent-danger"
 				style={css.close}
 				onClick={this.props.onClose}
 			>
@@ -753,22 +753,22 @@ export default class Devices extends React.Component<Props, State> {
 			>
 				{devicesDom}
 				<div
-					className="pt-non-ideal-state"
+					className="bp3-non-ideal-state"
 					style={css.state}
 					hidden={!!devicesDom.length || !this.state.initialized}
 				>
 					<div
-						className="pt-non-ideal-state-visual pt-non-ideal-state-icon"
+						className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon"
 						style={css.stateIcon}
 					>
 						<Blueprint.Icon icon="id-number" iconSize={80}/>
 					</div>
-					<h4 className="pt-non-ideal-state-title">
+					<h4 className="bp3-non-ideal-state-title">
 						No devices registered
 					</h4>
 				</div>
 				<button
-					className="pt-button pt-intent-success pt-icon-add"
+					className="bp3-button bp3-intent-success bp3-icon-add"
 					disabled={this.state.disabled}
 					onClick={this.initRegister}
 				>Add U2F Device</button>

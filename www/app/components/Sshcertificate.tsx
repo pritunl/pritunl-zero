@@ -36,7 +36,7 @@ export default class Sshcertificate extends React.Component<Props, {}> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">

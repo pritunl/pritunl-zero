@@ -98,16 +98,16 @@ export default class Subscription extends React.Component<{}, State> {
 
 	update(): JSX.Element {
 		return <div>
-			<div className="pt-card pt-elevation-2" style={css.card}>
+			<div className="bp3-card bp3-elevation-2" style={css.card}>
 				<div
-					className="pt-callout pt-intent-success"
+					className="bp3-callout bp3-intent-success"
 					style={css.message}
 					hidden={!this.state.message}
 				>
 					{this.state.message}
 				</div>
 				<textarea
-					className="pt-input"
+					className="bp3-input"
 					style={css.license}
 					disabled={this.state.disabled}
 					placeholder="New License Key"
@@ -121,7 +121,7 @@ export default class Subscription extends React.Component<{}, State> {
 				/>
 				<div className="layout horizontal center-justified">
 					<button
-						className="pt-button pt-intent-danger pt-icon-cross"
+						className="bp3-button bp3-intent-danger bp3-icon-cross"
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
@@ -133,7 +133,7 @@ export default class Subscription extends React.Component<{}, State> {
 						}}
 					>Cancel</button>
 					<button
-						className="pt-button pt-intent-primary pt-icon-endorsed"
+						className="bp3-button bp3-intent-primary bp3-icon-endorsed"
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
@@ -165,16 +165,16 @@ export default class Subscription extends React.Component<{}, State> {
 
 	activate(): JSX.Element {
 		return <div>
-			<div className="pt-card pt-elevation-2" style={css.card}>
+			<div className="bp3-card bp3-elevation-2" style={css.card}>
 				<div
-					className="pt-callout pt-intent-success"
+					className="bp3-callout bp3-intent-success"
 					style={css.message}
 					hidden={!this.state.message}
 				>
 					{this.state.message}
 				</div>
 				<textarea
-					className="pt-input"
+					className="bp3-input"
 					style={css.license}
 					disabled={this.state.disabled}
 					placeholder="License Key"
@@ -188,7 +188,7 @@ export default class Subscription extends React.Component<{}, State> {
 				/>
 				<div className="layout horizontal center-justified">
 					<button
-						className="pt-button pt-intent-primary pt-icon-endorsed"
+						className="bp3-button bp3-intent-primary bp3-icon-endorsed"
 						style={css.button}
 						disabled={this.state.disabled}
 						onClick={(): void => {
@@ -248,7 +248,7 @@ export default class Subscription extends React.Component<{}, State> {
 						stripeKey="pk_live_plmoOl3lS3k5dMNQViZWGfVR"
 					>
 						<button
-							className="pt-button pt-intent-success pt-icon-credit-card"
+							className="bp3-button bp3-intent-success bp3-icon-credit-card"
 							style={css.button}
 							disabled={this.state.disabled}
 						>Subscribe</button>
@@ -266,9 +266,9 @@ export default class Subscription extends React.Component<{}, State> {
 		let trialEnd = MiscUtils.formatDateShort(sub.trial_end);
 
 		return <div>
-			<div className="pt-card pt-elevation-2" style={css.card2}>
+			<div className="bp3-card bp3-elevation-2" style={css.card2}>
 				<div
-					className="pt-callout pt-intent-success"
+					className="bp3-callout bp3-intent-success"
 					style={css.message}
 					hidden={!this.state.message}
 				>
@@ -334,8 +334,8 @@ export default class Subscription extends React.Component<{}, State> {
 				</div>
 				<div className="layout horizontal center-justified">
 					<ConfirmButton
-						className="pt-intent-danger pt-icon-disable"
-						progressClassName="pt-intent-danger"
+						className="bp3-intent-danger bp3-icon-disable"
+						progressClassName="bp3-intent-danger"
 						style={css.button2}
 						disabled={this.state.disabled}
 						hidden={canceling}
@@ -400,7 +400,7 @@ export default class Subscription extends React.Component<{}, State> {
 						stripeKey="pk_live_plmoOl3lS3k5dMNQViZWGfVR"
 					>
 						<button
-							className="pt-button pt-intent-success pt-icon-credit-card"
+							className="bp3-button bp3-intent-success bp3-icon-credit-card"
 							style={canceling ? css.button3 : css.button2}
 							disabled={this.state.disabled}
 						>
@@ -410,8 +410,8 @@ export default class Subscription extends React.Component<{}, State> {
 				</div>
 				<div className="layout horizontal center-justified">
 					<ConfirmButton
-						className="pt-intent-danger pt-icon-delete"
-						progressClassName="pt-intent-danger"
+						className="bp3-intent-danger bp3-icon-delete"
+						progressClassName="bp3-intent-danger"
 						style={css.button2}
 						disabled={this.state.disabled}
 						label="Remove License"
@@ -434,7 +434,7 @@ export default class Subscription extends React.Component<{}, State> {
 						}}
 					/>
 					<button
-						className="pt-button pt-intent-primary pt-icon-endorsed"
+						className="bp3-button bp3-intent-primary bp3-icon-endorsed"
 						style={css.button2}
 						disabled={this.state.disabled}
 						onClick={(): void => {

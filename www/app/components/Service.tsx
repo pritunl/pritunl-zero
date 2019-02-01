@@ -489,13 +489,13 @@ export default class Service extends React.Component<Props, State> {
 		for (let role of service.roles) {
 			roles.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -526,13 +526,13 @@ export default class Service extends React.Component<Props, State> {
 		for (let whitelistNet of service.whitelist_networks) {
 			whitelistNets.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={whitelistNet}
 				>
 					{whitelistNet}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveWhitelistNet(whitelistNet);
 						}}
@@ -542,15 +542,15 @@ export default class Service extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm service remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
@@ -585,7 +585,7 @@ export default class Service extends React.Component<Props, State> {
 					</label>
 					{domains}
 					<button
-						className="pt-button pt-intent-success pt-icon-add"
+						className="bp3-button bp3-intent-success bp3-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddDomain}
@@ -601,7 +601,7 @@ export default class Service extends React.Component<Props, State> {
 					</label>
 					{servers}
 					<button
-						className="pt-button pt-intent-success pt-icon-add"
+						className="bp3-button bp3-intent-success bp3-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddServer}
@@ -628,7 +628,7 @@ export default class Service extends React.Component<Props, State> {
 							},
 						]}
 					/>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Roles
 						<Help
 							title="Roles"
@@ -639,7 +639,7 @@ export default class Service extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -652,7 +652,7 @@ export default class Service extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Whitelisted Networks
 						<Help
 							title="Whitelisted Networks"
@@ -663,7 +663,7 @@ export default class Service extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add network"

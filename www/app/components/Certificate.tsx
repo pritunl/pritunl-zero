@@ -258,15 +258,15 @@ export default class Certificate extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm certificate remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
@@ -318,7 +318,7 @@ export default class Certificate extends React.Component<Props, State> {
 						{domains}
 					</div>
 					<button
-						className="pt-button pt-intent-success pt-icon-add"
+						className="bp3-button bp3-intent-success bp3-icon-add"
 						style={css.itemsAdd}
 						hidden={cert.type !== 'lets_encrypt'}
 						type="button"

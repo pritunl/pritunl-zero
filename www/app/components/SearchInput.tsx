@@ -12,10 +12,10 @@ interface Props {
 
 export default class SearchInput extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div className="pt-input-group" style={this.props.style}>
-			<span className="pt-icon pt-icon-search"/>
+		return <div className="bp3-input-group" style={this.props.style}>
+			<span className="bp3-icon bp3-icon-search"/>
 			<input
-				className="pt-input pt-round"
+				className="bp3-input bp3-round"
 				type="text"
 				autoCapitalize="off"
 				spellCheck={false}

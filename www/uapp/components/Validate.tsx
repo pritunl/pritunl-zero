@@ -171,11 +171,11 @@ export default class Validate extends React.Component<Props, State> {
 
 	device(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-key"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -233,11 +233,11 @@ export default class Validate extends React.Component<Props, State> {
 
 	secondary(): JSX.Element {
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-key"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">
+				<h4 className="bp3-non-ideal-state-title">
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -246,7 +246,7 @@ export default class Validate extends React.Component<Props, State> {
 			</div>
 			<div className="layout vertical center-justified" style={css.buttons}>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.push}
@@ -265,7 +265,7 @@ export default class Validate extends React.Component<Props, State> {
 					Push
 				</button>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.phone}
@@ -284,7 +284,7 @@ export default class Validate extends React.Component<Props, State> {
 					Call Me
 				</button>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.sms}
@@ -303,7 +303,7 @@ export default class Validate extends React.Component<Props, State> {
 					Text Me
 				</button>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.secondaryInput}
 					hidden={!this.state.secondary.passcode}
 					disabled={!this.state.secondaryState.passcode}
@@ -332,7 +332,7 @@ export default class Validate extends React.Component<Props, State> {
 					}}
 				/>
 				<button
-					className="pt-button"
+					className="bp3-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.passcode}
@@ -363,11 +363,11 @@ export default class Validate extends React.Component<Props, State> {
 		}
 
 		return <div>
-			<div className="pt-non-ideal-state" style={css.body}>
-				<div className="pt-non-ideal-state-visual pt-non-ideal-state-icon">
-					<span className="pt-icon pt-icon-endorsed"/>
+			<div className="bp3-non-ideal-state" style={css.body}>
+				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
+					<span className="bp3-icon bp3-icon-endorsed"/>
 				</div>
-				<h4 className="pt-non-ideal-state-title">Validate SSH Key</h4>
+				<h4 className="bp3-non-ideal-state-title">Validate SSH Key</h4>
 				<span style={css.description}>
 					If you did not initiate this validation deny the request and
 					report the incident to an administrator
@@ -375,7 +375,7 @@ export default class Validate extends React.Component<Props, State> {
 			</div>
 			<div className="layout horizontal center-justified" style={css.buttons}>
 				<button
-					className="pt-button pt-large pt-intent-danger pt-icon-delete"
+					className="bp3-button bp3-large bp3-intent-danger bp3-icon-delete"
 					style={css.button}
 					type="button"
 					disabled={this.state.disabled}
@@ -412,7 +412,7 @@ export default class Validate extends React.Component<Props, State> {
 					Deny
 				</button>
 				<button
-					className="pt-button pt-large pt-intent-success pt-icon-add"
+					className="bp3-button bp3-large bp3-intent-success bp3-icon-add"
 					style={css.button}
 					type="button"
 					disabled={this.state.disabled}

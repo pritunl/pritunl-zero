@@ -426,13 +426,13 @@ export default class Policy extends React.Component<Props, State> {
 
 			services.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={service.id}
 				>
 					{service.name}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveService(service.id);
 						}}
@@ -464,13 +464,13 @@ export default class Policy extends React.Component<Props, State> {
 
 			authorities.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={authority.id}
 				>
 					{authority.name}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveAuthority(authority.id);
 						}}
@@ -497,13 +497,13 @@ export default class Policy extends React.Component<Props, State> {
 		for (let role of policy.roles) {
 			roles.push(
 				<div
-					className="pt-tag pt-tag-removable pt-intent-primary"
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="pt-tag-remove"
+						className="bp3-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -581,15 +581,15 @@ export default class Policy extends React.Component<Props, State> {
 			providerIds.indexOf(policy.authority_secondary) !== -1;
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm policy remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
@@ -605,7 +605,7 @@ export default class Policy extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<label className="pt-label">
+					<label className="bp3-label">
 						Roles
 						<Help
 							title="Roles"
@@ -616,7 +616,7 @@ export default class Policy extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="pt-intent-success pt-icon-add"
+						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -630,7 +630,7 @@ export default class Policy extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						style={css.label}
 					>
 						Services
@@ -646,7 +646,7 @@ export default class Policy extends React.Component<Props, State> {
 						label="Add Service"
 						value={this.state.addService}
 						disabled={!this.props.services.length}
-						buttonClass="pt-intent-success"
+						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -658,7 +658,7 @@ export default class Policy extends React.Component<Props, State> {
 						{servicesSelect}
 					</PageSelectButton>
 					<label
-						className="pt-label"
+						className="bp3-label"
 						style={css.label}
 					>
 						Authorities
@@ -674,7 +674,7 @@ export default class Policy extends React.Component<Props, State> {
 						label="Add Authority"
 						value={this.state.addAuthority}
 						disabled={!this.props.authorities.length}
-						buttonClass="pt-intent-success"
+						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,

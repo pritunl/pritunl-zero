@@ -12,13 +12,13 @@ interface Props {
 
 export default class Switch extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <label className="pt-control pt-switch" style={this.props.style}>
+		return <label className="bp3-control bp3-switch" style={this.props.style}>
 			<input
 				type="checkbox"
 				checked={this.props.checked}
 				onChange={this.props.onToggle}
 			/>
-			<span className="pt-control-indicator"/>
+			<span className="bp3-control-indicator"/>
 			{this.props.label}
 		</label>;
 	}

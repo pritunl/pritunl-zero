@@ -164,26 +164,26 @@ export default class Device extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="pt-card"
+			className="bp3-card"
 			style={cardStyle}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="pt-minimal pt-intent-danger pt-icon-trash"
-							progressClassName="pt-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							progressClassName="bp3-intent-danger"
 							confirmMsg="Confirm node remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
 					</div>
 					<div
-						className="pt-input-group flex"
+						className="bp3-input-group flex"
 						style={css.inputGroup}
 					>
 						<input
-							className="pt-input"
+							className="bp3-input"
 							type="text"
 							placeholder="Device name"
 							value={device.name}
@@ -197,7 +197,7 @@ export default class Device extends React.Component<Props, State> {
 							}}
 						/>
 						<button
-							className="pt-button pt-minimal pt-intent-primary pt-icon-tick"
+							className="bp3-button bp3-minimal bp3-intent-primary bp3-icon-tick"
 							hidden={!this.state.device}
 							disabled={this.state.disabled}
 							onClick={this.onSave}

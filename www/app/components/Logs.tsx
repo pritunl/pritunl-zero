@@ -75,9 +75,9 @@ export default class Logs extends React.Component<{}, State> {
 			/>);
 		});
 
-		let filterClass = 'pt-button pt-intent-primary pt-icon-filter ';
+		let filterClass = 'bp3-button bp3-intent-primary bp3-icon-filter ';
 		if (this.state.filter) {
-			filterClass += 'pt-active';
+			filterClass += 'bp3-active';
 		}
 
 		return <Page>

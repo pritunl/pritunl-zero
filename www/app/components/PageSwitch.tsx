@@ -20,14 +20,14 @@ const css = {
 export default class PageSwitch extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div hidden={this.props.hidden}>
-			<label className="pt-control pt-switch" style={css.label}>
+			<label className="bp3-control bp3-switch" style={css.label}>
 				<input
 					type="checkbox"
 					disabled={this.props.disabled}
 					checked={!!this.props.checked}
 					onChange={this.props.onToggle}
 				/>
-				<span className="pt-control-indicator"/>
+				<span className="bp3-control-indicator"/>
 				{this.props.label}
 			</label>
 			<Help

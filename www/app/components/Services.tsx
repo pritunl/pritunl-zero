@@ -70,7 +70,7 @@ export default class Services extends React.Component<{}, State> {
 					<div className="flex"/>
 					<div style={css.buttons}>
 						<button
-							className="pt-button pt-intent-success pt-icon-add"
+							className="bp3-button bp3-intent-success bp3-icon-add"
 							style={css.button}
 							disabled={this.state.disabled}
 							type="button"
@@ -104,7 +104,7 @@ export default class Services extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!servicesDom.length}
-				iconClass="pt-icon-cloud"
+				iconClass="bp3-icon-cloud"
 				title="No services"
 				description="Add a new service to get started."
 			/>

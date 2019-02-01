@@ -33,10 +33,10 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		let domain = this.props.domain;
 
-		return <div className="pt-control-group" style={css.group}>
+		return <div className="bp3-control-group" style={css.group}>
 			<div style={css.domainBox}>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.domain}
 					type="text"
 					autoCapitalize="off"
@@ -52,7 +52,7 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 			</div>
 			<div style={css.domainBox}>
 				<input
-					className="pt-input"
+					className="bp3-input"
 					style={css.domain}
 					type="text"
 					autoCapitalize="off"
@@ -67,7 +67,7 @@ export default class ServiceDomain extends React.Component<Props, {}> {
 				/>
 			</div>
 			<button
-				className="pt-button pt-minimal pt-intent-danger pt-icon-remove"
+				className="bp3-button bp3-minimal bp3-intent-danger bp3-icon-remove"
 				onClick={(): void => {
 					this.props.onRemove();
 				}}

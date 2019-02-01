@@ -95,67 +95,67 @@ export default class Main extends React.Component<{}, State> {
 
 		return <ReactRouter.HashRouter>
 			<div>
-				<nav className="pt-navbar layout horizontal" style={css.nav}>
+				<nav className="bp3-navbar layout horizontal" style={css.nav}>
 					<div
-						className="pt-navbar-group pt-align-left flex"
+						className="bp3-navbar-group bp3-align-left flex"
 						style={css.navTitle}
 					>
-						<div className="pt-navbar-heading"
+						<div className="bp3-navbar-heading"
 							style={css.heading}
 						>Pritunl Zero</div>
 					</div>
-					<div className="pt-navbar-group pt-align-right" style={css.navGroup}>
+					<div className="bp3-navbar-group bp3-align-right" style={css.navGroup}>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-people"
+							className="bp3-button bp3-minimal bp3-icon-people"
 							style={css.link}
 							to="/users"
 						>
 							Users
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-cloud"
+							className="bp3-button bp3-minimal bp3-icon-cloud"
 							style={css.link}
 							to="/services"
 						>
 							Services
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-layers"
+							className="bp3-button bp3-minimal bp3-icon-layers"
 							style={css.link}
 							to="/nodes"
 						>
 							Nodes
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-filter"
+							className="bp3-button bp3-minimal bp3-icon-filter"
 							style={css.link}
 							to="/policies"
 						>
 							Policies
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-office"
+							className="bp3-button bp3-minimal bp3-icon-office"
 							style={css.link}
 							to="/authorities"
 						>
 							Authorities
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-endorsed"
+							className="bp3-button bp3-minimal bp3-icon-endorsed"
 							style={css.link}
 							to="/certificates"
 						>
 							Certificates
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-history"
+							className="bp3-button bp3-minimal bp3-icon-history"
 							style={css.link}
 							to="/logs"
 						>
 							Logs
 						</ReactRouter.Link>
 						<ReactRouter.Link
-							className="pt-button pt-minimal pt-icon-cog"
+							className="bp3-button bp3-minimal bp3-icon-cog"
 							style={css.link}
 							to="/settings"
 						>
@@ -166,7 +166,7 @@ export default class Main extends React.Component<{}, State> {
 							style={css.sub}
 						>
 							<button
-								className="pt-button pt-minimal pt-icon-credit-card"
+								className="bp3-button bp3-minimal bp3-icon-credit-card"
 								style={css.link}
 								onClick={(): void => {
 									SubscriptionActions.sync(true);
@@ -175,7 +175,7 @@ export default class Main extends React.Component<{}, State> {
 						</ReactRouter.Link>
 						<ReactRouter.Route render={(props) => (
 							<button
-								className="pt-button pt-minimal pt-icon-refresh"
+								className="bp3-button bp3-minimal bp3-icon-refresh"
 								disabled={this.state.disabled}
 								onClick={() => {
 									let pathname = props.location.pathname;
@@ -363,13 +363,13 @@ export default class Main extends React.Component<{}, State> {
 							>Refresh</button>
 						)}/>
 						<button
-							className="pt-button pt-minimal pt-icon-log-out"
+							className="bp3-button bp3-minimal bp3-icon-log-out"
 							onClick={() => {
 								window.location.href = '/logout';
 							}}
 						>Logout</button>
 						<button
-							className="pt-button pt-minimal pt-icon-moon"
+							className="bp3-button bp3-minimal bp3-icon-moon"
 							onClick={(): void => {
 								Theme.toggle();
 								Theme.save();

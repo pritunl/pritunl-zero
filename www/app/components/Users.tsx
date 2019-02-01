@@ -180,9 +180,9 @@ export default class Users extends React.Component<{}, State> {
 			/>);
 		});
 
-		let filterClass = 'pt-button pt-intent-primary pt-icon-filter ';
+		let filterClass = 'bp3-button bp3-intent-primary bp3-icon-filter ';
 		if (this.state.filter) {
-			filterClass += 'pt-active';
+			filterClass += 'bp3-active';
 		}
 
 		return <Page>
@@ -207,14 +207,14 @@ export default class Users extends React.Component<{}, State> {
 						</button>
 						<ConfirmButton
 							label="Delete Selected"
-							className="pt-intent-danger pt-icon-delete"
-							progressClassName="pt-intent-danger"
+							className="bp3-intent-danger bp3-icon-delete"
+							progressClassName="bp3-intent-danger"
 							style={css.button}
 							disabled={!this.selected || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
 						<ReactRouter.Link
-							className="pt-button pt-intent-success pt-icon-add"
+							className="bp3-button bp3-intent-success bp3-icon-add"
 							style={css.button}
 							to="/user"
 						>
