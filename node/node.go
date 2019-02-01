@@ -32,6 +32,8 @@ type Node struct {
 	Protocol             string                     `bson:"protocol" json:"protocol"`
 	Certificate          bson.ObjectId              `bson:"certificate" json:"certificate"`
 	Certificates         []bson.ObjectId            `bson:"certificates" json:"certificates"`
+	SelfCertificate      string                     `bson:"self_certificate_key" json:"-"`
+	SelfCertificateKey   string                     `bson:"self_certificate" json:"-"`
 	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
 	Services             []bson.ObjectId            `bson:"services" json:"services"`
@@ -203,6 +205,8 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Port = nde.Port
 	n.Protocol = nde.Protocol
 	n.Certificates = nde.Certificates
+	n.SelfCertificate = nde.SelfCertificate
+	n.SelfCertificateKey = nde.SelfCertificateKey
 	n.ManagementDomain = nde.ManagementDomain
 	n.UserDomain = nde.UserDomain
 	n.Services = nde.Services
