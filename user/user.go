@@ -314,6 +314,11 @@ func init() {
 				return
 			}
 
+			_, err = usr.Validate(db)
+			if err != nil {
+				return
+			}
+
 			err = usr.Insert(db)
 			if err != nil {
 				return
