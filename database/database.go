@@ -1,38 +1,70 @@
 package database
 
 import (
-	"crypto/tls"
-	"crypto/x509"
+	"context"
+	"net/url"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/mongo"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
-	"gopkg.in/mgo.v2"
-	"io/ioutil"
-	"net"
-	"net/url"
-	"time"
 )
 
 var (
-	Session *mgo.Session
+	Client          *mongo.Client
+	DefaultDatabase string
 )
 
 type Database struct {
-	session  *mgo.Session
-	database *mgo.Database
+	ctx      context.Context
+	client   *mongo.Client
+	database *mongo.Database
+}
+
+func (d *Database) Deadline() (time.Time, bool) {
+	if d.ctx != nil {
+		return d.ctx.Deadline()
+	}
+	return time.Time{}, false
+}
+
+func (d *Database) Done() <-chan struct{} {
+	if d.ctx != nil {
+		return d.ctx.Done()
+	}
+	return nil
+}
+
+func (d *Database) Err() error {
+	if d.ctx != nil {
+		return d.ctx.Err()
+	}
+	return nil
+}
+
+func (d *Database) Value(key interface{}) interface{} {
+	if d.ctx != nil {
+		return d.ctx.Value(key)
+	}
+	return nil
+}
+
+func (d *Database) String() string {
+	return "context.database"
 }
 
 func (d *Database) Close() {
-	d.session.Close()
 }
 
 func (d *Database) getCollection(name string) (coll *Collection) {
 	coll = &Collection{
-		*d.database.C(name),
-		d,
+		db:         d,
+		Collection: d.database.Collection(name),
 	}
 	return
 }
@@ -143,7 +175,7 @@ func (d *Database) Geo() (coll *Collection) {
 }
 
 func Connect() (err error) {
-	mgoUrl, err := url.Parse(config.Config.MongoUri)
+	mongoUrl, err := url.Parse(config.Config.MongoUri)
 	if err != nil {
 		err = &ConnectionError{
 			errors.Wrap(err, "database: Failed to parse mongo uri"),
@@ -152,79 +184,41 @@ func Connect() (err error) {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"mongodb_host": mgoUrl.Host,
+		"mongodb_host": mongoUrl.Host,
 	}).Info("database: Connecting to MongoDB server")
 
-	vals := mgoUrl.Query()
-	mgoSsl := vals.Get("ssl")
-	mgoSslCerts := vals.Get("ssl_ca_certs")
-	vals.Del("ssl")
-	vals.Del("ssl_ca_certs")
-	mgoUrl.RawQuery = vals.Encode()
-	mgoUri := mgoUrl.String()
-
-	if mgoSsl == "true" {
-		info, e := mgo.ParseURL(mgoUri)
-		if e != nil {
-			err = &ConnectionError{
-				errors.Wrap(e, "database: Failed to parse mongo url"),
-			}
-			return
-		}
-
-		info.DialServer = func(addr *mgo.ServerAddr) (
-			conn net.Conn, err error) {
-
-			tlsConf := &tls.Config{}
-
-			if mgoSslCerts != "" {
-				caData, e := ioutil.ReadFile(mgoSslCerts)
-				if e != nil {
-					err = &CertificateError{
-						errors.Wrap(e, "database: Failed to load certificate"),
-					}
-					return
-				}
-
-				caPool := x509.NewCertPool()
-				if ok := caPool.AppendCertsFromPEM(caData); !ok {
-					err = &CertificateError{
-						errors.Wrap(err,
-							"database: Failed to parse certificate"),
-					}
-					return
-				}
-
-				tlsConf.RootCAs = caPool
-			}
-
-			conn, err = tls.Dial("tcp", addr.String(), tlsConf)
-			return
-		}
-		Session, err = mgo.DialWithInfo(info)
-		if err != nil {
-			err = &ConnectionError{
-				errors.Wrap(err, "database: Connection error"),
-			}
-			return
-		}
-	} else {
-		Session, err = mgo.Dial(mgoUri)
-		if err != nil {
-			err = &ConnectionError{
-				errors.Wrap(err, "database: Connection error"),
-			}
-			return
-		}
+	path := mongoUrl.Path
+	if len(path) > 1 {
+		DefaultDatabase = path[1:]
 	}
 
-	Session.SetMode(mgo.Strong, true)
+	client, err := mongo.NewClient(config.Config.MongoUri)
+	if err != nil {
+		err = &ConnectionError{
+			errors.Wrap(err, "database: Client error"),
+		}
+		return
+	}
+
+	err = client.Connect(context.TODO())
+	if err != nil {
+		err = &ConnectionError{
+			errors.Wrap(err, "database: Connection error"),
+		}
+		return
+	}
+
+	Client = client
 
 	err = ValidateDatabase()
 	if err != nil {
-		Session = nil
+		Client = nil
 		return
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"mongodb_host": mongoUrl.Host,
+	}).Info("database: Connected to MongoDB server")
 
 	return
 }
@@ -232,14 +226,25 @@ func Connect() (err error) {
 func ValidateDatabase() (err error) {
 	db := GetDatabase()
 
-	names, err := db.database.CollectionNames()
+	cursor, err := db.database.ListCollections(
+		db, &bson.M{})
 	if err != nil {
 		err = ParseError(err)
 		return
 	}
+	defer cursor.Close(db)
 
-	for _, name := range names {
-		if name == "servers" {
+	for cursor.Next(db) {
+		item := &struct {
+			Name string `bson:"name"`
+		}{}
+		err = cursor.Decode(item)
+		if err != nil {
+			err = ParseError(err)
+			return
+		}
+
+		if item.Name == "servers" {
 			err = &errortypes.DatabaseError{
 				errors.New("database: Cannot connect to pritunl database"),
 			}
@@ -247,20 +252,41 @@ func ValidateDatabase() (err error) {
 		}
 	}
 
+	err = cursor.Err()
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+
 	return
 }
 
 func GetDatabase() (db *Database) {
-	sess := Session
-	if sess == nil {
+	client := Client
+	if client == nil {
 		return
 	}
 
-	session := sess.Copy()
-	database := session.DB("")
+	database := client.Database(DefaultDatabase)
 
 	db = &Database{
-		session:  session,
+		client:   client,
+		database: database,
+	}
+	return
+}
+
+func GetDatabaseCtx(ctx context.Context) (db *Database) {
+	client := Client
+	if client == nil {
+		return
+	}
+
+	database := client.Database(DefaultDatabase)
+
+	db = &Database{
+		ctx:      ctx,
+		client:   client,
 		database: database,
 	}
 	return
@@ -270,247 +296,280 @@ func addIndexes() (err error) {
 	db := GetDatabase()
 	defer db.Close()
 
-	coll := db.Users()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"username"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"type"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"roles"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.Audits()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"user"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"token"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.Policies()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"roles"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"services"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"authorities"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.CsrfTokens()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 168 * time.Hour,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-		return
-	}
-
-	coll = db.SecondaryTokens()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 3 * time.Minute,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-		return
-	}
-
-	coll = db.Nonces()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 24 * time.Hour,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.Authorities()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"host_tokens"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"hsm_token"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.SshChallenges()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 6 * time.Minute,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.SshCertificates()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 168 * time.Hour,
-		Background:  true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
-	}
-
-	coll = db.Devices()
-	err = coll.EnsureIndex(mgo.Index{
-		Key: []string{
-			"user",
-			"mode",
+	index := &Index{
+		Collection: db.Users(),
+		Keys: &bson.D{
+			{"username", 1},
 		},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
 	}
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"provider"},
-		Background: true,
-	})
+	err = index.Create()
 	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+		return
 	}
-
-	coll = db.Sessions()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"user"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+	index = &Index{
+		Collection: db.Users(),
+		Keys: &bson.D{
+			{"type", 1},
+		},
 	}
-
-	coll = db.Tasks()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 720 * time.Hour,
-		Background:  true,
-	})
+	err = index.Create()
 	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+		return
 	}
-
-	coll = db.Events()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:        []string{"channel"},
-		Background: true,
-	})
-	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+	index = &Index{
+		Collection: db.Users(),
+		Keys: &bson.D{
+			{"roles", 1},
+		},
 	}
-
-	coll = db.AcmeChallenges()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"timestamp"},
-		ExpireAfter: 3 * time.Minute,
-		Background:  true,
-	})
+	err = index.Create()
 	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+		return
+	}
+	index = &Index{
+		Collection: db.Users(),
+		Keys: &bson.D{
+			{"token", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
 		return
 	}
 
-	coll = db.Geo()
-	err = coll.EnsureIndex(mgo.Index{
-		Key:         []string{"t"},
-		ExpireAfter: 360 * time.Hour,
-		Background:  true,
-	})
+	index = &Index{
+		Collection: db.Audits(),
+		Keys: &bson.D{
+			{"user", 1},
+		},
+	}
+	err = index.Create()
 	if err != nil {
-		err = &IndexError{
-			errors.Wrap(err, "database: Index error"),
-		}
+		return
+	}
+
+	index = &Index{
+		Collection: db.Policies(),
+		Keys: &bson.D{
+			{"roles", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Policies(),
+		Keys: &bson.D{
+			{"services", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Policies(),
+		Keys: &bson.D{
+			{"authorities", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.CsrfTokens(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 168 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.SecondaryTokens(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 3 * time.Minute,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Nodes(),
+		Keys: &bson.D{
+			{"name", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Nonces(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 24 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Devices(),
+		Keys: &bson.D{
+			{"user", 1},
+			{"mode", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Devices(),
+		Keys: &bson.D{
+			{"provider", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Authorities(),
+		Keys: &bson.D{
+			{"host_tokens", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Authorities(),
+		Keys: &bson.D{
+			{"hsm_token", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.SshChallenges(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 6 * time.Minute,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.SshCertificates(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 168 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Devices(),
+		Keys: &bson.D{
+			{"user", 1},
+			{"mode", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Devices(),
+		Keys: &bson.D{
+			{"provider", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Sessions(),
+		Keys: &bson.D{
+			{"user", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Tasks(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 720 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Events(),
+		Keys: &bson.D{
+			{"channel", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.AcmeChallenges(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 3 * time.Minute,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Geo(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 360 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
 		return
 	}
 
@@ -520,25 +579,45 @@ func addIndexes() (err error) {
 func addCollections() (err error) {
 	db := GetDatabase()
 	defer db.Close()
-	coll := db.Events()
 
-	names, err := db.database.CollectionNames()
+	cursor, err := db.database.ListCollections(
+		db, &bson.M{})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		item := &struct {
+			Name string `bson:"name"`
+		}{}
+		err = cursor.Decode(item)
+		if err != nil {
+			err = ParseError(err)
+			return
+		}
+
+		if item.Name == "events" {
+			return
+		}
+	}
+
+	err = cursor.Err()
 	if err != nil {
 		err = ParseError(err)
 		return
 	}
 
-	for _, name := range names {
-		if name == "events" {
-			return
-		}
-	}
-
-	err = coll.Create(&mgo.CollectionInfo{
-		Capped:   true,
-		MaxDocs:  1000,
-		MaxBytes: 5242880,
-	})
+	err = db.database.RunCommand(
+		context.Background(),
+		bson.D{
+			{"create", "events"},
+			{"capped", true},
+			{"max", 1000},
+			{"size", 5242880},
+		},
+	).Err()
 	if err != nil {
 		err = ParseError(err)
 		return
