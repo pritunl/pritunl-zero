@@ -26,7 +26,7 @@ const css = {
 	link: {
 		cursor: 'pointer',
 		userSelect: 'none',
-		margin: '5px 5px 0 0',
+		margin: '7px 5px 0 0',
 	} as React.CSSProperties,
 	current: {
 		opacity: 0.5,
