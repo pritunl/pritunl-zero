@@ -2,15 +2,18 @@ package ssh
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type Info struct {
@@ -29,16 +32,16 @@ type Host struct {
 }
 
 type Certificate struct {
-	Id                     bson.ObjectId   `bson:"_id,omitempty" json:"id"`
-	UserId                 bson.ObjectId   `bson:"user_id,omitempty" json:"user_id"`
-	AuthorityIds           []bson.ObjectId `bson:"authority_ids" json:"authority_ids"`
-	Timestamp              time.Time       `bson:"timestamp" json:"timestamp"`
-	PubKey                 string          `bson:"pub_key"`
-	Hosts                  []*Host         `bson:"hosts" json:"hosts"`
-	CertificateAuthorities []string        `bson:"certificate_authorities" json:"-"`
-	Certificates           []string        `bson:"certificates" json:"-"`
-	CertificatesInfo       []*Info         `bson:"certificates_info" json:"certificates_info"`
-	Agent                  *agent.Agent    `bson:"agent" json:"agent"`
+	Id                     primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
+	UserId                 primitive.ObjectID   `bson:"user_id,omitempty" json:"user_id"`
+	AuthorityIds           []primitive.ObjectID `bson:"authority_ids" json:"authority_ids"`
+	Timestamp              time.Time            `bson:"timestamp" json:"timestamp"`
+	PubKey                 string               `bson:"pub_key"`
+	Hosts                  []*Host              `bson:"hosts" json:"hosts"`
+	CertificateAuthorities []string             `bson:"certificate_authorities" json:"-"`
+	Certificates           []string             `bson:"certificates" json:"-"`
+	CertificatesInfo       []*Info              `bson:"certificates_info" json:"certificates_info"`
+	Agent                  *agent.Agent         `bson:"agent" json:"agent"`
 }
 
 func (c *Certificate) Commit(db *database.Database) (err error) {
@@ -68,7 +71,7 @@ func (c *Certificate) CommitFields(db *database.Database, fields set.Set) (
 func (c *Certificate) Insert(db *database.Database) (err error) {
 	coll := db.SshCertificates()
 
-	err = coll.Insert(c)
+	_, err = coll.InsertOne(db, c)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -77,7 +80,7 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 	return
 }
 
-func GetCertificate(db *database.Database, certId bson.ObjectId) (
+func GetCertificate(db *database.Database, certId primitive.ObjectID) (
 	cert *Certificate, err error) {
 
 	coll := db.SshCertificates()
@@ -91,34 +94,50 @@ func GetCertificate(db *database.Database, certId bson.ObjectId) (
 	return
 }
 
-func GetCertificates(db *database.Database, userId bson.ObjectId,
-	page, pageCount int) (certs []*Certificate, count int, err error) {
+func GetCertificates(db *database.Database, userId primitive.ObjectID,
+	page, pageCount int64) (certs []*Certificate, count int64, err error) {
 
 	coll := db.SshCertificates()
 	certs = []*Certificate{}
 
-	qury := coll.Find(&bson.M{
+	count, err = coll.Count(db, &bson.M{
 		"user_id": userId,
 	})
-
-	count, err = qury.Count()
 	if err != nil {
 		err = database.ParseError(err)
 		return
 	}
 
-	page = utils.Min(page, count / pageCount)
-	skip := utils.Min(page*pageCount, count)
+	page = utils.Min64(page, count/pageCount)
+	skip := utils.Min64(page*pageCount, count)
 
-	cursor := qury.Sort("-timestamp").Skip(skip).Limit(pageCount).Iter()
+	cursor, err := coll.Find(db, &bson.M{
+		"u": userId,
+	}, &options.FindOptions{
+		Sort: &bson.D{
+			{"timestamp", -1},
+		},
+		Skip:  &skip,
+		Limit: &pageCount,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	cert := &Certificate{}
-	for cursor.Next(cert) {
+	for cursor.Next(db) {
+		cert := &Certificate{}
+		err = cursor.Decode(cert)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		certs = append(certs, cert)
-		cert = &Certificate{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -132,12 +151,12 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 	err error) {
 
 	cert = &Certificate{
-		Id:           bson.NewObjectId(),
-		UserId:       usr.Id,
-		AuthorityIds: []bson.ObjectId{},
-		Timestamp:    time.Now(),
-		PubKey:       pubKey,
-		Hosts:        []*Host{},
+		Id:                     primitive.NewObjectID(),
+		UserId:                 usr.Id,
+		AuthorityIds:           []primitive.ObjectID{},
+		Timestamp:              time.Now(),
+		PubKey:                 pubKey,
+		Hosts:                  []*Host{},
 		CertificateAuthorities: []string{},
 		Certificates:           []string{},
 		CertificatesInfo:       []*Info{},

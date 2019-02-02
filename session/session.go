@@ -2,22 +2,23 @@
 package session
 
 import (
+	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/user"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type Session struct {
-	Id         string        `bson:"_id" json:"id"`
-	Type       string        `bson:"type" json:"type"`
-	User       bson.ObjectId `bson:"user" json:"user"`
-	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
-	LastActive time.Time     `bson:"last_active" json:"last_active"`
-	Removed    bool          `bson:"removed" json:"removed"`
-	Agent      *agent.Agent  `bson:"agent" json:"agent"`
-	user       *user.User    `bson:"-" json:"-"`
+	Id         string             `bson:"_id" json:"id"`
+	Type       string             `bson:"type" json:"type"`
+	User       primitive.ObjectID `bson:"user" json:"user"`
+	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
+	LastActive time.Time          `bson:"last_active" json:"last_active"`
+	Removed    bool               `bson:"removed" json:"removed"`
+	Agent      *agent.Agent       `bson:"agent" json:"agent"`
+	user       *user.User         `bson:"-" json:"-"`
 }
 
 func (s *Session) Active() bool {

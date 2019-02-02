@@ -1,13 +1,14 @@
 package uhandlers
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
-	"strings"
 )
 
 func staticPath(c *gin.Context, pth string) {

@@ -2,18 +2,20 @@ package policy
 
 import (
 	"fmt"
+	"net"
+	"net/http"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
-	"gopkg.in/mgo.v2/bson"
-	"net"
-	"net/http"
 )
 
 type Rule struct {
@@ -23,79 +25,101 @@ type Rule struct {
 }
 
 type Policy struct {
-	Id                        bson.ObjectId    `bson:"_id,omitempty" json:"id"`
-	Name                      string           `bson:"name" json:"name"`
-	Services                  []bson.ObjectId  `bson:"services" json:"services"`
-	Authorities               []bson.ObjectId  `bson:"authorities" json:"authorities"`
-	Roles                     []string         `bson:"roles" json:"roles"`
-	Rules                     map[string]*Rule `bson:"rules" json:"rules"`
-	AdminSecondary            bson.ObjectId    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
-	UserSecondary             bson.ObjectId    `bson:"user_secondary,omitempty" json:"user_secondary"`
-	ProxySecondary            bson.ObjectId    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
-	AuthoritySecondary        bson.ObjectId    `bson:"authority_secondary,omitempty" json:"authority_secondary"`
-	AdminDeviceSecondary      bool             `bson:"admin_device_secondary" json:"admin_device_secondary"`
-	UserDeviceSecondary       bool             `bson:"user_device_secondary" json:"user_device_secondary"`
-	ProxyDeviceSecondary      bool             `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
-	AuthorityDeviceSecondary  bool             `bson:"authority_device_secondary" json:"authority_device_secondary"`
-	AuthorityRequireSmartCard bool             `bson:"authority_require_smart_card" json:"authority_require_smart_card"`
+	Id                        primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
+	Name                      string               `bson:"name" json:"name"`
+	Services                  []primitive.ObjectID `bson:"services" json:"services"`
+	Authorities               []primitive.ObjectID `bson:"authorities" json:"authorities"`
+	Roles                     []string             `bson:"roles" json:"roles"`
+	Rules                     map[string]*Rule     `bson:"rules" json:"rules"`
+	AdminSecondary            primitive.ObjectID   `bson:"admin_secondary,omitempty" json:"admin_secondary"`
+	UserSecondary             primitive.ObjectID   `bson:"user_secondary,omitempty" json:"user_secondary"`
+	ProxySecondary            primitive.ObjectID   `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
+	AuthoritySecondary        primitive.ObjectID   `bson:"authority_secondary,omitempty" json:"authority_secondary"`
+	AdminDeviceSecondary      bool                 `bson:"admin_device_secondary" json:"admin_device_secondary"`
+	UserDeviceSecondary       bool                 `bson:"user_device_secondary" json:"user_device_secondary"`
+	ProxyDeviceSecondary      bool                 `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
+	AuthorityDeviceSecondary  bool                 `bson:"authority_device_secondary" json:"authority_device_secondary"`
+	AuthorityRequireSmartCard bool                 `bson:"authority_require_smart_card" json:"authority_require_smart_card"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if p.Services == nil {
-		p.Services = []bson.ObjectId{}
+		p.Services = []primitive.ObjectID{}
 	}
 
-	services := []bson.ObjectId{}
+	services := []primitive.ObjectID{}
 	coll := db.Services()
-	err = coll.Find(&bson.M{
-		"_id": &bson.M{
-			"$in": p.Services,
+	servicesInf, err := coll.Distinct(
+		db,
+		"_id",
+		&bson.M{
+			"_id": &bson.M{
+				"$in": p.Services,
+			},
 		},
-	}).Distinct("_id", &services)
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
 	}
+
+	for _, idInf := range servicesInf {
+		if id, ok := idInf.(primitive.ObjectID); ok {
+			services = append(services, id)
+		}
+	}
+
 	p.Services = services
 
 	if p.Authorities == nil {
-		p.Authorities = []bson.ObjectId{}
+		p.Authorities = []primitive.ObjectID{}
 	}
 
-	authorities := []bson.ObjectId{}
+	authorities := []primitive.ObjectID{}
 	coll = db.Authorities()
-	err = coll.Find(&bson.M{
-		"_id": &bson.M{
-			"$in": p.Authorities,
+	authrsInf, err := coll.Distinct(
+		db,
+		"_id",
+		&bson.M{
+			"_id": &bson.M{
+				"$in": p.Services,
+			},
 		},
-	}).Distinct("_id", &authorities)
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
 	}
+
+	for _, idInf := range authrsInf {
+		if id, ok := idInf.(primitive.ObjectID); ok {
+			authorities = append(authorities, id)
+		}
+	}
+
 	p.Authorities = authorities
 
-	if p.AdminSecondary != "" &&
+	if !p.AdminSecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.AdminSecondary) == nil {
 
-		p.AdminSecondary = ""
+		p.AdminSecondary = primitive.NilObjectID
 	}
-	if p.UserSecondary != "" &&
+	if !p.UserSecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.UserSecondary) == nil {
 
-		p.UserSecondary = ""
+		p.UserSecondary = primitive.NilObjectID
 	}
-	if p.ProxySecondary != "" &&
+	if !p.ProxySecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.ProxySecondary) == nil {
 
-		p.ProxySecondary = ""
+		p.ProxySecondary = primitive.NilObjectID
 	}
-	if p.AuthoritySecondary != "" &&
+	if !p.AuthoritySecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.AuthoritySecondary) == nil {
 
-		p.AuthoritySecondary = ""
+		p.AuthoritySecondary = primitive.NilObjectID
 	}
 
 	hasUserNode := false
@@ -354,14 +378,14 @@ func (p *Policy) CommitFields(db *database.Database, fields set.Set) (
 func (p *Policy) Insert(db *database.Database) (err error) {
 	coll := db.Policies()
 
-	if p.Id != "" {
+	if !p.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("policy: Policy already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(p)
+	_, err = coll.InsertOne(db, p)
 	if err != nil {
 		err = database.ParseError(err)
 		return

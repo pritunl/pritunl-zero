@@ -1,7 +1,11 @@
 package validator
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -9,14 +13,12 @@ import (
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/user"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"time"
 )
 
 func ValidateAdmin(db *database.Database, usr *user.User,
-	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
-	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
+	isApi bool, r *http.Request) (deviceAuth bool,
+	secProvider primitive.ObjectID, errAudit audit.Fields,
+	errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
 		usr.ActiveUntil = time.Time{}
@@ -75,7 +77,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.AdminSecondary != "" && secProvider == "" {
+			if !polcy.AdminSecondary.IsZero() && secProvider.IsZero() {
 				secProvider = polcy.AdminSecondary
 			}
 		}
@@ -85,7 +87,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 }
 
 func ValidateUser(db *database.Database, usr *user.User,
-	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectId,
+	isApi bool, r *http.Request) (deviceAuth bool, secProvider primitive.ObjectID,
 	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
@@ -140,7 +142,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.UserSecondary != "" && secProvider == "" {
+			if !polcy.UserSecondary.IsZero() && secProvider.IsZero() {
 				secProvider = polcy.UserSecondary
 			}
 		}
@@ -151,7 +153,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 
 func ValidateProxy(db *database.Database, usr *user.User,
 	isApi bool, srvc *service.Service, r *http.Request) (
-	deviceAuth bool, secProvider bson.ObjectId,
+	deviceAuth bool, secProvider primitive.ObjectID,
 	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
@@ -231,7 +233,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.ProxySecondary != "" && secProvider == "" {
+			if !polcy.ProxySecondary.IsZero() && secProvider.IsZero() {
 				secProvider = polcy.ProxySecondary
 			}
 		}
@@ -253,7 +255,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 				deviceAuth = true
 			}
 
-			if polcy.ProxySecondary != "" && secProvider == "" {
+			if !polcy.ProxySecondary.IsZero() && secProvider.IsZero() {
 				secProvider = polcy.ProxySecondary
 			}
 		}

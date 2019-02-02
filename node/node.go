@@ -2,8 +2,16 @@ package node
 
 import (
 	"container/list"
+	"net/http"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
@@ -11,12 +19,6 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -24,20 +26,20 @@ var (
 )
 
 type Node struct {
-	Id                   bson.ObjectId              `bson:"_id" json:"id"`
+	Id                   primitive.ObjectID         `bson:"_id" json:"id"`
 	Name                 string                     `bson:"name" json:"name"`
 	Type                 string                     `bson:"type" json:"type"`
 	Timestamp            time.Time                  `bson:"timestamp" json:"timestamp"`
 	Port                 int                        `bson:"port" json:"port"`
 	Protocol             string                     `bson:"protocol" json:"protocol"`
-	Certificate          bson.ObjectId              `bson:"certificate" json:"certificate"`
-	Certificates         []bson.ObjectId            `bson:"certificates" json:"certificates"`
+	Certificate          primitive.ObjectID         `bson:"certificate" json:"certificate"`
+	Certificates         []primitive.ObjectID       `bson:"certificates" json:"certificates"`
 	SelfCertificate      string                     `bson:"self_certificate_key" json:"-"`
 	SelfCertificateKey   string                     `bson:"self_certificate" json:"-"`
 	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
-	Services             []bson.ObjectId            `bson:"services" json:"services"`
-	Authorities          []bson.ObjectId            `bson:"authorities" json:"authorities"`
+	Services             []primitive.ObjectID       `bson:"services" json:"services"`
+	Authorities          []primitive.ObjectID       `bson:"authorities" json:"authorities"`
 	RequestsMin          int64                      `bson:"requests_min" json:"requests_min"`
 	ForwardedForHeader   string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
 	ForwardedProtoHeader string                     `bson:"forwarded_proto_header" json:"forwarded_proto_header"`
@@ -63,11 +65,11 @@ func (n *Node) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if n.Services == nil {
-		n.Services = []bson.ObjectId{}
+		n.Services = []primitive.ObjectID{}
 	}
 
 	if n.Authorities == nil {
-		n.Authorities = []bson.ObjectId{}
+		n.Authorities = []primitive.ObjectID{}
 	}
 
 	if n.Protocol != "http" && n.Protocol != "https" {
@@ -87,7 +89,7 @@ func (n *Node) Validate(db *database.Database) (
 	}
 
 	if n.Certificates == nil || n.Protocol != "https" {
-		n.Certificates = []bson.ObjectId{}
+		n.Certificates = []primitive.ObjectID{}
 	}
 
 	if n.Type == "" {
@@ -107,11 +109,11 @@ func (n *Node) Validate(db *database.Database) (
 	}
 
 	if !strings.Contains(n.Type, Proxy) {
-		n.Services = []bson.ObjectId{}
+		n.Services = []primitive.ObjectID{}
 	}
 
 	if !strings.Contains(n.Type, Bastion) {
-		n.Authorities = []bson.ObjectId{}
+		n.Authorities = []primitive.ObjectID{}
 	}
 
 	n.Format()
@@ -174,8 +176,16 @@ func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 func (n *Node) update(db *database.Database) (err error) {
 	coll := db.Nodes()
 
-	change := mgo.Change{
-		Update: &bson.M{
+	nde := &Node{}
+	opts := &options.FindOneAndUpdateOptions{}
+	opts.SetReturnDocument(options.After)
+
+	err = coll.FindOneAndUpdate(
+		db,
+		&bson.M{
+			"_id": n.Id,
+		},
+		&bson.M{
 			"$set": &bson.M{
 				"timestamp":    n.Timestamp,
 				"requests_min": n.RequestsMin,
@@ -185,15 +195,8 @@ func (n *Node) update(db *database.Database) (err error) {
 				"load15":       n.Load15,
 			},
 		},
-		Upsert:    false,
-		ReturnNew: true,
-	}
-
-	nde := &Node{}
-
-	_, err = coll.Find(&bson.M{
-		"_id": n.Id,
-	}).Apply(change, nde)
+		opts,
+	).Decode(nde)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -363,26 +366,36 @@ func (n *Node) Init() (err error) {
 	}
 
 	if n.Services == nil {
-		n.Services = []bson.ObjectId{}
+		n.Services = []primitive.ObjectID{}
 	}
 
 	if n.Authorities == nil {
-		n.Authorities = []bson.ObjectId{}
+		n.Authorities = []primitive.ObjectID{}
 	}
 
-	_, err = coll.UpsertId(n.Id, &bson.M{
-		"$set": &bson.M{
-			"_id":              n.Id,
-			"name":             n.Name,
-			"type":             n.Type,
-			"timestamp":        time.Now(),
-			"protocol":         n.Protocol,
-			"port":             n.Port,
-			"services":         n.Services,
-			"authorities":      n.Authorities,
-			"software_version": n.SoftwareVersion,
+	opts := &options.UpdateOptions{}
+	opts.SetUpsert(true)
+
+	_, err = coll.UpdateOne(
+		db,
+		&bson.M{
+			"_id": n.Id,
 		},
-	})
+		&bson.M{
+			"$set": &bson.M{
+				"_id":              n.Id,
+				"name":             n.Name,
+				"type":             n.Type,
+				"timestamp":        time.Now(),
+				"protocol":         n.Protocol,
+				"port":             n.Port,
+				"services":         n.Services,
+				"authorities":      n.Authorities,
+				"software_version": n.SoftwareVersion,
+			},
+		},
+		opts,
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -423,11 +436,11 @@ func init() {
 				changed := set.NewSet("version")
 				node.Version = 1
 
-				if node.Certificate != "" &&
+				if !node.Certificate.IsZero() &&
 					(node.Certificates == nil ||
 						len(node.Certificates) == 0) {
 
-					node.Certificates = []bson.ObjectId{
+					node.Certificates = []primitive.ObjectID{
 						node.Certificate,
 					}
 					changed.Add("certificates")

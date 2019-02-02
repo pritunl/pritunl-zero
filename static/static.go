@@ -2,10 +2,11 @@
 package static
 
 import (
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"io/ioutil"
 	"path"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 type Store struct {

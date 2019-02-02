@@ -3,6 +3,15 @@ package proxy
 import (
 	"crypto/tls"
 	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
@@ -16,14 +25,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
-	"io"
-	"net"
-	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -125,7 +126,7 @@ func (w *webSocketConn) Run(db *database.Database) {
 					}
 
 					srvcId := w.authr.ServiceId()
-					if srvcId != "" {
+					if !srvcId.IsZero() {
 						srvc, err := service.Get(db, srvcId)
 						if err != nil {
 							switch err.(type) {

@@ -3,23 +3,23 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type certificateData struct {
-	Id          bson.ObjectId `json:"id"`
-	Name        string        `json:"name"`
-	Type        string        `json:"type"`
-	Key         string        `json:"key"`
-	Certificate string        `json:"certificate"`
-	AcmeAccount string        `json:"acme_account"`
-	AcmeDomains []string      `json:"acme_domains"`
+	Id          primitive.ObjectID `json:"id"`
+	Name        string             `json:"name"`
+	Type        string             `json:"type"`
+	Key         string             `json:"key"`
+	Certificate string             `json:"certificate"`
+	AcmeAccount string             `json:"acme_account"`
+	AcmeDomains []string           `json:"acme_domains"`
 }
 
 func certificatePut(c *gin.Context) {

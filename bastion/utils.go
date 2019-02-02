@@ -2,9 +2,13 @@ package bastion
 
 import (
 	"fmt"
-	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 	"strings"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
+
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func DockerMatchContainer(a, b string) bool {
@@ -14,12 +18,12 @@ func DockerMatchContainer(a, b string) bool {
 	return strings.HasPrefix(a, b)
 }
 
-func DockerGetName(authrId bson.ObjectId) string {
+func DockerGetName(authrId primitive.ObjectID) string {
 	return fmt.Sprintf("pritunl-bastion-%s", authrId.Hex())
 }
 
-func DockerGetRunning() (running map[string]bson.ObjectId, err error) {
-	running = map[string]bson.ObjectId{}
+func DockerGetRunning() (running map[string]primitive.ObjectID, err error) {
+	running = map[string]primitive.ObjectID{}
 
 	output, err := utils.ExecOutput("",
 		"docker", "ps", "-a", "--format", "{{.Names}}:{{.ID}}")
@@ -40,7 +44,13 @@ func DockerGetRunning() (running map[string]bson.ObjectId, err error) {
 			continue
 		}
 
-		authrId := bson.ObjectIdHex(name[16:])
+		authrId, e := primitive.ObjectIDFromHex(name[16:])
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "bastion: Failed to parse ObjectID"),
+			}
+			return
+		}
 
 		running[containerId] = authrId
 	}

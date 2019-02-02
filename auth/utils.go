@@ -2,6 +2,9 @@ package auth
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -9,8 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
-	"net/http"
-	"net/url"
 )
 
 func Get(db *database.Database, state string) (tokn *Token, err error) {

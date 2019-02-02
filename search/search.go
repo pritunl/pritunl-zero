@@ -5,16 +5,17 @@ import (
 	"container/list"
 	"context"
 	"crypto/md5"
-	"github.com/Sirupsen/logrus"
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/requires"
-	"github.com/pritunl/pritunl-zero/settings"
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/olivere/elastic.v6"
 	"io"
 	"sync"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/settings"
+	elastic "gopkg.in/olivere/elastic.v6"
 )
 
 var (
@@ -39,7 +40,7 @@ func Index(index, typ string, data interface{}) {
 		return
 	}
 
-	id := bson.NewObjectId().Hex()
+	id := primitive.NewObjectID().Hex()
 
 	request := elastic.NewBulkIndexRequest().Index(index).Type(typ).
 		Id(id).Doc(data)

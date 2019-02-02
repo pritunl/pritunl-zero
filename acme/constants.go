@@ -1,7 +1,7 @@
 package acme
 
 const (
-	AcmePath = "/.well-known/acme-challenge/"
+	AcmePath  = "/.well-known/acme-challenge/"
 	AcmeChain = `
 -----BEGIN CERTIFICATE-----
 MIIEqDCCA5CgAwIBAgIRAJgT9HUT5XULQ+dDHpceRL0wDQYJKoZIhvcNAQELBQAw

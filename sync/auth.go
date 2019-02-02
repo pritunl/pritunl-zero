@@ -1,12 +1,14 @@
 package sync
 
 import (
+	"time"
+
 	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 func authSync() (err error) {
@@ -14,10 +16,16 @@ func authSync() (err error) {
 	defer db.Close()
 
 	coll := db.Users()
+	opts := &options.CountOptions{}
+	opts.SetLimit(1)
 
-	count, err := coll.Find(&bson.M{
-		"type": user.Local,
-	}).Limit(1).Count()
+	count, err := coll.Count(
+		db,
+		&bson.M{
+			"type": user.Local,
+		},
+		opts,
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return

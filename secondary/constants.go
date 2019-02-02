@@ -1,7 +1,7 @@
 package secondary
 
 import (
-	"gopkg.in/mgo.v2/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 )
 
 const (
@@ -31,5 +31,5 @@ const (
 )
 
 var (
-	DeviceProvider = bson.ObjectIdHex("100000000000000000000000")
+	DeviceProvider, _ = primitive.ObjectIDFromHex("100000000000000000000000")
 )

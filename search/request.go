@@ -1,10 +1,11 @@
 package search
 
 import (
-	"github.com/dropbox/godropbox/container/set"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/dropbox/godropbox/container/set"
 )
 
 var (

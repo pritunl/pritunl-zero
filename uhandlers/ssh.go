@@ -1,6 +1,9 @@
 package uhandlers
 
 import (
+	"regexp"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -13,8 +16,6 @@ import (
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
-	"regexp"
-	"time"
 )
 
 var (
@@ -124,7 +125,7 @@ func sshValidatePut(c *gin.Context) {
 
 		c.JSON(201, data)
 		return
-	} else if secProviderId != "" {
+	} else if !secProviderId.IsZero() {
 		secd, err := secondary.NewChallenge(
 			db, usr.Id, secondary.Authority, chal.Id, secProviderId)
 		if err != nil {
@@ -407,7 +408,7 @@ func sshU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	if secProviderId != "" {
+	if !secProviderId.IsZero() {
 		secd, err := secondary.NewChallenge(db, usr.Id,
 			secondary.Authority, chal.Id, secProviderId)
 		if err != nil {

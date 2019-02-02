@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
@@ -15,7 +17,6 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
-	"time"
 )
 
 const (
@@ -64,7 +65,7 @@ func hsmGet(c *gin.Context) {
 		return
 	})
 
-	lst, err := event.SubscribeListener([]string{"pritunl_hsm_send"})
+	lst, err := event.SubscribeListener(db, []string{"pritunl_hsm_send"})
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
 )
 
 const (
@@ -105,7 +106,7 @@ func AzureRequest(db *database.Database, location, query string,
 		Query:     query,
 	}
 
-	err = coll.Insert(tokn)
+	_, err = coll.InsertOne(db, tokn)
 	if err != nil {
 		err = database.ParseError(err)
 		return

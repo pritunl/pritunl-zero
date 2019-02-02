@@ -2,15 +2,20 @@ package event
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type Listener struct {
+	db       *database.Database
 	state    bool
 	err      error
 	channels []string
@@ -26,9 +31,8 @@ func (l *Listener) Close() {
 	close(l.stream)
 }
 
-func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
-	defer db.Close()
-	coll := db.Events()
+func (l *Listener) sub(cursorId primitive.ObjectID) {
+	coll := l.db.Events()
 
 	var channelBson interface{}
 	if len(l.channels) == 1 {
@@ -39,23 +43,72 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 		}
 	}
 
+	queryOpts := &options.FindOptions{
+		Sort: &bson.D{
+			{"$natural", 1},
+		},
+	}
+	queryOpts.SetMaxAwaitTime(10 * time.Second)
+	queryOpts.SetCursorType(options.TailableAwait)
+
 	query := &bson.M{
 		"_id": &bson.M{
 			"$gt": cursorId,
 		},
 		"channel": channelBson,
 	}
-	iter := coll.Find(query).Sort("$natural").Tail(10 * time.Second)
+
+	var cursor mongo.Cursor
+	var err error
+	for {
+		cursor, err = coll.Find(
+			l.db,
+			query,
+			queryOpts,
+		)
+		if err != nil {
+			err = database.ParseError(err)
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Listener find error")
+		} else {
+			break
+		}
+
+		if !l.state {
+			return
+		}
+
+		time.Sleep(constants.RetryDelay)
+
+		if !l.state {
+			return
+		}
+	}
+
 	defer func() {
 		defer func() {
 			recover()
 		}()
-		iter.Close()
+		cursor.Close(l.db)
 	}()
 
 	for {
-		msg := &Event{}
-		for iter.Next(msg) {
+		for cursor.Next(l.db) {
+			msg := &Event{}
+			err = cursor.Decode(msg)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener decode error")
+
+				time.Sleep(constants.RetryDelay)
+				break
+			}
+
 			cursorId = msg.Id
 
 			if msg.Data == nil {
@@ -74,26 +127,23 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 			return
 		}
 
-		if iter.Err() != nil {
-			err := iter.Close()
+		err = cursor.Err()
+		if err != nil {
+			err = database.ParseError(err)
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
-			}).Error("event: Listener error")
+			}).Error("event: Listener cursor error")
 
 			time.Sleep(constants.RetryDelay)
-		} else if iter.Timeout() {
-			continue
 		}
 
 		if !l.state {
 			return
 		}
 
-		iter.Close()
-		db.Close()
-		db = database.GetDatabase()
-		coll = db.Events()
+		cursor.Close(l.db)
+		coll = l.db.Events()
 
 		query := &bson.M{
 			"_id": &bson.M{
@@ -101,15 +151,39 @@ func (l *Listener) sub(db *database.Database, cursorId bson.ObjectId) {
 			},
 			"channel": channelBson,
 		}
-		iter = coll.Find(query).Sort("$natural").Tail(10 * time.Second)
+
+		for {
+			cursor, err = coll.Find(
+				l.db,
+				query,
+				queryOpts,
+			)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener find error")
+			} else {
+				break
+			}
+
+			if !l.state {
+				return
+			}
+
+			time.Sleep(constants.RetryDelay)
+
+			if !l.state {
+				return
+			}
+		}
 	}
 }
 
 func (l *Listener) init() (err error) {
-	db := database.GetDatabase()
-
-	coll := db.Events()
-	cursorId, err := getCursorId(coll, l.channels)
+	coll := l.db.Events()
+	cursorId, err := getCursorId(l.db, coll, l.channels)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -123,16 +197,19 @@ func (l *Listener) init() (err error) {
 				"error": errors.New(fmt.Sprintf("%s", r)),
 			}).Error("event: Listener panic")
 		}
-		l.sub(db, cursorId)
+		l.sub(cursorId)
 	}()
 
 	return
 }
 
-func SubscribeListener(channels []string) (lst *Listener, err error) {
+func SubscribeListener(db *database.Database, channels []string) (
+	lst *Listener, err error) {
+
 	lst = &Listener{
+		db:       db,
 		channels: channels,
-		stream:   make(chan *Event),
+		stream:   make(chan *Event, 10),
 	}
 
 	err = lst.init()

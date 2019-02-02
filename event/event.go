@@ -2,27 +2,38 @@
 package event
 
 import (
+	"time"
+
 	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/requires"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var (
-	listeners = map[string][]func(*Event){}
+	listeners = map[string][]func(*EventPublish){}
 )
 
 type Event struct {
-	Id        bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Channel   string        `bson:"channel" json:"channel"`
-	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
-	Data      interface{}   `bson:"data" json:"data"`
+	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string             `bson:"channel" json:"channel"`
+	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
+	Data      bson.M             `bson:"data" json:"data"`
+}
+
+type EventPublish struct {
+	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string             `bson:"channel" json:"channel"`
+	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
+	Data      interface{}        `bson:"data" json:"data"`
 }
 
 type CustomEvent interface {
-	GetId() bson.ObjectId
+	GetId() primitive.ObjectID
 	GetData() interface{}
 }
 
@@ -30,10 +41,10 @@ type Dispatch struct {
 	Type string `bson:"type" json:"type"`
 }
 
-func getCursorId(coll *database.Collection, channels []string) (
-	id bson.ObjectId, err error) {
+func getCursorId(db *database.Database, coll *database.Collection,
+	channels []string) (id primitive.ObjectID, err error) {
 
-	msg := &Event{}
+	msg := &EventPublish{}
 
 	var query *bson.M
 	if len(channels) == 1 {
@@ -49,7 +60,19 @@ func getCursorId(coll *database.Collection, channels []string) (
 	}
 
 	for i := 0; i < 2; i++ {
-		err = coll.Find(query).Sort("-$natural").One(msg)
+		err = coll.FindOne(
+			db,
+			query,
+			&options.FindOneOptions{
+				Sort: &bson.D{
+					{"$natural", -1},
+				},
+			},
+		).Decode(msg)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
 
 		if err != nil {
 			err = database.ParseError(err)
@@ -60,7 +83,7 @@ func getCursorId(coll *database.Collection, channels []string) (
 			switch err.(type) {
 			case *database.NotFoundError:
 				// Cannot use client-side ObjectId for tailable collection
-				err = Publish(coll.Database, channels[0], nil)
+				err = Publish(db, channels[0], nil)
 				if err != nil {
 					err = database.ParseError(err)
 					return
@@ -79,14 +102,14 @@ func getCursorId(coll *database.Collection, channels []string) (
 	return
 }
 
-func getCursorIdRetry(channels []string) bson.ObjectId {
+func getCursorIdRetry(channels []string) primitive.ObjectID {
 	db := database.GetDatabase()
 	defer db.Close()
 
 	for {
 		coll := db.Events()
 
-		cursorId, err := getCursorId(coll, channels)
+		cursorId, err := getCursorId(db, coll, channels)
 		if err != nil {
 			err = database.ParseError(err)
 
@@ -111,14 +134,14 @@ func Publish(db *database.Database, channel string, data interface{}) (
 
 	coll := db.Events()
 
-	msg := &Event{
-		Id:        bson.NewObjectId(),
+	msg := &EventPublish{
+		Id:        primitive.NewObjectID(),
 		Channel:   channel,
 		Timestamp: time.Now(),
 		Data:      data,
 	}
 
-	err = coll.Insert(msg)
+	_, err = coll.InsertOne(db, msg)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -143,7 +166,7 @@ func PublishDispatch(db *database.Database, typ string) (
 }
 
 func Subscribe(channels []string, duration time.Duration,
-	onMsg func(*Event, error) bool) {
+	onMsg func(*EventPublish, error) bool) {
 
 	db := database.GetDatabase()
 	defer db.Close()
@@ -160,20 +183,71 @@ func Subscribe(channels []string, duration time.Duration,
 		}
 	}
 
-	query := bson.M{
-		"_id": bson.M{
+	queryOpts := &options.FindOptions{
+		Sort: &bson.D{
+			{"$natural", 1},
+		},
+	}
+	queryOpts.SetMaxAwaitTime(duration)
+	queryOpts.SetCursorType(options.TailableAwait)
+
+	query := &bson.M{
+		"_id": &bson.M{
 			"$gt": cursorId,
 		},
 		"channel": channelBson,
 	}
-	iter := coll.Find(query).Sort("$natural").Tail(duration)
+
+	var cursor mongo.Cursor
+	var err error
+	for {
+		cursor, err = coll.Find(
+			db,
+			query,
+			queryOpts,
+		)
+		if err != nil {
+			err = database.ParseError(err)
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Listener find error")
+
+			if !onMsg(nil, err) {
+				return
+			}
+		} else {
+			break
+		}
+
+		time.Sleep(constants.RetryDelay)
+	}
 	defer func() {
-		iter.Close()
+		defer func() {
+			recover()
+		}()
+		cursor.Close(db)
 	}()
 
 	for {
-		msg := &Event{}
-		for iter.Next(msg) {
+		for cursor.Next(db) {
+			msg := &EventPublish{}
+			err = cursor.Decode(msg)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener decode error")
+
+				if !onMsg(nil, err) {
+					return
+				}
+
+				time.Sleep(constants.RetryDelay)
+				break
+			}
+
 			cursorId = msg.Id
 
 			if msg.Data == nil {
@@ -186,26 +260,22 @@ func Subscribe(channels []string, duration time.Duration,
 			}
 		}
 
-		if iter.Err() != nil {
-			err := iter.Close()
+		err = cursor.Err()
+		if err != nil {
+			err = database.ParseError(err)
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
-			}).Error("event: Subscribe error")
+			}).Error("event: Listener cursor error")
 
 			if !onMsg(nil, err) {
 				return
 			}
 
 			time.Sleep(constants.RetryDelay)
-		} else if iter.Timeout() {
-			if !onMsg(nil, nil) {
-				return
-			}
-			continue
 		}
 
-		iter.Close()
+		cursor.Close(db)
 		db.Close()
 		db = database.GetDatabase()
 		coll = db.Events()
@@ -216,7 +286,28 @@ func Subscribe(channels []string, duration time.Duration,
 			},
 			"channel": channelBson,
 		}
-		iter = coll.Find(query).Sort("$natural").Tail(duration)
+		for {
+			cursor, err = coll.Find(
+				db,
+				query,
+				queryOpts,
+			)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener find error")
+
+				if !onMsg(nil, err) {
+					return
+				}
+			} else {
+				break
+			}
+
+			time.Sleep(constants.RetryDelay)
+		}
 	}
 }
 
@@ -238,20 +329,71 @@ func SubscribeType(channels []string, duration time.Duration,
 		}
 	}
 
-	query := bson.M{
-		"_id": bson.M{
+	queryOpts := &options.FindOptions{
+		Sort: &bson.D{
+			{"$natural", 1},
+		},
+	}
+	queryOpts.SetMaxAwaitTime(duration)
+	queryOpts.SetCursorType(options.TailableAwait)
+
+	query := &bson.M{
+		"_id": &bson.M{
 			"$gt": cursorId,
 		},
 		"channel": channelBson,
 	}
-	iter := coll.Find(query).Sort("$natural").Tail(duration)
+
+	var cursor mongo.Cursor
+	var err error
+	for {
+		cursor, err = coll.Find(
+			db,
+			query,
+			queryOpts,
+		)
+		if err != nil {
+			err = database.ParseError(err)
+
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("event: Listener find error")
+
+			if !onMsg(nil, err) {
+				return
+			}
+		} else {
+			break
+		}
+
+		time.Sleep(constants.RetryDelay)
+	}
 	defer func() {
-		iter.Close()
+		defer func() {
+			recover()
+		}()
+		cursor.Close(db)
 	}()
 
 	for {
-		msg := newEvent()
-		for iter.Next(msg) {
+		for cursor.Next(db) {
+			msg := newEvent()
+			err = cursor.Decode(msg)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener decode error")
+
+				if !onMsg(nil, err) {
+					return
+				}
+
+				time.Sleep(constants.RetryDelay)
+				break
+			}
+
 			cursorId = msg.GetId()
 
 			if msg.GetData() == nil {
@@ -264,26 +406,22 @@ func SubscribeType(channels []string, duration time.Duration,
 			}
 		}
 
-		if iter.Err() != nil {
-			err := iter.Close()
+		err = cursor.Err()
+		if err != nil {
+			err = database.ParseError(err)
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
-			}).Error("event: Subscribe error")
+			}).Error("event: Listener cursor error")
 
 			if !onMsg(nil, err) {
 				return
 			}
 
 			time.Sleep(constants.RetryDelay)
-		} else if iter.Timeout() {
-			if !onMsg(nil, nil) {
-				return
-			}
-			continue
 		}
 
-		iter.Close()
+		cursor.Close(db)
 		db.Close()
 		db = database.GetDatabase()
 		coll = db.Events()
@@ -294,15 +432,36 @@ func SubscribeType(channels []string, duration time.Duration,
 			},
 			"channel": channelBson,
 		}
-		iter = coll.Find(query).Sort("$natural").Tail(duration)
+		for {
+			cursor, err = coll.Find(
+				db,
+				query,
+				queryOpts,
+			)
+			if err != nil {
+				err = database.ParseError(err)
+
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("event: Listener find error")
+
+				if !onMsg(nil, err) {
+					return
+				}
+			} else {
+				break
+			}
+
+			time.Sleep(constants.RetryDelay)
+		}
 	}
 }
 
-func Register(channel string, callback func(*Event)) {
+func Register(channel string, callback func(*EventPublish)) {
 	callbacks := listeners[channel]
 
 	if callbacks == nil {
-		callbacks = []func(*Event){}
+		callbacks = []func(*EventPublish){}
 	}
 
 	listeners[channel] = append(callbacks, callback)
@@ -310,7 +469,7 @@ func Register(channel string, callback func(*Event)) {
 
 func subscribe(channels []string) {
 	Subscribe(channels, 10*time.Second,
-		func(msg *Event, err error) bool {
+		func(msg *EventPublish, err error) bool {
 			if msg == nil || err != nil {
 				return true
 			}

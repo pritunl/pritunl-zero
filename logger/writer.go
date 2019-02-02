@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"github.com/Sirupsen/logrus"
 	"strings"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type ErrorWriter struct {

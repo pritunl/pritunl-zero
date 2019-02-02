@@ -1,10 +1,12 @@
 package auth
 
 import (
-	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/database"
 )
 
 var (
@@ -18,21 +20,27 @@ type authData struct {
 }
 
 type Token struct {
-	Id        string        `bson:"_id"`
-	Type      string        `bson:"type"`
-	Secret    string        `bson:"secret"`
-	Timestamp time.Time     `bson:"timestamp"`
-	Provider  bson.ObjectId `bson:"provider,omitempty"`
-	Query     string        `bson:"query"`
+	Id        string             `bson:"_id"`
+	Type      string             `bson:"type"`
+	Secret    string             `bson:"secret"`
+	Timestamp time.Time          `bson:"timestamp"`
+	Provider  primitive.ObjectID `bson:"provider,omitempty"`
+	Query     string             `bson:"query"`
 }
 
 func (t *Token) Remove(db *database.Database) (err error) {
 	coll := db.Tokens()
 
-	err = coll.RemoveId(t.Id)
+	_, err = coll.DeleteOne(db, &bson.M{
+		"_id": t.Id,
+	})
 	if err != nil {
 		err = database.ParseError(err)
-		return
+		if _, ok := err.(*database.NotFoundError); ok {
+			err = nil
+		} else {
+			return
+		}
 	}
 
 	return

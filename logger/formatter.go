@@ -2,10 +2,11 @@ package logger
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/pritunl/pritunl-zero/colorize"
 	"sort"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/pritunl-zero/colorize"
 )
 
 var (

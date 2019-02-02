@@ -1,6 +1,10 @@
 package cookie
 
 import (
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -8,9 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 func GetAdmin(w http.ResponseWriter, r *http.Request) (

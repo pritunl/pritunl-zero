@@ -1,9 +1,10 @@
 package logger
 
 import (
-	"github.com/Sirupsen/logrus"
 	"hash/fnv"
 	"time"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type limiter map[uint32]time.Time

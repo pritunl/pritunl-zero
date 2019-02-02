@@ -1,14 +1,15 @@
 package session
 
 import (
+	"net/http"
+	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"time"
 )
 
 func GetExpire(typ string) time.Duration {
@@ -76,15 +77,15 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request,
 	sess = &Session{}
 	timestamp := time.Now()
 
-	change := mgo.Change{
-		Update: &bson.M{
+	err = coll.FindOneAndUpdate(
+		db,
+		query,
+		&bson.M{
 			"$set": &bson.M{
 				"last_active": timestamp,
 			},
 		},
-	}
-
-	_, err = coll.Find(query).Apply(change, sess)
+	).Decode(sess)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -113,18 +114,29 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request,
 	return
 }
 
-func GetAll(db *database.Database, userId bson.ObjectId, includeRemoved bool) (
-	sessions []*Session, err error) {
+func GetAll(db *database.Database, userId primitive.ObjectID,
+	includeRemoved bool) (sessions []*Session, err error) {
 
 	coll := db.Sessions()
 	sessions = []*Session{}
 
-	cursor := coll.Find(&bson.M{
+	cursor, err := coll.Find(db, &bson.M{
 		"user": userId,
-	}).Iter()
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	sess := &Session{}
-	for cursor.Next(sess) {
+	for cursor.Next(db) {
+		sess := &Session{}
+		err = cursor.Decode(sess)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		if !sess.Active() {
 			if !includeRemoved {
 				continue
@@ -132,10 +144,9 @@ func GetAll(db *database.Database, userId bson.ObjectId, includeRemoved bool) (
 			sess.Removed = true
 		}
 		sessions = append(sessions, sess)
-		sess = &Session{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -144,7 +155,7 @@ func GetAll(db *database.Database, userId bson.ObjectId, includeRemoved bool) (
 	return
 }
 
-func New(db *database.Database, r *http.Request, userId bson.ObjectId,
+func New(db *database.Database, r *http.Request, userId primitive.ObjectID,
 	typ string) (sess *Session, err error) {
 
 	id, err := utils.RandStr(32)
@@ -167,7 +178,7 @@ func New(db *database.Database, r *http.Request, userId bson.ObjectId,
 		Agent:      agnt,
 	}
 
-	err = coll.Insert(sess)
+	_, err = coll.InsertOne(db, sess)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -198,10 +209,10 @@ func Remove(db *database.Database, id string) (err error) {
 	return
 }
 
-func RemoveAll(db *database.Database, userId bson.ObjectId) (err error) {
+func RemoveAll(db *database.Database, userId primitive.ObjectID) (err error) {
 	coll := db.Sessions()
 
-	_, err = coll.UpdateAll(&bson.M{
+	_, err = coll.UpdateMany(db, &bson.M{
 		"user": userId,
 	}, &bson.M{
 		"$set": &bson.M{

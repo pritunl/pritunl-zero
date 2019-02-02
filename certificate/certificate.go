@@ -5,14 +5,15 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"gopkg.in/mgo.v2/bson"
-	"io"
-	"time"
 )
 
 type Info struct {
@@ -26,15 +27,15 @@ type Info struct {
 }
 
 type Certificate struct {
-	Id          bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name        string        `bson:"name" json:"name"`
-	Type        string        `bson:"type" json:"type"`
-	Key         string        `bson:"key" json:"key"`
-	Certificate string        `bson:"certificate" json:"certificate"`
-	Info        *Info         `bson:"info" json:"info"`
-	AcmeHash    string        `bson:"acme_hash" json:"acme_hash"`
-	AcmeAccount string        `bson:"acme_account" json:"acme_account"`
-	AcmeDomains []string      `bson:"acme_domains" json:"acme_domains"`
+	Id          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name        string             `bson:"name" json:"name"`
+	Type        string             `bson:"type" json:"type"`
+	Key         string             `bson:"key" json:"key"`
+	Certificate string             `bson:"certificate" json:"certificate"`
+	Info        *Info              `bson:"info" json:"info"`
+	AcmeHash    string             `bson:"acme_hash" json:"acme_hash"`
+	AcmeAccount string             `bson:"acme_account" json:"acme_account"`
+	AcmeDomains []string           `bson:"acme_domains" json:"acme_domains"`
 }
 
 func (c *Certificate) Validate(db *database.Database) (
@@ -164,14 +165,14 @@ func (c *Certificate) CommitFields(db *database.Database, fields set.Set) (
 func (c *Certificate) Insert(db *database.Database) (err error) {
 	coll := db.Certificates()
 
-	if c.Id != "" {
+	if !c.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("certificate: Certificate already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(c)
+	_, err = coll.InsertOne(db, c)
 	if err != nil {
 		err = database.ParseError(err)
 		return

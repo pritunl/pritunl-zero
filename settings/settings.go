@@ -1,20 +1,21 @@
-// Settings stored on mongodb.
 package settings
 
 import (
+	"reflect"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"reflect"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func Commit(db *database.Database, group interface{}, fields set.Set) (
@@ -24,10 +25,16 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 
 	selector := database.SelectFields(group, set.NewSet("_id"))
 	update := database.SelectFields(group, fields)
+	opts := &options.UpdateOptions{}
+	opts.SetUpsert(true)
 
-	_, err = coll.Upsert(selector, &bson.M{
-		"$set": update,
-	})
+	_, err = coll.UpdateOne(
+		db,
+		selector, &bson.M{
+			"$set": update,
+		},
+		opts,
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -43,11 +50,17 @@ func Get(db *database.Database, group string, key string) (
 
 	grp := map[string]interface{}{}
 
-	err = coll.Find(bson.M{
-		"_id": group,
-	}).Select(bson.M{
-		key: 1,
-	}).One(grp)
+	err = coll.FindOne(
+		db,
+		&bson.M{
+			"_id": group,
+		},
+		&options.FindOneOptions{
+			Projection: &bson.D{
+				{key, 1},
+			},
+		},
+	).Decode(grp)
 	if err != nil {
 		err = database.ParseError(err)
 
@@ -71,12 +84,20 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 	err error) {
 
 	coll := db.Settings()
+	opts := &options.UpdateOptions{}
+	opts.SetUpsert(true)
 
-	_, err = coll.Upsert(bson.M{
-		"_id": group,
-	}, bson.M{"$set": bson.M{
-		key: val,
-	}})
+	_, err = coll.UpdateOne(
+		db,
+		bson.M{
+			"_id": group,
+		},
+		bson.M{
+			"$set": bson.M{
+				key: val,
+			},
+		},
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -89,12 +110,20 @@ func Unset(db *database.Database, group string, key string) (
 	err error) {
 
 	coll := db.Settings()
+	opts := &options.UpdateOptions{}
+	opts.SetUpsert(true)
 
-	_, err = coll.Upsert(bson.M{
-		"_id": group,
-	}, bson.M{"$unset": bson.M{
-		key: "",
-	}})
+	_, err = coll.UpdateOne(
+		db,
+		bson.M{
+			"_id": group,
+		},
+		bson.M{
+			"$unset": bson.M{
+				key: "",
+			},
+		},
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return

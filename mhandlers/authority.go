@@ -1,38 +1,39 @@
 package mhandlers
 
 import (
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"strings"
 )
 
 type authorityData struct {
-	Id                 bson.ObjectId `json:"id"`
-	Name               string        `json:"name"`
-	Type               string        `json:"type"`
-	Expire             int           `json:"expire"`
-	HostExpire         int           `json:"host_expire"`
-	MatchRoles         bool          `json:"match_roles"`
-	Roles              []string      `json:"roles"`
-	ProxyHosting       bool          `json:"proxy_hosting"`
-	ProxyHostname      string        `json:"proxy_hostname"`
-	ProxyPort          int           `json:"proxy_port"`
-	HostDomain         string        `json:"host_domain"`
-	HostMatches        []string      `json:"host_matches"`
-	HostSubnets        []string      `json:"host_subnets"`
-	HostProxy          string        `json:"host_proxy"`
-	HostCertificates   bool          `json:"host_certificates"`
-	StrictHostChecking bool          `json:"strict_host_checking"`
-	HsmToken           string        `json:"hsm_token"`
-	HsmSecret          string        `json:"hsm_secret"`
-	HsmSerial          string        `json:"hsm_serial"`
-	HsmGenerateSecret  bool          `json:"hsm_generate_secret"`
+	Id                 primitive.ObjectID `json:"id"`
+	Name               string             `json:"name"`
+	Type               string             `json:"type"`
+	Expire             int                `json:"expire"`
+	HostExpire         int                `json:"host_expire"`
+	MatchRoles         bool               `json:"match_roles"`
+	Roles              []string           `json:"roles"`
+	ProxyHosting       bool               `json:"proxy_hosting"`
+	ProxyHostname      string             `json:"proxy_hostname"`
+	ProxyPort          int                `json:"proxy_port"`
+	HostDomain         string             `json:"host_domain"`
+	HostMatches        []string           `json:"host_matches"`
+	HostSubnets        []string           `json:"host_subnets"`
+	HostProxy          string             `json:"host_proxy"`
+	HostCertificates   bool               `json:"host_certificates"`
+	StrictHostChecking bool               `json:"strict_host_checking"`
+	HsmToken           string             `json:"hsm_token"`
+	HsmSecret          string             `json:"hsm_secret"`
+	HsmSerial          string             `json:"hsm_serial"`
+	HsmGenerateSecret  bool               `json:"hsm_generate_secret"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -302,7 +303,7 @@ func authorityPublicKeyGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
 	authrIdsStr := strings.Split(c.Param("authr_ids"), ",")
-	authrIds := []bson.ObjectId{}
+	authrIds := []primitive.ObjectID{}
 
 	for _, authrIdStr := range authrIdsStr {
 		if authrIdStr == "" {

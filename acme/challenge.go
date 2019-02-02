@@ -1,9 +1,10 @@
 package acme
 
 import (
-	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/pritunl-zero/database"
 )
 
 type Challenge struct {
@@ -15,7 +16,7 @@ type Challenge struct {
 func (c *Challenge) Insert(db *database.Database) (err error) {
 	coll := db.AcmeChallenges()
 
-	err = coll.Insert(c)
+	_, err = coll.InsertOne(db, c)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -27,7 +28,7 @@ func (c *Challenge) Insert(db *database.Database) (err error) {
 func (c *Challenge) Remove(db *database.Database) (err error) {
 	coll := db.AcmeChallenges()
 
-	err = coll.Remove(&bson.M{
+	_, err = coll.DeleteOne(db, &bson.M{
 		"_id": c.Id,
 	})
 	if err != nil {

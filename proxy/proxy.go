@@ -2,9 +2,15 @@ package proxy
 
 import (
 	"fmt"
+	"math/rand"
+	"net"
+	"net/http"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -16,11 +22,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
-	"gopkg.in/mgo.v2/bson"
-	"math/rand"
-	"net"
-	"net/http"
-	"time"
 )
 
 type Host struct {
@@ -205,7 +206,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func (p *Proxy) reloadHosts(db *database.Database, services []bson.ObjectId) (
+func (p *Proxy) reloadHosts(db *database.Database, services []primitive.ObjectID) (
 	err error) {
 
 	hosts := map[string]*Host{}

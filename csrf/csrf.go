@@ -1,9 +1,10 @@
 package csrf
 
 import (
+	"time"
+
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
-	"time"
 )
 
 type CsrfToken struct {
@@ -28,7 +29,7 @@ func NewToken(db *database.Database, sessionId string) (
 		Timestamp: time.Now(),
 	}
 
-	err = coll.Insert(doc)
+	_, err = coll.InsertOne(db, doc)
 	if err != nil {
 		err = database.ParseError(err)
 		return

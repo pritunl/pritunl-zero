@@ -2,8 +2,9 @@ package phandlers
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/url"
+
+	"github.com/gin-gonic/gin"
 )
 
 func redirect(c *gin.Context) {

@@ -1,35 +1,37 @@
 package user
 
 import (
+	"sort"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"sort"
-	"time"
 )
 
 type User struct {
-	Id            bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Type          string        `bson:"type" json:"type"`
-	Username      string        `bson:"username" json:"username"`
-	Password      string        `bson:"password" json:"-"`
-	Token         string        `bson:"token" json:"token"`
-	Secret        string        `bson:"secret" json:"secret"`
-	Theme         string        `bson:"theme" json:"-"`
-	LastActive    time.Time     `bson:"last_active" json:"last_active"`
-	LastSync      time.Time     `bson:"last_sync" json:"last_sync"`
-	Roles         []string      `bson:"roles" json:"roles"`
-	Administrator string        `bson:"administrator" json:"administrator"`
-	Disabled      bool          `bson:"disabled" json:"disabled"`
-	ActiveUntil   time.Time     `bson:"active_until" json:"active_until"`
-	Permissions   []string      `bson:"permissions" json:"permissions"`
+	Id            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Type          string             `bson:"type" json:"type"`
+	Username      string             `bson:"username" json:"username"`
+	Password      string             `bson:"password" json:"-"`
+	Token         string             `bson:"token" json:"token"`
+	Secret        string             `bson:"secret" json:"secret"`
+	Theme         string             `bson:"theme" json:"-"`
+	LastActive    time.Time          `bson:"last_active" json:"last_active"`
+	LastSync      time.Time          `bson:"last_sync" json:"last_sync"`
+	Roles         []string           `bson:"roles" json:"roles"`
+	Administrator string             `bson:"administrator" json:"administrator"`
+	Disabled      bool               `bson:"disabled" json:"disabled"`
+	ActiveUntil   time.Time          `bson:"active_until" json:"active_until"`
+	Permissions   []string           `bson:"permissions" json:"permissions"`
 }
 
 func (u *User) Validate(db *database.Database) (
@@ -75,7 +77,7 @@ func (u *User) Validate(db *database.Database) (
 func (u *User) SuperExists(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
-	if u.Administrator != "super" && u.Id != "" {
+	if u.Administrator != "super" && !u.Id.IsZero() {
 		exists, e := hasSuperSkip(db, u.Id)
 		if e != nil {
 			err = e
@@ -138,14 +140,14 @@ func (u *User) CommitFields(db *database.Database, fields set.Set) (
 func (u *User) Insert(db *database.Database) (err error) {
 	coll := db.Users()
 
-	if u.Id != "" {
+	if !u.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("user: User already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(u)
+	_, err = coll.InsertOne(db, u)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -157,18 +159,21 @@ func (u *User) Insert(db *database.Database) (err error) {
 func (u *User) Upsert(db *database.Database) (err error) {
 	coll := db.Users()
 
-	change := mgo.Change{
-		Update: &bson.M{
+	opts := &options.FindOneAndUpdateOptions{}
+	opts.SetUpsert(true)
+	opts.SetReturnDocument(options.After)
+
+	err = coll.FindOneAndUpdate(
+		db,
+		&bson.M{
+			"type":     u.Type,
+			"username": u.Username,
+		},
+		&bson.M{
 			"$setOnInsert": u,
 		},
-		Upsert:    true,
-		ReturnNew: true,
-	}
-
-	_, err = coll.Find(&bson.M{
-		"type":     u.Type,
-		"username": u.Username,
-	}).Apply(change, u)
+		opts,
+	).Decode(u)
 	if err != nil {
 		err = database.ParseError(err)
 		return

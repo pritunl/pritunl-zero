@@ -4,14 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/pritunl/pritunl-zero/authorizer"
-	"github.com/pritunl/pritunl-zero/logger"
-	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/search"
-	"github.com/pritunl/pritunl-zero/service"
-	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/utils"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,6 +13,15 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/pritunl/pritunl-zero/authorizer"
+	"github.com/pritunl/pritunl-zero/logger"
+	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/search"
+	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type web struct {

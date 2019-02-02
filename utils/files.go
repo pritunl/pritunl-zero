@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"io/ioutil"
 	"os"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 func Exists(pth string) (exists bool, err error) {

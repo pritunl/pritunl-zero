@@ -2,15 +2,16 @@ package config
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"os"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
-	"os"
-	"time"
 )
 
 var (
@@ -157,7 +158,7 @@ func init() {
 
 		if Config.NodeId == "" && nodeId == "" {
 			save = true
-			Config.NodeId = bson.NewObjectId().Hex()
+			Config.NodeId = primitive.NewObjectID().Hex()
 		}
 		if Config.MongoUri == "" && mongoUri == "" {
 			save = true

@@ -1,25 +1,33 @@
 package cmd
 
 import (
-	"github.com/Sirupsen/logrus"
-	"github.com/pritunl/pritunl-zero/config"
-	"github.com/pritunl/pritunl-zero/constants"
-	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/router"
-	"github.com/pritunl/pritunl-zero/sync"
-	"gopkg.in/mgo.v2/bson"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/config"
+	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/router"
+	"github.com/pritunl/pritunl-zero/sync"
 )
 
 func Node() (err error) {
-	sig := make(chan os.Signal, 2)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+	objId, err := primitive.ObjectIDFromHex(config.Config.NodeId)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "cmd: Failed to parse ObjectId"),
+		}
+		return
+	}
 
 	nde := &node.Node{
-		Id: bson.ObjectIdHex(config.Config.NodeId),
+		Id: objId,
 	}
 	err = nde.Init()
 	if err != nil {
@@ -39,7 +47,12 @@ func Node() (err error) {
 		}
 	}()
 
+	sig := make(chan os.Signal, 2)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 	<-sig
+
+	constants.Interrupt = true
+
 	logrus.Info("cmd.node: Shutting down")
 	go routr.Shutdown()
 	if constants.Production {

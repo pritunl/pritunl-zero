@@ -1,11 +1,12 @@
 package node
 
 import (
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, nodeId bson.ObjectId) (
+func Get(db *database.Database, nodeId primitive.ObjectID) (
 	nde *Node, err error) {
 
 	coll := db.Nodes()
@@ -23,16 +24,26 @@ func GetAll(db *database.Database) (nodes []*Node, err error) {
 	coll := db.Nodes()
 	nodes = []*Node{}
 
-	cursor := coll.Find(bson.M{}).Iter()
+	cursor, err := coll.Find(db, bson.M{})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	nde := &Node{}
-	for cursor.Next(nde) {
+	for cursor.Next(db) {
+		nde := &Node{}
+		err = cursor.Decode(nde)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		nde.SetActive()
 		nodes = append(nodes, nde)
-		nde = &Node{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -41,10 +52,10 @@ func GetAll(db *database.Database) (nodes []*Node, err error) {
 	return
 }
 
-func Remove(db *database.Database, nodeId bson.ObjectId) (err error) {
+func Remove(db *database.Database, nodeId primitive.ObjectID) (err error) {
 	coll := db.Nodes()
 
-	err = coll.Remove(&bson.M{
+	_, err = coll.DeleteOne(db, &bson.M{
 		"_id": nodeId,
 	})
 	if err != nil {

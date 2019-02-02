@@ -1,11 +1,12 @@
 package logger
 
 import (
+	"os"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/requires"
-	"os"
-	"strings"
 )
 
 var (

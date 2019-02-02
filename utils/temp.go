@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
-	"gopkg.in/mgo.v2/bson"
+
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 )
 
 func GetTempPath() string {
-	return fmt.Sprintf("/tmp/pritunl-zero/%s", bson.NewObjectId().Hex())
+	return fmt.Sprintf("/tmp/pritunl-zero/%s", primitive.NewObjectID().Hex())
 }

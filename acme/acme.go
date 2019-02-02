@@ -5,17 +5,18 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"strings"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/letsencrypt"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/letsencrypt"
 	"github.com/pritunl/pritunl-zero/settings"
 	"golang.org/x/crypto/acme"
-	"strings"
-	"time"
 )
 
 func Generate(db *database.Database, cert *certificate.Certificate) (

@@ -3,12 +3,13 @@ package geo
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
-	"net/http"
-	"time"
 )
 
 var (
@@ -121,7 +122,7 @@ func Get(db *database.Database, addr string) (ge *Geo, err error) {
 
 		if ge != nil {
 			ge.Timestamp = time.Now()
-			coll.Insert(ge)
+			coll.InsertOne(db, ge)
 		} else {
 			ge = &Geo{}
 		}

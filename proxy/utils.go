@@ -1,11 +1,12 @@
 package proxy
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
-	"net/http"
-	"strings"
 )
 
 func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {

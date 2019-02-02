@@ -1,16 +1,18 @@
 package user
 
 import (
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
-func Get(db *database.Database, userId bson.ObjectId) (
+func Get(db *database.Database, userId primitive.ObjectID) (
 	usr *User, err error) {
 
 	coll := db.Users()
@@ -24,22 +26,24 @@ func Get(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func GetUpdate(db *database.Database, userId bson.ObjectId) (
+func GetUpdate(db *database.Database, userId primitive.ObjectID) (
 	usr *User, err error) {
 
 	coll := db.Users()
 	usr = &User{}
 	timestamp := time.Now()
 
-	change := mgo.Change{
-		Update: &bson.M{
+	err = coll.FindOneAndUpdate(
+		db,
+		&bson.M{
+			"_id": userId,
+		},
+		&bson.M{
 			"$set": &bson.M{
 				"last_active": timestamp,
 			},
 		},
-	}
-
-	_, err = coll.FindId(userId).Apply(change, usr)
+	).Decode(usr)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -57,17 +61,17 @@ func GetTokenUpdate(db *database.Database, token string) (
 	usr = &User{}
 	timestamp := time.Now()
 
-	change := mgo.Change{
-		Update: &bson.M{
+	err = coll.FindOneAndUpdate(
+		db,
+		&bson.M{
+			"token": token,
+		},
+		&bson.M{
 			"$set": &bson.M{
 				"last_active": timestamp,
 			},
 		},
-	}
-
-	_, err = coll.Find(&bson.M{
-		"token": token,
-	}).Apply(change, usr)
+	).Decode(usr)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -91,43 +95,62 @@ func GetUsername(db *database.Database, typ, username string) (
 		return
 	}
 
-	err = coll.FindOne(&bson.M{
+	err = coll.FindOne(db, &bson.M{
 		"type":     typ,
 		"username": username,
-	}, usr)
+	}).Decode(usr)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
 	return
 }
 
-func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
-	users []*User, count int, err error) {
+func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
+	users []*User, count int64, err error) {
 
 	coll := db.Users()
 	users = []*User{}
 
-	qury := coll.Find(query)
-
-	count, err = qury.Count()
+	count, err = coll.Count(db, query)
 	if err != nil {
 		err = database.ParseError(err)
 		return
 	}
 
-	page = utils.Min(page, count / pageCount)
-	skip := utils.Min(page*pageCount, count)
+	page = utils.Min64(page, count/pageCount)
+	skip := utils.Min64(page*pageCount, count)
 
-	cursor := qury.Sort("username").Skip(skip).Limit(pageCount).Iter()
+	cursor, err := coll.Find(
+		db,
+		query,
+		&options.FindOptions{
+			Sort: &bson.D{
+				{"username", 1},
+			},
+			Skip:  &skip,
+			Limit: &pageCount,
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	usr := &User{}
-	for cursor.Next(usr) {
+	for cursor.Next(db) {
+		usr := &User{}
+		err = cursor.Decode(usr)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		users = append(users, usr)
-		usr = &User{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -136,17 +159,23 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int) (
 	return
 }
 
-func Remove(db *database.Database, userIds []bson.ObjectId) (
+func Remove(db *database.Database, userIds []primitive.ObjectID) (
 	errData *errortypes.ErrorData, err error) {
 
 	coll := db.Users()
+	opts := &options.CountOptions{}
+	opts.SetLimit(1)
 
-	count, err := coll.Find(bson.M{
-		"_id": &bson.M{
-			"$nin": userIds,
+	count, err := coll.Count(
+		db,
+		&bson.M{
+			"_id": &bson.M{
+				"$nin": userIds,
+			},
+			"administrator": "super",
 		},
-		"administrator": "super",
-	}).Count()
+		opts,
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -162,7 +191,7 @@ func Remove(db *database.Database, userIds []bson.ObjectId) (
 
 	coll = db.Sessions()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteMany(db, &bson.M{
 		"user": &bson.M{
 			"$in": userIds,
 		},
@@ -174,7 +203,7 @@ func Remove(db *database.Database, userIds []bson.ObjectId) (
 
 	coll = db.Users()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": &bson.M{
 			"$in": userIds,
 		},
@@ -187,10 +216,10 @@ func Remove(db *database.Database, userIds []bson.ObjectId) (
 	return
 }
 
-func Count(db *database.Database) (count int, err error) {
+func Count(db *database.Database) (count int64, err error) {
 	coll := db.Users()
 
-	count, err = coll.Count()
+	count, err = coll.Count(db, &bson.M{})
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -199,17 +228,23 @@ func Count(db *database.Database) (count int, err error) {
 	return
 }
 
-func hasSuperSkip(db *database.Database, skipId bson.ObjectId) (
+func hasSuperSkip(db *database.Database, skipId primitive.ObjectID) (
 	exists bool, err error) {
 
 	coll := db.Users()
+	opts := &options.CountOptions{}
+	opts.SetLimit(1)
 
-	count, err := coll.Find(&bson.M{
-		"_id": &bson.M{
-			"$ne": skipId,
+	count, err := coll.Count(
+		db,
+		&bson.M{
+			"_id": &bson.M{
+				"$ne": skipId,
+			},
+			"administrator": "super",
 		},
-		"administrator": "super",
-	}).Count()
+		opts,
+	)
 	if err != nil {
 		err = database.ParseError(err)
 		return

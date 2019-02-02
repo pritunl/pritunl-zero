@@ -1,6 +1,8 @@
 package phandlers
 
 import (
+	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -10,7 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
-	"path/filepath"
 )
 
 var (

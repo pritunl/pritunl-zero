@@ -1,10 +1,11 @@
 package signature
 
 import (
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"strconv"
 	"time"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 func Parse(token, sigStr, timeStr, nonce, method, path string) (

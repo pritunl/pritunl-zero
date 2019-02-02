@@ -3,25 +3,25 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type policyData struct {
-	Id                        bson.ObjectId           `json:"id"`
+	Id                        primitive.ObjectID      `json:"id"`
 	Name                      string                  `json:"name"`
-	Services                  []bson.ObjectId         `json:"services"`
-	Authorities               []bson.ObjectId         `json:"authorities"`
+	Services                  []primitive.ObjectID    `json:"services"`
+	Authorities               []primitive.ObjectID    `json:"authorities"`
 	Roles                     []string                `json:"roles"`
 	Rules                     map[string]*policy.Rule `json:"rules"`
-	AdminSecondary            bson.ObjectId           `json:"admin_secondary"`
-	UserSecondary             bson.ObjectId           `json:"user_secondary"`
-	ProxySecondary            bson.ObjectId           `json:"proxy_secondary"`
-	AuthoritySecondary        bson.ObjectId           `json:"authority_secondary"`
+	AdminSecondary            primitive.ObjectID      `json:"admin_secondary"`
+	UserSecondary             primitive.ObjectID      `json:"user_secondary"`
+	ProxySecondary            primitive.ObjectID      `json:"proxy_secondary"`
+	AuthoritySecondary        primitive.ObjectID      `json:"authority_secondary"`
 	AdminDeviceSecondary      bool                    `json:"admin_device_secondary"`
 	UserDeviceSecondary       bool                    `json:"user_device_secondary"`
 	ProxyDeviceSecondary      bool                    `json:"proxy_device_secondary"`

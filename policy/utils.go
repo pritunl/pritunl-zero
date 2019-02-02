@@ -1,11 +1,12 @@
 package policy
 
 import (
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, policyId bson.ObjectId) (
+func Get(db *database.Database, policyId primitive.ObjectID) (
 	polcy *Policy, err error) {
 
 	coll := db.Policies()
@@ -19,23 +20,36 @@ func Get(db *database.Database, policyId bson.ObjectId) (
 	return
 }
 
-func GetService(db *database.Database, serviceId bson.ObjectId) (
+func GetService(db *database.Database, serviceId primitive.ObjectID) (
 	policies []*Policy, err error) {
 
 	coll := db.Policies()
 	policies = []*Policy{}
 
-	cursor := coll.Find(bson.M{
-		"services": serviceId,
-	}).Iter()
+	cursor, err := coll.Find(
+		db,
+		&bson.M{
+			"services": serviceId,
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	polcy := &Policy{}
-	for cursor.Next(polcy) {
+	for cursor.Next(db) {
+		polcy := &Policy{}
+		err = cursor.Decode(polcy)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		policies = append(policies, polcy)
-		polcy = &Policy{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -54,19 +68,32 @@ func GetRoles(db *database.Database, roles []string) (
 		roles = []string{}
 	}
 
-	cursor := coll.Find(bson.M{
-		"roles": &bson.M{
-			"$in": roles,
+	cursor, err := coll.Find(
+		db,
+		&bson.M{
+			"roles": &bson.M{
+				"$in": roles,
+			},
 		},
-	}).Sort("_id").Iter()
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	polcy := &Policy{}
-	for cursor.Next(polcy) {
+	for cursor.Next(db) {
+		polcy := &Policy{}
+		err = cursor.Decode(polcy)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		policies = append(policies, polcy)
-		polcy = &Policy{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -75,34 +102,47 @@ func GetRoles(db *database.Database, roles []string) (
 	return
 }
 
-func GetAuthoritiesRoles(db *database.Database, authrIds []bson.ObjectId,
+func GetAuthoritiesRoles(db *database.Database, authrIds []primitive.ObjectID,
 	roles []string) (policies []*Policy, err error) {
 
 	coll := db.Policies()
 	policies = []*Policy{}
 
-	cursor := coll.Find(bson.M{
-		"$or": []*bson.M{
-			&bson.M{
-				"roles": &bson.M{
-					"$in": roles,
+	cursor, err := coll.Find(
+		db,
+		&bson.M{
+			"$or": []*bson.M{
+				&bson.M{
+					"roles": &bson.M{
+						"$in": roles,
+					},
 				},
-			},
-			&bson.M{
-				"authorities": &bson.M{
-					"$in": authrIds,
+				&bson.M{
+					"authorities": &bson.M{
+						"$in": authrIds,
+					},
 				},
 			},
 		},
-	}).Iter()
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	polcy := &Policy{}
-	for cursor.Next(polcy) {
+	for cursor.Next(db) {
+		polcy := &Policy{}
+		err = cursor.Decode(polcy)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		policies = append(policies, polcy)
-		polcy = &Policy{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -115,15 +155,28 @@ func GetAll(db *database.Database) (policies []*Policy, err error) {
 	coll := db.Policies()
 	policies = []*Policy{}
 
-	cursor := coll.Find(bson.M{}).Iter()
+	cursor, err := coll.Find(
+		db,
+		&bson.M{},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	polcy := &Policy{}
-	for cursor.Next(polcy) {
+	for cursor.Next(db) {
+		polcy := &Policy{}
+		err = cursor.Decode(polcy)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		policies = append(policies, polcy)
-		polcy = &Policy{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -132,10 +185,10 @@ func GetAll(db *database.Database) (policies []*Policy, err error) {
 	return
 }
 
-func Remove(db *database.Database, policyId bson.ObjectId) (err error) {
+func Remove(db *database.Database, policyId primitive.ObjectID) (err error) {
 	coll := db.Policies()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": policyId,
 	})
 	if err != nil {

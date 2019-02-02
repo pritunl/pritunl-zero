@@ -3,14 +3,15 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"io/ioutil"
-	"net/http"
-	"time"
 )
 
 const (
@@ -107,7 +108,7 @@ func SamlRequest(db *database.Database, location, query string,
 		Query:     query,
 	}
 
-	err = coll.Insert(tokn)
+	_, err = coll.InsertOne(db, tokn)
 	if err != nil {
 		err = database.ParseError(err)
 		return

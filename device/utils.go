@@ -1,12 +1,15 @@
 package device
 
 import (
-	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/pritunl-zero/database"
 )
 
-func Get(db *database.Database, devcId bson.ObjectId) (
+func Get(db *database.Database, devcId primitive.ObjectID) (
 	devc *Device, err error) {
 
 	coll := db.Devices()
@@ -20,40 +23,16 @@ func Get(db *database.Database, devcId bson.ObjectId) (
 	return
 }
 
-func GetUser(db *database.Database, devcId bson.ObjectId,
-	userId bson.ObjectId) (devc *Device, err error) {
+func GetUser(db *database.Database, devcId primitive.ObjectID,
+	userId primitive.ObjectID) (devc *Device, err error) {
 
 	coll := db.Devices()
 	devc = &Device{}
 
-	err = coll.FindOne(&bson.M{
+	err = coll.FindOne(db, &bson.M{
 		"_id":  devcId,
 		"user": userId,
-	}, devc)
-	if err != nil {
-		return
-	}
-
-	return
-}
-
-func GetAll(db *database.Database, userId bson.ObjectId) (
-	devices []*Device, err error) {
-
-	coll := db.Devices()
-	devices = []*Device{}
-
-	cursor := coll.Find(&bson.M{
-		"user": userId,
-	}).Iter()
-
-	devc := &Device{}
-	for cursor.Next(devc) {
-		devices = append(devices, devc)
-		devc = &Device{}
-	}
-
-	err = cursor.Close()
+	}).Decode(devc)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -62,23 +41,33 @@ func GetAll(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func GetAllSorted(db *database.Database, userId bson.ObjectId) (
+func GetAll(db *database.Database, userId primitive.ObjectID) (
 	devices []*Device, err error) {
 
 	coll := db.Devices()
 	devices = []*Device{}
 
-	cursor := coll.Find(&bson.M{
+	cursor, err := coll.Find(db, &bson.M{
 		"user": userId,
-	}).Sort("mode", "name").Iter()
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	devc := &Device{}
-	for cursor.Next(devc) {
+	for cursor.Next(db) {
+		devc := &Device{}
+		err = cursor.Decode(devc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		devices = append(devices, devc)
-		devc = &Device{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -87,24 +76,74 @@ func GetAllSorted(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func GetAllMode(db *database.Database, userId bson.ObjectId,
+func GetAllSorted(db *database.Database, userId primitive.ObjectID) (
+	devices []*Device, err error) {
+
+	coll := db.Devices()
+	devices = []*Device{}
+
+	cursor, err := coll.Find(db, &bson.M{
+		"user": userId,
+	}, &options.FindOptions{
+		Sort: &bson.D{
+			{"mode", 1},
+			{"name", 1},
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		devc := &Device{}
+		err = cursor.Decode(devc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		devices = append(devices, devc)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func GetAllMode(db *database.Database, userId primitive.ObjectID,
 	mode string) (devices []*Device, err error) {
 
 	coll := db.Devices()
 	devices = []*Device{}
 
-	cursor := coll.Find(&bson.M{
+	cursor, err := coll.Find(db, &bson.M{
 		"user": userId,
 		"mode": mode,
-	}).Iter()
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	devc := &Device{}
-	for cursor.Next(devc) {
+	for cursor.Next(db) {
+		devc := &Device{}
+		err = cursor.Decode(devc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		devices = append(devices, devc)
-		devc = &Device{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -113,15 +152,15 @@ func GetAllMode(db *database.Database, userId bson.ObjectId,
 	return
 }
 
-func Count(db *database.Database, userId bson.ObjectId) (
-	count int, err error) {
+func Count(db *database.Database, userId primitive.ObjectID) (
+	count int64, err error) {
 
 	coll := db.Devices()
 
-	count, err = coll.Find(&bson.M{
+	count, err = coll.Count(db, &bson.M{
 		"user": userId,
 		"mode": Secondary,
-	}).Count()
+	})
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -130,9 +169,9 @@ func Count(db *database.Database, userId bson.ObjectId) (
 	return
 }
 
-func New(userId bson.ObjectId, typ, mode string) (devc *Device) {
+func New(userId primitive.ObjectID, typ, mode string) (devc *Device) {
 	devc = &Device{
-		Id:         bson.NewObjectId(),
+		Id:         primitive.NewObjectID(),
 		Type:       typ,
 		Mode:       mode,
 		User:       userId,
@@ -143,10 +182,12 @@ func New(userId bson.ObjectId, typ, mode string) (devc *Device) {
 	return
 }
 
-func Remove(db *database.Database, id bson.ObjectId) (err error) {
+func Remove(db *database.Database, id primitive.ObjectID) (err error) {
 	coll := db.Devices()
 
-	err = coll.RemoveId(id)
+	_, err = coll.DeleteOne(db, &bson.M{
+		"_id": id,
+	})
 	if err != nil {
 		err = database.ParseError(err)
 
@@ -161,12 +202,12 @@ func Remove(db *database.Database, id bson.ObjectId) (err error) {
 	return
 }
 
-func RemoveUser(db *database.Database, id bson.ObjectId,
-	userId bson.ObjectId) (err error) {
+func RemoveUser(db *database.Database, id primitive.ObjectID,
+	userId primitive.ObjectID) (err error) {
 
 	coll := db.Devices()
 
-	err = coll.Remove(&bson.M{
+	_, err = coll.DeleteOne(db, &bson.M{
 		"_id":  id,
 		"user": userId,
 	})
@@ -184,10 +225,10 @@ func RemoveUser(db *database.Database, id bson.ObjectId,
 	return
 }
 
-func RemoveAll(db *database.Database, userId bson.ObjectId) (err error) {
+func RemoveAll(db *database.Database, userId primitive.ObjectID) (err error) {
 	coll := db.Devices()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteMany(db, &bson.M{
 		"user": userId,
 	})
 	if err != nil {

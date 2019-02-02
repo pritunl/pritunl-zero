@@ -1,11 +1,12 @@
 package service
 
 import (
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 )
 
-func Get(db *database.Database, serviceId bson.ObjectId) (
+func Get(db *database.Database, serviceId primitive.ObjectID) (
 	srvce *Service, err error) {
 
 	coll := db.Services()
@@ -19,25 +20,38 @@ func Get(db *database.Database, serviceId bson.ObjectId) (
 	return
 }
 
-func GetMulti(db *database.Database, serviceIds []bson.ObjectId) (
+func GetMulti(db *database.Database, serviceIds []primitive.ObjectID) (
 	services []*Service, err error) {
 
 	coll := db.Services()
 	services = []*Service{}
 
-	cursor := coll.Find(bson.M{
-		"_id": &bson.M{
-			"$in": serviceIds,
+	cursor, err := coll.Find(
+		db,
+		&bson.M{
+			"_id": &bson.M{
+				"$in": serviceIds,
+			},
 		},
-	}).Iter()
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	srvce := &Service{}
-	for cursor.Next(srvce) {
+	for cursor.Next(db) {
+		srvce := &Service{}
+		err = cursor.Decode(srvce)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		services = append(services, srvce)
-		srvce = &Service{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -51,15 +65,28 @@ func GetAll(db *database.Database) (services []*Service, err error) {
 	coll := db.Services()
 	services = []*Service{}
 
-	cursor := coll.Find(bson.M{}).Iter()
+	cursor, err := coll.Find(
+		db,
+		&bson.M{},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	srvce := &Service{}
-	for cursor.Next(srvce) {
+	for cursor.Next(db) {
+		srvce := &Service{}
+		err = cursor.Decode(srvce)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		services = append(services, srvce)
-		srvce = &Service{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -68,10 +95,10 @@ func GetAll(db *database.Database) (services []*Service, err error) {
 	return
 }
 
-func Remove(db *database.Database, serviceId bson.ObjectId) (err error) {
+func Remove(db *database.Database, serviceId primitive.ObjectID) (err error) {
 	coll := db.Services()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": serviceId,
 	})
 	if err != nil {

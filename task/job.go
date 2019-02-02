@@ -1,24 +1,26 @@
 package task
 
 import (
-	"github.com/pritunl/pritunl-zero/database"
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/database"
 )
 
 type Job struct {
-	Id        string        `bson:"_id"`
-	Name      string        `bson:"name"`
-	State     string        `bson:"state"`
-	Retry     bool          `bson:"retry"`
-	Node      bson.ObjectId `bson:"node"`
-	Timestamp time.Time     `bson:"timestamp"`
+	Id        string             `bson:"_id"`
+	Name      string             `bson:"name"`
+	State     string             `bson:"state"`
+	Retry     bool               `bson:"retry"`
+	Node      primitive.ObjectID `bson:"node"`
+	Timestamp time.Time          `bson:"timestamp"`
 }
 
 func (j *Job) Reserve(db *database.Database) (reserved bool, err error) {
 	coll := db.Tasks()
 
-	err = coll.Insert(j)
+	_, err = coll.InsertOne(db, j)
 	if err != nil {
 		err = database.ParseError(err)
 

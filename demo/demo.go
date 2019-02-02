@@ -1,7 +1,10 @@
 package demo
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -10,8 +13,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/subscription"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 func IsDemo() bool {
@@ -48,9 +49,10 @@ var Agent = &agent.Agent{
 	Longitude:       -122.337,
 }
 
+var auditId, _ = primitive.ObjectIDFromHex("5a17f9bf051a45ffacf2b352")
 var Audits = []*audit.Audit{
 	&audit.Audit{
-		Id:        bson.ObjectIdHex("5a17f9bf051a45ffacf2b352"),
+		Id:        auditId,
 		Timestamp: time.Unix(1498018860, 0),
 		Type:      "admin_login",
 		Fields: audit.Fields{
@@ -71,11 +73,13 @@ var Sessions = []*session.Session{
 	},
 }
 
+var sshId, _ = primitive.ObjectIDFromHex("5a180207051a45ffacf3b846")
+var authrId, _ = primitive.ObjectIDFromHex("5a191ca03745632d533cf597")
 var Sshcerts = []*ssh.Certificate{
 	&ssh.Certificate{
-		Id: bson.ObjectIdHex("5a180207051a45ffacf3b846"),
-		AuthorityIds: []bson.ObjectId{
-			bson.ObjectIdHex("5a191ca03745632d533cf597"),
+		Id: sshId,
+		AuthorityIds: []primitive.ObjectID{
+			authrId,
 		},
 		Timestamp: time.Unix(1498018860, 0),
 		CertificatesInfo: []*ssh.Info{
@@ -98,9 +102,11 @@ var Sshcerts = []*ssh.Certificate{
 	},
 }
 
+var logId0, _ = primitive.ObjectIDFromHex("5a18e6ae051a45ffac0e5b67")
+var logId1, _ = primitive.ObjectIDFromHex("5a190b42051a45ffac129bbc")
 var Logs = []*log.Entry{
 	&log.Entry{
-		Id:        bson.ObjectIdHex("5a18e6ae051a45ffac0e5b67"),
+		Id:        logId0,
 		Level:     log.Info,
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting redirect server",
@@ -112,7 +118,7 @@ var Logs = []*log.Entry{
 		},
 	},
 	&log.Entry{
-		Id:        bson.ObjectIdHex("5a190b42051a45ffac129bbc"),
+		Id:        logId1,
 		Level:     log.Info,
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting web server",

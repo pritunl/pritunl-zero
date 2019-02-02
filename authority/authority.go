@@ -13,9 +13,19 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"hash/fnv"
+	"net"
+	"net/http"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -25,15 +35,6 @@ import (
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/ssh"
-	"gopkg.in/mgo.v2/bson"
-	"hash/fnv"
-	"net"
-	"net/http"
-	"sort"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (
@@ -51,34 +52,34 @@ type Info struct {
 }
 
 type Authority struct {
-	Id                 bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name               string        `bson:"name" json:"name"`
-	Type               string        `bson:"type" json:"type"`
-	Info               *Info         `bson:"info" json:"info"`
-	MatchRoles         bool          `bson:"match_roles" json:"match_roles"`
-	Roles              []string      `bson:"roles" json:"roles"`
-	Expire             int           `bson:"expire" json:"expire"`
-	HostExpire         int           `bson:"host_expire" json:"host_expire"`
-	PrivateKey         string        `bson:"private_key" json:"-"`
-	PublicKey          string        `bson:"public_key" json:"public_key"`
-	ProxyJump          string        `bson:"-" json:"proxy_jump"`
-	ProxyPrivateKey    string        `bson:"proxy_private_key" json:"-"`
-	ProxyPublicKey     string        `bson:"proxy_public_key" json:"proxy_public_key"`
-	ProxyHosting       bool          `bson:"proxy_hosting" json:"proxy_hosting"`
-	ProxyHostname      string        `bson:"proxy_hostname" json:"proxy_hostname"`
-	ProxyPort          int           `bson:"proxy_port" json:"proxy_port"`
-	HostDomain         string        `bson:"host_domain" json:"host_domain"`
-	HostSubnets        []string      `bson:"host_subnets" json:"host_subnets"`
-	HostMatches        []string      `bson:"host_matches" json:"host_matches"`
-	HostProxy          string        `bson:"host_proxy" json:"host_proxy"`
-	HostCertificates   bool          `bson:"host_certificates" json:"host_certificates"`
-	StrictHostChecking bool          `bson:"strict_host_checking" json:"strict_host_checking"`
-	HostTokens         []string      `bson:"host_tokens" json:"host_tokens"`
-	HsmToken           string        `bson:"hsm_token" json:"hsm_token"`
-	HsmSecret          string        `bson:"hsm_secret" json:"hsm_secret"`
-	HsmSerial          string        `bson:"hsm_serial" json:"hsm_serial"`
-	HsmStatus          string        `bson:"hsm_status" json:"hsm_status"`
-	HsmTimestamp       time.Time     `bson:"hsm_timestamp" json:"hsm_timestamp"`
+	Id                 primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name               string             `bson:"name" json:"name"`
+	Type               string             `bson:"type" json:"type"`
+	Info               *Info              `bson:"info" json:"info"`
+	MatchRoles         bool               `bson:"match_roles" json:"match_roles"`
+	Roles              []string           `bson:"roles" json:"roles"`
+	Expire             int                `bson:"expire" json:"expire"`
+	HostExpire         int                `bson:"host_expire" json:"host_expire"`
+	PrivateKey         string             `bson:"private_key" json:"-"`
+	PublicKey          string             `bson:"public_key" json:"public_key"`
+	ProxyJump          string             `bson:"-" json:"proxy_jump"`
+	ProxyPrivateKey    string             `bson:"proxy_private_key" json:"-"`
+	ProxyPublicKey     string             `bson:"proxy_public_key" json:"proxy_public_key"`
+	ProxyHosting       bool               `bson:"proxy_hosting" json:"proxy_hosting"`
+	ProxyHostname      string             `bson:"proxy_hostname" json:"proxy_hostname"`
+	ProxyPort          int                `bson:"proxy_port" json:"proxy_port"`
+	HostDomain         string             `bson:"host_domain" json:"host_domain"`
+	HostSubnets        []string           `bson:"host_subnets" json:"host_subnets"`
+	HostMatches        []string           `bson:"host_matches" json:"host_matches"`
+	HostProxy          string             `bson:"host_proxy" json:"host_proxy"`
+	HostCertificates   bool               `bson:"host_certificates" json:"host_certificates"`
+	StrictHostChecking bool               `bson:"strict_host_checking" json:"strict_host_checking"`
+	HostTokens         []string           `bson:"host_tokens" json:"host_tokens"`
+	HsmToken           string             `bson:"hsm_token" json:"hsm_token"`
+	HsmSecret          string             `bson:"hsm_secret" json:"hsm_secret"`
+	HsmSerial          string             `bson:"hsm_serial" json:"hsm_serial"`
+	HsmStatus          string             `bson:"hsm_status" json:"hsm_status"`
+	HsmTimestamp       time.Time          `bson:"hsm_timestamp" json:"hsm_timestamp"`
 }
 
 func (a *Authority) GetDomain(hostname string) string {
@@ -324,7 +325,7 @@ func (a *Authority) createCertificateLocal(usr *user.User, sshPubKey string) (
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(bson.NewObjectId().Hex()))
+	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := serialHash.Sum64()
 
 	expire := a.Expire
@@ -501,7 +502,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 	rawSignature := hashFunc.Sum(nil)
 	sig := base64.StdEncoding.EncodeToString(rawSignature)
 
-	payloadId := bson.NewObjectId().Hex()
+	payloadId := primitive.NewObjectID().Hex()
 	payload := &HsmPayload{
 		Id:        payloadId,
 		Token:     a.HsmToken,
@@ -650,7 +651,7 @@ func (a *Authority) createHostCertificate(
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(bson.NewObjectId().Hex()))
+	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := serialHash.Sum64()
 
 	expire := a.HostExpire
@@ -763,7 +764,7 @@ func (a *Authority) createHostCertificateHsm(db *database.Database,
 	rawSignature := hashFunc.Sum(nil)
 	sig := base64.StdEncoding.EncodeToString(rawSignature)
 
-	payloadId := bson.NewObjectId().Hex()
+	payloadId := primitive.NewObjectID().Hex()
 	payload := &HsmPayload{
 		Id:        payloadId,
 		Token:     a.HsmToken,
@@ -1335,14 +1336,14 @@ func (a *Authority) CommitFields(db *database.Database, fields set.Set) (
 func (a *Authority) Insert(db *database.Database) (err error) {
 	coll := db.Authorities()
 
-	if a.Id != "" {
+	if !a.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("authority: Authority already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(a)
+	_, err = coll.InsertOne(db, a)
 	if err != nil {
 		err = database.ParseError(err)
 		return

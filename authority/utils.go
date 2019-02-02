@@ -11,13 +11,15 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
+	"net"
+	"strings"
+
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"golang.org/x/crypto/ssh"
-	"gopkg.in/mgo.v2/bson"
-	"net"
-	"strings"
 )
 
 func parseSubnetMatch(subnetMatch string) (
@@ -246,7 +248,7 @@ func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
 	return
 }
 
-func Get(db *database.Database, authrId bson.ObjectId) (
+func Get(db *database.Database, authrId primitive.ObjectID) (
 	authr *Authority, err error) {
 
 	coll := db.Authorities()
@@ -266,33 +268,44 @@ func GetHsmToken(db *database.Database, token string) (
 	coll := db.Authorities()
 	authr = &Authority{}
 
-	err = coll.FindOne(&bson.M{
+	err = coll.FindOne(db, &bson.M{
 		"hsm_token": token,
-	}, authr)
+	}).Decode(authr)
 	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
 	return
 }
 
-func GetMulti(db *database.Database, authrIds []bson.ObjectId) (
+func GetMulti(db *database.Database, authrIds []primitive.ObjectID) (
 	authrs []*Authority, err error) {
 
 	coll := db.Authorities()
 	authrs = []*Authority{}
 
-	cursor := coll.Find(&bson.M{
+	cursor, err := coll.Find(db, &bson.M{
 		"_id": &bson.M{"$in": authrIds},
-	}).Iter()
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	authr := &Authority{}
-	for cursor.Next(authr) {
+	for cursor.Next(db) {
+		authr := &Authority{}
+		err = cursor.Decode(authr)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		authrs = append(authrs, authr)
-		authr = &Authority{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -305,15 +318,25 @@ func GetAll(db *database.Database) (authrs []*Authority, err error) {
 	coll := db.Authorities()
 	authrs = []*Authority{}
 
-	cursor := coll.Find(bson.M{}).Iter()
+	cursor, err := coll.Find(db, &bson.M{})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	authr := &Authority{}
-	for cursor.Next(authr) {
+	for cursor.Next(db) {
+		authr := &Authority{}
+		err = cursor.Decode(authr)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		authrs = append(authrs, authr)
-		authr = &Authority{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -328,19 +351,29 @@ func GetTokens(db *database.Database, tokens []string) (
 	coll := db.Authorities()
 	authrs = []*Authority{}
 
-	cursor := coll.Find(&bson.M{
+	cursor, err := coll.Find(db, &bson.M{
 		"host_tokens": &bson.M{
 			"$in": tokens,
 		},
-	}).Iter()
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	authr := &Authority{}
-	for cursor.Next(authr) {
+	for cursor.Next(db) {
+		authr := &Authority{}
+		err = cursor.Decode(authr)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		authrs = append(authrs, authr)
-		authr = &Authority{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -349,15 +382,20 @@ func GetTokens(db *database.Database, tokens []string) (
 	return
 }
 
-func Remove(db *database.Database, authrId bson.ObjectId) (err error) {
+func Remove(db *database.Database, authrId primitive.ObjectID) (err error) {
 	coll := db.Authorities()
 
-	_, err = coll.RemoveAll(&bson.M{
+	_, err = coll.DeleteOne(db, &bson.M{
 		"_id": authrId,
 	})
 	if err != nil {
 		err = database.ParseError(err)
-		return
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
 	}
 
 	return

@@ -3,27 +3,27 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type nodeData struct {
-	Id                   bson.ObjectId   `json:"id"`
-	Name                 string          `json:"name"`
-	Type                 string          `json:"type"`
-	Port                 int             `json:"port"`
-	Protocol             string          `json:"protocol"`
-	Certificates         []bson.ObjectId `json:"certificates"`
-	ManagementDomain     string          `json:"management_domain"`
-	UserDomain           string          `json:"user_domain"`
-	Services             []bson.ObjectId `json:"services"`
-	Authorities          []bson.ObjectId `json:"authorities"`
-	ForwardedForHeader   string          `json:"forwarded_for_header"`
-	ForwardedProtoHeader string          `json:"forwarded_proto_header"`
+	Id                   primitive.ObjectID   `json:"id"`
+	Name                 string               `json:"name"`
+	Type                 string               `json:"type"`
+	Port                 int                  `json:"port"`
+	Protocol             string               `json:"protocol"`
+	Certificates         []primitive.ObjectID `json:"certificates"`
+	ManagementDomain     string               `json:"management_domain"`
+	UserDomain           string               `json:"user_domain"`
+	Services             []primitive.ObjectID `json:"services"`
+	Authorities          []primitive.ObjectID `json:"authorities"`
+	ForwardedForHeader   string               `json:"forwarded_for_header"`
+	ForwardedProtoHeader string               `json:"forwarded_proto_header"`
 }
 
 func nodePut(c *gin.Context) {

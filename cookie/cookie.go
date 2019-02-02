@@ -1,17 +1,18 @@
 package cookie
 
 import (
+	"net/http"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
 )
 
 var (
@@ -20,7 +21,7 @@ var (
 )
 
 type Cookie struct {
-	Id    bson.ObjectId
+	Id    primitive.ObjectID
 	store *sessions.Session
 	w     http.ResponseWriter
 	r     *http.Request
@@ -68,7 +69,7 @@ func (c *Cookie) GetSession(db *database.Database, r *http.Request,
 }
 
 func (c *Cookie) NewSession(db *database.Database, r *http.Request,
-	id bson.ObjectId, remember bool, typ string) (
+	id primitive.ObjectID, remember bool, typ string) (
 	sess *session.Session, err error) {
 
 	sess, err = session.New(db, r, id, typ)

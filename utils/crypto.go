@@ -3,12 +3,13 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"math"
 	"math/big"
 	mathrand "math/rand"
 	"regexp"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 var (

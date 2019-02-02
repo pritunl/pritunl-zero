@@ -1,19 +1,20 @@
 package log
 
 import (
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
-	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var published = false
 
 type Entry struct {
-	Id        bson.ObjectId          `bson:"_id,omitempty" json:"id"`
+	Id        primitive.ObjectID     `bson:"_id,omitempty" json:"id"`
 	Level     string                 `bson:"level" json:"level"`
 	Timestamp time.Time              `bson:"timestamp" json:"timestamp"`
 	Message   string                 `bson:"message" json:"message"`
@@ -24,14 +25,14 @@ type Entry struct {
 func (e *Entry) Insert(db *database.Database) (err error) {
 	coll := db.Logs()
 
-	if e.Id != "" {
+	if !e.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("log: Entry already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(e)
+	_, err = coll.InsertOne(db, e)
 	if err != nil {
 		err = database.ParseError(err)
 		return

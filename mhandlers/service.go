@@ -3,26 +3,26 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type serviceData struct {
-	Id                bson.ObjectId     `json:"id"`
-	Name              string            `json:"name"`
-	Type              string            `json:"type"`
-	ShareSession      bool              `json:"share_session"`
-	LogoutPath        string            `json:"logout_path"`
-	WebSockets        bool              `json:"websockets"`
-	DisableCsrfCheck  bool              `json:"disable_csrf_check"`
-	Domains           []*service.Domain `json:"domains"`
-	Roles             []string          `json:"roles"`
-	Servers           []*service.Server `json:"servers"`
-	WhitelistNetworks []string          `json:"whitelist_networks"`
+	Id                primitive.ObjectID `json:"id"`
+	Name              string             `json:"name"`
+	Type              string             `json:"type"`
+	ShareSession      bool               `json:"share_session"`
+	LogoutPath        string             `json:"logout_path"`
+	WebSockets        bool               `json:"websockets"`
+	DisableCsrfCheck  bool               `json:"disable_csrf_check"`
+	Domains           []*service.Domain  `json:"domains"`
+	Roles             []string           `json:"roles"`
+	Servers           []*service.Server  `json:"servers"`
+	WhitelistNetworks []string           `json:"whitelist_networks"`
 }
 
 func servicePut(c *gin.Context) {

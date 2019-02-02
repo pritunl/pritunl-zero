@@ -9,10 +9,11 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base64"
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 type SshRequest struct {
@@ -40,13 +41,13 @@ type HsmPayload struct {
 }
 
 type HsmEvent struct {
-	Id        bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Channel   string        `bson:"channel" json:"channel"`
-	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
-	Data      *HsmPayload   `bson:"data" json:"data"`
+	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string             `bson:"channel" json:"channel"`
+	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
+	Data      *HsmPayload        `bson:"data" json:"data"`
 }
 
-func (h *HsmEvent) GetId() bson.ObjectId {
+func (h *HsmEvent) GetId() primitive.ObjectID {
 	return h.Id
 }
 

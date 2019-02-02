@@ -1,8 +1,9 @@
 package phandlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/url"
+
+	"github.com/gin-gonic/gin"
 )
 
 type redirectData struct {

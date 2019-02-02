@@ -1,26 +1,27 @@
 package challenge
 
 import (
+	"sync"
+
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
-	"gopkg.in/mgo.v2/bson"
-	"sync"
 )
 
 var (
-	registry     = map[string]map[bson.ObjectId]func(){}
+	registry     = map[string]map[primitive.ObjectID]func(){}
 	registryLock = sync.Mutex{}
 )
 
-func Register(token string, callback func()) bson.ObjectId {
-	listernerId := bson.NewObjectId()
+func Register(token string, callback func()) primitive.ObjectID {
+	listernerId := primitive.NewObjectID()
 
 	registryLock.Lock()
 	defer registryLock.Unlock()
 
 	callbacks, ok := registry[token]
 	if !ok {
-		callbacks = map[bson.ObjectId]func(){}
+		callbacks = map[primitive.ObjectID]func(){}
 	}
 	callbacks[listernerId] = callback
 	registry[token] = callbacks
@@ -28,7 +29,7 @@ func Register(token string, callback func()) bson.ObjectId {
 	return listernerId
 }
 
-func Unregister(token string, listenerId bson.ObjectId) {
+func Unregister(token string, listenerId primitive.ObjectID) {
 	registryLock.Lock()
 	defer registryLock.Unlock()
 
@@ -43,7 +44,7 @@ func Unregister(token string, listenerId bson.ObjectId) {
 	}
 }
 
-func callback(evt *event.Event) {
+func callback(evt *event.EventPublish) {
 	token := evt.Data.(string)
 
 	registryLock.Lock()

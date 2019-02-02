@@ -1,46 +1,46 @@
 package settings
 
 import (
-	"gopkg.in/mgo.v2/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 )
 
 var Auth *auth
 
 type Provider struct {
-	Id             bson.ObjectId `bson:"id" json:"id"`
-	Type           string        `bson:"type" json:"type"`
-	Label          string        `bson:"label" json:"label"`
-	DefaultRoles   []string      `bson:"default_roles" json:"default_roles"`
-	AutoCreate     bool          `bson:"auto_create" json:"auto_create"`
-	RoleManagement string        `bson:"role_management" json:"role_management"`
-	Tenant         string        `bson:"tenant" json:"tenant"`               // azure
-	ClientId       string        `bson:"client_id" json:"client_id"`         // azure + authzero
-	ClientSecret   string        `bson:"client_secret" json:"client_secret"` // azure + authzero
-	Domain         string        `bson:"domain" json:"domain"`               // google + authzero
-	GoogleKey      string        `bson:"google_key" json:"google_key"`       // google
-	GoogleEmail    string        `bson:"google_email" json:"google_email"`   // google
-	IssuerUrl      string        `bson:"issuer_url" json:"issuer_url"`       // saml
-	SamlUrl        string        `bson:"saml_url" json:"saml_url"`           // saml
-	SamlCert       string        `bson:"saml_cert" json:"saml_cert"`         // saml
+	Id             primitive.ObjectID `bson:"id" json:"id"`
+	Type           string             `bson:"type" json:"type"`
+	Label          string             `bson:"label" json:"label"`
+	DefaultRoles   []string           `bson:"default_roles" json:"default_roles"`
+	AutoCreate     bool               `bson:"auto_create" json:"auto_create"`
+	RoleManagement string             `bson:"role_management" json:"role_management"`
+	Tenant         string             `bson:"tenant" json:"tenant"`               // azure
+	ClientId       string             `bson:"client_id" json:"client_id"`         // azure + authzero
+	ClientSecret   string             `bson:"client_secret" json:"client_secret"` // azure + authzero
+	Domain         string             `bson:"domain" json:"domain"`               // google + authzero
+	GoogleKey      string             `bson:"google_key" json:"google_key"`       // google
+	GoogleEmail    string             `bson:"google_email" json:"google_email"`   // google
+	IssuerUrl      string             `bson:"issuer_url" json:"issuer_url"`       // saml
+	SamlUrl        string             `bson:"saml_url" json:"saml_url"`           // saml
+	SamlCert       string             `bson:"saml_cert" json:"saml_cert"`         // saml
 }
 
 type SecondaryProvider struct {
-	Id             bson.ObjectId `bson:"id" json:"id"`
-	Type           string        `bson:"type" json:"type"`
-	Name           string        `bson:"name" json:"name"`
-	Label          string        `bson:"label" json:"label"`
-	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`         // duo
-	DuoKey         string        `bson:"duo_key" json:"duo_key"`                   // duo
-	DuoSecret      string        `bson:"duo_secret" json:"duo_secret"`             // duo
-	OneLoginRegion string        `bson:"one_login_region" json:"one_login_region"` // onelogin
-	OneLoginId     string        `bson:"one_login_id" json:"one_login_id"`         // onelogin
-	OneLoginSecret string        `bson:"one_login_secret" json:"one_login_secret"` // onelogin
-	OktaDomain     string        `bson:"okta_domain" json:"okta_domain"`           // okta
-	OktaToken      string        `bson:"okta_token" json:"okta_token"`             // okta
-	PushFactor     bool          `bson:"push_factor" json:"push_factor"`           // duo + onelogin + okta
-	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
-	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
-	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
+	Id             primitive.ObjectID `bson:"id" json:"id"`
+	Type           string             `bson:"type" json:"type"`
+	Name           string             `bson:"name" json:"name"`
+	Label          string             `bson:"label" json:"label"`
+	DuoHostname    string             `bson:"duo_hostname" json:"duo_hostname"`         // duo
+	DuoKey         string             `bson:"duo_key" json:"duo_key"`                   // duo
+	DuoSecret      string             `bson:"duo_secret" json:"duo_secret"`             // duo
+	OneLoginRegion string             `bson:"one_login_region" json:"one_login_region"` // onelogin
+	OneLoginId     string             `bson:"one_login_id" json:"one_login_id"`         // onelogin
+	OneLoginSecret string             `bson:"one_login_secret" json:"one_login_secret"` // onelogin
+	OktaDomain     string             `bson:"okta_domain" json:"okta_domain"`           // okta
+	OktaToken      string             `bson:"okta_token" json:"okta_token"`             // okta
+	PushFactor     bool               `bson:"push_factor" json:"push_factor"`           // duo + onelogin + okta
+	PhoneFactor    bool               `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
+	PasscodeFactor bool               `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
+	SmsFactor      bool               `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
 }
 
 type auth struct {
@@ -60,7 +60,7 @@ type auth struct {
 	DisaleGeo          bool                 `bson:"disable_geo" json:"disable_geo"`
 }
 
-func (a *auth) GetProvider(id bson.ObjectId) *Provider {
+func (a *auth) GetProvider(id primitive.ObjectID) *Provider {
 	for _, provider := range a.Providers {
 		if provider.Id == id {
 			return provider
@@ -70,7 +70,7 @@ func (a *auth) GetProvider(id bson.ObjectId) *Provider {
 	return nil
 }
 
-func (a *auth) GetSecondaryProvider(id bson.ObjectId) *SecondaryProvider {
+func (a *auth) GetSecondaryProvider(id primitive.ObjectID) *SecondaryProvider {
 	for _, provider := range a.SecondaryProviders {
 		if provider.Id == id {
 			return provider

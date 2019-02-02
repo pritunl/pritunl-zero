@@ -3,13 +3,13 @@ package mhandlers
 import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type settingsData struct {
@@ -126,15 +126,15 @@ func settingsPut(c *gin.Context) {
 	}
 
 	for _, provider := range data.AuthProviders {
-		if provider.Id == "" {
-			provider.Id = bson.NewObjectId()
+		if provider.Id.IsZero() {
+			provider.Id = primitive.NewObjectID()
 		}
 	}
 	settings.Auth.Providers = data.AuthProviders
 
 	for _, provider := range data.AuthSecondaryProviders {
-		if provider.Id == "" {
-			provider.Id = bson.NewObjectId()
+		if provider.Id.IsZero() {
+			provider.Id = primitive.NewObjectID()
 		}
 
 		if provider.Type == secondary.OneLogin &&

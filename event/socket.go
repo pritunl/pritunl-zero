@@ -2,11 +2,12 @@ package event
 
 import (
 	"context"
-	"github.com/dropbox/godropbox/container/set"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/dropbox/godropbox/container/set"
+	"github.com/gorilla/websocket"
 )
 
 var (

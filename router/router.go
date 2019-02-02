@@ -6,6 +6,14 @@ import (
 	"crypto/md5"
 	"crypto/tls"
 	"fmt"
+	"io"
+	"math/rand"
+	"net/http"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
@@ -21,13 +29,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
-	"io"
-	"math/rand"
-	"net/http"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 type Router struct {

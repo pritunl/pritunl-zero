@@ -5,9 +5,13 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base64"
+	"net/url"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -15,9 +19,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"net/url"
-	"strings"
 )
 
 func Local(db *database.Database, username, password string) (
@@ -71,7 +72,13 @@ func Request(c *gin.Context) {
 		c.Redirect(302, redirect)
 		return
 	} else {
-		providerId := bson.ObjectIdHex(id)
+		providerId, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "auth: ObjectId parse error"),
+			}
+			return
+		}
 
 		var provider *settings.Provider
 		for _, prvidr := range settings.Auth.Providers {

@@ -2,13 +2,15 @@ package mhandlers
 
 import (
 	"context"
+	"time"
+
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
-	"time"
 )
 
 const (
@@ -18,6 +20,7 @@ const (
 )
 
 func eventGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
 	socket := &event.WebSocket{}
 
 	defer func() {
@@ -50,7 +53,7 @@ func eventGet(c *gin.Context) {
 		return
 	})
 
-	lst, err := event.SubscribeListener([]string{"dispatch"})
+	lst, err := event.SubscribeListener(db, []string{"dispatch"})
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

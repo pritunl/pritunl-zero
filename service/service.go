@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/dropbox/godropbox/container/set"
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
-	"gopkg.in/mgo.v2/bson"
 	"net"
 	"sort"
+
+	"github.com/dropbox/godropbox/container/set"
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 type Domain struct {
@@ -22,17 +23,17 @@ type Server struct {
 }
 
 type Service struct {
-	Id                bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Name              string        `bson:"name" json:"name"`
-	Type              string        `bson:"type" json:"type"`
-	ShareSession      bool          `bson:"share_session" json:"share_session"`
-	LogoutPath        string        `bson:"logout_path" json:"logout_path"`
-	WebSockets        bool          `bson:"websockets" json:"websockets"`
-	DisableCsrfCheck  bool          `bson:"disable_csrf_check" json:"disable_csrf_check"`
-	Domains           []*Domain     `bson:"domains" json:"domains"`
-	Roles             []string      `bson:"roles" json:"roles"`
-	Servers           []*Server     `bson:"servers" json:"servers"`
-	WhitelistNetworks []string      `bson:"whitelist_networks" json:"whitelist_networks"`
+	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name              string             `bson:"name" json:"name"`
+	Type              string             `bson:"type" json:"type"`
+	ShareSession      bool               `bson:"share_session" json:"share_session"`
+	LogoutPath        string             `bson:"logout_path" json:"logout_path"`
+	WebSockets        bool               `bson:"websockets" json:"websockets"`
+	DisableCsrfCheck  bool               `bson:"disable_csrf_check" json:"disable_csrf_check"`
+	Domains           []*Domain          `bson:"domains" json:"domains"`
+	Roles             []string           `bson:"roles" json:"roles"`
+	Servers           []*Server          `bson:"servers" json:"servers"`
+	WhitelistNetworks []string           `bson:"whitelist_networks" json:"whitelist_networks"`
 }
 
 func (s *Service) Validate(db *database.Database) (
@@ -133,14 +134,14 @@ func (s *Service) CommitFields(db *database.Database, fields set.Set) (
 func (s *Service) Insert(db *database.Database) (err error) {
 	coll := db.Services()
 
-	if s.Id != "" {
+	if !s.Id.IsZero() {
 		err = &errortypes.DatabaseError{
 			errors.New("service: Service already exists"),
 		}
 		return
 	}
 
-	err = coll.Insert(s)
+	_, err = coll.InsertOne(db, s)
 	if err != nil {
 		err = database.ParseError(err)
 		return

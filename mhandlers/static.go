@@ -1,6 +1,9 @@
 package mhandlers
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -8,8 +11,6 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
-	"net/http"
-	"strings"
 )
 
 func staticPath(c *gin.Context, pth string) {

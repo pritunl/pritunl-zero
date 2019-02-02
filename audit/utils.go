@@ -1,13 +1,16 @@
 package audit
 
 import (
+	"net/http"
+	"time"
+
+	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"time"
 )
 
 func Get(db *database.Database, adtId string) (
@@ -24,34 +27,50 @@ func Get(db *database.Database, adtId string) (
 	return
 }
 
-func GetAll(db *database.Database, userId bson.ObjectId,
-	page, pageCount int) (audits []*Audit, count int, err error) {
+func GetAll(db *database.Database, userId primitive.ObjectID,
+	page, pageCount int64) (audits []*Audit, count int64, err error) {
 
 	coll := db.Audits()
 	audits = []*Audit{}
 
-	qury := coll.Find(&bson.M{
+	count, err = coll.Count(db, &bson.M{
 		"u": userId,
 	})
-
-	count, err = qury.Count()
 	if err != nil {
 		err = database.ParseError(err)
 		return
 	}
 
-	page = utils.Min(page, count / pageCount)
-	skip := utils.Min(page*pageCount, count)
+	page = utils.Min64(page, count/pageCount)
+	skip := utils.Min64(page*pageCount, count)
 
-	cursor := qury.Sort("-$natural").Skip(skip).Limit(pageCount).Iter()
+	cursor, err := coll.Find(db, &bson.M{
+		"u": userId,
+	}, &options.FindOptions{
+		Sort: &bson.D{
+			{"$natural", -1},
+		},
+		Skip:  &skip,
+		Limit: &pageCount,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
 
-	adt := &Audit{}
-	for cursor.Next(adt) {
+	for cursor.Next(db) {
+		adt := &Audit{}
+		err = cursor.Decode(adt)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
 		audits = append(audits, adt)
-		adt = &Audit{}
 	}
 
-	err = cursor.Close()
+	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -61,8 +80,7 @@ func GetAll(db *database.Database, userId bson.ObjectId,
 }
 
 func New(db *database.Database, r *http.Request,
-	userId bson.ObjectId, typ string, fields Fields) (
-	err error) {
+	userId primitive.ObjectID, typ string, fields Fields) (err error) {
 
 	if settings.System.Demo {
 		return

@@ -4,8 +4,9 @@ package requires
 import (
 	"container/list"
 	"fmt"
-	"github.com/dropbox/godropbox/container/set"
 	"os"
+
+	"github.com/dropbox/godropbox/container/set"
 )
 
 var (

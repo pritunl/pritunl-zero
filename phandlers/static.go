@@ -1,8 +1,9 @@
 package phandlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func staticIndexGet(c *gin.Context) {

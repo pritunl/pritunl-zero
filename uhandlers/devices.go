@@ -2,9 +2,11 @@ package uhandlers
 
 import (
 	"encoding/base64"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
@@ -17,7 +19,6 @@ import (
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type deviceData struct {
@@ -256,9 +257,9 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	if deviceCount > 0 || secProviderId != "" {
+	if deviceCount > 0 || !secProviderId.IsZero() {
 		secType := ""
-		var secProvider bson.ObjectId
+		var secProvider primitive.ObjectID
 
 		if deviceCount == 0 {
 			if deviceType == device.SmartCard {
@@ -641,7 +642,7 @@ func deviceU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	if secProviderId != "" {
+	if !secProviderId.IsZero() {
 		secd, err := secondary.New(db, usr.Id,
 			secondary.UserManage, secProviderId)
 		if err != nil {
