@@ -2,9 +2,11 @@
 package event
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo"
@@ -226,6 +228,11 @@ func Subscribe(channels []string, duration time.Duration,
 		defer func() {
 			recover()
 		}()
+		if r := recover(); r != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": errors.New(fmt.Sprintf("%s", r)),
+			}).Error("event: Event panic")
+		}
 		cursor.Close(db)
 	}()
 

@@ -91,6 +91,11 @@ func (l *Listener) sub(cursorId primitive.ObjectID) {
 		defer func() {
 			recover()
 		}()
+		if r := recover(); r != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": errors.New(fmt.Sprintf("%s", r)),
+			}).Error("event: Event panic")
+		}
 		cursor.Close(l.db)
 	}()
 
