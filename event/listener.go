@@ -58,7 +58,7 @@ func (l *Listener) sub(cursorId primitive.ObjectID) {
 		"channel": channelBson,
 	}
 
-	var cursor mongo.Cursor
+	var cursor *mongo.Cursor
 	var err error
 	for {
 		cursor, err = coll.Find(

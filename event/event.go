@@ -200,7 +200,7 @@ func Subscribe(channels []string, duration time.Duration,
 		"channel": channelBson,
 	}
 
-	var cursor mongo.Cursor
+	var cursor *mongo.Cursor
 	var err error
 	for {
 		cursor, err = coll.Find(
@@ -351,7 +351,7 @@ func SubscribeType(channels []string, duration time.Duration,
 		"channel": channelBson,
 	}
 
-	var cursor mongo.Cursor
+	var cursor *mongo.Cursor
 	var err error
 	for {
 		cursor, err = coll.Find(
