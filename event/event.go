@@ -1,4 +1,3 @@
-// Pub/sub messaging system using mongodb tailable cursor.
 package event
 
 import (
