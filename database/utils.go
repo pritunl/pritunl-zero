@@ -9,6 +9,27 @@ import (
 
 func GetErrorCode(err error) (errCode int) {
 	switch err := err.(type) {
+	case mongo.WriteError:
+		errCode = err.Code
+		break
+	case mongo.BulkWriteError:
+		errCode = err.Code
+		break
+	case mongo.WriteConcernError:
+		errCode = err.Code
+		break
+	case mongo.WriteException:
+		if err.WriteConcernError != nil {
+			errCode = err.WriteConcernError.Code
+		} else if err.WriteErrors != nil {
+			for _, e := range err.WriteErrors {
+				if e.Code != 0 {
+					errCode = e.Code
+					break
+				}
+			}
+		}
+		break
 	case *mongo.WriteError:
 		errCode = err.Code
 		break
@@ -17,6 +38,18 @@ func GetErrorCode(err error) (errCode int) {
 		break
 	case *mongo.WriteConcernError:
 		errCode = err.Code
+		break
+	case *mongo.WriteException:
+		if err.WriteConcernError != nil {
+			errCode = err.WriteConcernError.Code
+		} else if err.WriteErrors != nil {
+			for _, e := range err.WriteErrors {
+				if e.Code != 0 {
+					errCode = e.Code
+					break
+				}
+			}
+		}
 		break
 	}
 
