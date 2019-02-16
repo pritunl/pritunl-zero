@@ -26,7 +26,9 @@ export default class PageDateTime extends React.Component<Props, {}> {
 		let dateStyle: React.CSSProperties = {};
 
 		let date = new Date(this.props.value);
-		if (!this.props.value || this.props.value === '0001-01-01T00:00:00Z') {
+		if (!this.props.value ||
+				this.props.value.includes('0000-12-31') ||
+				this.props.value.includes('0001-01-01')) {
 			date = null;
 		}
 
