@@ -213,7 +213,7 @@ export default class Subscription extends React.Component<{}, State> {
 					>Activate License</button>
 					<ReactStripeCheckout
 						label="Pritunl Zero"
-						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
+						image="https://objectstorage.us-ashburn-1.oraclecloud.com/n/pritunl8472/b/pritunl-static/o/logo_stripe.png"
 						allowRememberMe={false}
 						zipCode={true}
 						amount={5000}
@@ -362,7 +362,7 @@ export default class Subscription extends React.Component<{}, State> {
 					/>
 					<ReactStripeCheckout
 						label="Pritunl Zero"
-						image="//s3.amazonaws.com/pritunl-static/logo_stripe.png"
+						image="https://objectstorage.us-ashburn-1.oraclecloud.com/n/pritunl8472/b/pritunl-static/o/logo_stripe.png"
 						allowRememberMe={false}
 						zipCode={true}
 						amount={canceling && sub.status !== 'active' ? 5000 : 0}
