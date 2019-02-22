@@ -626,6 +626,85 @@ func addCollections() (err error) {
 	return
 }
 
+func fixData() (err error) {
+	db := GetDatabase()
+	defer db.Close()
+
+	coll := db.Policies()
+	_, err = coll.UpdateMany(db, &bson.M{
+		"admin_secondary": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"admin_secondary": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+	_, err = coll.UpdateMany(db, &bson.M{
+		"user_secondary": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"user_secondary": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+	_, err = coll.UpdateMany(db, &bson.M{
+		"proxy_secondary": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"proxy_secondary": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+	_, err = coll.UpdateMany(db, &bson.M{
+		"authority_secondary": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"authority_secondary": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+
+	coll = db.SshCertificates()
+	_, err = coll.UpdateMany(db, &bson.M{
+		"user_id": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"user_id": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+
+	coll = db.SshChallenges()
+	_, err = coll.UpdateMany(db, &bson.M{
+		"certificate_id": nil,
+	}, &bson.M{
+		"$unset": &bson.M{
+			"certificate_id": 1,
+		},
+	})
+	if err != nil {
+		err = ParseError(err)
+		return
+	}
+
+	return
+}
+
 func init() {
 	module := requires.New("database")
 	module.After("config")
@@ -650,6 +729,11 @@ func init() {
 		}
 
 		err = addIndexes()
+		if err != nil {
+			return
+		}
+
+		err = fixData()
 		if err != nil {
 			return
 		}
