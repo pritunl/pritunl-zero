@@ -143,16 +143,16 @@ func ExecCombinedOutputLogged(ignores []string, name string, arg ...string) (
 		}
 	}
 	if err != nil {
+		err = &errortypes.ExecError{
+			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
+		}
+
 		logrus.WithFields(logrus.Fields{
 			"output": output,
 			"cmd":    name,
 			"arg":    arg,
 			"error":  err,
 		}).Error("utils: Process exec error")
-
-		err = &errortypes.ExecError{
-			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
-		}
 		return
 	}
 
@@ -182,16 +182,16 @@ func ExecCombinedOutputLoggedDir(ignores []string,
 		}
 	}
 	if err != nil {
+		err = &errortypes.ExecError{
+			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
+		}
+
 		logrus.WithFields(logrus.Fields{
 			"output": output,
 			"cmd":    name,
 			"arg":    arg,
 			"error":  err,
 		}).Error("utils: Process exec error")
-
-		err = &errortypes.ExecError{
-			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
-		}
 		return
 	}
 
@@ -224,6 +224,10 @@ func ExecOutputLogged(ignores []string, name string, arg ...string) (
 		}
 	}
 	if err != nil {
+		err = &errortypes.ExecError{
+			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
+		}
+
 		logrus.WithFields(logrus.Fields{
 			"output":       output,
 			"error_output": errOutput,
@@ -231,10 +235,6 @@ func ExecOutputLogged(ignores []string, name string, arg ...string) (
 			"arg":          arg,
 			"error":        err,
 		}).Error("utils: Process exec error")
-
-		err = &errortypes.ExecError{
-			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
-		}
 		return
 	}
 
