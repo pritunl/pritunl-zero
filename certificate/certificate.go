@@ -33,8 +33,8 @@ type Certificate struct {
 	Key         string             `bson:"key" json:"key"`
 	Certificate string             `bson:"certificate" json:"certificate"`
 	Info        *Info              `bson:"info" json:"info"`
-	AcmeHash    string             `bson:"acme_hash" json:"acme_hash"`
-	AcmeAccount string             `bson:"acme_account" json:"acme_account"`
+	AcmeHash    string             `bson:"acme_hash" json:"-"`
+	AcmeAccount string             `bson:"acme_account" json:"-"`
 	AcmeDomains []string           `bson:"acme_domains" json:"acme_domains"`
 }
 
