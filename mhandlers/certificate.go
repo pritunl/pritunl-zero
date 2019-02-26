@@ -18,7 +18,6 @@ type certificateData struct {
 	Type        string             `json:"type"`
 	Key         string             `json:"key"`
 	Certificate string             `json:"certificate"`
-	AcmeAccount string             `json:"acme_account"`
 	AcmeDomains []string           `json:"acme_domains"`
 }
 
@@ -50,13 +49,11 @@ func certificatePut(c *gin.Context) {
 
 	cert.Name = data.Name
 	cert.Type = data.Type
-	cert.AcmeAccount = data.AcmeAccount
 	cert.AcmeDomains = data.AcmeDomains
 
 	fields := set.NewSet(
 		"name",
 		"type",
-		"acme_account",
 		"acme_domains",
 		"info",
 	)
@@ -123,7 +120,6 @@ func certificatePost(c *gin.Context) {
 	cert := &certificate.Certificate{
 		Name:        data.Name,
 		Type:        data.Type,
-		AcmeAccount: data.AcmeAccount,
 		AcmeDomains: data.AcmeDomains,
 	}
 
