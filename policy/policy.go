@@ -15,6 +15,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/subscription"
 	"github.com/pritunl/pritunl-zero/user"
 )
 
@@ -44,6 +45,42 @@ type Policy struct {
 
 func (p *Policy) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
+
+	if p.Roles == nil {
+		p.Roles = []string{}
+	}
+	if p.Rules == nil {
+		p.Rules = map[string]*Rule{}
+	}
+
+	for _, rule := range p.Rules {
+		switch rule.Type {
+		case OperatingSystem:
+			break
+		case Browser:
+			break
+		case Location:
+			if !subscription.Sub.Active {
+				errData = &errortypes.ErrorData{
+					Error: "location_subscription_required",
+					Message: "Location policy requires subscription " +
+						"for GeoIP service.",
+				}
+				return
+			}
+			break
+		case WhitelistNetworks:
+			break
+		case BlacklistNetworks:
+			break
+		default:
+			errData = &errortypes.ErrorData{
+				Error:   "invalid_rule_type",
+				Message: "Rule type is invalid",
+			}
+			return
+		}
+	}
 
 	if p.Services == nil {
 		p.Services = []primitive.ObjectID{}
