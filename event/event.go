@@ -72,11 +72,6 @@ func getCursorId(db *database.Database, coll *database.Collection,
 		).Decode(msg)
 		if err != nil {
 			err = database.ParseError(err)
-			return
-		}
-
-		if err != nil {
-			err = database.ParseError(err)
 			if i > 0 {
 				return
 			}
