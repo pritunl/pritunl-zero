@@ -48,6 +48,7 @@ type Node struct {
 	Load5                float64                    `bson:"load5" json:"load5"`
 	Load15               float64                    `bson:"load15" json:"load15"`
 	SoftwareVersion      string                     `bson:"software_version" json:"software_version"`
+	Hostname             string                     `bson:"hostname" json:"hostname"`
 	Version              int                        `bson:"version" json:"-"`
 	CertificateObjs      []*certificate.Certificate `bson:"-" json:"-"`
 	reqLock              sync.Mutex                 `bson:"-" json:"-"`
@@ -193,6 +194,7 @@ func (n *Node) update(db *database.Database) (err error) {
 				"load1":        n.Load1,
 				"load5":        n.Load5,
 				"load15":       n.Load15,
+				"hostname":     n.Hostname,
 			},
 		},
 		opts,
