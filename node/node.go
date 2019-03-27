@@ -31,6 +31,7 @@ type Node struct {
 	Type                 string                     `bson:"type" json:"type"`
 	Timestamp            time.Time                  `bson:"timestamp" json:"timestamp"`
 	Port                 int                        `bson:"port" json:"port"`
+	NoRedirectServer     bool                       `bson:"no_redirect_server" json:"no_redirect_server"`
 	Protocol             string                     `bson:"protocol" json:"protocol"`
 	Certificate          primitive.ObjectID         `bson:"certificate" json:"certificate"`
 	Certificates         []primitive.ObjectID       `bson:"certificates" json:"certificates"`
@@ -208,6 +209,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Name = nde.Name
 	n.Type = nde.Type
 	n.Port = nde.Port
+	n.NoRedirectServer = nde.NoRedirectServer
 	n.Protocol = nde.Protocol
 	n.Certificates = nde.Certificates
 	n.SelfCertificate = nde.SelfCertificate
