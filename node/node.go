@@ -3,12 +3,14 @@ package node
 import (
 	"container/list"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
@@ -284,6 +286,17 @@ func (n *Node) sync() {
 		n.Load5 = load.Load5
 		n.Load15 = load.Load15
 	}
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "node: Failed to get hostname"),
+		}
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("node: Failed to get hostname")
+	}
+	n.Hostname = hostname
 
 	err = n.update(db)
 	if err != nil {
