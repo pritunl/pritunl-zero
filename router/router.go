@@ -35,6 +35,7 @@ type Router struct {
 	nodeHash         []byte
 	typ              string
 	port             int
+	noRedirectServer bool
 	protocol         string
 	certificates     []*certificate.Certificate
 	managementDomain string
@@ -141,7 +142,7 @@ func (r *Router) initRedirect() (err error) {
 func (r *Router) startRedirect() {
 	defer r.waiter.Done()
 
-	if r.port == 80 {
+	if r.port == 80 || r.noRedirectServer {
 		return
 	}
 
@@ -171,6 +172,7 @@ func (r *Router) initWeb() (err error) {
 	r.managementDomain = node.Self.ManagementDomain
 	r.userDomain = node.Self.UserDomain
 	r.certificates = node.Self.CertificateObjs
+	r.noRedirectServer = node.Self.NoRedirectServer
 
 	r.port = node.Self.Port
 	if r.port == 0 {
