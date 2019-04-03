@@ -114,7 +114,7 @@ func (r *Router) initRedirect() (err error) {
 						logrus.WithFields(logrus.Fields{
 							"token": token,
 						}).Info("router: Acme challenge requested")
-						io.WriteString(w, chal.Resource)
+						utils.WriteText(w, 200, chal.Resource)
 					}
 					return
 				}
