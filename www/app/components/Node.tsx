@@ -636,6 +636,15 @@ export default class Node extends React.Component<Props, State> {
 							/>
 						</div>
 					</label>
+					<PageSwitch
+						disabled={this.state.disabled}
+						label="Web redirect server"
+						help="Enable redirect server for HTTP requests to HTTPS. Required for Lets Encrypt certificates."
+						checked={!node.no_redirect_server}
+						onToggle={(): void => {
+							this.set('no_redirect_server', !node.no_redirect_server);
+						}}
+					/>
 					<label
 						className="bp3-label"
 						style={css.label}
