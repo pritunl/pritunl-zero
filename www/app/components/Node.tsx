@@ -726,6 +726,10 @@ export default class Node extends React.Component<Props, State> {
 								label: 'Requests',
 								value: node.requests_min + '/min',
 							},
+							{
+								label: 'Hostname',
+								value: node.hostname || 'Unknown',
+							},
 						]}
 						bars={[
 							{
