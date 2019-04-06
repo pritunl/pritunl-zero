@@ -18,7 +18,6 @@ export interface Certificate {
 	key?: string;
 	certificate?: string;
 	info?: Info;
-	acme_account?: string;
 	acme_domains?: string[];
 }
 
