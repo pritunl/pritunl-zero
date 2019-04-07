@@ -20,6 +20,10 @@ interface State {
 }
 
 const css = {
+	label: {
+		fontSize: '16px',
+		margin: '0 0 7px 0',
+	} as React.CSSProperties,
 	card: {
 		marginBottom: '5px',
 	} as React.CSSProperties,
@@ -319,7 +323,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		}
 
 		return <div className="bp3-card" style={css.card}>
-			<h6>{label}</h6>
+			<h6 style={css.label}>{label}</h6>
 			<PageInfo
 				fields={[
 					{
