@@ -23,6 +23,7 @@ export interface Node {
 	forwarded_for_header?: string;
 	forwarded_proto_header?: string;
 	software_version?: string;
+	hostname?: string;
 }
 
 export type Nodes = Node[];
