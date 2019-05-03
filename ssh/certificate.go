@@ -100,7 +100,7 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 	coll := db.SshCertificates()
 	certs = []*Certificate{}
 
-	count, err = coll.Count(db, &bson.M{
+	count, err = coll.CountDocuments(db, &bson.M{
 		"user_id": userId,
 	})
 	if err != nil {

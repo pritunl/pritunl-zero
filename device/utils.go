@@ -157,7 +157,7 @@ func Count(db *database.Database, userId primitive.ObjectID) (
 
 	coll := db.Devices()
 
-	count, err = coll.Count(db, &bson.M{
+	count, err = coll.CountDocuments(db, &bson.M{
 		"user": userId,
 		"mode": Secondary,
 	})

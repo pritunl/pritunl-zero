@@ -113,7 +113,7 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	coll := db.Users()
 	users = []*User{}
 
-	count, err = coll.Count(db, query)
+	count, err = coll.CountDocuments(db, query)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -166,7 +166,7 @@ func Remove(db *database.Database, userIds []primitive.ObjectID) (
 	opts := &options.CountOptions{}
 	opts.SetLimit(1)
 
-	count, err := coll.Count(
+	count, err := coll.CountDocuments(
 		db,
 		&bson.M{
 			"_id": &bson.M{
@@ -219,7 +219,7 @@ func Remove(db *database.Database, userIds []primitive.ObjectID) (
 func Count(db *database.Database) (count int64, err error) {
 	coll := db.Users()
 
-	count, err = coll.Count(db, &bson.M{})
+	count, err = coll.CountDocuments(db, &bson.M{})
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -235,7 +235,7 @@ func hasSuperSkip(db *database.Database, skipId primitive.ObjectID) (
 	opts := &options.CountOptions{}
 	opts.SetLimit(1)
 
-	count, err := coll.Count(
+	count, err := coll.CountDocuments(
 		db,
 		&bson.M{
 			"_id": &bson.M{

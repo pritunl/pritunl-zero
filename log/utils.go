@@ -29,7 +29,7 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	coll := db.Logs()
 	entries = []*Entry{}
 
-	count, err = coll.Count(db, query)
+	count, err = coll.CountDocuments(db, query)
 	if err != nil {
 		err = database.ParseError(err)
 		return

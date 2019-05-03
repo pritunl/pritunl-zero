@@ -19,7 +19,7 @@ func authSync() (err error) {
 	opts := &options.CountOptions{}
 	opts.SetLimit(1)
 
-	count, err := coll.Count(
+	count, err := coll.CountDocuments(
 		db,
 		&bson.M{
 			"type": user.Local,

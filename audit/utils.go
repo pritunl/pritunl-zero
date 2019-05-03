@@ -33,7 +33,7 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 	coll := db.Audits()
 	audits = []*Audit{}
 
-	count, err = coll.Count(db, &bson.M{
+	count, err = coll.CountDocuments(db, &bson.M{
 		"u": userId,
 	})
 	if err != nil {
