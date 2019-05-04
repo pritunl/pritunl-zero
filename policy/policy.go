@@ -28,6 +28,7 @@ type Rule struct {
 type Policy struct {
 	Id                        primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
 	Name                      string               `bson:"name" json:"name"`
+	Disabled                  bool                 `bson:"disabled" json:"disabled"`
 	Services                  []primitive.ObjectID `bson:"services" json:"services"`
 	Authorities               []primitive.ObjectID `bson:"authorities" json:"authorities"`
 	Roles                     []string             `bson:"roles" json:"roles"`
