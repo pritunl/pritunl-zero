@@ -14,6 +14,7 @@ import (
 type policyData struct {
 	Id                        primitive.ObjectID      `json:"id"`
 	Name                      string                  `json:"name"`
+	Disabled                  bool                    `json:"disabled"`
 	Services                  []primitive.ObjectID    `json:"services"`
 	Authorities               []primitive.ObjectID    `json:"authorities"`
 	Roles                     []string                `json:"roles"`
@@ -56,6 +57,7 @@ func policyPut(c *gin.Context) {
 	}
 
 	polcy.Name = data.Name
+	polcy.Disabled = data.Disabled
 	polcy.Services = data.Services
 	polcy.Authorities = data.Authorities
 	polcy.Roles = data.Roles
@@ -72,6 +74,7 @@ func policyPut(c *gin.Context) {
 
 	fields := set.NewSet(
 		"name",
+		"disabled",
 		"services",
 		"authorities",
 		"roles",
@@ -127,6 +130,7 @@ func policyPost(c *gin.Context) {
 
 	polcy := &policy.Policy{
 		Name:                     data.Name,
+		Disabled:                 data.Disabled,
 		Services:                 data.Services,
 		Authorities:              data.Authorities,
 		Roles:                    data.Roles,
