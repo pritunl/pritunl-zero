@@ -98,6 +98,30 @@ func ResetPassword() (err error) {
 	return
 }
 
+func DisablePolicies() (err error) {
+	db := database.GetDatabase()
+	defer db.Close()
+
+	coll := db.Policies()
+
+	_, err = coll.UpdateMany(db, &bson.M{}, &bson.M{
+		"$set": &bson.M{
+			"disabled": true,
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			err = nil
+		} else {
+			return
+		}
+	}
+
+	logrus.Info("cmd: Policies disabled")
+
+	return
+}
+
 func SettingsSet() (err error) {
 	group := flag.Arg(1)
 	key := flag.Arg(2)
