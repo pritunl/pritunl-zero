@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
+
 	"github.com/pritunl/pritunl-zero/cmd"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/task"
-	"time"
 )
 
 const help = `
@@ -68,6 +69,13 @@ func main() {
 	case "reset-password":
 		Init()
 		err := cmd.ResetPassword()
+		if err != nil {
+			panic(err)
+		}
+		return
+	case "disable-policies":
+		Init()
+		err := cmd.DisablePolicies()
 		if err != nil {
 			panic(err)
 		}
