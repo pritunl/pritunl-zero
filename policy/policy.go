@@ -191,6 +191,10 @@ func (p *Policy) Validate(db *database.Database) (
 func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 	r *http.Request) (errData *errortypes.ErrorData, err error) {
 
+	if p.Disabled {
+		return
+	}
+
 	agnt, err := agent.Parse(db, r)
 	if err != nil {
 		return
