@@ -811,6 +811,14 @@ export default class Policy extends React.Component<Props, State> {
 							},
 						]}
 					/>
+					<PageSwitch
+						label="Enabled"
+						help="Enable or disable policy."
+						checked={!policy.disabled}
+						onToggle={(): void => {
+							this.set('disabled', !policy.disabled)
+						}}
+					/>
 					<PolicyRule
 						rule={whitelistNetworks}
 						onChange={(val): void => {
