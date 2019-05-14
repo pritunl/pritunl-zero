@@ -11,6 +11,7 @@ export interface Rule {
 export interface Policy {
 	id: string;
 	name?: string;
+	disabled?: boolean;
 	services?: string[];
 	authorities?: string[];
 	roles?: string[];
