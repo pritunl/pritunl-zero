@@ -359,8 +359,6 @@ func (p *Proxy) watchNode() {
 			logrus.WithFields(logrus.Fields{
 				"error": err,
 			}).Error("proxy: Failed to load proxy state")
-
-			return
 		}
 
 		time.Sleep(3 * time.Second)
