@@ -73,6 +73,13 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 		}
 
 		for _, polcy := range policies {
+			errData, err = polcy.ValidateUser(db, usr, r)
+			if err != nil || errData != nil {
+				return
+			}
+		}
+
+		for _, polcy := range policies {
 			if polcy.AdminDeviceSecondary {
 				deviceAuth = true
 			}
