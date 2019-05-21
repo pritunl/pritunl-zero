@@ -210,7 +210,9 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	return
 }
 
-func Update(db *database.Database, cert *certificate.Certificate) (err error) {
+func Update(db *database.Database, cert *certificate.Certificate) (
+	err error) {
+
 	if cert.Type != certificate.LetsEncrypt {
 		return
 	}
