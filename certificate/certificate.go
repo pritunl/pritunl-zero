@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -52,6 +53,12 @@ func (c *Certificate) Validate(db *database.Database) (
 
 	if c.AcmeDomains == nil {
 		c.AcmeDomains = []string{}
+	}
+
+	for i, domain := range c.AcmeDomains {
+		if strings.HasSuffix(domain, ".") {
+			c.AcmeDomains[i] = domain[:len(domain)-1]
+		}
 	}
 
 	if c.Type == LetsEncrypt && len(c.AcmeDomains) == 0 {
