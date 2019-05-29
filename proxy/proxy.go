@@ -206,8 +206,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func (p *Proxy) reloadHosts(db *database.Database, services []primitive.ObjectID) (
-	err error) {
+func (p *Proxy) reloadHosts(db *database.Database,
+	services []primitive.ObjectID) (err error) {
 
 	hosts := map[string]*Host{}
 	appId := ""
