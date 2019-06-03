@@ -258,12 +258,17 @@ func Callback(db *database.Database, sig, query string) (
 	roles := []string{}
 	roles = append(roles, provider.DefaultRoles...)
 
+	roleParam := params.Get("roles")
+	if roleParam == "" {
+		roleParam = params.Get("groups")
+	}
+
 	splitChar := ","
-	if strings.Contains(params.Get("roles"), ";") {
+	if strings.Contains(roleParam, ";") {
 		splitChar = ";"
 	}
 
-	for _, role := range strings.Split(params.Get("roles"), splitChar) {
+	for _, role := range strings.Split(roleParam, splitChar) {
 		if role != "" {
 			roles = append(roles, role)
 		}
