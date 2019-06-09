@@ -272,6 +272,7 @@ func (p *Proxy) reloadHosts(db *database.Database,
 						"error":   err,
 					}).Error("proxy: Invalid whitelist network")
 					err = nil
+
 					continue
 				}
 
