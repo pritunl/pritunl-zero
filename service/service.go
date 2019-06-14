@@ -3,12 +3,14 @@ package service
 import (
 	"net"
 	"sort"
+	"strings"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Domain struct {
@@ -23,17 +25,40 @@ type Server struct {
 }
 
 type Service struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name              string             `bson:"name" json:"name"`
-	Type              string             `bson:"type" json:"type"`
-	ShareSession      bool               `bson:"share_session" json:"share_session"`
-	LogoutPath        string             `bson:"logout_path" json:"logout_path"`
-	WebSockets        bool               `bson:"websockets" json:"websockets"`
-	DisableCsrfCheck  bool               `bson:"disable_csrf_check" json:"disable_csrf_check"`
-	Domains           []*Domain          `bson:"domains" json:"domains"`
-	Roles             []string           `bson:"roles" json:"roles"`
-	Servers           []*Server          `bson:"servers" json:"servers"`
-	WhitelistNetworks []string           `bson:"whitelist_networks" json:"whitelist_networks"`
+	Id                 primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name               string             `bson:"name" json:"name"`
+	Type               string             `bson:"type" json:"type"`
+	ShareSession       bool               `bson:"share_session" json:"share_session"`
+	LogoutPath         string             `bson:"logout_path" json:"logout_path"`
+	WebSockets         bool               `bson:"websockets" json:"websockets"`
+	DisableCsrfCheck   bool               `bson:"disable_csrf_check" json:"disable_csrf_check"`
+	Domains            []*Domain          `bson:"domains" json:"domains"`
+	Roles              []string           `bson:"roles" json:"roles"`
+	Servers            []*Server          `bson:"servers" json:"servers"`
+	WhitelistNetworks  []string           `bson:"whitelist_networks" json:"whitelist_networks"`
+	logoutPathExtMatch int
+}
+
+func (s *Service) MatchLogoutPath(pth string) bool {
+	if s.LogoutPath == "" {
+		return false
+	}
+
+	if s.logoutPathExtMatch == 0 {
+		if strings.Contains(s.LogoutPath, "*") ||
+			strings.Contains(s.LogoutPath, "?") {
+
+			s.logoutPathExtMatch = 2
+		} else {
+			s.logoutPathExtMatch = 1
+		}
+	}
+
+	if s.logoutPathExtMatch == 2 {
+		return utils.Match(s.LogoutPath, pth)
+	} else {
+		return pth == s.LogoutPath
+	}
 }
 
 func (s *Service) Validate(db *database.Database) (
