@@ -189,9 +189,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
-	if host.Service.LogoutPath != "" &&
-		r.URL.Path == host.Service.LogoutPath {
-
+	if host.Service.MatchLogoutPath(r.URL.Path) {
 		err = authr.Clear(db, w, r)
 		if err != nil {
 			WriteError(w, r, 500, err)
