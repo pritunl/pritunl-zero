@@ -610,7 +610,7 @@ export default class Service extends React.Component<Props, State> {
 					</button>
 					<PageInput
 						label="Logout Path"
-						help="Optional, path such as '/logout' that will end the Pritunl Zero users session."
+						help="Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards."
 						type="text"
 						placeholder="Enter logout path"
 						value={service.logout_path}
