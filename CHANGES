@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Service management improvements
+
 Version 1.0.1146.22 2019-01-13
 ------------------------------
 
