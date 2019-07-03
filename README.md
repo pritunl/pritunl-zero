@@ -15,9 +15,7 @@ found at [docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
 ```bash
 # Install Go
 sudo yum -y install git
-wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
-sudo tar -C /usr/local -xf go1.9.2.linux-amd64.tar.gz
-rm -f go1.9.2.linux-amd64.tar.gz
+curl -L https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz | sudo tar -C /usr/local -xz
 tee -a ~/.bashrc << EOF
 export GOPATH=\$HOME/go
 export PATH=/usr/local/go/bin:\$PATH
@@ -25,13 +23,13 @@ EOF
 source ~/.bashrc
 
 # Install MongoDB
-sudo tee -a /etc/yum.repos.d/mongodb-org-3.4.repo << EOF
-[mongodb-org-3.4]
+sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo << EOF
+[mongodb-org-4.0]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
 EOF
 sudo yum -y install mongodb-org
 sudo service mongod start
