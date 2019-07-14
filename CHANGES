@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1328.22 2019-07-14
+------------------------------
 
 Fix issue with service creation
 
