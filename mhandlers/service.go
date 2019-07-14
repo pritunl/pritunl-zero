@@ -104,8 +104,12 @@ func servicePost(c *gin.Context) {
 
 	db := c.MustGet("db").(*database.Database)
 	data := &serviceData{
-		Name:         "New Service",
-		ShareSession: true,
+		Name:              "New Service",
+		ShareSession:      true,
+		Domains:           make([]*service.Domain, 0),
+		Roles:             make([]string, 0),
+		Servers:           make([]*service.Server, 0),
+		WhitelistNetworks: make([]string, 0),
 	}
 
 	err := c.Bind(data)
