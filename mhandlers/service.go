@@ -127,6 +127,17 @@ func servicePost(c *gin.Context) {
 		WhitelistNetworks: data.WhitelistNetworks,
 	}
 
+	errData, err := srvce.Validate(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
 	err = srvce.Insert(db)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
