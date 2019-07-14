@@ -7,9 +7,11 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -173,4 +175,36 @@ func (s *Service) Insert(db *database.Database) (err error) {
 	}
 
 	return
+}
+
+func init() {
+	module := requires.New("service")
+	module.After("settings")
+
+	module.Handler = func() (err error) {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		coll := db.Services()
+
+		_, err = coll.UpdateMany(db, &bson.M{
+			"domains":            nil,
+			"roles":              nil,
+			"servers":            nil,
+			"whitelist_networks": nil,
+		}, &bson.M{
+			"$set": &bson.M{
+				"domains":            []interface{}{},
+				"roles":              []interface{}{},
+				"servers":            []interface{}{},
+				"whitelist_networks": []interface{}{},
+			},
+		})
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		return
+	}
 }
