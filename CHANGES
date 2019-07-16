@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with SSH challenge
+
 Version 1.0.1328.22 2019-07-14
 ------------------------------
 
