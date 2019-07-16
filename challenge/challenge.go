@@ -191,7 +191,9 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	_, err = coll.UpdateOne(db, &bson.M{
 		"_id":   c.Id,
 		"state": "",
-	}, c)
+	}, &bson.M{
+		"$set": c,
+	})
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -216,7 +218,9 @@ func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
 	_, err = coll.UpdateOne(db, &bson.M{
 		"_id":   c.Id,
 		"state": "",
-	}, c)
+	}, &bson.M{
+		"$set": c,
+	})
 	if err != nil {
 		err = database.ParseError(err)
 		return
