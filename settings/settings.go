@@ -30,7 +30,8 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 
 	_, err = coll.UpdateOne(
 		db,
-		selector, &bson.M{
+		selector,
+		&bson.M{
 			"$set": update,
 		},
 		opts,
@@ -89,11 +90,11 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 
 	_, err = coll.UpdateOne(
 		db,
-		bson.M{
+		&bson.M{
 			"_id": group,
 		},
-		bson.M{
-			"$set": bson.M{
+		&bson.M{
+			"$set": &bson.M{
 				key: val,
 			},
 		},
@@ -115,11 +116,11 @@ func Unset(db *database.Database, group string, key string) (
 
 	_, err = coll.UpdateOne(
 		db,
-		bson.M{
+		&bson.M{
 			"_id": group,
 		},
-		bson.M{
-			"$unset": bson.M{
+		&bson.M{
+			"$unset": &bson.M{
 				key: "",
 			},
 		},
