@@ -332,7 +332,7 @@ func init() {
 				Administrator: "super",
 			}
 
-			err = usr.SetPassword("pritunl")
+			err = usr.GenerateDefaultPassword()
 			if err != nil {
 				return
 			}
