@@ -105,7 +105,12 @@ func ResetPassword() (err error) {
 		Administrator: "super",
 	}
 
-	err = usr.SetPassword("pritunl")
+	_, err = usr.Validate(db)
+	if err != nil {
+		return
+	}
+
+	err = usr.GenerateDefaultPassword()
 	if err != nil {
 		return
 	}
@@ -115,10 +120,10 @@ func ResetPassword() (err error) {
 		return
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"username": "pritunl",
-		"password": "pritunl",
-	}).Info("cmd: Password reset")
+	logrus.Info("cmd: Password reset")
+
+	fmt.Println("Username: pritunl")
+	fmt.Println("Password: " + usr.DefaultPassword)
 
 	return
 }
