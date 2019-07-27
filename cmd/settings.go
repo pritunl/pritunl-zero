@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
@@ -53,6 +54,30 @@ func ResetId() (err error) {
 	logrus.WithFields(logrus.Fields{
 		"node_id": config.Config.NodeId,
 	}).Info("cmd: Reset node ID")
+
+	return
+}
+
+func DefaultPassword() (err error) {
+	db := database.GetDatabase()
+	defer db.Close()
+
+	usr, err := user.GetUsername(db, user.Local, "pritunl")
+	if err != nil {
+		return
+	}
+
+	if usr.DefaultPassword == "" {
+		err = &errortypes.NotFoundError{
+			errors.New("cmd: No default password available"),
+		}
+		return
+	}
+
+	logrus.Info("cmd: Get default password")
+
+	fmt.Println("Username: pritunl")
+	fmt.Println("Password: " + usr.DefaultPassword)
 
 	return
 }
