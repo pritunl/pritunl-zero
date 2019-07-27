@@ -266,6 +266,22 @@ func (u *User) SetPassword(password string) (err error) {
 	return
 }
 
+func (u *User) GenerateDefaultPassword() (err error) {
+	passwd, err := utils.RandStr(12)
+	if err != nil {
+		return
+	}
+
+	err = u.SetPassword(passwd)
+	if err != nil {
+		return
+	}
+
+	u.DefaultPassword = passwd
+
+	return
+}
+
 func (u *User) CheckPassword(password string) bool {
 	if u.Type != Local || u.Password == "" {
 		return false
