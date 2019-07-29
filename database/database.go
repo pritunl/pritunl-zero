@@ -120,6 +120,11 @@ func (d *Database) Nonces() (coll *Collection) {
 	return
 }
 
+func (d *Database) Rokeys() (coll *Collection) {
+	coll = d.getCollection("rokeys")
+	return
+}
+
 func (d *Database) Settings() (coll *Collection) {
 	coll = d.getCollection("settings")
 	return
