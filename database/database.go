@@ -434,6 +434,30 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.Rokeys(),
+		Keys: &bson.D{
+			{"type", 1},
+			{"timeblock", 1},
+		},
+		Unique: true,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+	index = &Index{
+		Collection: db.Rokeys(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 720 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.Devices(),
 		Keys: &bson.D{
 			{"user", 1},
