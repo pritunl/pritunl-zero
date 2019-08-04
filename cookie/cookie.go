@@ -50,7 +50,15 @@ func (c *Cookie) GetSession(db *database.Database, r *http.Request,
 		return
 	}
 
-	sess, err = session.GetUpdate(db, sessId, r, typ)
+	sig := c.Get("signature")
+	if sig == "" {
+		err = &errortypes.NotFoundError{
+			errors.New("cookie: Session signature not found"),
+		}
+		return
+	}
+
+	sess, err = session.GetUpdate(db, sessId, r, typ, sig)
 	if err != nil {
 		switch err.(type) {
 		case *database.NotFoundError:
@@ -72,7 +80,7 @@ func (c *Cookie) NewSession(db *database.Database, r *http.Request,
 	id primitive.ObjectID, remember bool, typ string) (
 	sess *session.Session, err error) {
 
-	sess, err = session.New(db, r, id, typ)
+	sess, sig, err := session.New(db, r, id, typ)
 	if err != nil {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "cookie: Unknown session error"),
@@ -81,6 +89,7 @@ func (c *Cookie) NewSession(db *database.Database, r *http.Request,
 	}
 
 	c.Set("id", sess.Id)
+	c.Set("signature", sig)
 	maxAge := 0
 
 	if remember {
@@ -115,6 +124,7 @@ func (c *Cookie) Remove(db *database.Database) (err error) {
 	}
 
 	c.Set("id", "")
+	c.Set("signature", "")
 	err = c.Save()
 	if err != nil {
 		err = &errortypes.UnknownError{
