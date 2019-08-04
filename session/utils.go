@@ -49,7 +49,7 @@ func Get(db *database.Database, sessId string) (
 }
 
 func GetUpdate(db *database.Database, sessId string, r *http.Request,
-	typ string) (sess *Session, err error) {
+	typ, sig string) (sess *Session, err error) {
 
 	query := bson.M{
 		"_id": sessId,
@@ -92,6 +92,16 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request,
 	}
 
 	sess.LastActive = timestamp
+
+	valid, err := sess.CheckSignature(db, sig)
+	if err != nil {
+		return
+	}
+
+	if !valid {
+		sess = nil
+		return
+	}
 
 	agnt, err := agent.Parse(db, r)
 	if err != nil {
