@@ -2,12 +2,18 @@
 package session
 
 import (
+	"crypto/hmac"
+	"crypto/sha512"
+	"crypto/subtle"
+	"encoding/base64"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/rokey"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Session struct {
@@ -21,6 +27,55 @@ type Session struct {
 	Removed    bool               `bson:"removed" json:"removed"`
 	Agent      *agent.Agent       `bson:"agent" json:"agent"`
 	user       *user.User         `bson:"-" json:"-"`
+}
+
+func (s *Session) CheckSignature(db *database.Database, inSig string) (
+	valid bool, err error) {
+
+	if s.Rokey.IsZero() || s.Secret == "" {
+		return
+	}
+
+	rkey, err := rokey.GetId(db, s.Type, s.Rokey)
+	if err != nil {
+		return
+	}
+
+	if rkey == nil {
+		return
+	}
+
+	hash := hmac.New(sha512.New, []byte(rkey.Secret))
+	hash.Write([]byte(s.Secret))
+	outSig := base64.RawStdEncoding.EncodeToString(hash.Sum(nil))
+
+	if subtle.ConstantTimeCompare([]byte(inSig), []byte(outSig)) == 1 {
+		valid = true
+	}
+
+	return
+}
+
+func (s *Session) GenerateSignature(db *database.Database) (
+	sig string, err error) {
+
+	rkey, err := rokey.Get(db, s.Type)
+	if err != nil {
+		return
+	}
+
+	s.Rokey = rkey.Id
+
+	s.Secret, err = utils.RandStr(64)
+	if err != nil {
+		return
+	}
+
+	hash := hmac.New(sha512.New, []byte(rkey.Secret))
+	hash.Write([]byte(s.Secret))
+	sig = base64.RawStdEncoding.EncodeToString(hash.Sum(nil))
+
+	return
 }
 
 func (s *Session) Active() bool {
