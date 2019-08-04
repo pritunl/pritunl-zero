@@ -166,7 +166,7 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 }
 
 func New(db *database.Database, r *http.Request, userId primitive.ObjectID,
-	typ string) (sess *Session, err error) {
+	typ string) (sess *Session, sig string, err error) {
 
 	id, err := utils.RandStr(32)
 	if err != nil {
@@ -186,6 +186,11 @@ func New(db *database.Database, r *http.Request, userId primitive.ObjectID,
 		Timestamp:  time.Now(),
 		LastActive: time.Now(),
 		Agent:      agnt,
+	}
+
+	sig, err = sess.GenerateSignature(db)
+	if err != nil {
+		return
 	}
 
 	_, err = coll.InsertOne(db, sess)
