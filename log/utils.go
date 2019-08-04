@@ -35,19 +35,23 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 		return
 	}
 
-	page = utils.Min64(page, count/pageCount)
-	skip := utils.Min64(page*pageCount, count)
+	opts := options.FindOptions{
+		Sort: &bson.D{
+			{"$natural", -1},
+		},
+	}
+
+	if pageCount != 0 {
+		page = utils.Min64(page, count/pageCount)
+		skip := utils.Min64(page*pageCount, count)
+		opts.Skip = &skip
+		opts.Limit = &pageCount
+	}
 
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"$natural", -1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		&opts,
 	)
 	if err != nil {
 		err = database.ParseError(err)
