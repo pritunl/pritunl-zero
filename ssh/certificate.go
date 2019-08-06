@@ -108,18 +108,22 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 		return
 	}
 
-	page = utils.Min64(page, count/pageCount)
-	skip := utils.Min64(page*pageCount, count)
-
-	cursor, err := coll.Find(db, &bson.M{
-		"u": userId,
-	}, &options.FindOptions{
+	opts := options.FindOptions{
 		Sort: &bson.D{
 			{"timestamp", -1},
 		},
-		Skip:  &skip,
-		Limit: &pageCount,
-	})
+	}
+
+	if pageCount != 0 {
+		page = utils.Min64(page, count/pageCount)
+		skip := utils.Min64(page*pageCount, count)
+		opts.Skip = &skip
+		opts.Limit = &pageCount
+	}
+
+	cursor, err := coll.Find(db, &bson.M{
+		"u": userId,
+	}, &opts)
 	if err != nil {
 		err = database.ParseError(err)
 		return
