@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Improve session management
 API improvements
 
 Version 1.0.1330.84 2019-07-16
