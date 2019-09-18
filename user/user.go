@@ -2,6 +2,7 @@ package user
 
 import (
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -317,6 +318,36 @@ func init() {
 	module.Handler = func() (err error) {
 		db := database.GetDatabase()
 		defer db.Close()
+
+		coll := db.Users()
+
+		cursor, err := coll.Find(db, &bson.M{})
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+		defer cursor.Close(db)
+
+		for cursor.Next(db) {
+			usr := &User{}
+			err = cursor.Decode(usr)
+			if err != nil {
+				err = database.ParseError(err)
+				return
+			}
+
+			newUsername := strings.ToLower(usr.Username)
+			if usr.Username != newUsername {
+				err = coll.UpdateId(usr.Id, &bson.M{
+					"$set": &bson.M{
+						"username": newUsername,
+					},
+				})
+				if err != nil {
+					return
+				}
+			}
+		}
 
 		count, err := Count(db)
 		if err != nil {
