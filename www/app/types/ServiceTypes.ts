@@ -7,6 +7,10 @@ export interface Domain {
 	host?: string;
 }
 
+export interface Path {
+	path?: string;
+}
+
 export interface Server {
 	protocol?: string;
 	hostname?: string;
