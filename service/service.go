@@ -26,6 +26,11 @@ type Server struct {
 	Port     int    `bson:"port" json:"port"`
 }
 
+type WhitelistPath struct {
+	Path     string `bson:"path" json:"path"`
+	extMatch int
+}
+
 type Service struct {
 	Id                 primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name               string             `bson:"name" json:"name"`
