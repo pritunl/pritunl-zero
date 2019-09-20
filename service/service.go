@@ -69,6 +69,40 @@ func (s *Service) MatchLogoutPath(pth string) bool {
 	}
 }
 
+func (s *Service) MatchWhitelistPath(matchPth string) bool {
+	if s.WhitelistPaths == nil || len(s.WhitelistPaths) == 0 {
+		return false
+	}
+
+	for _, pth := range s.WhitelistPaths {
+		if pth.Path == "" {
+			continue
+		}
+
+		if pth.extMatch == 0 {
+			if strings.Contains(pth.Path, "*") ||
+				strings.Contains(pth.Path, "?") {
+
+				pth.extMatch = 2
+			} else {
+				pth.extMatch = 1
+			}
+		}
+
+		if pth.extMatch == 2 {
+			if utils.Match(pth.Path, matchPth) {
+				return true
+			}
+		} else {
+			if matchPth == pth.Path {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
