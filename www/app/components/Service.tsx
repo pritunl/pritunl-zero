@@ -4,6 +4,7 @@ import * as ServiceTypes from '../types/ServiceTypes';
 import * as ServiceActions from '../actions/ServiceActions';
 import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
+import ServiceWhitelistPath from './ServiceWhitelistPath';
 import PageInput from './PageInput';
 import PageSelect from './PageSelect';
 import PageSwitch from './PageSwitch';
@@ -454,6 +455,92 @@ export default class Service extends React.Component<Props, State> {
 		domains.splice(i, 1);
 
 		service.domains = domains;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: service,
+		});
+	}
+
+	onAddWhitelistPath = (): void => {
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
+
+		let paths = [
+			...(service.whitelist_paths || []),
+			{},
+		];
+
+		service.whitelist_paths = paths;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: service,
+		});
+	}
+
+	onChangeWhitelistPath(i: number, state: ServiceTypes.Path): void {
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
+
+		let paths = [
+			...service.whitelist_paths,
+		];
+
+		paths[i] = state;
+
+		service.whitelist_paths = paths;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			service: service,
+		});
+	}
+
+	onRemoveWhitelistPath(i: number): void {
+		let service: ServiceTypes.Service;
+
+		if (this.state.changed) {
+			service = {
+				...this.state.service,
+			};
+		} else {
+			service = {
+				...this.props.service,
+			};
+		}
+
+		let paths = [
+			...service.whitelist_paths,
+		];
+
+		paths.splice(i, 1);
+
+		service.whitelist_paths = paths;
 
 		this.setState({
 			...this.state,
