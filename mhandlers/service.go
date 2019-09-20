@@ -12,17 +12,18 @@ import (
 )
 
 type serviceData struct {
-	Id                primitive.ObjectID `json:"id"`
-	Name              string             `json:"name"`
-	Type              string             `json:"type"`
-	ShareSession      bool               `json:"share_session"`
-	LogoutPath        string             `json:"logout_path"`
-	WebSockets        bool               `json:"websockets"`
-	DisableCsrfCheck  bool               `json:"disable_csrf_check"`
-	Domains           []*service.Domain  `json:"domains"`
-	Roles             []string           `json:"roles"`
-	Servers           []*service.Server  `json:"servers"`
-	WhitelistNetworks []string           `json:"whitelist_networks"`
+	Id                primitive.ObjectID       `json:"id"`
+	Name              string                   `json:"name"`
+	Type              string                   `json:"type"`
+	ShareSession      bool                     `json:"share_session"`
+	LogoutPath        string                   `json:"logout_path"`
+	WebSockets        bool                     `json:"websockets"`
+	DisableCsrfCheck  bool                     `json:"disable_csrf_check"`
+	Domains           []*service.Domain        `json:"domains"`
+	Roles             []string                 `json:"roles"`
+	Servers           []*service.Server        `json:"servers"`
+	WhitelistNetworks []string                 `json:"whitelist_networks"`
+	WhitelistPaths    []*service.WhitelistPath `json:"whitelist_paths"`
 }
 
 func servicePut(c *gin.Context) {
@@ -61,6 +62,7 @@ func servicePut(c *gin.Context) {
 	srvce.Roles = data.Roles
 	srvce.Servers = data.Servers
 	srvce.WhitelistNetworks = data.WhitelistNetworks
+	srvce.WhitelistPaths = data.WhitelistPaths
 
 	fields := set.NewSet(
 		"name",
@@ -73,6 +75,7 @@ func servicePut(c *gin.Context) {
 		"roles",
 		"servers",
 		"whitelist_networks",
+		"whitelist_paths",
 	)
 
 	errData, err := srvce.Validate(db)
@@ -125,6 +128,7 @@ func servicePost(c *gin.Context) {
 		Domains:           data.Domains,
 		Servers:           data.Servers,
 		WhitelistNetworks: data.WhitelistNetworks,
+		WhitelistPaths:    data.WhitelistPaths,
 	}
 
 	errData, err := srvce.Validate(db)
