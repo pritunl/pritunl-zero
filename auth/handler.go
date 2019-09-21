@@ -24,6 +24,8 @@ import (
 func Local(db *database.Database, username, password string) (
 	usr *user.User, errData *errortypes.ErrorData, err error) {
 
+	username = strings.ToLower(username)
+
 	usr, err = user.GetUsername(db, user.Local, username)
 	if err != nil {
 		switch err.(type) {
@@ -170,7 +172,7 @@ func Callback(db *database.Database, sig, query string) (
 		return
 	}
 
-	username := params.Get("username")
+	username := strings.ToLower(params.Get("username"))
 
 	if username == "" {
 		errAudit = audit.Fields{
