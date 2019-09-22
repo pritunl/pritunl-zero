@@ -509,6 +509,7 @@ if cmd == 'upload' or cmd == 'build-upload':
         's3cmd',
         'sync',
         '--follow-symlinks',
+        '--delete-removed',
         'mirror/',
         's3://dev/' if is_snapshot else 's3://stable/',
     ], cwd=pacur_path)
