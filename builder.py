@@ -61,8 +61,8 @@ def post_git_asset(release_id, file_name, file_path):
     )
 
     if response.status_code != 201:
-        print 'Failed to create asset on github'
-        print response.json()
+        print('Failed to create asset on github')
+        print(response.json())
         sys.exit(1)
 
 def get_ver(version):
@@ -174,7 +174,7 @@ if cmd == 'encrypt':
     passphrase2 = getpass.getpass('Enter passphrase: ')
 
     if passphrase != passphrase2:
-        print 'ERROR: Passphrase mismatch'
+        print('ERROR: Passphrase mismatch')
         sys.exit(1)
 
     with open(BUILD_KEYS_PATH, 'r') as build_keys_file:
@@ -223,7 +223,7 @@ build_num = 0
 
 # Run cmd
 if cmd == 'version':
-    print '%s v%s' % (REPO_NAME, cur_version)
+    print('%s v%s' % (REPO_NAME, cur_version))
     sys.exit(0)
 
 
@@ -242,12 +242,12 @@ if cmd == 'sync-releases':
         )
 
         if response.status_code != 200:
-            print 'Failed to get repo releases on github'
-            print response.json()
+            print('Failed to get repo releases on github')
+            print(response.json())
             sys.exit(1)
 
         for release in response.json():
-            print release['tag_name']
+            print(release['tag_name'])
 
             # Create gitlab release
             resp = requests.post(
@@ -265,8 +265,8 @@ if cmd == 'sync-releases':
             )
 
             if resp.status_code not in (201, 409):
-                print 'Failed to create releases on gitlab'
-                print resp.json()
+                print('Failed to create releases on gitlab')
+                print(resp.json())
                 sys.exit(1)
 
         if 'Link' not in response.headers or \
@@ -307,13 +307,13 @@ if cmd == 'set-version':
     )
 
     if response.status_code != 200:
-        print 'Failed to get repo releases on github'
-        print response.json()
+        print('Failed to get repo releases on github')
+        print(response.json())
         sys.exit(1)
 
     for release in response.json():
         if release['tag_name'] == new_version:
-            print 'Version already exists in github'
+            print('Version already exists in github')
             sys.exit(1)
 
 
@@ -336,13 +336,13 @@ if cmd == 'set-version':
                     release_body += '* %s\n' % line
 
     if not is_snapshot and version != new_version:
-        print 'New version does not exist in changes'
+        print('New version does not exist in changes')
         sys.exit(1)
 
     if is_snapshot:
         release_body = '* Snapshot release'
     elif not release_body:
-        print 'Failed to generate github release body'
+        print('Failed to generate github release body')
         sys.exit(1)
     release_body = release_body.rstrip('\n')
 
@@ -392,8 +392,8 @@ if cmd == 'set-version':
     )
 
     if response.status_code != 201:
-        print 'Failed to create release on github'
-        print response.json()
+        print('Failed to create release on github')
+        print(response.json())
         sys.exit(1)
 
     subprocess.check_call(['git', 'pull'])
@@ -417,8 +417,8 @@ if cmd == 'set-version':
     )
 
     if response.status_code != 201:
-        print 'Failed to create release on gitlab'
-        print response.json()
+        print('Failed to create release on gitlab')
+        print(response.json())
         sys.exit(1)
 
 
@@ -493,7 +493,7 @@ if cmd == 'upload' or cmd == 'build-upload':
             release_id = release['id']
 
     if not release_id:
-        print 'Version does not exists in github'
+        print('Version does not exists in github')
         sys.exit(1)
 
 
@@ -540,7 +540,7 @@ if cmd == 'upload-github':
             release_id = release['id']
 
     if not release_id:
-        print 'Version does not exists in github'
+        print('Version does not exists in github')
         sys.exit(1)
 
 
