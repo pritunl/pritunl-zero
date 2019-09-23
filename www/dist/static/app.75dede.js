@@ -13663,7 +13663,46 @@ System.registerDynamic("app/components/ServiceServer.js", ["npm:react@16.7.0.js"
     exports.default = ServiceServer;
     
 });
-System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/ServiceWhitelistPath.js", ["npm:react@16.7.0.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.7.0.js");
+    const css = {
+        group: {
+            width: '100%',
+            maxWidth: '310px',
+            marginTop: '5px'
+        },
+        path: {
+            width: '100%',
+            borderRadius: '0 3px 3px 0'
+        },
+        pathBox: {
+            flex: '1'
+        }
+    };
+    class ServiceWhitelistPath extends React.Component {
+        clone() {
+            return Object.assign({}, this.props.path);
+        }
+        render() {
+            let path = this.props.path;
+            return React.createElement("div", { className: "bp3-control-group", style: css.group }, React.createElement("div", { style: css.pathBox }, React.createElement("input", { className: "bp3-input", style: css.path, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Whitelist path", value: path.path || '', onChange: evt => {
+                    let state = this.clone();
+                    state.path = evt.target.value;
+                    this.props.onChange(state);
+                } })), React.createElement("button", { className: "bp3-button bp3-minimal bp3-intent-danger bp3-icon-remove", onClick: () => {
+                    this.props.onRemove();
+                } }));
+        }
+    }
+    exports.default = ServiceWhitelistPath;
+    
+});
+System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/ServiceWhitelistPath.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -13673,6 +13712,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
     const ServiceActions = $__require("app/actions/ServiceActions.js");
     const ServiceDomain_1 = $__require("app/components/ServiceDomain.js");
     const ServiceServer_1 = $__require("app/components/ServiceServer.js");
+    const ServiceWhitelistPath_1 = $__require("app/components/ServiceWhitelistPath.js");
     const PageInput_1 = $__require("app/components/PageInput.js");
     const PageSelect_1 = $__require("app/components/PageSelect.js");
     const PageSwitch_1 = $__require("app/components/PageSwitch.js");
@@ -13796,6 +13836,17 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
                 service.domains = domains;
                 this.setState(Object.assign({}, this.state, { changed: true, message: '', service: service }));
             };
+            this.onAddWhitelistPath = () => {
+                let service;
+                if (this.state.changed) {
+                    service = Object.assign({}, this.state.service);
+                } else {
+                    service = Object.assign({}, this.props.service);
+                }
+                let paths = [...(service.whitelist_paths || []), {}];
+                service.whitelist_paths = paths;
+                this.setState(Object.assign({}, this.state, { changed: true, message: '', service: service }));
+            };
             this.state = {
                 disabled: false,
                 changed: false,
@@ -13895,6 +13946,30 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
             service.domains = domains;
             this.setState(Object.assign({}, this.state, { changed: true, message: '', service: service }));
         }
+        onChangeWhitelistPath(i, state) {
+            let service;
+            if (this.state.changed) {
+                service = Object.assign({}, this.state.service);
+            } else {
+                service = Object.assign({}, this.props.service);
+            }
+            let paths = [...service.whitelist_paths];
+            paths[i] = state;
+            service.whitelist_paths = paths;
+            this.setState(Object.assign({}, this.state, { changed: true, message: '', service: service }));
+        }
+        onRemoveWhitelistPath(i) {
+            let service;
+            if (this.state.changed) {
+                service = Object.assign({}, this.state.service);
+            } else {
+                service = Object.assign({}, this.props.service);
+            }
+            let paths = [...service.whitelist_paths];
+            paths.splice(i, 1);
+            service.whitelist_paths = paths;
+            this.setState(Object.assign({}, this.state, { changed: true, message: '', service: service }));
+        }
         render() {
             let service = this.state.service || this.props.service;
             let domains = [];
@@ -13927,6 +14002,15 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
                         this.onRemoveWhitelistNet(whitelistNet);
                     } })));
             }
+            let whitelistPaths = [];
+            for (let i = 0; i < (service.whitelist_paths || []).length; i++) {
+                let index = i;
+                whitelistPaths.push(React.createElement(ServiceWhitelistPath_1.default, { key: index, path: service.whitelist_paths[index], onChange: state => {
+                        this.onChangeWhitelistPath(index, state);
+                    }, onRemove: () => {
+                        this.onRemoveWhitelistPath(index);
+                    } }));
+            }
             return React.createElement("div", { className: "bp3-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash", progressClassName: "bp3-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Service type", value: service.type, onChange: val => {
@@ -13940,7 +14024,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
                     this.setState(Object.assign({}, this.state, { addRole: val }));
                 }, onSubmit: this.onAddRole }), React.createElement("label", { className: "bp3-label" }, "Whitelisted Networks", React.createElement(Help_1.default, { title: "Whitelisted Networks", content: "Allowed subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address." }), React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "bp3-intent-success bp3-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
                     this.setState(Object.assign({}, this.state, { addWhitelistNet: val }));
-                }, onSubmit: this.onAddWhitelistNet }), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", help: "This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain.", checked: service.share_session, onToggle: () => {
+                }, onSubmit: this.onAddWhitelistNet }), React.createElement("label", { style: css.itemsLabel }, "Whitelist Paths", React.createElement(Help_1.default, { title: "Whitelist Paths", content: "Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards." })), whitelistPaths, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddWhitelistPath }, "Add Whitelist Path"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", help: "This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain.", checked: service.share_session, onToggle: () => {
                     this.set('share_session', !service.share_session);
                 } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", help: "This will allow WebSockets to be proxied to the user. If the internal service relies on WebSockets this must be enabled.", checked: service.websockets, onToggle: () => {
                     this.set('websockets', !service.websockets);
