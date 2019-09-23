@@ -205,6 +205,7 @@ with open(BUILD_KEYS_PATH, 'r') as build_keys_file:
     build_keys = json.loads(data.strip())
     github_owner = build_keys['github_owner']
     github_token = build_keys['github_token']
+    gitlab_host = build_keys['gitlab_host']
     gitlab_token = build_keys['gitlab_token']
     mirror_url = build_keys['mirror_url']
     test_mirror_url = build_keys['test_mirror_url']
@@ -251,7 +252,7 @@ if cmd == 'sync-releases':
 
             # Create gitlab release
             resp = requests.post(
-                'https://git.pritunl.com/api/v4/projects' + \
+                'https://' + gitlab_host + '/api/v4/projects' + \
                 '/%s%%2F%s/repository/tags/%s/release' % (
                     github_owner, REPO_NAME, release['tag_name']),
                 headers={
@@ -403,7 +404,7 @@ if cmd == 'set-version':
 
     # Create gitlab release
     response = requests.post(
-        'https://git.pritunl.com/api/v4/projects' + \
+        'https://' + gitlab_host + '/api/v4/projects' + \
         '/%s%%2F%s/repository/tags/%s/release' % (
             github_owner, REPO_NAME, new_version),
         headers={
