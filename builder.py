@@ -507,12 +507,12 @@ if cmd == 'upload' or cmd == 'build-upload':
 
     # Sync mirror
     subprocess.check_call([
-        's3cmd',
-        'sync',
-        '--follow-symlinks',
-        '--delete-removed',
-        'mirror/',
-        's3://dev/' if is_snapshot else 's3://stable/',
+        'mc',
+        'mirror',
+        '--remove',
+        '--overwrite',
+        'mirror',
+        'repo/dev' if is_snapshot else 'repo/stable',
     ], cwd=pacur_path)
 
 
