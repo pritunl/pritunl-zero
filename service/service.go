@@ -126,6 +126,10 @@ func (s *Service) Validate(db *database.Database) (
 		s.WhitelistNetworks = []string{}
 	}
 
+	if s.WhitelistPaths == nil {
+		s.WhitelistPaths = []*WhitelistPath{}
+	}
+
 	for _, server := range s.Servers {
 		if server.Protocol != "http" && server.Protocol != "https" {
 			errData = &errortypes.ErrorData{
