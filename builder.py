@@ -124,7 +124,7 @@ def aes_encrypt(passphrase, data):
         iterations=1000,
         backend=default_backend(),
     )
-    enc_key = kdf.derive(passphrase)
+    enc_key = kdf.derive(passphrase.encode())
 
     data += '\x00' * (16 - (len(data) % 16))
 
@@ -133,12 +133,12 @@ def aes_encrypt(passphrase, data):
         modes.CBC(enc_iv),
         backend=default_backend()
     ).encryptor()
-    enc_data = cipher.update(data) + cipher.finalize()
+    enc_data = cipher.update(data.encode()) + cipher.finalize()
 
     return '\n'.join([
-        base64.b64encode(enc_salt),
-        base64.b64encode(enc_iv),
-        base64.b64encode(enc_data),
+        base64.b64encode(enc_salt).decode('utf-8'),
+        base64.b64encode(enc_iv).decode('utf-8'),
+        base64.b64encode(enc_data).decode('utf-8'),
     ])
 
 def aes_decrypt(passphrase, data):
@@ -166,7 +166,7 @@ def aes_decrypt(passphrase, data):
     ).decryptor()
     data = cipher.update(enc_data) + cipher.finalize()
 
-    return data.replace('\x00', '')
+    return data.decode('utf-8').replace('\x00', '')
 
 passphrase = getpass.getpass('Enter passphrase: ')
 
