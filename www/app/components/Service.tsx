@@ -628,6 +628,24 @@ export default class Service extends React.Component<Props, State> {
 			);
 		}
 
+		let whitelistPaths: JSX.Element[] = [];
+		for (let i = 0; i < (service.whitelist_paths || []).length; i++) {
+			let index = i;
+
+			whitelistPaths.push(
+				<ServiceWhitelistPath
+					key={index}
+					path={service.whitelist_paths[index]}
+					onChange={(state: ServiceTypes.Path): void => {
+						this.onChangeWhitelistPath(index, state);
+					}}
+					onRemove={(): void => {
+						this.onRemoveWhitelistPath(index);
+					}}
+				/>,
+			);
+		}
+
 		return <div
 			className="bp3-card"
 			style={css.card}
@@ -763,6 +781,22 @@ export default class Service extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddWhitelistNet}
 					/>
+					<label style={css.itemsLabel}>
+						Whitelist Paths
+						<Help
+							title="Whitelist Paths"
+							content="Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards."
+						/>
+					</label>
+					{whitelistPaths}
+					<button
+						className="bp3-button bp3-intent-success bp3-icon-add"
+						style={css.itemsAdd}
+						type="button"
+						onClick={this.onAddWhitelistPath}
+					>
+						Add Whitelist Path
+					</button>
 					<PageSwitch
 						label="Share session with subdomains"
 						help="This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain."
