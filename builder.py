@@ -157,7 +157,7 @@ def aes_decrypt(passphrase, data):
         iterations=1000,
         backend=default_backend(),
     )
-    enc_key = kdf.derive(passphrase)
+    enc_key = kdf.derive(passphrase.encode())
 
     cipher = Cipher(
         algorithms.AES(enc_key),
