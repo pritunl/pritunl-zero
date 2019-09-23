@@ -93,6 +93,12 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		}
 	}
 
+	if host.Service.MatchWhitelistPath(r.URL.Path) {
+		wProxies[rand.Intn(wLen)].ServeHTTP(
+			w, r, authorizer.NewProxy())
+		return true
+	}
+
 	authr, err := authorizer.AuthorizeProxy(db, host.Service, w, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
