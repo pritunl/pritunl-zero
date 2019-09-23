@@ -782,9 +782,9 @@ export default class Service extends React.Component<Props, State> {
 						onSubmit={this.onAddWhitelistNet}
 					/>
 					<label style={css.itemsLabel}>
-						Whitelist Paths
+						Whitelisted Paths
 						<Help
-							title="Whitelist Paths"
+							title="Whitelisted Paths"
 							content="Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards."
 						/>
 					</label>
