@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add whitelist paths to services
+
 Version 1.0.1356.92 2019-08-11
 ------------------------------
 
