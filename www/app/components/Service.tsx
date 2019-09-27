@@ -785,7 +785,7 @@ export default class Service extends React.Component<Props, State> {
 						Whitelisted Paths
 						<Help
 							title="Whitelisted Paths"
-							content="Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards."
+							content="Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards. Using this feature significantly increases the attack surface of the service and is not recommended."
 						/>
 					</label>
 					{whitelistPaths}
