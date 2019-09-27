@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Disable whitelist paths by default
+
 Version 1.0.1399.28 2019-09-23
 ------------------------------
 
