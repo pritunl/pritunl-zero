@@ -15,6 +15,7 @@ type router struct {
 	IdleConnTimeout     int    `bson:"idle_conn_timeout" default:"90"`
 	HandshakeTimeout    int    `bson:"handshake_timeout" default:"10"`
 	ContinueTimeout     int    `bson:"continue_timeout" default:"10"`
+	UnsafeRequests      bool   `bson:"unsafe_requests"`
 	SkipVerify          bool   `bson:"skip_verify"`
 }
 
