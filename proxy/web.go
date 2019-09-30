@@ -40,7 +40,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	prxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			req.Header.Set("X-Forwarded-For",
-				strings.Split(req.RemoteAddr, ":")[0])
+				node.Self.GetRemoteAddr(req))
 			req.Header.Set("X-Forwarded-Proto", w.proxyProto)
 			req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
