@@ -81,21 +81,24 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	db := database.GetDatabase()
 	defer db.Close()
 
-	clientIp := net.ParseIP(node.Self.GetRemoteAddr(r))
-	if clientIp != nil {
-		for _, network := range host.WhitelistNetworks {
-			if network.Contains(clientIp) {
-				if wsProxies != nil && wsLen > 0 &&
-					r.Header.Get("Upgrade") == "websocket" {
+	remoteAddr, valid := node.Self.SafeGetRemoteAddr(r)
+	if valid && len(host.WhitelistNetworks) > 0 {
+		clientIp := net.ParseIP(remoteAddr)
+		if clientIp != nil {
+			for _, network := range host.WhitelistNetworks {
+				if network.Contains(clientIp) {
+					if wsProxies != nil && wsLen > 0 &&
+						r.Header.Get("Upgrade") == "websocket" {
 
-					wsProxies[rand.Intn(wsLen)].ServeHTTP(
-						w, r, db, authorizer.NewProxy())
+						wsProxies[rand.Intn(wsLen)].ServeHTTP(
+							w, r, db, authorizer.NewProxy())
+						return true
+					}
+
+					wProxies[rand.Intn(wLen)].ServeHTTP(
+						w, r, authorizer.NewProxy())
 					return true
 				}
-
-				wProxies[rand.Intn(wLen)].ServeHTTP(
-					w, r, authorizer.NewProxy())
-				return true
 			}
 		}
 	}
