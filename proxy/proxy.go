@@ -81,8 +81,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	db := database.GetDatabase()
 	defer db.Close()
 
-	remoteAddr, valid := node.Self.SafeGetRemoteAddr(r)
-	if !valid && len(host.WhitelistNetworks) > 0 {
+	remoteAddr, addrHeader, addrValid := node.Self.SafeGetRemoteAddr(r)
+	if !addrValid && len(host.WhitelistNetworks) > 0 {
 		logrus.WithFields(logrus.Fields{
 			"service_id": host.Service.Id.Hex(),
 		}).Error("proxy: Unsafe access on whitelisted networks " +
@@ -95,22 +95,33 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		}
 
 		host.WhitelistNetworks = []*net.IPNet{}
-	} else if valid && len(host.WhitelistNetworks) > 0 {
-		clientIp := net.ParseIP(remoteAddr)
-		if clientIp != nil {
-			for _, network := range host.WhitelistNetworks {
-				if network.Contains(clientIp) {
-					if wsProxies != nil && wsLen > 0 &&
-						r.Header.Get("Upgrade") == "websocket" {
+	} else if addrValid && len(host.WhitelistNetworks) > 0 {
+		if addrHeader && !settings.Router.UnsafeRemoteHeader &&
+			!utils.IsPrivateRequest(r) {
 
-						wsProxies[rand.Intn(wsLen)].ServeHTTP(
-							w, r, db, authorizer.NewProxy())
+			logrus.WithFields(logrus.Fields{
+				"service_id":            host.Service.Id.Hex(),
+				"remote_address":        utils.StripPort(r.RemoteAddr),
+				"header_remote_address": remoteAddr,
+			}).Error("proxy: Blocking remote header address " +
+				"whitelist check")
+		} else {
+			clientIp := net.ParseIP(remoteAddr)
+			if clientIp != nil {
+				for _, network := range host.WhitelistNetworks {
+					if network.Contains(clientIp) {
+						if wsProxies != nil && wsLen > 0 &&
+							r.Header.Get("Upgrade") == "websocket" {
+
+							wsProxies[rand.Intn(wsLen)].ServeHTTP(
+								w, r, db, authorizer.NewProxy())
+							return true
+						}
+
+						wProxies[rand.Intn(wLen)].ServeHTTP(
+							w, r, authorizer.NewProxy())
 						return true
 					}
-
-					wProxies[rand.Intn(wLen)].ServeHTTP(
-						w, r, authorizer.NewProxy())
-					return true
 				}
 			}
 		}
