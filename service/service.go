@@ -106,6 +106,19 @@ func (s *Service) MatchWhitelistPath(matchPth string) bool {
 	return false
 }
 
+func (s *Service) RemoveWhitelistNetworks() (err error) {
+	db := database.GetDatabase()
+	defer db.Close()
+
+	s.WhitelistNetworks = []string{}
+	err = s.CommitFields(db, set.NewSet("whitelist_networks"))
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
