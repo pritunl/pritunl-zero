@@ -171,6 +171,10 @@ func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 		if addr != "" {
 			return
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"forwarded_header": n.ForwardedForHeader,
+		}).Warn("node: Unsafe node forwarded header")
 	}
 
 	addr = utils.StripPort(r.RemoteAddr)
