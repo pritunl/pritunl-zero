@@ -85,7 +85,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	if !valid && len(host.WhitelistNetworks) > 0 {
 		logrus.WithFields(logrus.Fields{
 			"service_id": host.Service.Id.Hex(),
-		}).Error("node: Unsafe access on whitelisted networks " +
+		}).Error("proxy: Unsafe access on whitelisted networks " +
 			"with unset forwarded header. Disabling whitelisted networks")
 
 		err := host.Service.RemoveWhitelistNetworks()
