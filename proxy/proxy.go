@@ -82,7 +82,20 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	defer db.Close()
 
 	remoteAddr, valid := node.Self.SafeGetRemoteAddr(r)
-	if valid && len(host.WhitelistNetworks) > 0 {
+	if !valid && len(host.WhitelistNetworks) > 0 {
+		logrus.WithFields(logrus.Fields{
+			"service_id": host.Service.Id.Hex(),
+		}).Error("node: Unsafe access on whitelisted networks " +
+			"with unset forwarded header. Disabling whitelisted networks")
+
+		err := host.Service.RemoveWhitelistNetworks()
+		if err != nil {
+			WriteError(w, r, 500, err)
+			return true
+		}
+
+		host.WhitelistNetworks = []*net.IPNet{}
+	} else if valid && len(host.WhitelistNetworks) > 0 {
 		clientIp := net.ParseIP(remoteAddr)
 		if clientIp != nil {
 			for _, network := range host.WhitelistNetworks {
