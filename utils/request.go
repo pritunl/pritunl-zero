@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -10,6 +11,32 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+)
+
+var (
+	privateCidrs    = []*net.IPNet{}
+	privateCidrsStr = []string{
+		"10.0.0.0/8",
+		"100.64.0.0/10",
+		"127.0.0.0/8",
+		"172.16.0.0/12",
+		"192.0.0.0/24",
+		"192.168.0.0/16",
+		"198.18.0.0/15",
+		"6.0.0.0/8",
+		"7.0.0.0/8",
+		"11.0.0.0/8",
+		"21.0.0.0/8",
+		"22.0.0.0/8",
+		"26.0.0.0/8",
+		"28.0.0.0/8",
+		"29.0.0.0/8",
+		"30.0.0.0/8",
+		"33.0.0.0/8",
+		"::1/128",
+		"fc00::/7",
+		"fe80::/10",
+	}
 )
 
 type NopCloser struct {
@@ -189,5 +216,31 @@ func CopyHeaders(dst, src http.Header) {
 		for _, v := range vv {
 			dst.Add(k, v)
 		}
+	}
+}
+
+func IsPrivateRequest(r *http.Request) (private bool) {
+	addr := net.ParseIP(StripPort(r.RemoteAddr))
+	if addr == nil {
+		return
+	}
+
+	for _, block := range privateCidrs {
+		if block.Contains(addr) {
+			private = true
+			return
+		}
+	}
+
+	return
+}
+
+func init() {
+	for _, cidr := range privateCidrsStr {
+		_, block, err := net.ParseCIDR(cidr)
+		if err != nil {
+			panic("Invalid private cidr")
+		}
+		privateCidrs = append(privateCidrs, block)
 	}
 }
