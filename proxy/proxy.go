@@ -35,6 +35,7 @@ type Proxy struct {
 	nodeHash  []byte
 	wProxies  map[string][]*web
 	wsProxies map[string][]*webSocket
+	wiProxies map[string][]*webIsolated
 }
 
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
@@ -306,6 +307,7 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 
 	wProxies := map[string][]*web{}
 	wsProxies := map[string][]*webSocket{}
+	wiProxies := map[string][]*webIsolated{}
 
 	for domain, host := range p.Hosts {
 		domainProxies := []*web{}
@@ -323,10 +325,20 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 			}
 			wsProxies[domain] = domainWsProxies
 		}
+
+		if settings.Router.UnsafeRequests {
+			domainIsoProxies := []*webIsolated{}
+			for _, server := range host.Service.Servers {
+				prxy := newWebIsolated(proto, port, host, server)
+				domainIsoProxies = append(domainIsoProxies, prxy)
+			}
+			wiProxies[domain] = domainIsoProxies
+		}
 	}
 
 	p.wProxies = wProxies
 	p.wsProxies = wsProxies
+	p.wiProxies = wiProxies
 
 	return
 }
@@ -360,6 +372,7 @@ func (p *Proxy) watchNode() {
 			p.Hosts = map[string]*Host{}
 			p.wProxies = map[string][]*web{}
 			p.wsProxies = map[string][]*webSocket{}
+			p.wiProxies = map[string][]*webIsolated{}
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
