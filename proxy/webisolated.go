@@ -61,7 +61,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 
 	utils.CopyHeaders(req.Header, r.Header)
 	req.Header.Set("X-Forwarded-For",
-		node.Self.GetRemoteAddr(req))
+		node.Self.GetRemoteAddr(r))
 	req.Header.Set("X-Forwarded-Proto", w.proxyProto)
 	req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
