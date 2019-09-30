@@ -17,6 +17,7 @@ type router struct {
 	HandshakeTimeout    int    `bson:"handshake_timeout" default:"10"`
 	ContinueTimeout     int    `bson:"continue_timeout" default:"10"`
 	UnsafeRequests      bool   `bson:"unsafe_requests"`
+	UnsafeRemoteHeader  bool   `bson:"unsafe_remote_header"`
 	SkipVerify          bool   `bson:"skip_verify"`
 }
 
