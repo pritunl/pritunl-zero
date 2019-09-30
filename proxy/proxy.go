@@ -44,6 +44,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	host := p.Hosts[hst]
 	wProxies := p.wProxies[hst]
 	wsProxies := p.wsProxies[hst]
+	wiProxies := p.wiProxies[hst]
 
 	wLen := 0
 	if wProxies != nil {
@@ -55,7 +56,12 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		wsLen = len(wsProxies)
 	}
 
-	if host == nil || wLen == 0 {
+	wiLen := 0
+	if wiProxies != nil {
+		wiLen = len(wiProxies)
+	}
+
+	if host == nil || wLen == 0 || wProxies == nil {
 		if r.URL.Path == "/check" {
 			utils.WriteText(w, 200, "ok")
 			return true
@@ -94,8 +100,10 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		}
 	}
 
-	if host.Service.MatchWhitelistPath(r.URL.Path) {
-		wProxies[rand.Intn(wLen)].ServeHTTP(
+	if wiProxies != nil && wiLen > 0 &&
+		host.Service.MatchWhitelistPath(r.URL.Path) {
+
+		wiProxies[rand.Intn(wLen)].ServeHTTP(
 			w, r, authorizer.NewProxy())
 		return true
 	}
