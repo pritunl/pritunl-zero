@@ -181,11 +181,14 @@ func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 	return
 }
 
-func (n *Node) SafeGetRemoteAddr(r *http.Request) (addr string, valid bool) {
+func (n *Node) SafeGetRemoteAddr(r *http.Request) (addr string,
+	header bool, valid bool) {
+
 	if n.ForwardedForHeader != "" {
 		addr = strings.TrimSpace(
 			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 1)[0])
 		if addr != "" {
+			header = true
 			valid = true
 		}
 		return
