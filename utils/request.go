@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -157,4 +158,28 @@ func GetLocation(r *http.Request) string {
 	}
 
 	return "https://" + host
+}
+
+func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
+	dstUrl *url.URL) {
+
+	dstUrl = &url.URL{
+		Scheme:   dstScheme,
+		Host:     dstHost,
+		Path:     srcUrl.Path,
+		Fragment: srcUrl.Fragment,
+	}
+
+	srcQuery := srcUrl.Query()
+	dstQuery := url.Values{}
+
+	for key, vals := range srcQuery {
+		for _, val := range vals {
+			dstQuery.Add(key, val)
+		}
+	}
+
+	dstUrl.RawQuery = dstQuery.Encode()
+
+	return
 }
