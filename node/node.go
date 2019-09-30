@@ -181,6 +181,21 @@ func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 	return
 }
 
+func (n *Node) SafeGetRemoteAddr(r *http.Request) (addr string, valid bool) {
+	if n.ForwardedForHeader != "" {
+		addr = strings.TrimSpace(
+			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 1)[0])
+		if addr != "" {
+			valid = true
+		}
+		return
+	}
+
+	addr = utils.StripPort(r.RemoteAddr)
+	valid = true
+	return
+}
+
 func (n *Node) update(db *database.Database) (err error) {
 	coll := db.Nodes()
 
