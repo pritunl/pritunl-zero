@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -223,7 +222,7 @@ func (w *webSocket) Director(req *http.Request, authr *authorizer.Authorizer) (
 	u.Host = w.serverHost
 
 	header.Set("X-Forwarded-For",
-		strings.Split(req.RemoteAddr, ":")[0])
+		node.Self.GetRemoteAddr(req))
 	header.Set("X-Forwarded-Proto", w.proxyProto)
 	header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
