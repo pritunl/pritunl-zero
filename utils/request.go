@@ -183,3 +183,11 @@ func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
 
 	return
 }
+
+func CopyHeaders(dst, src http.Header) {
+	for k, vv := range src {
+		for _, v := range vv {
+			dst.Add(k, v)
+		}
+	}
+}
