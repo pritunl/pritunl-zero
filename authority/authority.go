@@ -1142,6 +1142,46 @@ func (a *Authority) GetMatches() (matches []string, err error) {
 	return
 }
 
+func (a *Authority) SetPublicKeyPem() (err error) {
+	pubKey, err := ParseSshPubKey(a.PublicKey)
+	if err != nil {
+		return
+	}
+
+	switch pubKey := pubKey.(type) {
+	case *rsa.PublicKey:
+		keyBytes := x509.MarshalPKCS1PublicKey(pubKey)
+
+		block := &pem.Block{
+			Type:  "RSA PUBLIC KEY",
+			Bytes: keyBytes,
+		}
+
+		a.PublicKeyPem = strings.TrimSpace(string(pem.EncodeToMemory(block)))
+
+		break
+	case *ecdsa.PublicKey:
+		keyBytes, e := x509.MarshalPKIXPublicKey(pubKey)
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "authority: Failed to parse public key"),
+			}
+			return
+		}
+
+		block := &pem.Block{
+			Type:  "PUBLIC KEY",
+			Bytes: keyBytes,
+		}
+
+		a.PublicKeyPem = strings.TrimSpace(string(pem.EncodeToMemory(block)))
+
+		break
+	}
+
+	return
+}
+
 func (a *Authority) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
