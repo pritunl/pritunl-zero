@@ -248,6 +248,26 @@ func ParsePemKey(data string) (key crypto.PrivateKey, err error) {
 	return
 }
 
+func ParseSshPubKey(data string) (pubKey crypto.PublicKey, err error) {
+	sshPubKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(data))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ssh public key"),
+		}
+		return
+	}
+
+	cryptoPubKey, ok := sshPubKey.(ssh.CryptoPublicKey)
+	if !ok {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ssh public key type"),
+		}
+		return
+	}
+
+	pubKey = cryptoPubKey
+}
+
 func Get(db *database.Database, authrId primitive.ObjectID) (
 	authr *Authority, err error) {
 
