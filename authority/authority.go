@@ -63,6 +63,7 @@ type Authority struct {
 	PrivateKey         string             `bson:"private_key" json:"-"`
 	PublicKey          string             `bson:"public_key" json:"public_key"`
 	PublicKeyPem       string             `bson:"public_key_pem" json:"public_key_pem"`
+	RootCertificate    string             `bson:"root_certificate" json:"root_certificate"`
 	ProxyJump          string             `bson:"-" json:"proxy_jump"`
 	ProxyPrivateKey    string             `bson:"proxy_private_key" json:"-"`
 	ProxyPublicKey     string             `bson:"proxy_public_key" json:"proxy_public_key"`
