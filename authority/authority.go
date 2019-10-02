@@ -115,6 +115,11 @@ func (a *Authority) GenerateRsaPrivateKey() (err error) {
 	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
 
+	err = a.SetPublicKeyPem()
+	if err != nil {
+		return
+	}
+
 	return
 }
 
@@ -129,6 +134,11 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	}
 	a.PrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.PublicKey = strings.TrimSpace(string(pubKeyBytes))
+
+	err = a.SetPublicKeyPem()
+	if err != nil {
+		return
+	}
 
 	return
 }
