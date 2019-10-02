@@ -18,6 +18,7 @@ export interface Authority {
 	roles?: string[];
 	public_key?: string;
 	public_key_pem?: string;
+	root_certificate?: string;
 	proxy_jump?: string;
 	proxy_hosting?: boolean;
 	proxy_hostname?: string;
