@@ -114,6 +114,8 @@ func authorityPut(c *gin.Context) {
 		"expire",
 		"host_expire",
 		"public_key",
+		"public_key_pem",
+		"root_certificate",
 		"private_key",
 		"info",
 		"match_roles",
