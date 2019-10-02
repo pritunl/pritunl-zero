@@ -265,7 +265,9 @@ func ParseSshPubKey(data string) (pubKey crypto.PublicKey, err error) {
 		return
 	}
 
-	pubKey = cryptoPubKey
+	pubKey = cryptoPubKey.CryptoPublicKey()
+
+	return
 }
 
 func Get(db *database.Database, authrId primitive.ObjectID) (
