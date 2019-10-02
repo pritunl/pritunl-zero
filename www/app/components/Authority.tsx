@@ -8,7 +8,7 @@ import PageSwitch from './PageSwitch';
 import PageSelect from './PageSelect';
 import PageInputButton from './PageInputButton';
 import AuthorityDeploy from './AuthorityDeploy';
-import PageTextArea from './PageTextArea';
+import PageTextAreaTab from './PageTextAreaTab';
 import * as PageInfos from './PageInfo';
 import PageInfo from './PageInfo';
 import PageSave from './PageSave';
@@ -575,15 +575,21 @@ export default class Authority extends React.Component<Props, State> {
 						}}
 					>
 						<option value="local">Local</option>
-						<option value="pritunl_hsm">Pritunl HSM</option>
 					</PageSelect>
-					<PageTextArea
+					<PageTextAreaTab
 						readOnly={true}
 						label="Public Key"
 						help="Certificate authority public key in SSH format"
 						placeholder="Public key"
 						rows={10}
-						value={this.props.authority.public_key}
+						tabs={[
+							"SSH Format",
+							"PEM Format",
+						]}
+						values={[
+							this.props.authority.public_key,
+							this.props.authority.public_key_pem,
+						]}
 						onChange={(val: string): void => {
 							this.set('key', val);
 						}}
