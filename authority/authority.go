@@ -1448,6 +1448,20 @@ func (a *Authority) Validate(db *database.Database) (
 		return
 	}
 
+	if a.PublicKeyPem == "" {
+		err = a.SetPublicKeyPem()
+		if err != nil {
+			return
+		}
+	}
+
+	if a.RootCertificate == "" {
+		err = a.CreateRootCertificate(db)
+		if err != nil {
+			return
+		}
+	}
+
 	if a.Expire < 1 {
 		a.Expire = 600
 	} else if a.Expire > 1440 {
