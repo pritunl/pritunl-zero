@@ -10,6 +10,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"crypto/subtle"
+	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/base64"
@@ -33,6 +34,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/nonce"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -998,6 +1000,120 @@ func (a *Authority) CreateRootCertificate(db *database.Database) (
 		}
 	} else {
 		err = a.createRootCertificateLocal()
+	}
+
+	return
+}
+
+func (a *Authority) createClientCertificateLocal() (
+	caPool *x509.CertPool, cert tls.Certificate, err error) {
+
+	privateKey, err := ParsePemKey(a.PrivateKey)
+	if err != nil {
+		return
+	}
+
+	block, _ := pem.Decode([]byte(a.RootCertificate))
+	if block == nil {
+		err = &errortypes.ParseError{
+			errors.New("authority: Failed to decode root certificate"),
+		}
+		return
+	}
+
+	rootCert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse root certificate"),
+		}
+		return
+	}
+
+	clientPrivateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "authority: Failed to generate rsa key"),
+		}
+		return
+	}
+
+	serialHash := fnv.New64a()
+	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
+	serial := &big.Int{}
+	serial.SetUint64(serialHash.Sum64())
+
+	notBefore := time.Now().Add(-90 * time.Second)
+	notAfter := time.Now().Add(
+		time.Duration(600) * time.Second) // TODO
+
+	template := &x509.Certificate{
+		SerialNumber: serial,
+		Issuer: pkix.Name{
+			CommonName: a.Id.Hex(),
+		},
+		Subject: pkix.Name{
+			CommonName: node.Self.Id.Hex(),
+		},
+		NotBefore:             notBefore,
+		NotAfter:              notAfter,
+		BasicConstraintsValid: true,
+		KeyUsage:              x509.KeyUsageDigitalSignature,
+		ExtKeyUsage: []x509.ExtKeyUsage{
+			x509.ExtKeyUsageClientAuth,
+		},
+	}
+
+	certBytes, err := x509.CreateCertificate(
+		rand.Reader,
+		template,
+		rootCert,
+		clientPrivateKey.Public(),
+		privateKey,
+	)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err,
+				"authority: Failed to create client certificate"),
+		}
+		return
+	}
+
+	certBlock := &pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certBytes,
+	}
+
+	certPem := pem.EncodeToMemory(certBlock)
+
+	privateBlock := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(clientPrivateKey),
+	}
+
+	clientKeyPem := pem.EncodeToMemory(privateBlock)
+
+	cert, err = tls.X509KeyPair(certPem, clientKeyPem)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err,
+				"authority: Failed to create x509 key pair"),
+		}
+		return
+	}
+
+	return
+}
+
+func (a *Authority) CreateClientCertificate(db *database.Database) (
+	caPool *x509.CertPool, cert tls.Certificate, err error) {
+
+	if a.Type == PritunlHsm {
+		err = &errortypes.UnknownError{
+			errors.Wrap(err,
+				"authority: Client certificate not available on HSM"),
+		}
+	} else {
+		caPool, cert, err = a.createClientCertificateLocal()
 	}
 
 	return
