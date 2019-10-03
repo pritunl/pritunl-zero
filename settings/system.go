@@ -25,7 +25,7 @@ type system struct {
 	SshHostTokenLen                int    `bson:"ssh_host_token_len" default:"10"`
 	HsmResponseTimeout             int    `bson:"hsm_response_timeout" default:"10"`
 	DisableBastionHostCertificates bool   `bson:"disable_bastion_host_certificates"`
-	BastionDockerImage             string `bson:"bastion_docker_image" default:"pritunl/pritunl-bastion"`
+	BastionDockerImage             string `bson:"bastion_docker_image" default:"iad.ocir.io/pritunl8472/pritunl-bastion"`
 }
 
 func newSystem() interface{} {
