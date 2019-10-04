@@ -150,6 +150,12 @@ func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 		tlsConfig.InsecureSkipVerify = true
 	}
 
+	if host.ClientCertificate != nil {
+		tlsConfig.Certificates = []tls.Certificate{
+			*host.ClientCertificate,
+		}
+	}
+
 	writer := &logger.ErrorWriter{
 		Message: "node: Proxy server error",
 		Fields: logrus.Fields{

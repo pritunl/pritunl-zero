@@ -355,6 +355,12 @@ func newWebSocket(proxyProto string, proxyPort int, host *Host,
 		tlsConfig.InsecureSkipVerify = true
 	}
 
+	if host.ClientCertificate != nil {
+		tlsConfig.Certificates = []tls.Certificate{
+			*host.ClientCertificate,
+		}
+	}
+
 	ws = &webSocket{
 		reqHost:    host.Domain.Host,
 		serverHost: utils.FormatHostPort(server.Hostname, server.Port),
