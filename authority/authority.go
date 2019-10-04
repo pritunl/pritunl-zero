@@ -946,8 +946,7 @@ func (a *Authority) createRootCertificateLocal() (err error) {
 	serial.SetUint64(serialHash.Sum64())
 
 	notBefore := time.Now().Add(-90 * time.Second)
-	notAfter := time.Now().Add(
-		time.Duration(600) * time.Second) // TODO
+	notAfter := time.Now().Add(87600 * time.Hour)
 
 	template := &x509.Certificate{
 		SerialNumber: serial,
