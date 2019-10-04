@@ -25,6 +25,7 @@ export interface Service {
 	logout_path?: string;
 	websockets?: boolean;
 	disable_csrf_check?: boolean;
+	client_authority?: string;
 	domains?: Domain[];
 	roles?: string[];
 	servers?: Server[];
