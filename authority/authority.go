@@ -1005,7 +1005,7 @@ func (a *Authority) CreateRootCertificate(db *database.Database) (
 }
 
 func (a *Authority) createClientCertificateLocal() (
-	caPool *x509.CertPool, cert tls.Certificate, err error) {
+	clientCert *tls.Certificate, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
 	if err != nil {
@@ -1090,7 +1090,7 @@ func (a *Authority) createClientCertificateLocal() (
 
 	clientKeyPem := pem.EncodeToMemory(privateBlock)
 
-	cert, err = tls.X509KeyPair(certPem, clientKeyPem)
+	cert, err := tls.X509KeyPair(certPem, clientKeyPem)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err,
@@ -1099,11 +1099,13 @@ func (a *Authority) createClientCertificateLocal() (
 		return
 	}
 
+	clientCert = &cert
+
 	return
 }
 
 func (a *Authority) CreateClientCertificate(db *database.Database) (
-	caPool *x509.CertPool, cert tls.Certificate, err error) {
+	cert *tls.Certificate, err error) {
 
 	if a.Type == PritunlHsm {
 		err = &errortypes.UnknownError{
@@ -1111,7 +1113,7 @@ func (a *Authority) CreateClientCertificate(db *database.Database) (
 				"authority: Client certificate not available on HSM"),
 		}
 	} else {
-		caPool, cert, err = a.createClientCertificateLocal()
+		cert, err = a.createClientCertificateLocal()
 	}
 
 	return
