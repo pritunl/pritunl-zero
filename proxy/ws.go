@@ -31,20 +31,13 @@ var (
 	webSocketConnsLock = sync.Mutex{}
 )
 
-var InsecureDialer = &websocket.Dialer{
-	Proxy:            http.ProxyFromEnvironment,
-	HandshakeTimeout: 45 * time.Second,
-	TLSClientConfig: &tls.Config{
-		InsecureSkipVerify: true,
-	},
-}
-
 type webSocket struct {
 	reqHost     string
 	serverHost  string
 	serverProto string
 	proxyProto  string
 	proxyPort   int
+	tlsConfig   *tls.Config
 	upgrader    *websocket.Upgrader
 }
 
@@ -284,9 +277,6 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	var backResp *http.Response
 	var err error
 
-	skipVerify := settings.Router.SkipVerify || net.ParseIP(
-		utils.StripPort(w.serverHost)) != nil
-
 	dialer := &websocket.Dialer{
 		Proxy: func(req *http.Request) (url *url.URL, err error) {
 			if w.reqHost != "" {
@@ -297,12 +287,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			return
 		},
 		HandshakeTimeout: 45 * time.Second,
-	}
-
-	if skipVerify {
-		dialer.TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true,
-		}
+		TLSClientConfig:  w.tlsConfig,
 	}
 
 	backConn, backResp, err = dialer.Dial(u.String(), header)
@@ -362,6 +347,14 @@ func getUpgradeHeaders(resp *http.Response) (header http.Header) {
 func newWebSocket(proxyProto string, proxyPort int, host *Host,
 	server *service.Server) (ws *webSocket) {
 
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		MaxVersion: tls.VersionTLS13,
+	}
+	if settings.Router.SkipVerify || net.ParseIP(server.Hostname) != nil {
+		tlsConfig.InsecureSkipVerify = true
+	}
+
 	ws = &webSocket{
 		reqHost:    host.Domain.Host,
 		serverHost: utils.FormatHostPort(server.Hostname, server.Port),
@@ -376,6 +369,7 @@ func newWebSocket(proxyProto string, proxyPort int, host *Host,
 				return true
 			},
 		},
+		tlsConfig: tlsConfig,
 	}
 
 	if server.Protocol == "http" {
