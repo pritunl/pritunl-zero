@@ -1,8 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from '../types/AuthorityTypes';
 import ServicesStore from '../stores/ServicesStore';
+import AuthoritiesStore from '../stores/AuthoritiesStore';
 import * as ServiceActions from '../actions/ServiceActions';
+import * as AuthorityActions from '../actions/AuthorityActions';
 import NonState from './NonState';
 import Service from './Service';
 import Page from './Page';
@@ -10,6 +13,7 @@ import PageHeader from './PageHeader';
 
 interface State {
 	services: ServiceTypes.ServicesRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 	disabled: boolean;
 }
 
@@ -33,23 +37,28 @@ export default class Services extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 			disabled: false,
 		};
 	}
 
 	componentDidMount(): void {
 		ServicesStore.addChangeListener(this.onChange);
+		AuthoritiesStore.addChangeListener(this.onChange);
 		ServiceActions.sync();
+		AuthorityActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		ServicesStore.removeChangeListener(this.onChange);
+		AuthoritiesStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
 		this.setState({
 			...this.state,
 			services: ServicesStore.services,
+			authorities: AuthoritiesStore.authorities,
 		});
 	}
 
@@ -60,6 +69,7 @@ export default class Services extends React.Component<{}, State> {
 			servicesDom.push(<Service
 				key={service.id}
 				service={service}
+				authorities={this.state.authorities}
 			/>);
 		});
 
