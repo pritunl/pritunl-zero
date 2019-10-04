@@ -120,11 +120,12 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 	continueTimeout := time.Duration(
 		settings.Router.ContinueTimeout) * time.Second
 
-	var tlsConfig *tls.Config
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		MaxVersion: tls.VersionTLS13,
+	}
 	if settings.Router.SkipVerify || net.ParseIP(server.Hostname) != nil {
-		tlsConfig = &tls.Config{
-			InsecureSkipVerify: true,
-		}
+		tlsConfig.InsecureSkipVerify = true
 	}
 
 	writer := &logger.ErrorWriter{
