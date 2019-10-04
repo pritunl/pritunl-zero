@@ -19,6 +19,7 @@ type serviceData struct {
 	LogoutPath        string                   `json:"logout_path"`
 	WebSockets        bool                     `json:"websockets"`
 	DisableCsrfCheck  bool                     `json:"disable_csrf_check"`
+	ClientAuthority   primitive.ObjectID       `json:"client_authority"`
 	Domains           []*service.Domain        `json:"domains"`
 	Roles             []string                 `json:"roles"`
 	Servers           []*service.Server        `json:"servers"`
@@ -58,6 +59,7 @@ func servicePut(c *gin.Context) {
 	srvce.LogoutPath = data.LogoutPath
 	srvce.WebSockets = data.WebSockets
 	srvce.DisableCsrfCheck = data.DisableCsrfCheck
+	srvce.ClientAuthority = data.ClientAuthority
 	srvce.Domains = data.Domains
 	srvce.Roles = data.Roles
 	srvce.Servers = data.Servers
@@ -71,6 +73,7 @@ func servicePut(c *gin.Context) {
 		"logout_path",
 		"websockets",
 		"disable_csrf_check",
+		"client_authority",
 		"domains",
 		"roles",
 		"servers",
@@ -124,6 +127,7 @@ func servicePost(c *gin.Context) {
 		LogoutPath:        data.LogoutPath,
 		WebSockets:        data.WebSockets,
 		DisableCsrfCheck:  data.DisableCsrfCheck,
+		ClientAuthority:   data.ClientAuthority,
 		Roles:             data.Roles,
 		Domains:           data.Domains,
 		Servers:           data.Servers,
