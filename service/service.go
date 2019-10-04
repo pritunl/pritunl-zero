@@ -40,6 +40,7 @@ type Service struct {
 	LogoutPath         string             `bson:"logout_path" json:"logout_path"`
 	WebSockets         bool               `bson:"websockets" json:"websockets"`
 	DisableCsrfCheck   bool               `bson:"disable_csrf_check" json:"disable_csrf_check"`
+	ClientAuthority    primitive.ObjectID `bson:"client_authority,omitempty" json:"client_authority"`
 	Domains            []*Domain          `bson:"domains" json:"domains"`
 	Roles              []string           `bson:"roles" json:"roles"`
 	Servers            []*Server          `bson:"servers" json:"servers"`
