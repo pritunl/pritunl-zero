@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ServiceTypes from '../types/ServiceTypes';
+import * as AuthorityTypes from "../types/AuthorityTypes";
 import * as ServiceActions from '../actions/ServiceActions';
 import ServiceDomain from './ServiceDomain';
 import ServiceServer from './ServiceServer';
@@ -16,6 +17,7 @@ import Help from './Help';
 
 interface Props {
 	service: ServiceTypes.ServiceRo;
+	authorities: AuthorityTypes.AuthoritiesRo;
 }
 
 interface State {
@@ -609,6 +611,18 @@ export default class Service extends React.Component<Props, State> {
 			);
 		}
 
+		let authorities: JSX.Element[] = [
+			<option key="null" value="">None</option>,
+		];
+		for (let authority of this.props.authorities) {
+			authorities.push(
+				<option
+					key={authority.id}
+					value={authority.id}
+				>{authority.name}</option>,
+			);
+		}
+
 		let whitelistNets: JSX.Element[] = [];
 		for (let whitelistNet of service.whitelist_networks) {
 			whitelistNets.push(
@@ -713,6 +727,16 @@ export default class Service extends React.Component<Props, State> {
 					>
 						Add Server
 					</button>
+					<PageSelect
+						label="Client Certificate Authority"
+						help="Certificate authority to use for client certificate"
+						value={service.client_authority}
+						onChange={(val): void => {
+							this.set('client_authority', val);
+						}}
+					>
+						{authorities}
+					</PageSelect>
 					<PageInput
 						label="Logout Path"
 						help="Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards."
