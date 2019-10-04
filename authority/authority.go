@@ -1041,8 +1041,8 @@ func (a *Authority) createClientCertificateLocal() (
 	serial := &big.Int{}
 	serial.SetUint64(serialHash.Sum64())
 
-	notBefore := time.Now().Add(-60 * time.Second)
-	notAfter := time.Now().Add(60 * time.Second)
+	notBefore := time.Now().Add(-30 * time.Second)
+	notAfter := time.Now().Add(30 * time.Second)
 
 	template := &x509.Certificate{
 		SerialNumber: serial,
