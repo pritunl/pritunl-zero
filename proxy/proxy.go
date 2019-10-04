@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"crypto/tls"
 	"fmt"
 	"math/rand"
 	"net"
@@ -13,6 +14,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -28,6 +30,8 @@ type Host struct {
 	Service           *service.Service
 	Domain            *service.Domain
 	WhitelistNetworks []*net.IPNet
+	ClientAuthority   *authority.Authority
+	ClientCertificate *tls.Certificate
 }
 
 type Proxy struct {
@@ -319,10 +323,37 @@ func (p *Proxy) reloadHosts(db *database.Database,
 				whitelistNets = append(whitelistNets, network)
 			}
 
+			var clientAuthr *authority.Authority
+			if !srvc.ClientAuthority.IsZero() {
+				clientAuthr, err = authority.Get(db, srvc.ClientAuthority)
+				if err != nil {
+					if _, ok := err.(*database.NotFoundError); ok {
+						err = nil
+
+						logrus.WithFields(logrus.Fields{
+							"service_id":          srvc.Id.Hex(),
+							"client_authority_id": srvc.ClientAuthority.Hex(),
+						}).Warn("proxy: Service client authority not found")
+					} else {
+						return
+					}
+				}
+			}
+
+			var cert *tls.Certificate
+			if clientAuthr != nil {
+				cert, err = clientAuthr.CreateClientCertificate(db)
+				if err != nil {
+					return
+				}
+			}
+
 			srvcDomain := &Host{
 				Service:           srvc,
 				Domain:            domain,
 				WhitelistNetworks: whitelistNets,
+				ClientAuthority:   clientAuthr,
+				ClientCertificate: cert,
 			}
 
 			hosts[domain.Domain] = srvcDomain
