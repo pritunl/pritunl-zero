@@ -1637,6 +1637,30 @@ func init() {
 					return
 				}
 			}
+
+			if authr.PublicKeyPem == "" {
+				err = authr.SetPublicKeyPem()
+				if err != nil {
+					return
+				}
+
+				err = authr.CommitFields(db, set.NewSet("public_key_pem"))
+				if err != nil {
+					return
+				}
+			}
+
+			if authr.RootCertificate == "" {
+				err = authr.CreateRootCertificate(db)
+				if err != nil {
+					return
+				}
+
+				err = authr.CommitFields(db, set.NewSet("root_certificate"))
+				if err != nil {
+					return
+				}
+			}
 		}
 
 		return
