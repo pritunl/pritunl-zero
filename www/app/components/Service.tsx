@@ -729,7 +729,7 @@ export default class Service extends React.Component<Props, State> {
 					</button>
 					<PageSelect
 						label="Client Certificate Authority"
-						help="Certificate authority to use for client certificate"
+						help="Certificate authority to use for client certificate. Only valid for HTTPS connections to internal servers."
 						value={service.client_authority}
 						onChange={(val): void => {
 							this.set('client_authority', val);
