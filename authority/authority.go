@@ -326,7 +326,8 @@ func (a *Authority) HostnameValidate(hostname string, port int,
 	return true
 }
 
-func (a *Authority) createCertificateLocal(usr *user.User, sshPubKey string) (
+func (a *Authority) createCertificateLocal(
+	usr *user.User, sshPubKey string) (
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
