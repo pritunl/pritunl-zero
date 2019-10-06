@@ -585,10 +585,12 @@ export default class Authority extends React.Component<Props, State> {
 						tabs={[
 							"SSH Format",
 							"PEM Format",
+							"Root Certificate",
 						]}
 						values={[
 							this.props.authority.public_key,
 							this.props.authority.public_key_pem,
+							this.props.authority.root_certificate,
 						]}
 						onChange={(val: string): void => {
 							this.set('key', val);
