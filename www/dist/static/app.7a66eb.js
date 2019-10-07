@@ -12315,85 +12315,57 @@ sudo service sshd restart || true`;
     exports.default = AuthorityDeploy;
     
 });
-System.registerDynamic("app/stores/AuthoritiesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuthorityTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/PageTextAreaTab.js", ["npm:react@16.7.0.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
         GLOBAL = global;
     Object.defineProperty(exports, "__esModule", { value: true });
-    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
-    const EventEmitter_1 = $__require("app/EventEmitter.js");
-    const AuthorityTypes = $__require("app/types/AuthorityTypes.js");
-    const GlobalTypes = $__require("app/types/GlobalTypes.js");
-    class AuthoritiesStore extends EventEmitter_1.default {
-        constructor() {
-            super(...arguments);
-            this._authorities = Object.freeze([]);
-            this._secrets = {};
-            this._map = {};
-            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+    const React = $__require("npm:react@16.7.0.js");
+    const Help_1 = $__require("app/components/Help.js");
+    const css = {
+        label: {
+            width: '100%',
+            maxWidth: '280px'
+        },
+        textarea: {
+            width: '100%',
+            resize: 'none',
+            fontSize: '12px',
+            fontFamily: '"Lucida Console", Monaco, monospace'
+        },
+        tab: {
+            fontSize: '12px',
+            lineHeight: '24px',
+            userSelect: 'none'
         }
-        get authorities() {
-            return this._authorities;
+    };
+    class PageTextAreaTab extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                activeIndex: 0
+            };
         }
-        get authoritiesM() {
-            let authorities = [];
-            this._authorities.forEach(policy => {
-                authorities.push(Object.assign({}, policy));
-            });
-            return authorities;
-        }
-        authority(id) {
-            let i = this._map[id];
-            if (i === undefined) {
-                return null;
+        render() {
+            let activeIndex = this.state.activeIndex || 0;
+            let tabs = [];
+            for (let i = 0; i < (this.props.tabs || []).length; i++) {
+                let tab = this.props.tabs[i];
+                let index = i;
+                tabs.push(React.createElement("li", { key: i, className: "bp3-tab", style: css.tab, role: "tab", "aria-selected": i == activeIndex, onClick: () => {
+                        this.setState(Object.assign({}, this.state, { activeIndex: index }));
+                    } }, tab));
             }
-            return this._authorities[i];
-        }
-        authoritySecret(id) {
-            return this._secrets[id];
-        }
-        emitChange() {
-            this.emitDefer(GlobalTypes.CHANGE);
-        }
-        addChangeListener(callback) {
-            this.on(GlobalTypes.CHANGE, callback);
-        }
-        removeChangeListener(callback) {
-            this.removeListener(GlobalTypes.CHANGE, callback);
-        }
-        _sync(authorities) {
-            this._map = {};
-            for (let i = 0; i < authorities.length; i++) {
-                authorities[i] = Object.freeze(authorities[i]);
-                this._map[authorities[i].id] = i;
-            }
-            this._authorities = Object.freeze(authorities);
-            this.emitChange();
-        }
-        _syncSecret(id, secret) {
-            if (!secret) {
-                delete this._secrets[id];
-            } else {
-                this._secrets[id] = secret;
-            }
-            this.emitChange();
-        }
-        _callback(action) {
-            switch (action.type) {
-                case AuthorityTypes.SYNC:
-                    this._sync(action.data.authorities);
-                    break;
-                case AuthorityTypes.SYNC_SECRET:
-                    this._syncSecret(action.data.id, action.data.secret);
-                    break;
-            }
+            return React.createElement("label", { className: "bp3-label", style: css.label, hidden: this.props.hidden }, this.props.label, React.createElement(Help_1.default, { title: this.props.label, content: this.props.help }), React.createElement("div", { className: "bp3-tabs" }, React.createElement("ul", { className: "bp3-tab-list .modifier", role: "tablist" }, tabs)), React.createElement("textarea", { className: "bp3-input", style: css.textarea, disabled: this.props.disabled, readOnly: this.props.readOnly, autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, rows: this.props.rows, value: this.props.values[activeIndex] || '', onChange: evt => {
+                    this.props.onChange(this.props.tabs[this.state.activeIndex], evt.target.value);
+                } }));
         }
     }
-    exports.default = new AuthoritiesStore();
+    exports.default = PageTextAreaTab;
     
 });
-System.registerDynamic("app/components/Authority.js", ["npm:react@16.7.0.js", "app/actions/AuthorityActions.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageInputButton.js", "app/components/AuthorityDeploy.js", "app/components/PageTextArea.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js", "app/utils/MiscUtils.js", "app/stores/AuthoritiesStore.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Authority.js", ["npm:react@16.7.0.js", "app/actions/AuthorityActions.js", "app/components/PageInput.js", "app/components/PageSwitch.js", "app/components/PageSelect.js", "app/components/PageInputButton.js", "app/components/AuthorityDeploy.js", "app/components/PageTextAreaTab.js", "app/components/PageInfo.js", "app/components/PageSave.js", "app/components/ConfirmButton.js", "app/components/Help.js", "app/utils/MiscUtils.js", "app/stores/AuthoritiesStore.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -12406,7 +12378,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.7.0.js", "a
     const PageSelect_1 = $__require("app/components/PageSelect.js");
     const PageInputButton_1 = $__require("app/components/PageInputButton.js");
     const AuthorityDeploy_1 = $__require("app/components/AuthorityDeploy.js");
-    const PageTextArea_1 = $__require("app/components/PageTextArea.js");
+    const PageTextAreaTab_1 = $__require("app/components/PageTextAreaTab.js");
     const PageInfo_1 = $__require("app/components/PageInfo.js");
     const PageSave_1 = $__require("app/components/PageSave.js");
     const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
@@ -12681,7 +12653,7 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.7.0.js", "a
                     this.set('name', val);
                 } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Authority type", value: authority.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "local" }, "Local"), React.createElement("option", { value: "pritunl_hsm" }, "Pritunl HSM")), React.createElement(PageTextArea_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, value: this.props.authority.public_key, onChange: val => {
+                } }, React.createElement("option", { value: "local" }, "Local")), React.createElement(PageTextAreaTab_1.default, { readOnly: true, label: "Public Key", help: "Certificate authority public key in SSH format", placeholder: "Public key", rows: 10, tabs: ["SSH Format", "PEM Format", "Root Certificate"], values: [this.props.authority.public_key, this.props.authority.public_key_pem, this.props.authority.root_certificate], onChange: val => {
                     this.set('key', val);
                 } }), React.createElement(PageSwitch_1.default, { label: "Host certificates", help: "Allow servers to validate and sign SSH host keys.", checked: authority.host_certificates, onToggle: () => {
                     this.toggle('host_certificates');
@@ -13566,6 +13538,84 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
     exports.default = new ServicesStore();
     
 });
+System.registerDynamic("app/stores/AuthoritiesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuthorityTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("app/EventEmitter.js");
+    const AuthorityTypes = $__require("app/types/AuthorityTypes.js");
+    const GlobalTypes = $__require("app/types/GlobalTypes.js");
+    class AuthoritiesStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._authorities = Object.freeze([]);
+            this._secrets = {};
+            this._map = {};
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get authorities() {
+            return this._authorities;
+        }
+        get authoritiesM() {
+            let authorities = [];
+            this._authorities.forEach(policy => {
+                authorities.push(Object.assign({}, policy));
+            });
+            return authorities;
+        }
+        authority(id) {
+            let i = this._map[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._authorities[i];
+        }
+        authoritySecret(id) {
+            return this._secrets[id];
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _sync(authorities) {
+            this._map = {};
+            for (let i = 0; i < authorities.length; i++) {
+                authorities[i] = Object.freeze(authorities[i]);
+                this._map[authorities[i].id] = i;
+            }
+            this._authorities = Object.freeze(authorities);
+            this.emitChange();
+        }
+        _syncSecret(id, secret) {
+            if (!secret) {
+                delete this._secrets[id];
+            } else {
+                this._secrets[id] = secret;
+            }
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case AuthorityTypes.SYNC:
+                    this._sync(action.data.authorities);
+                    break;
+                case AuthorityTypes.SYNC_SECRET:
+                    this._syncSecret(action.data.id, action.data.secret);
+                    break;
+            }
+        }
+    }
+    exports.default = new AuthoritiesStore();
+    
+});
 System.registerDynamic("app/components/ServiceDomain.js", ["npm:react@16.7.0.js"], true, function ($__require, exports, module) {
     "use strict";
 
@@ -13996,6 +14046,10 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
                         this.onRemoveServer(index);
                     } }));
             }
+            let authorities = [React.createElement("option", { key: "null", value: "" }, "None")];
+            for (let authority of this.props.authorities) {
+                authorities.push(React.createElement("option", { key: authority.id, value: authority.id }, authority.name));
+            }
             let whitelistNets = [];
             for (let whitelistNet of service.whitelist_networks) {
                 whitelistNets.push(React.createElement("div", { className: "bp3-tag bp3-tag-removable bp3-intent-primary", style: css.item, key: whitelistNet }, whitelistNet, React.createElement("button", { className: "bp3-tag-remove", onMouseUp: () => {
@@ -14015,7 +14069,9 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
                     this.set('name', val);
                 } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Service type", value: service.type, onChange: val => {
                     this.set('type', val);
-                } }, React.createElement("option", { value: "http" }, "HTTP")), React.createElement("label", { style: css.itemsLabel }, "External Domains", React.createElement(Help_1.default, { title: "External Domains", content: "When a request comes into a proxy node the requests host will be used to match the request with the domain of a service. The external domain must point to either a node that has the service added or a load balancer that forwards to nodes serving the service. Some internal services will be expecting a specific host such as a web server that serves mutliple websites that is also matching the requests host to one of the mutliple websites. If the internal service is expecting a different host set the host field, otherwise leave it blank. Services that are associated with the same node should not also have the same domains." })), domains, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers", React.createElement(Help_1.default, { title: "Internal Servers", content: "After a proxy node receives an authenticated request it will be forwarded to the internal servers and the response will be sent back to the user. Multiple internal servers can be added to load balance the requests. This should only be done if outages are not expected as no health checks are preformed for each server. If outages are expected a load balancer such as AWS ELB should be used. If a domain is used with HTTPS the internal server must have a valid certificate. When an IP address is used with HTTPS the internal servers certificate will not be validated. These internal servers should ideally be configured to only accept requests from the private IP addresses of the Pritunl Zero nodes. It is important to consider that if the internal servers are configured to accept requests from other IP addresses those requests will be sent directly to the internal server and will bypass the authentication provided by Pritunl Zero." })), servers, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server"), React.createElement(PageInput_1.default, { label: "Logout Path", help: "Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards.", type: "text", placeholder: "Enter logout path", value: service.logout_path, onChange: val => {
+                } }, React.createElement("option", { value: "http" }, "HTTP")), React.createElement("label", { style: css.itemsLabel }, "External Domains", React.createElement(Help_1.default, { title: "External Domains", content: "When a request comes into a proxy node the requests host will be used to match the request with the domain of a service. The external domain must point to either a node that has the service added or a load balancer that forwards to nodes serving the service. Some internal services will be expecting a specific host such as a web server that serves mutliple websites that is also matching the requests host to one of the mutliple websites. If the internal service is expecting a different host set the host field, otherwise leave it blank. Services that are associated with the same node should not also have the same domains." })), domains, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddDomain }, "Add Domain"), React.createElement("label", { style: css.itemsLabel }, "Internal Servers", React.createElement(Help_1.default, { title: "Internal Servers", content: "After a proxy node receives an authenticated request it will be forwarded to the internal servers and the response will be sent back to the user. Multiple internal servers can be added to load balance the requests. This should only be done if outages are not expected as no health checks are preformed for each server. If outages are expected a load balancer such as AWS ELB should be used. If a domain is used with HTTPS the internal server must have a valid certificate. When an IP address is used with HTTPS the internal servers certificate will not be validated. These internal servers should ideally be configured to only accept requests from the private IP addresses of the Pritunl Zero nodes. It is important to consider that if the internal servers are configured to accept requests from other IP addresses those requests will be sent directly to the internal server and will bypass the authentication provided by Pritunl Zero." })), servers, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddServer }, "Add Server"), React.createElement(PageSelect_1.default, { label: "Client Certificate Authority", help: "Certificate authority to use for client certificate. Only valid for HTTPS connections to internal servers.", value: service.client_authority, onChange: val => {
+                    this.set('client_authority', val);
+                } }, authorities), React.createElement(PageInput_1.default, { label: "Logout Path", help: "Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards.", type: "text", placeholder: "Enter logout path", value: service.logout_path, onChange: val => {
                     this.set('logout_path', val);
                 } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
                     label: 'ID',
@@ -14038,7 +14094,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.7.0.js", "app
     exports.default = Service;
     
 });
-System.registerDynamic("app/components/Services.js", ["npm:react@16.7.0.js", "app/stores/ServicesStore.js", "app/actions/ServiceActions.js", "app/components/NonState.js", "app/components/Service.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Services.js", ["npm:react@16.7.0.js", "app/stores/ServicesStore.js", "app/stores/AuthoritiesStore.js", "app/actions/ServiceActions.js", "app/actions/AuthorityActions.js", "app/components/NonState.js", "app/components/Service.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -14046,7 +14102,9 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.7.0.js", "ap
     Object.defineProperty(exports, "__esModule", { value: true });
     const React = $__require("npm:react@16.7.0.js");
     const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
+    const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
+    const AuthorityActions = $__require("app/actions/AuthorityActions.js");
     const NonState_1 = $__require("app/components/NonState.js");
     const Service_1 = $__require("app/components/Service.js");
     const Page_1 = $__require("app/components/Page.js");
@@ -14069,24 +14127,28 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.7.0.js", "ap
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
-                this.setState(Object.assign({}, this.state, { services: ServicesStore_1.default.services }));
+                this.setState(Object.assign({}, this.state, { services: ServicesStore_1.default.services, authorities: AuthoritiesStore_1.default.authorities }));
             };
             this.state = {
                 services: ServicesStore_1.default.services,
+                authorities: AuthoritiesStore_1.default.authorities,
                 disabled: false
             };
         }
         componentDidMount() {
             ServicesStore_1.default.addChangeListener(this.onChange);
+            AuthoritiesStore_1.default.addChangeListener(this.onChange);
             ServiceActions.sync();
+            AuthorityActions.sync();
         }
         componentWillUnmount() {
             ServicesStore_1.default.removeChangeListener(this.onChange);
+            AuthoritiesStore_1.default.removeChangeListener(this.onChange);
         }
         render() {
             let servicesDom = [];
             this.state.services.forEach(service => {
-                servicesDom.push(React.createElement(Service_1.default, { key: service.id, service: service }));
+                servicesDom.push(React.createElement(Service_1.default, { key: service.id, service: service, authorities: this.state.authorities }));
             });
             return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Services"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
                     this.setState(Object.assign({}, this.state, { disabled: true }));
