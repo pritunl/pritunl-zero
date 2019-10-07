@@ -653,7 +653,6 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 
 func (a *Authority) createHostCertificate(
 	hostname, domain string, sshPubKey string) (
-
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
