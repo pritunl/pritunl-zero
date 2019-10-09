@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1415.1 2019-10-09
+-----------------------------
 
 Add support for client certificates
 
