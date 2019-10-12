@@ -98,6 +98,7 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 				key: val,
 			},
 		},
+		opts,
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -124,6 +125,7 @@ func Unset(db *database.Database, group string, key string) (
 				key: "",
 			},
 		},
+		opts,
 	)
 	if err != nil {
 		err = database.ParseError(err)
