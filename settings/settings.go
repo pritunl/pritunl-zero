@@ -242,7 +242,7 @@ func Update(name string) (err error) {
 
 func update() {
 	for {
-		time.Sleep(30 * time.Second)
+		time.Sleep(10 * time.Second)
 		for name := range registry {
 			err := Update(name)
 			if err != nil {
