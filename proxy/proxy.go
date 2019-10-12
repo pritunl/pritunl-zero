@@ -392,14 +392,12 @@ func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 			wsProxies[domain] = domainWsProxies
 		}
 
-		if settings.Router.UnsafeRequests {
-			domainIsoProxies := []*webIsolated{}
-			for _, server := range host.Service.Servers {
-				prxy := newWebIsolated(proto, port, host, server)
-				domainIsoProxies = append(domainIsoProxies, prxy)
-			}
-			wiProxies[domain] = domainIsoProxies
+		domainIsoProxies := []*webIsolated{}
+		for _, server := range host.Service.Servers {
+			prxy := newWebIsolated(proto, port, host, server)
+			domainIsoProxies = append(domainIsoProxies, prxy)
 		}
+		wiProxies[domain] = domainIsoProxies
 	}
 
 	p.wProxies = wProxies
