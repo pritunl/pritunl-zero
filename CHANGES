@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with settings command
+
 Version 1.0.1415.1 2019-10-09
 -----------------------------
 
