@@ -12,7 +12,6 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
-	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -72,9 +71,7 @@ func (s *Service) MatchLogoutPath(pth string) bool {
 }
 
 func (s *Service) MatchWhitelistPath(matchPth string) bool {
-	if !settings.Router.UnsafeRequests || s.WhitelistPaths == nil ||
-		len(s.WhitelistPaths) == 0 {
-
+	if s.WhitelistPaths == nil || len(s.WhitelistPaths) == 0 {
 		return false
 	}
 
@@ -145,15 +142,6 @@ func (s *Service) Validate(db *database.Database) (
 
 	if s.WhitelistPaths == nil {
 		s.WhitelistPaths = []*WhitelistPath{}
-	}
-
-	if len(s.WhitelistPaths) > 0 && !settings.Router.UnsafeRequests {
-		errData = &errortypes.ErrorData{
-			Error: "unsafe_requests_required",
-			Message: "Unsafe requests must be enabled to use " +
-				"whitelisted paths",
-		}
-		return
 	}
 
 	for _, server := range s.Servers {
