@@ -598,7 +598,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Host certificates"
-						help="Allow servers to validate and sign SSH host keys."
+						help="Allow servers to validate and sign SSH host keys. This should be disabled for most configurations."
 						checked={authority.host_certificates}
 						onToggle={(): void => {
 							this.toggle('host_certificates');
@@ -615,7 +615,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<PageInput
 						label="Host Domain"
-						help="Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain."
+						help="Domain that will be used for SSH host certificates. All servers must have a subdomain registered on this domain. This should be empty for most configurations."
 						type="text"
 						placeholder="Host domain"
 						value={authority.host_domain}
@@ -643,7 +643,7 @@ export default class Authority extends React.Component<Props, State> {
 					/>
 					<PageSwitch
 						label="Automatic bastion server"
-						help="Enable automatic bastion servers on nodes using Docker containers."
+						help="Enable automatic bastion servers on nodes using Docker containers. This should be disabled for most configurations."
 						checked={authority.proxy_hosting}
 						onToggle={(): void => {
 							this.toggle('proxy_hosting');
