@@ -683,7 +683,7 @@ export default class Authority extends React.Component<Props, State> {
 									if (evt.target.value) {
 										this.set('proxy_port', parseInt(evt.target.value, 10));
 									} else {
-										this.set('proxy_port', '');
+										this.set('proxy_port', 0);
 									}
 								}}
 							/>
