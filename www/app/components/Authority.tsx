@@ -692,7 +692,7 @@ export default class Authority extends React.Component<Props, State> {
 					<PageInput
 						hidden={authority.proxy_hosting}
 						label="Bastion Host"
-						help="Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate."
+						help="Optional username and hostname of bastion host to proxy client connections for this domain. If the bastion station requires a specific username it must be included such as 'ec2-user@server.domain.com'. Bastion hostname does not need to be in host domain. If strict host checking is enabled bastion host must have a valid certificate. This should be empty for most configurations."
 						type="text"
 						placeholder="Bastion host"
 						value={authority.host_proxy}
@@ -823,7 +823,7 @@ export default class Authority extends React.Component<Props, State> {
 						Custom Matches
 						<Help
 							title="Custom Matches"
-							content="Custom domains that will be proxied through the bastion host."
+							content="Custom domains that will be proxied through the bastion host. This should be empty for most configurations."
 						/>
 						<div>
 							{matches}
@@ -847,7 +847,7 @@ export default class Authority extends React.Component<Props, State> {
 						Match Subnets
 						<Help
 							title="Match Subnets"
-							content="Subnets that will be proxied through the bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported."
+							content="Subnets that will be proxied through the bastion host. All hosts in the subnets must be accessible from the bastion host. For best security match only private subnets in the same network as the bastion host. Currently only /8, /16, /24 and /32 subnets are supported. This should be empty for most configurations."
 						/>
 						<div>
 							{subnets}
