@@ -707,7 +707,7 @@ export default class Authority extends React.Component<Props, State> {
 						proxy={false}
 					/>
 					<AuthorityDeploy
-						hidden={authority.proxy_hosting}
+						hidden={authority.proxy_hosting || !authority.host_proxy}
 						disabled={this.state.disabled || !authority.host_proxy}
 						nodes={this.props.nodes}
 						authority={authority}
