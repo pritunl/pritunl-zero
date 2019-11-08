@@ -41,6 +41,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		Director: func(req *http.Request) {
 			req.Header.Set("X-Forwarded-For",
 				node.Self.GetRemoteAddr(req))
+			req.Header.Set("X-Forwarded-Host", req.Host)
 			req.Header.Set("X-Forwarded-Proto", w.proxyProto)
 			req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 

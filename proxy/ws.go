@@ -216,6 +216,7 @@ func (w *webSocket) Director(req *http.Request, authr *authorizer.Authorizer) (
 
 	header.Set("X-Forwarded-For",
 		node.Self.GetRemoteAddr(req))
+	header.Set("X-Forwarded-Host", req.Host)
 	header.Set("X-Forwarded-Proto", w.proxyProto)
 	header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
 
