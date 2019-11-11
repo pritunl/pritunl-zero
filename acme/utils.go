@@ -38,10 +38,8 @@ func GetChallenge(token string) (challenge *Challenge, err error) {
 	return
 }
 
-func newRsaCsr(domains []string) (csr *x509.CertificateRequest,
-	keyPem []byte, err error) {
-
-	key, err := rsa.GenerateKey(rand.Reader, 2048)
+func newRsaCsr(domains []string) (csr []byte, keyPem []byte, err error) {
+	key, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "acme: Failed to generate private key"),
@@ -59,18 +57,10 @@ func newRsaCsr(domains []string) (csr *x509.CertificateRequest,
 		DNSNames: domains,
 	}
 
-	csrData, err := x509.CreateCertificateRequest(rand.Reader, csrReq, key)
+	csr, err = x509.CreateCertificateRequest(rand.Reader, csrReq, key)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "acme: Failed to create certificate request"),
-		}
-		return
-	}
-
-	csr, err = x509.ParseCertificateRequest(csrData)
-	if err != nil {
-		err = &errortypes.ReadError{
-			errors.Wrap(err, "acme: Failed to parse certificate request"),
 		}
 		return
 	}
@@ -87,9 +77,7 @@ func newRsaCsr(domains []string) (csr *x509.CertificateRequest,
 	return
 }
 
-func newEcCsr(domains []string) (csr *x509.CertificateRequest,
-	keyPem []byte, err error) {
-
+func newEcCsr(domains []string) (csr []byte, keyPem []byte, err error) {
 	key, err := ecdsa.GenerateKey(
 		elliptic.P384(),
 		rand.Reader,
@@ -111,18 +99,10 @@ func newEcCsr(domains []string) (csr *x509.CertificateRequest,
 		DNSNames: domains,
 	}
 
-	csrData, err := x509.CreateCertificateRequest(rand.Reader, csrReq, key)
+	csr, err = x509.CreateCertificateRequest(rand.Reader, csrReq, key)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "acme: Failed to create certificate request"),
-		}
-		return
-	}
-
-	csr, err = x509.ParseCertificateRequest(csrData)
-	if err != nil {
-		err = &errortypes.ReadError{
-			errors.Wrap(err, "acme: Failed to parse certificate request"),
 		}
 		return
 	}
