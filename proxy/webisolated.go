@@ -181,19 +181,21 @@ func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 		proxyProto:  proxyProto,
 		proxyPort:   proxyPort,
 		Client: &http.Client{
-			Transport: &http.Transport{
-				Proxy: http.ProxyFromEnvironment,
-				DialContext: (&net.Dialer{
-					Timeout:   dialTimeout,
-					KeepAlive: dialKeepAlive,
-					DualStack: true,
-				}).DialContext,
-				MaxIdleConns:          maxIdleConns,
-				MaxIdleConnsPerHost:   maxIdleConnsPerHost,
-				IdleConnTimeout:       idleConnTimeout,
-				TLSHandshakeTimeout:   handshakeTimeout,
-				ExpectContinueTimeout: continueTimeout,
-				TLSClientConfig:       tlsConfig,
+			Transport: &TransportFix{
+				transport: &http.Transport{
+					Proxy: http.ProxyFromEnvironment,
+					DialContext: (&net.Dialer{
+						Timeout:   dialTimeout,
+						KeepAlive: dialKeepAlive,
+						DualStack: true,
+					}).DialContext,
+					MaxIdleConns:          maxIdleConns,
+					MaxIdleConnsPerHost:   maxIdleConnsPerHost,
+					IdleConnTimeout:       idleConnTimeout,
+					TLSHandshakeTimeout:   handshakeTimeout,
+					ExpectContinueTimeout: continueTimeout,
+					TLSClientConfig:       tlsConfig,
+				},
 			},
 			CheckRedirect: func(r *http.Request, v []*http.Request) error {
 				return http.ErrUseLastResponse
