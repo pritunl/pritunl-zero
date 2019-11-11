@@ -1,6 +1,7 @@
 package acme
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -14,7 +15,6 @@ import (
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/letsencrypt"
 	"github.com/pritunl/pritunl-zero/settings"
 	"golang.org/x/crypto/acme"
 )
@@ -30,14 +30,6 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	if cert.AcmeDomains == nil || len(cert.AcmeDomains) == 0 {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err, "acme: No acme domains"),
-		}
-		return
-	}
-
-	cli, err := letsencrypt.NewClient(settings.Acme.Url + "/directory")
-	if err != nil {
-		err = &errortypes.UnknownError{
-			errors.Wrap(err, "acme: Failed to create acme client"),
 		}
 		return
 	}
@@ -81,63 +73,85 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 	}
 
-	_, err = cli.NewRegistration(acctKey)
-	if err != nil {
-		switch err.(type) {
-		case *acme.Error:
-			acmeErr := err.(*acme.Error)
-			if acmeErr.StatusCode == 409 {
-				err = nil
-			}
-			break
-		}
+	acct := &acme.Account{}
 
-		if err != nil {
+	client := &acme.Client{
+		DirectoryURL: AcmeDirectory,
+		Key:          acctKey,
+	}
+
+	_, err = client.Register(context.Background(), acct, prompt)
+	if err != nil {
+		if err == acme.ErrAccountAlreadyExists {
+			err = nil
+		} else {
 			err = &errortypes.RequestError{
-				errors.Wrap(err, "acme: Failed to create registration"),
+				errors.Wrap(err, "acme: Failed to register account"),
 			}
 			return
 		}
 	}
 
-	for _, domain := range cert.AcmeDomains {
-		auth, _, e := cli.NewAuthorization(acctKey, "dns", domain)
+	order, err := client.AuthorizeOrder(
+		context.Background(), acme.DomainIDs(cert.AcmeDomains...))
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "acme: Failed to authorize order"),
+		}
+		return
+	}
+
+	if order.Status != acme.StatusPending {
+		err = &errortypes.RequestError{
+			errors.Newf(
+				"acme: Authorize order status '%s' not pending",
+				order.Status,
+			),
+		}
+		return
+	}
+
+	for _, authzUrl := range order.AuthzURLs {
+		authz, e := client.GetAuthorization(
+			context.Background(), authzUrl)
 		if e != nil {
 			err = &errortypes.RequestError{
-				errors.Wrapf(e, "acme: Failed to authorize %s", domain),
+				errors.Wrap(e, "acme: Failed to get authorization"),
 			}
 			return
 		}
 
-		challenges := auth.Combinations(letsencrypt.ChallengeHTTP)
-		if len(challenges) == 0 || len(challenges[0]) == 0 {
-			err = &errortypes.ParseError{
-				errors.Wrap(err, "acme: No supported challenges"),
+		if authz.Status != acme.StatusPending {
+			continue
+		}
+
+		var authzChal *acme.Challenge
+		for _, c := range authz.Challenges {
+			if c.Type == "http-01" {
+				authzChal = c
+				break
+			}
+		}
+
+		if authzChal == nil {
+			err = &errortypes.RequestError{
+				errors.New(
+					"acme: Authorization HTTP challenge not available"),
 			}
 			return
 		}
 
-		challenge := challenges[0][0]
-
-		path, resource, e := challenge.HTTP(acctKey)
+		resp, e := client.HTTP01ChallengeResponse(authzChal.Token)
 		if e != nil {
-			err = &errortypes.ParseError{
-				errors.Wrap(e, "acme: Failed to generate challenge path"),
-			}
-			return
-		}
-
-		token := ParsePath(path)
-		if token == "" {
-			err = &errortypes.ParseError{
-				errors.Wrap(err, "acme: Failed to parse challenge path"),
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "acme: Challenge response failed"),
 			}
 			return
 		}
 
 		chal := &Challenge{
-			Id:        token,
-			Resource:  resource,
+			Id:        authzChal.Token,
+			Resource:  resp,
 			Timestamp: time.Now(),
 		}
 
@@ -146,10 +160,19 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			return
 		}
 
-		err = cli.ChallengeReady(acctKey, challenge)
+		_, err = client.Accept(context.Background(), authzChal)
 		if err != nil {
 			err = &errortypes.RequestError{
-				errors.Wrapf(err, "acme: Failed to challenge %s", domain),
+				errors.Wrap(err, "acme: Authorization accept failed"),
+			}
+			return
+		}
+
+		_, err = client.WaitAuthorization(
+			context.Background(), authzChal.URI)
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(err, "acme: Authorization wait failed"),
 			}
 			return
 		}
@@ -160,7 +183,15 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 	}
 
-	var csr *x509.CertificateRequest
+	order, err = client.WaitOrder(context.Background(), order.URI)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "acme: Order wait failed"),
+		}
+		return
+	}
+
+	var csr []byte
 	var keyPem []byte
 
 	if settings.System.AcmeKeyAlgorithm == "ec" {
@@ -175,24 +206,34 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 	}
 
-	certResp, err := cli.NewCertificate(acctKey, csr)
+	derChain, _, err := client.CreateOrderCert(
+		context.Background(),
+		order.FinalizeURL,
+		csr,
+		true,
+	)
 	if err != nil {
 		err = &errortypes.RequestError{
-			errors.Wrap(err, "acme: Failed to get certificate"),
+			errors.Wrap(err, "acme: Create order cert failed"),
 		}
 		return
 	}
 
-	certBlock := &pem.Block{
-		Type:  "CERTIFICATE",
-		Bytes: certResp.Certificate.Raw,
+	certPem := ""
+
+	for _, der := range derChain {
+		certBlock := &pem.Block{
+			Type:  "CERTIFICATE",
+			Bytes: der,
+		}
+
+		if certPem != "" {
+			certPem += "\n"
+		}
+		certPem += strings.TrimSpace(string(pem.EncodeToMemory(certBlock)))
 	}
 
-	certPem := string(pem.EncodeToMemory(certBlock))
-	certPem = strings.Trim(certPem, "\n")
-	certPem += AcmeChain
-
-	cert.Key = string(keyPem)
+	cert.Key = strings.TrimSpace(string(keyPem))
 	cert.Certificate = certPem
 	cert.AcmeHash = cert.Hash()
 
@@ -210,9 +251,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 	return
 }
 
-func Update(db *database.Database, cert *certificate.Certificate) (
-	err error) {
-
+func Update(db *database.Database, cert *certificate.Certificate) (err error) {
 	if cert.Type != certificate.LetsEncrypt {
 		return
 	}
