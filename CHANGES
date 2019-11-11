@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Support acme v2
+
 Version 1.0.1418.42 2019-10-12
 ------------------------------
 
