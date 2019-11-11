@@ -15,6 +15,10 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
+func prompt(_ string) bool {
+	return true
+}
+
 func ParsePath(path string) string {
 	split := strings.SplitN(path, AcmePath, 2)
 	if len(split) == 2 {
