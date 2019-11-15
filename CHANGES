@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1452.54 2019-11-15
+------------------------------
 
 Improve acme v2 support
 Fix login loop with subdomain
