@@ -111,7 +111,9 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	for _, authzUrl := range order.AuthzURLs {
+	authzUrls := order.AuthzURLs
+
+	for _, authzUrl := range authzUrls {
 		authz, e := client.GetAuthorization(
 			context.Background(), authzUrl)
 		if e != nil {
@@ -134,6 +136,8 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 
 		if authzChal == nil {
+			revoke(client, authzUrls)
+
 			err = &errortypes.RequestError{
 				errors.New(
 					"acme: Authorization HTTP challenge not available"),
@@ -143,6 +147,8 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 
 		resp, e := client.HTTP01ChallengeResponse(authzChal.Token)
 		if e != nil {
+			revoke(client, authzUrls)
+
 			err = &errortypes.RequestError{
 				errors.Wrap(e, "acme: Challenge response failed"),
 			}
@@ -162,6 +168,8 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 
 		_, err = client.Accept(context.Background(), authzChal)
 		if err != nil {
+			revoke(client, authzUrls)
+
 			err = &errortypes.RequestError{
 				errors.Wrap(err, "acme: Authorization accept failed"),
 			}
@@ -171,6 +179,8 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		_, err = client.WaitAuthorization(
 			context.Background(), authzChal.URI)
 		if err != nil {
+			revoke(client, authzUrls)
+
 			err = &errortypes.RequestError{
 				errors.Wrap(err, "acme: Authorization wait failed"),
 			}
@@ -179,12 +189,16 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 
 		err = chal.Remove(db)
 		if err != nil {
+			revoke(client, authzUrls)
+
 			return
 		}
 	}
 
 	order, err = client.WaitOrder(context.Background(), order.URI)
 	if err != nil {
+		revoke(client, authzUrls)
+
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "acme: Order wait failed"),
 		}
