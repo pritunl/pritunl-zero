@@ -12,6 +12,10 @@ import (
 func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (authr *Authorizer, err error) {
 
+	authr = &Authorizer{
+		typ: Admin,
+	}
+
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
 
@@ -32,14 +36,9 @@ func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 			return
 		}
 
-		err = sig.Validate(db)
+		err = authr.AddSignature(db, sig)
 		if err != nil {
 			return
-		}
-
-		authr = &Authorizer{
-			typ: Admin,
-			sig: sig,
 		}
 	} else {
 		cook, sess, e := auth.CookieSessionAdmin(db, w, r)
@@ -48,10 +47,9 @@ func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 			return
 		}
 
-		authr = &Authorizer{
-			typ:  Admin,
-			cook: cook,
-			sess: sess,
+		err = authr.AddCookie(cook, sess)
+		if err != nil {
+			return
 		}
 	}
 
@@ -61,6 +59,11 @@ func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 func AuthorizeProxy(db *database.Database, srvc *service.Service,
 	w http.ResponseWriter, r *http.Request) (authr *Authorizer, err error) {
 
+	authr = &Authorizer{
+		typ:  Proxy,
+		srvc: srvc,
+	}
+
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
 
@@ -81,23 +84,21 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 			return
 		}
 
-		authr = &Authorizer{
-			typ: Proxy,
-			sig: sig,
+		err = authr.AddSignature(db, sig)
+		if err != nil {
+			return
 		}
-		return
-	}
+	} else {
+		cook, sess, e := auth.CookieSessionProxy(db, srvc, w, r)
+		if e != nil {
+			err = e
+			return
+		}
 
-	cook, sess, err := auth.CookieSessionProxy(db, srvc, w, r)
-	if err != nil {
-		return
-	}
-
-	authr = &Authorizer{
-		typ:  Proxy,
-		cook: cook,
-		sess: sess,
-		srvc: srvc,
+		err = authr.AddCookie(cook, sess)
+		if err != nil {
+			return
+		}
 	}
 
 	return
@@ -106,6 +107,10 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (authr *Authorizer, err error) {
 
+	authr = &Authorizer{
+		typ: User,
+	}
+
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
 
@@ -126,22 +131,21 @@ func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 			return
 		}
 
-		authr = &Authorizer{
-			typ: User,
-			sig: sig,
+		err = authr.AddSignature(db, sig)
+		if err != nil {
+			return
 		}
-		return
-	}
+	} else {
+		cook, sess, e := auth.CookieSessionUser(db, w, r)
+		if e != nil {
+			err = e
+			return
+		}
 
-	cook, sess, err := auth.CookieSessionUser(db, w, r)
-	if err != nil {
-		return
-	}
-
-	authr = &Authorizer{
-		typ:  User,
-		cook: cook,
-		sess: sess,
+		err = authr.AddCookie(cook, sess)
+		if err != nil {
+			return
+		}
 	}
 
 	return
