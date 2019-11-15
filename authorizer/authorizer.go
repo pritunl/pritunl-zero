@@ -39,7 +39,7 @@ func (a *Authorizer) AddSignature(db *database.Database,
 
 	a.sig = sig
 
-	return a.sess.Remove(db)
+	return
 }
 
 func (a *Authorizer) AddCookie(cook *cookie.Cookie,
