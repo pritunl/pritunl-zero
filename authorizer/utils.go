@@ -12,9 +12,7 @@ import (
 func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (authr *Authorizer, err error) {
 
-	authr = &Authorizer{
-		typ: Admin,
-	}
+	authr = NewAdmin()
 
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
@@ -59,10 +57,7 @@ func AuthorizeAdmin(db *database.Database, w http.ResponseWriter,
 func AuthorizeProxy(db *database.Database, srvc *service.Service,
 	w http.ResponseWriter, r *http.Request) (authr *Authorizer, err error) {
 
-	authr = &Authorizer{
-		typ:  Proxy,
-		srvc: srvc,
-	}
+	authr = NewProxy(srvc)
 
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
@@ -107,9 +102,7 @@ func AuthorizeProxy(db *database.Database, srvc *service.Service,
 func AuthorizeUser(db *database.Database, w http.ResponseWriter,
 	r *http.Request) (authr *Authorizer, err error) {
 
-	authr = &Authorizer{
-		typ: User,
-	}
+	authr = NewUser()
 
 	token := r.Header.Get("Pritunl-Zero-Token")
 	sigStr := r.Header.Get("Pritunl-Zero-Signature")
