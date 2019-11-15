@@ -1,6 +1,7 @@
 package acme
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -13,10 +14,31 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"golang.org/x/crypto/acme"
 )
 
 func prompt(_ string) bool {
 	return true
+}
+
+func revoke(client *acme.Client, authzUrls []string) {
+	if authzUrls == nil {
+		return
+	}
+
+	for _, authzUrl := range authzUrls {
+		authz, err := client.GetAuthorization(
+			context.Background(), authzUrl)
+		if err != nil {
+			continue
+		}
+
+		if authz.Status != acme.StatusPending {
+			continue
+		}
+
+		_ = client.RevokeAuthorization(context.Background(), authzUrl)
+	}
 }
 
 func ParsePath(path string) string {
