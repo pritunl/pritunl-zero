@@ -118,12 +118,12 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 							r.Header.Get("Upgrade") == "websocket" {
 
 							wsProxies[rand.Intn(wsLen)].ServeHTTP(
-								w, r, db, authorizer.NewProxy())
+								w, r, db, authorizer.NewProxy(nil))
 							return true
 						}
 
 						wProxies[rand.Intn(wLen)].ServeHTTP(
-							w, r, authorizer.NewProxy())
+							w, r, authorizer.NewProxy(nil))
 						return true
 					}
 				}
@@ -135,7 +135,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		host.Service.MatchWhitelistPath(r.URL.Path) {
 
 		wiProxies[rand.Intn(wLen)].ServeHTTP(
-			w, r, authorizer.NewProxy())
+			w, r, authorizer.NewProxy(nil))
 		return true
 	}
 

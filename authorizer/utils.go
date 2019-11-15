@@ -159,9 +159,10 @@ func NewAdmin() (authr *Authorizer) {
 	return
 }
 
-func NewProxy() (authr *Authorizer) {
+func NewProxy(srvc *service.Service) (authr *Authorizer) {
 	authr = &Authorizer{
-		typ: Proxy,
+		typ:  Proxy,
+		srvc: srvc,
 	}
 
 	return
