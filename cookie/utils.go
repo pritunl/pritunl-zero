@@ -161,15 +161,31 @@ func CleanProxy(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cook)
 
-	cook = &http.Cookie{
-		Name:     "pritunl-zero",
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-		MaxAge:   -1,
-		Domain:   getCookieTopDomain(r),
+	tld := getCookieTopDomain(r)
+	if tld != "" {
+		cook = &http.Cookie{
+			Name:     "pritunl-zero",
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+			MaxAge:   -1,
+			Domain:   tld,
+		}
+		http.SetCookie(w, cook)
+
+		tld = getCookieNextDomain(tld)
+		if tld != "" {
+			cook = &http.Cookie{
+				Name:     "pritunl-zero",
+				Path:     "/",
+				Secure:   true,
+				HttpOnly: true,
+				MaxAge:   -1,
+				Domain:   tld,
+			}
+			http.SetCookie(w, cook)
+		}
 	}
-	http.SetCookie(w, cook)
 
 	return
 }
