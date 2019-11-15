@@ -74,6 +74,27 @@ func getCookieTopDomain(r *http.Request) string {
 	return ""
 }
 
+func getCookieNextDomain(host string) string {
+	if host == "" {
+		return ""
+	}
+
+	if host[0] == '.' {
+		host = host[1:]
+	}
+
+	if strings.Count(host, ".") >= 2 {
+		i := strings.LastIndex(host, ".")
+		tld := host[i+1:]
+		if _, err := strconv.Atoi(tld); err != nil {
+			host = "." + strings.SplitN(host, ".", 2)[1]
+			return host
+		}
+	}
+
+	return ""
+}
+
 func newProxyStore(srvc *service.Service,
 	r *http.Request) *sessions.CookieStore {
 
