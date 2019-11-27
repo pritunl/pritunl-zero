@@ -104,7 +104,7 @@ func newProxyStore(srvc *service.Service,
 	cookieStore.Options.HttpOnly = true
 
 	if srvc.ShareSession {
-		cookieStore.Options.Domain = getCookieTopDomain(r)
+		cookieStore.Options.Domain = getCookieTopDomain(r.Host)
 	}
 
 	return cookieStore
