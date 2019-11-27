@@ -2,7 +2,6 @@ package cookie
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
@@ -60,15 +59,16 @@ func CleanAdmin(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func getCookieTopDomain(r *http.Request) string {
-	host := utils.StripPort(r.Host)
+func getCookieTopDomain(host string) string {
+	host = utils.StripPort(host)
+
+	if host == "" {
+		return ""
+	}
+
 	if strings.Count(host, ".") >= 2 {
-		i := strings.LastIndex(host, ".")
-		tld := host[i+1:]
-		if _, err := strconv.Atoi(tld); err != nil {
-			host = "." + strings.SplitN(host, ".", 2)[1]
-			return host
-		}
+		host = "." + strings.SplitN(host, ".", 2)[1]
+		return host
 	}
 
 	return ""
