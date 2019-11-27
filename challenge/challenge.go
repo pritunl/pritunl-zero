@@ -65,6 +65,10 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 
 	requireSmartCard := false
 	for _, polcy := range policies {
+		if polcy.Disabled {
+			continue
+		}
+
 		if polcy.AuthorityDeviceSecondary {
 			deviceAuth = true
 		}
