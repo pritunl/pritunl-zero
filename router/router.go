@@ -106,6 +106,7 @@ func (r *Router) initRedirect() (err error) {
 
 			if strings.HasPrefix(req.URL.Path, acme.AcmePath) {
 				token := acme.ParsePath(req.URL.Path)
+				token = utils.FilterStr(token, 96)
 				if token != "" {
 					chal, err := acme.GetChallenge(token)
 					if err != nil {
