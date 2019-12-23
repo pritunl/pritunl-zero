@@ -53,6 +53,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 						}}
 						datePickerProps={{
 							showActionsBar: true,
+							maxDate: new Date(new Date().getFullYear() + 1, 11, 31).getTime()
 						}}
 						onChange={(newDate: Date): void => {
 							if (this.props.disabled) {
