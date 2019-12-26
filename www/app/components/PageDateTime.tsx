@@ -12,6 +12,9 @@ interface Props {
 	onChange: (val: string) => void;
 }
 
+const minDate = new Date(2018, 0, 1);
+const maxDate = new Date(new Date().getFullYear() + 3, 0, 0);
+
 const css = {
 	group: {
 		display: 'inline-block',
@@ -53,7 +56,8 @@ export default class PageDateTime extends React.Component<Props, {}> {
 						}}
 						datePickerProps={{
 							showActionsBar: true,
-							maxDate: new Date(new Date().getFullYear() + 1, 11, 31).getTime()
+							minDate: minDate,
+							maxDate: maxDate,
 						}}
 						onChange={(newDate: Date): void => {
 							if (this.props.disabled) {
