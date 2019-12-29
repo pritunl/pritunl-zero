@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Interface improvements
+
 Version 1.0.1452.54 2019-11-15
 ------------------------------
 
