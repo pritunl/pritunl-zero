@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with bastion server startup
+
 Version 1.0.1497.97 2019-12-30
 ------------------------------
 
