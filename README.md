@@ -23,13 +23,13 @@ EOF
 source ~/.bashrc
 
 # Install MongoDB
-sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo << EOF
-[mongodb-org-4.0]
+sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+[mongodb-org-4.2]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
 EOF
 sudo yum -y install mongodb-org
 sudo service mongod start
@@ -63,13 +63,13 @@ sudo systemctl enable mongodb pritunl-zero
 ### amazonlinux 2
 
 ```bash
-sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo << EOF
-[mongodb-org-4.0]
+sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+[mongodb-org-4.2]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.2/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
 EOF
 
 sudo tee /etc/yum.repos.d/pritunl.repo << EOF
@@ -91,13 +91,13 @@ sudo systemctl enable mongod pritunl-zero
 ### centos 7
 
 ```bash
-sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo << EOF
-[mongodb-org-4.0]
+sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+[mongodb-org-4.2]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
 EOF
 
 sudo tee /etc/yum.repos.d/pritunl.repo << EOF
@@ -119,15 +119,15 @@ sudo systemctl enable mongod pritunl-zero
 ### debian jessie
 
 ```bash
-sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list << EOF
-deb https://repo.mongodb.org/apt/debian jessie/mongodb-org/4.0 main
+sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list << EOF
+deb https://repo.mongodb.org/apt/debian jessie/mongodb-org/4.2 main
 EOF
 
 sudo tee /etc/apt/sources.list.d/pritunl.list << EOF
 deb https://repo.pritunl.com/stable/apt jessie main
 EOF
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv E162F504A20CDF15827F718D4B7C549A058F8B6B
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
 sudo apt-get update
 sudo apt-get --assume-yes install pritunl-zero mongodb-org
@@ -138,15 +138,15 @@ sudo systemctl enable mongod pritunl-zero
 ### debian strech
 
 ```bash
-sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list << EOF
-deb https://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main
+sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list << EOF
+deb https://repo.mongodb.org/apt/debian stretch/mongodb-org/4.2 main
 EOF
 
 sudo tee /etc/apt/sources.list.d/pritunl.list << EOF
 deb https://repo.pritunl.com/stable/apt stretch main
 EOF
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv E162F504A20CDF15827F718D4B7C549A058F8B6B
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
 sudo apt-get update
 sudo apt-get --assume-yes install pritunl-zero mongodb-server
@@ -157,13 +157,13 @@ sudo systemctl enable mongodb pritunl-zero
 ### oracle linux 7
 
 ```bash
-sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo << EOF
-[mongodb-org-4.0]
+sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
+[mongodb-org-4.2]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
 EOF
 
 sudo tee /etc/yum.repos.d/pritunl.repo << EOF
@@ -186,15 +186,15 @@ sudo systemctl enable mongod pritunl-zero
 ### ubuntu xenial
 
 ```bash
-sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list << EOF
-deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse
+sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list << EOF
+deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse
 EOF
 
 sudo tee /etc/apt/sources.list.d/pritunl.list << EOF
 deb https://repo.pritunl.com/stable/apt xenial main
 EOF
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv E162F504A20CDF15827F718D4B7C549A058F8B6B
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
 sudo apt-get update
 sudo apt-get --assume-yes install pritunl-zero mongodb-org
@@ -205,15 +205,15 @@ sudo systemctl enable pritunl-zero mongod
 ### ubuntu bionic
 
 ```bash
-sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list << EOF
-deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse
+sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list << EOF
+deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse
 EOF
 
 sudo tee /etc/apt/sources.list.d/pritunl.list << EOF
 deb https://repo.pritunl.com/stable/apt bionic main
 EOF
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv E162F504A20CDF15827F718D4B7C549A058F8B6B
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv 7568D9BB55FF9E5287D586017AE645C0CF8E292A
 sudo apt-get update
 sudo apt-get --assume-yes install pritunl-zero mongodb-server
