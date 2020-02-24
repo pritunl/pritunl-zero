@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Interface improvements
+
 Version 1.0.1499.1 2020-01-01
 -----------------------------
 
