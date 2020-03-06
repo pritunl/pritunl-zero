@@ -100,6 +100,20 @@ func (n *Node) Validate(db *database.Database) (
 		n.Type = Management
 	}
 
+	typs := strings.Split(n.Type, ",")
+	for _, typ := range typs {
+		switch typ {
+		case Management, User, Proxy, Bastion:
+			break
+		default:
+			errData = &errortypes.ErrorData{
+				Error:   "type_invalid",
+				Message: "Invalid node type",
+			}
+			return
+		}
+	}
+
 	if n.Type == Management {
 		n.ManagementDomain = ""
 		n.UserDomain = ""
