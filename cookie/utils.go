@@ -66,7 +66,15 @@ func getCookieTopDomain(host string) string {
 		return ""
 	}
 
-	if strings.Count(host, ".") >= 2 {
+	minLen := 0
+	hostSpl := strings.Split(host, ".")
+	if len(hostSpl[len(hostSpl)-1]) == 2 {
+		minLen = 3
+	} else {
+		minLen = 2
+	}
+
+	if strings.Count(host, ".") >= minLen {
 		host = "." + strings.SplitN(host, ".", 2)[1]
 		return host
 	}
@@ -85,7 +93,15 @@ func getCookieNextDomain(host string) string {
 		host = host[1:]
 	}
 
-	if strings.Count(host, ".") >= 2 {
+	minLen := 0
+	hostSpl := strings.Split(host, ".")
+	if len(hostSpl[len(hostSpl)-1]) == 2 {
+		minLen = 3
+	} else {
+		minLen = 2
+	}
+
+	if strings.Count(host, ".") >= minLen {
 		host = "." + strings.SplitN(host, ".", 2)[1]
 		return host
 	}
