@@ -36,7 +36,6 @@ type Host struct {
 
 type Proxy struct {
 	Hosts     map[string]*Host
-	nodeHash  []byte
 	wProxies  map[string][]*web
 	wsProxies map[string][]*webSocket
 	wiProxies map[string][]*webIsolated
@@ -65,7 +64,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		wiLen = len(wiProxies)
 	}
 
-	if host == nil || wLen == 0 || wProxies == nil {
+	if host == nil || wLen == 0 {
 		if r.URL.Path == "/check" {
 			utils.WriteText(w, 200, "ok")
 			return true
@@ -230,7 +229,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if wsProxies != nil && r.Header.Get("Upgrade") == "websocket" {
+	if wsLen == 0 && r.Header.Get("Upgrade") == "websocket" {
 		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, db, authr)
 		return true
 	}
@@ -432,7 +431,6 @@ func (p *Proxy) watchNode() {
 	for {
 		err := p.update()
 		if err != nil {
-			p.nodeHash = []byte{}
 			p.Hosts = map[string]*Host{}
 			p.wProxies = map[string][]*web{}
 			p.wsProxies = map[string][]*webSocket{}
@@ -445,8 +443,6 @@ func (p *Proxy) watchNode() {
 
 		time.Sleep(3 * time.Second)
 	}
-
-	return
 }
 
 func (p *Proxy) Init() {
