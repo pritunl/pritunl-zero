@@ -122,7 +122,7 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 	}
 
 	cursor, err := coll.Find(db, &bson.M{
-		"u": userId,
+		"user_id": userId,
 	}, &opts)
 	if err != nil {
 		err = database.ParseError(err)
