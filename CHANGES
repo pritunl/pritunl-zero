@@ -1,8 +1,7 @@
 pritunl-zero changelog
 ======================
 
-Version 1.0.1623.78 2020-05-04
-------------------------------
+<%= version %>
 
 Fix display issue with user certificates
 
