@@ -100,7 +100,7 @@ func (n *Node) Validate(db *database.Database) (
 		n.Type = Management
 	}
 
-	typs := strings.Split(n.Type, ",")
+	typs := strings.Split(n.Type, "_")
 	for _, typ := range typs {
 		switch typ {
 		case Management, User, Proxy, Bastion:
