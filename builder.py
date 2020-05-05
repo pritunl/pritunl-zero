@@ -511,6 +511,7 @@ if cmd == 'upload' or cmd == 'build-upload':
         'mirror',
         '--remove',
         '--overwrite',
+        '--md5',
         'mirror',
         'repo/dev' if is_snapshot else 'repo/stable',
     ], cwd=pacur_path)
