@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix node configuration
+
 Version 1.0.1623.80 2020-05-04
 ------------------------------
 
