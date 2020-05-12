@@ -17,6 +17,7 @@ type authorityData struct {
 	Id                 primitive.ObjectID `json:"id"`
 	Name               string             `json:"name"`
 	Type               string             `json:"type"`
+	Algorithm          string             `json:"algorithm"`
 	Expire             int                `json:"expire"`
 	HostExpire         int                `json:"host_expire"`
 	MatchRoles         bool               `json:"match_roles"`
@@ -182,6 +183,7 @@ func authorityPost(c *gin.Context) {
 	authr := &authority.Authority{
 		Name:               data.Name,
 		Type:               data.Type,
+		Algorithm:          data.Algorithm,
 		Expire:             data.Expire,
 		HostExpire:         data.HostExpire,
 		MatchRoles:         data.MatchRoles,
@@ -195,7 +197,7 @@ func authorityPost(c *gin.Context) {
 		StrictHostChecking: data.StrictHostChecking,
 	}
 
-	err = authr.GenerateRsaPrivateKey()
+	err = authr.GeneratePrivateKey()
 	if err != nil {
 		return
 	}
