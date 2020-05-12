@@ -150,6 +150,16 @@ func (a *Authority) GenerateEcPrivateKey() (err error) {
 	return
 }
 
+func (a *Authority) GeneratePrivateKey() (err error) {
+	if a.Algorithm == ECP384 {
+		err = a.GenerateEcPrivateKey()
+	} else {
+		err = a.GenerateRsaPrivateKey()
+	}
+
+	return
+}
+
 func (a *Authority) GenerateHsmToken() (err error) {
 	a.PublicKey = ""
 
@@ -1415,7 +1425,7 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HsmSerial = ""
 
 		if a.PrivateKey == "" {
-			err = a.GenerateRsaPrivateKey()
+			err = a.GeneratePrivateKey()
 			if err != nil {
 				return
 			}
