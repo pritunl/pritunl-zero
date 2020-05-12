@@ -1418,6 +1418,22 @@ func (a *Authority) Validate(db *database.Database) (
 		a.HostSubnets = []string{}
 	}
 
+	switch a.Algorithm {
+	case RSA4096:
+		break
+	case ECP384:
+		break
+	case "":
+		a.Algorithm = RSA4096
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "invalid_algorithm",
+			Message: "Invalid algorithm",
+		}
+		return
+	}
+
 	switch a.Type {
 	case Local:
 		a.HsmToken = ""
