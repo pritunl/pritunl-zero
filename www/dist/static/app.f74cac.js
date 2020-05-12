@@ -13279,10 +13279,28 @@ System.registerDynamic("app/components/Authorities.js", ["npm:react@16.11.0.js",
             margin: '19px 0 0 0'
         },
         button: {
-            margin: '8px 0 0 8px'
+            margin: '8px 0 0 0'
         },
         buttons: {
             marginTop: '8px'
+        },
+        group: {
+            width: '100%'
+        },
+        select: {
+            width: '100%'
+        },
+        selectFirst: {
+            width: '100%',
+            borderTopLeftRadius: '3px',
+            borderBottomLeftRadius: '3px'
+        },
+        selectInner: {
+            width: '100%'
+        },
+        selectBox: {
+            margin: '8px 0 0 8px',
+            flex: '1'
         }
     };
     class Authorities extends React.Component {
@@ -13294,7 +13312,8 @@ System.registerDynamic("app/components/Authorities.js", ["npm:react@16.11.0.js",
             this.state = {
                 authorities: AuthoritiesStore_1.default.authorities,
                 nodes: NodesStore_1.default.nodes,
-                disabled: false
+                disabled: false,
+                algorithm: ''
             };
         }
         componentDidMount() {
@@ -13312,14 +13331,19 @@ System.registerDynamic("app/components/Authorities.js", ["npm:react@16.11.0.js",
             this.state.authorities.forEach(authority => {
                 authoritiesDom.push(React.createElement(Authority_1.default, { key: authority.id, nodes: this.state.nodes, authority: authority }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Authorities"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Authorities"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("div", { className: "bp3-control-group", style: css.group }, React.createElement("div", { style: css.selectBox }, React.createElement("div", { className: "bp3-select", style: css.selectFirst }, React.createElement("select", { style: css.selectInner, value: this.state.algorithm, onChange: evt => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { algorithm: evt.target.value }));
+                } }, React.createElement("option", { key: "rsa4096", value: "rsa4096" }, "RSA 4096"), React.createElement("option", { key: "ecp384", value: "ecp384" }, "EC P384")))), React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
                     this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
-                    AuthorityActions.create(null).then(() => {
+                    AuthorityActions.create({
+                        id: null,
+                        algorithm: this.state.algorithm
+                    }).then(() => {
                         this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                     }).catch(() => {
                         this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                     });
-                } }, "New")))), React.createElement("div", null, authoritiesDom), React.createElement(NonState_1.default, { hidden: !!authoritiesDom.length, iconClass: "bp3-icon-office", title: "No authorities", description: "Add a new authority to get started." }));
+                } }, "New"))))), React.createElement("div", null, authoritiesDom), React.createElement(NonState_1.default, { hidden: !!authoritiesDom.length, iconClass: "bp3-icon-office", title: "No authorities", description: "Add a new authority to get started." }));
         }
     }
     exports.default = Authorities;
