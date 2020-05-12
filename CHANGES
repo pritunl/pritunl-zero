@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add algorithm option to authorities
+
 Version 1.0.1624.53 2020-05-05
 ------------------------------
 
