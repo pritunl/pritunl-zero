@@ -66,6 +66,7 @@ type Authority struct {
 	Roles              []string           `bson:"roles" json:"roles"`
 	Expire             int                `bson:"expire" json:"expire"`
 	HostExpire         int                `bson:"host_expire" json:"host_expire"`
+	Algorithm          string             `bson:"algorithm" json:"algorithm"`
 	PrivateKey         string             `bson:"private_key" json:"-"`
 	PublicKey          string             `bson:"public_key" json:"public_key"`
 	PublicKeyPem       string             `bson:"public_key_pem" json:"public_key_pem"`
