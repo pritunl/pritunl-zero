@@ -11,6 +11,7 @@ export interface Authority {
 	id: string;
 	name?: string;
 	type?: string;
+	algorithm?: string;
 	info?: Info;
 	expire?: number;
 	host_expire?: number;
