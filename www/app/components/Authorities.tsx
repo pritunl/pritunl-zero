@@ -26,7 +26,7 @@ const css = {
 		margin: '19px 0 0 0',
 	} as React.CSSProperties,
 	button: {
-		margin: '8px 0 0 8px',
+		margin: '8px 0 0 0',
 	} as React.CSSProperties,
 	buttons: {
 		marginTop: '8px',
@@ -105,7 +105,7 @@ export default class Authorities extends React.Component<{}, State> {
 							style={css.group}
 						>
 							<div style={css.selectBox}>
-								<div className="bp3-select" style={css.select}>
+								<div className="bp3-select" style={css.selectFirst}>
 									<select
 										style={css.selectInner}
 										value={this.state.algorithm}
