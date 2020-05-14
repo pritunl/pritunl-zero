@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix browser cache issue
+
 Version 1.0.1631.2 2020-05-12
 -----------------------------
 
