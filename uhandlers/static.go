@@ -11,7 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
-func staticPath(c *gin.Context, pth string) {
+func staticPath(c *gin.Context, pth string, cache bool) {
 	pth = config.StaticRoot + pth
 
 	file, ok := store.Files[pth]
@@ -20,7 +20,7 @@ func staticPath(c *gin.Context, pth string) {
 		return
 	}
 
-	if constants.StaticCache {
+	if constants.StaticCache && cache {
 		c.Writer.Header().Add("Cache-Control", "public, max-age=86400")
 		c.Writer.Header().Add("ETag", file.Hash)
 	} else {
@@ -45,19 +45,19 @@ func staticIndexGet(c *gin.Context) {
 		return
 	}
 
-	staticPath(c, "/uindex.html")
+	staticPath(c, "/uindex.html", false)
 }
 
 func staticLoginGet(c *gin.Context) {
-	staticPath(c, "/login.html")
+	staticPath(c, "/login.html", false)
 }
 
 func staticLogoGet(c *gin.Context) {
-	staticPath(c, "/logo.png")
+	staticPath(c, "/logo.png", true)
 }
 
 func staticGet(c *gin.Context) {
-	staticPath(c, "/static"+c.Params.ByName("path"))
+	staticPath(c, "/static"+c.Params.ByName("path"), true)
 }
 
 func staticTestingGet(c *gin.Context) {
