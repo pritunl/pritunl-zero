@@ -559,11 +559,13 @@ export default class Node extends React.Component<Props, State> {
 						type="text"
 						placeholder="Enter name"
 						value={node.name}
+						disabled={this.state.disabled}
 						onChange={(val): void => {
 							this.set('name', val);
 						}}
 					/>
 					<PageSwitch
+						disabled={this.state.disabled}
 						label="Management"
 						help="Provides access to the admin console."
 						checked={node.type.indexOf('management') !== -1}
@@ -572,6 +574,7 @@ export default class Node extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSwitch
+						disabled={this.state.disabled}
 						label="User"
 						help="Provides access to the user console for SSH certificates."
 						checked={node.type.indexOf('user') !== -1}
@@ -580,6 +583,7 @@ export default class Node extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSwitch
+						disabled={this.state.disabled}
 						label="Proxy"
 						help="Provides access to the services added to the node."
 						checked={node.type.indexOf('proxy') !== -1}
@@ -588,6 +592,7 @@ export default class Node extends React.Component<Props, State> {
 						}}
 					/>
 					<PageSwitch
+						disabled={this.state.disabled}
 						label="Bastion"
 						help="Host bastion servers on this node."
 						checked={node.type.indexOf('bastion') !== -1}
@@ -598,6 +603,7 @@ export default class Node extends React.Component<Props, State> {
 					<PageInput
 						hidden={node.type.indexOf('_') === -1 ||
 							node.type.indexOf('management') === -1}
+						disabled={this.state.disabled}
 						label="Management Domain"
 						help="Domain that will be used to access the management interface."
 						type="text"
@@ -615,6 +621,7 @@ export default class Node extends React.Component<Props, State> {
 						type="text"
 						placeholder="Enter user domain"
 						value={node.user_domain}
+						disabled={this.state.disabled}
 						onChange={(val): void => {
 							this.set('user_domain', val);
 						}}
@@ -674,7 +681,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('proxy') === -1}
 						label="Add Service"
 						value={this.state.addService}
-						disabled={!this.props.services.length}
+						disabled={this.state.disabled || !this.props.services.length}
 						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
@@ -704,7 +711,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Add Authority"
 						hidden={node.type.indexOf('bastion') === -1}
 						value={this.state.addAuthority}
-						disabled={!this.props.authorities.length}
+						disabled={this.state.disabled || !this.props.authorities.length}
 						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
@@ -783,7 +790,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.protocol === 'http'}
 						label="Add Certificate"
 						value={this.state.addCert}
-						disabled={!this.props.certificates.length}
+						disabled={this.state.disabled || !hasCertificates}
 						buttonClass="bp3-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
