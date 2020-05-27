@@ -53,7 +53,9 @@ func NewFile(path string) (file *File, err error) {
 
 	data, e := ioutil.ReadFile(path)
 	if e != nil {
-		err = e
+		err = &errortypes.ReadError{
+			errors.Wrap(e, "static: Read error"),
+		}
 		return
 	}
 
