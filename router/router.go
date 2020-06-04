@@ -489,8 +489,6 @@ func (r *Router) watchNode() {
 			time.Sleep(2 * time.Second)
 		}
 	}
-
-	return
 }
 
 func (r *Router) Run() (err error) {
