@@ -17,6 +17,9 @@ type Store struct {
 func (s *Store) addDir(dir string) (err error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "static: Read directory error"),
+		}
 		return
 	}
 
