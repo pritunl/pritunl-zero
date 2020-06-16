@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -114,7 +115,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 				for _, network := range host.WhitelistNetworks {
 					if network.Contains(clientIp) {
 						if wsProxies != nil && wsLen > 0 &&
-							r.Header.Get("Upgrade") == "websocket" {
+							strings.ToLower(
+								r.Header.Get("Upgrade")) == "websocket" {
 
 							wsProxies[rand.Intn(wsLen)].ServeHTTP(
 								w, r, db, authorizer.NewProxy(nil))
@@ -229,7 +231,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if wsLen == 0 && r.Header.Get("Upgrade") == "websocket" {
+	if wsLen == 0 && strings.ToLower(r.Header.Get("Upgrade")) == "websocket" {
 		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, db, authr)
 		return true
 	}
