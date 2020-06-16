@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1666.86 2020-06-16
+------------------------------
 
 Improve WebSocket support
 
