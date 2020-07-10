@@ -103,13 +103,13 @@ export default class PolicyRule extends React.Component<Props, State> {
 				options = Constants.locations;
 				break;
 			case 'whitelist_networks':
-				label = 'Whitelisted Networks';
-				selectLabel = 'Whitelisted network policies';
+				label = 'Allowed Networks';
+				selectLabel = 'Allowed network policies';
 				selectPlaceholder = 'Add network';
 				break;
 			case 'blacklist_networks':
-				label = 'Blacklisted Networks';
-				selectLabel = 'Blacklisted network policies';
+				label = 'Blocked Networks';
+				selectLabel = 'Blocked network policies';
 				selectPlaceholder = 'Add network';
 				break;
 		}
