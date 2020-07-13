@@ -42,6 +42,9 @@ func devicePut(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -462,6 +465,9 @@ func deviceU2fSecondaryPut(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -575,6 +581,9 @@ func deviceU2fSignPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
