@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -224,6 +225,9 @@ func sshSecondaryPut(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -349,6 +353,9 @@ func sshU2fSignPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -451,6 +458,9 @@ func sshChallengePut(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -566,6 +576,9 @@ func sshChallengePost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
@@ -606,6 +619,9 @@ func sshHostPost(c *gin.Context) {
 
 	err := c.Bind(data)
 	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
 		utils.AbortWithError(c, 500, err)
 		return
 	}
