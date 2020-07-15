@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Web server improvements
+
 Version 1.0.1666.86 2020-06-16
 ------------------------------
 
