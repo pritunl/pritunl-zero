@@ -158,7 +158,7 @@ func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 	}
 
 	writer := &logger.ErrorWriter{
-		Message: "node: Proxy server error",
+		Message: "node: Proxy isolated server error",
 		Fields: logrus.Fields{
 			"service": host.Service.Name,
 			"domain":  host.Domain.Domain,
