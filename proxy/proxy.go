@@ -116,7 +116,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 					if network.Contains(clientIp) {
 						if wsProxies != nil && wsLen > 0 &&
 							strings.ToLower(
-								r.Header.Get("Upgrade")) == "websocket" {
+								r.Header.Get("Upgrade")) != "" {
 
 							wsProxies[rand.Intn(wsLen)].ServeHTTP(
 								w, r, db, authorizer.NewProxy(nil))
@@ -231,7 +231,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if wsLen == 0 && strings.ToLower(r.Header.Get("Upgrade")) == "websocket" {
+	if wsLen == 0 && r.Header.Get("Upgrade") != "" {
 		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, db, authr)
 		return true
 	}

@@ -3,7 +3,6 @@ package middlewear
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
@@ -316,7 +315,7 @@ func CsrfToken(c *gin.Context) {
 	}
 
 	token := ""
-	if strings.ToLower(c.Request.Header.Get("Upgrade")) == "websocket" {
+	if c.Request.Header.Get("Upgrade") != "" {
 		token = c.Query("csrf_token")
 	} else {
 		token = c.Request.Header.Get("Csrf-Token")
