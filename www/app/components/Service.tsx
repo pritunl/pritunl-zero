@@ -782,10 +782,10 @@ export default class Service extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<label className="bp3-label">
-						Allowed Networks
+						Permitted Networks
 						<Help
-							title="Allowed Networks"
-							content="Allowed subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address."
+							title="Permitted Networks"
+							content="Permitted subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address."
 						/>
 						<div>
 							{whitelistNets}
@@ -806,10 +806,10 @@ export default class Service extends React.Component<Props, State> {
 						onSubmit={this.onAddWhitelistNet}
 					/>
 					<label style={css.itemsLabel}>
-						Allowed Paths
+						Permitted Paths
 						<Help
-							title="Allowed Paths"
-							content="Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards. Using this feature significantly increases the attack surface of the service and is not recommended."
+							title="Permitted Paths"
+							content="Permitted paths that can be accessed without authenticating. Supports '*' and '?' wildcards. Using this feature significantly increases the attack surface of the service and is not recommended."
 						/>
 					</label>
 					{whitelistPaths}
@@ -819,7 +819,7 @@ export default class Service extends React.Component<Props, State> {
 						type="button"
 						onClick={this.onAddWhitelistPath}
 					>
-						Add Allowed Path
+						Add Permitted Path
 					</button>
 					<PageSwitch
 						label="Share session with subdomains"
