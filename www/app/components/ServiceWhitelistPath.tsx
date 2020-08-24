@@ -41,7 +41,7 @@ export default class ServiceWhitelistPath extends React.Component<Props, {}> {
 					type="text"
 					autoCapitalize="off"
 					spellCheck={false}
-					placeholder="Allowed path"
+					placeholder="Permitted path"
 					value={path.path || ''}
 					onChange={(evt): void => {
 						let state = this.clone();
