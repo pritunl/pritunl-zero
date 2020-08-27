@@ -11967,13 +11967,13 @@ System.registerDynamic("app/components/PolicyRule.js", ["npm:react@16.11.0.js", 
                     options = Constants.locations;
                     break;
                 case 'whitelist_networks':
-                    label = 'Whitelisted Networks';
-                    selectLabel = 'Whitelisted network policies';
+                    label = 'Permitted Networks';
+                    selectLabel = 'Permitted network policies';
                     selectPlaceholder = 'Add network';
                     break;
                 case 'blacklist_networks':
-                    label = 'Blacklisted Networks';
-                    selectLabel = 'Blacklisted network policies';
+                    label = 'Blocked Networks';
+                    selectLabel = 'Blocked network policies';
                     selectPlaceholder = 'Add network';
                     break;
             }
@@ -14310,7 +14310,7 @@ System.registerDynamic("app/components/ServiceWhitelistPath.js", ["npm:react@16.
         }
         render() {
             let path = this.props.path;
-            return React.createElement("div", { className: "bp3-control-group", style: css.group }, React.createElement("div", { style: css.pathBox }, React.createElement("input", { className: "bp3-input", style: css.path, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Whitelist path", value: path.path || '', onChange: evt => {
+            return React.createElement("div", { className: "bp3-control-group", style: css.group }, React.createElement("div", { style: css.pathBox }, React.createElement("input", { className: "bp3-input", style: css.path, type: "text", autoCapitalize: "off", spellCheck: false, placeholder: "Permitted path", value: path.path || '', onChange: evt => {
                     let state = this.clone();
                     state.path = evt.target.value;
                     this.props.onChange(state);
@@ -14648,9 +14648,9 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
                     value: service.id || 'None'
                 }] }), React.createElement("label", { className: "bp3-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "The user roles that will be allowed access to this service. At least one role must match for the user to access the service." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "bp3-intent-success bp3-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
                     this.setState(Object.assign(Object.assign({}, this.state), { addRole: val }));
-                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "bp3-label" }, "Whitelisted Networks", React.createElement(Help_1.default, { title: "Whitelisted Networks", content: "Allowed subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address." }), React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "bp3-intent-success bp3-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
+                }, onSubmit: this.onAddRole }), React.createElement("label", { className: "bp3-label" }, "Permitted Networks", React.createElement(Help_1.default, { title: "Permitted Networks", content: "Permitted subnets with CIDR such as 10.0.0.0/8 that can access the service without authenticating. Single IP addresses can also be used. Any request coming from an IP address on these networks will be able to access the service without any authentication. Extra care should be taken when using this with the forwarded for header option in the node settings. If the nodes forwarded for header is enabled without a load balancer the user can modify the header value to spoof an IP address." }), React.createElement("div", null, whitelistNets)), React.createElement(PageInputButton_1.default, { buttonClass: "bp3-intent-success bp3-icon-add", label: "Add", type: "text", placeholder: "Add network", value: this.state.addWhitelistNet, onChange: val => {
                     this.setState(Object.assign(Object.assign({}, this.state), { addWhitelistNet: val }));
-                }, onSubmit: this.onAddWhitelistNet }), React.createElement("label", { style: css.itemsLabel }, "Whitelisted Paths", React.createElement(Help_1.default, { title: "Whitelisted Paths", content: "Allowed paths that can be accessed without authenticating. Supports '*' and '?' wildcards. Using this feature significantly increases the attack surface of the service and is not recommended." })), whitelistPaths, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddWhitelistPath }, "Add Whitelist Path"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", help: "This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain.", checked: service.share_session, onToggle: () => {
+                }, onSubmit: this.onAddWhitelistNet }), React.createElement("label", { style: css.itemsLabel }, "Permitted Paths", React.createElement(Help_1.default, { title: "Permitted Paths", content: "Permitted paths that can be accessed without authenticating. Supports '*' and '?' wildcards. Using this feature significantly increases the attack surface of the service and is not recommended." })), whitelistPaths, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.itemsAdd, type: "button", onClick: this.onAddWhitelistPath }, "Add Permitted Path"), React.createElement(PageSwitch_1.default, { label: "Share session with subdomains", help: "This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain.", checked: service.share_session, onToggle: () => {
                     this.set('share_session', !service.share_session);
                 } }), React.createElement(PageSwitch_1.default, { label: "Allow WebSockets", help: "This will allow WebSockets to be proxied to the user. If the internal service relies on WebSockets this must be enabled.", checked: service.websockets, onToggle: () => {
                     this.set('websockets', !service.websockets);
