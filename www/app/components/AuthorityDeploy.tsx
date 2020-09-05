@@ -149,7 +149,7 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 				hostCertificateDisabled = true;
 			}
 
-			servers.forEach((server): void => {
+			servers.forEach((server: string): void => {
 				if (!serverDefault) {
 					serverDefault = server;
 				}
