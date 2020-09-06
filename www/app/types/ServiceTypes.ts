@@ -1,5 +1,7 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'service.sync';
+export const TRAVERSE = 'service.traverse';
+export const FILTER = 'service.filter';
 export const CHANGE = 'service.change';
 
 export interface Domain {
@@ -33,6 +35,12 @@ export interface Service {
 	whitelist_paths?: Path[];
 }
 
+export interface Filter {
+	id?: string;
+	name?: string;
+	role?: string;
+}
+
 export type Services = Service[];
 
 export type ServiceRo = Readonly<Service>;
@@ -44,5 +52,9 @@ export interface ServiceDispatch {
 		id?: string;
 		service?: Service;
 		services?: Services;
+		page?: number;
+		pageCount?: number;
+		filter?: Filter;
+		count?: number;
 	};
 }
