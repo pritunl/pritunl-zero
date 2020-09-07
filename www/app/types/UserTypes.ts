@@ -23,6 +23,7 @@ export interface User {
 }
 
 export interface Filter {
+	id?: string;
 	username?: string;
 	type?: string;
 	administrator?: boolean;
