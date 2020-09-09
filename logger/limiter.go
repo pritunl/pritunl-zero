@@ -4,7 +4,7 @@ import (
 	"hash/fnv"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type limiter map[uint32]time.Time

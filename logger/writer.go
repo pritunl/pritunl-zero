@@ -3,7 +3,7 @@ package logger
 import (
 	"strings"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type ErrorWriter struct {
