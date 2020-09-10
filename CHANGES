@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1752.12 2020-09-10
+------------------------------
 
 Add paging to services
 
