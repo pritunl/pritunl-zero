@@ -1,9 +1,14 @@
 package mhandlers
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
@@ -27,6 +32,11 @@ type serviceData struct {
 	Servers           []*service.Server        `json:"servers"`
 	WhitelistNetworks []string                 `json:"whitelist_networks"`
 	WhitelistPaths    []*service.WhitelistPath `json:"whitelist_paths"`
+}
+
+type servicesData struct {
+	Services []*service.Service `json:"services"`
+	Count    int64              `json:"count"`
 }
 
 func servicePut(c *gin.Context) {
@@ -192,11 +202,54 @@ func serviceDelete(c *gin.Context) {
 func servicesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	services, err := service.GetAll(db)
+	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
+
+	query := bson.M{}
+
+	serviceId, ok := utils.ParseObjectId(c.Query("id"))
+	if ok {
+		query["_id"] = serviceId
+	}
+
+	name := strings.TrimSpace(c.Query("name"))
+	if name != "" {
+		query["$or"] = []*bson.M{
+			&bson.M{
+				"name": &bson.M{
+					"$regex":   fmt.Sprintf(".*%s.*", name),
+					"$options": "i",
+				},
+			},
+			&bson.M{
+				"key": &bson.M{
+					"$regex":   fmt.Sprintf(".*%s.*", name),
+					"$options": "i",
+				},
+			},
+		}
+	}
+
+	typ := strings.TrimSpace(c.Query("type"))
+	if typ != "" {
+		query["type"] = typ
+	}
+
+	organization, ok := utils.ParseObjectId(c.Query("organization"))
+	if ok {
+		query["organization"] = organization
+	}
+
+	services, count, err := service.GetAllPaged(db, &query, page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	c.JSON(200, services)
+	dta := &servicesData{
+		Services: services,
+		Count:    count,
+	}
+
+	c.JSON(200, dta)
 }
