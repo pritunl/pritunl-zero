@@ -4581,7 +4581,15 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@16.11.0.js",
             if (this.props.filter === null) {
                 return React.createElement("div", null);
             }
-            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Username", value: this.props.filter.username, onChange: val => {
+            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "User ID", value: this.props.filter.id, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.id = val;
+                    } else {
+                        delete filter.id;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Username", value: this.props.filter.username, onChange: val => {
                     let filter = Object.assign({}, this.props.filter);
                     if (val) {
                         filter.username = val;
@@ -11452,7 +11460,12 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.11.0.js", "app/a
                     this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
-                            this.setState(Object.assign(Object.assign({}, this.state), { message: '', changed: false, node: null }));
+                            this.setState(Object.assign(Object.assign({}, this.state), { node: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
                         }
                     }, 3000);
                 }).catch(() => {
@@ -13799,23 +13812,6 @@ System.registerDynamic("app/components/Log.js", ["npm:react@16.11.0.js", "npm:@b
     exports.default = Log;
     
 });
-System.registerDynamic("app/components/SearchInput.js", ["npm:react@16.11.0.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const React = $__require("npm:react@16.11.0.js");
-    class SearchInput extends React.Component {
-        render() {
-            return React.createElement("div", { className: "bp3-input-group", style: this.props.style }, React.createElement("span", { className: "bp3-icon bp3-icon-search" }), React.createElement("input", { className: "bp3-input bp3-round", type: "text", autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
-                    this.props.onChange(evt.target.value);
-                } }));
-        }
-    }
-    exports.default = SearchInput;
-    
-});
 System.registerDynamic("app/components/LogsFilter.js", ["npm:react@16.11.0.js", "app/components/SearchInput.js"], true, function ($__require, exports, module) {
     "use strict";
 
@@ -14045,69 +14041,6 @@ System.registerDynamic("app/components/Logs.js", ["npm:react@16.11.0.js", "app/s
     exports.default = Logs;
     
 });
-System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/ServiceTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
-    const EventEmitter_1 = $__require("app/EventEmitter.js");
-    const ServiceTypes = $__require("app/types/ServiceTypes.js");
-    const GlobalTypes = $__require("app/types/GlobalTypes.js");
-    class ServicesStore extends EventEmitter_1.default {
-        constructor() {
-            super(...arguments);
-            this._services = Object.freeze([]);
-            this._map = {};
-            this._token = Dispatcher_1.default.register(this._callback.bind(this));
-        }
-        get services() {
-            return this._services;
-        }
-        get servicesM() {
-            let services = [];
-            this._services.forEach(service => {
-                services.push(Object.assign({}, service));
-            });
-            return services;
-        }
-        service(id) {
-            let i = this._map[id];
-            if (i === undefined) {
-                return null;
-            }
-            return this._services[i];
-        }
-        emitChange() {
-            this.emitDefer(GlobalTypes.CHANGE);
-        }
-        addChangeListener(callback) {
-            this.on(GlobalTypes.CHANGE, callback);
-        }
-        removeChangeListener(callback) {
-            this.removeListener(GlobalTypes.CHANGE, callback);
-        }
-        _sync(services) {
-            this._map = {};
-            for (let i = 0; i < services.length; i++) {
-                services[i] = Object.freeze(services[i]);
-                this._map[services[i].id] = i;
-            }
-            this._services = Object.freeze(services);
-            this.emitChange();
-        }
-        _callback(action) {
-            switch (action.type) {
-                case ServiceTypes.SYNC:
-                    this._sync(action.data.services);
-                    break;
-            }
-        }
-    }
-    exports.default = new ServicesStore();
-    
-});
 System.registerDynamic("app/stores/AuthoritiesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/AuthorityTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
     "use strict";
 
@@ -14322,7 +14255,7 @@ System.registerDynamic("app/components/ServiceWhitelistPath.js", ["npm:react@16.
     exports.default = ServiceWhitelistPath;
     
 });
-System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/ServiceWhitelistPath.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/ServiceDetailed.js", ["npm:react@16.11.0.js", "app/actions/ServiceActions.js", "app/components/ServiceDomain.js", "app/components/ServiceServer.js", "app/components/ServiceWhitelistPath.js", "app/components/PageInput.js", "app/components/PageSelect.js", "app/components/PageSwitch.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -14344,8 +14277,8 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
     const css = {
         card: {
             position: 'relative',
-            padding: '10px 10px 0 10px',
-            marginBottom: '5px'
+            padding: '48px 10px 0 10px',
+            width: '100%'
         },
         remove: {
             position: 'absolute',
@@ -14364,13 +14297,49 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
         },
         group: {
             flex: 1,
-            minWidth: '250px'
+            minWidth: '250px',
+            margin: '0 10px'
         },
         save: {
             paddingBottom: '10px'
+        },
+        button: {
+            height: '30px'
+        },
+        buttons: {
+            cursor: 'pointer',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            padding: '4px',
+            height: '39px',
+            backgroundColor: 'rgba(0, 0, 0, 0.13)'
+        },
+        label: {
+            width: '100%',
+            maxWidth: '280px'
+        },
+        status: {
+            margin: '6px 0 0 1px'
+        },
+        icon: {
+            marginRight: '3px'
+        },
+        inputGroup: {
+            width: '100%'
+        },
+        protocol: {
+            flex: '0 1 auto'
+        },
+        port: {
+            flex: '1'
+        },
+        select: {
+            margin: '7px 0px 0px 6px'
         }
     };
-    class Service extends React.Component {
+    class ServiceDetailed extends React.Component {
         constructor(props, context) {
             super(props, context);
             this.onSave = () => {
@@ -14379,7 +14348,12 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
                     this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
-                            this.setState(Object.assign(Object.assign({}, this.state), { message: '', changed: false, service: null }));
+                            this.setState(Object.assign(Object.assign({}, this.state), { service: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
                         }
                     }, 3000);
                 }).catch(() => {
@@ -14635,7 +14609,15 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
                         this.onRemoveWhitelistPath(index);
                     } }));
             }
-            return React.createElement("div", { className: "bp3-card", style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash", progressClassName: "bp3-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
+            return React.createElement("td", { className: "bp3-cell", colSpan: 2, style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { className: "layout horizontal", style: css.buttons, onClick: evt => {
+                    let target = evt.target;
+                    if (target.className.indexOf('open-ignore') !== -1) {
+                        return;
+                    }
+                    this.props.onClose();
+                } }, React.createElement("div", null, React.createElement("label", { className: "bp3-control bp3-checkbox open-ignore", style: css.select }, React.createElement("input", { type: "checkbox", className: "open-ignore", checked: this.props.selected, onClick: evt => {
+                    this.props.onSelect(evt.shiftKey);
+                } }), React.createElement("span", { className: "bp3-control-indicator open-ignore" }))), React.createElement("div", { className: "flex" }), React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash open-ignore", style: css.button, progressClassName: "bp3-intent-danger", confirmMsg: "Confirm service remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of service", type: "text", placeholder: "Enter name", value: service.name, onChange: val => {
                     this.set('name', val);
                 } }), React.createElement(PageSelect_1.default, { label: "Type", help: "Service type", value: service.type, onChange: val => {
                     this.set('type', val);
@@ -14656,15 +14638,284 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
                     this.set('websockets', !service.websockets);
                 } }), React.createElement(PageSwitch_1.default, { label: "CSRF check", help: "Check headers to block cross domain requests. The service must implement CSRF protection if disabled.", checked: !service.disable_csrf_check, onToggle: () => {
                     this.set('disable_csrf_check', !service.disable_csrf_check);
-                } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
+                } }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.service && !this.state.message, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
                     this.setState(Object.assign(Object.assign({}, this.state), { changed: false, service: null }));
                 }, onSave: this.onSave }));
+        }
+    }
+    exports.default = ServiceDetailed;
+    
+});
+System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "app/components/ServiceDetailed.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const ServiceDetailed_1 = $__require("app/components/ServiceDetailed.js");
+    const css = {
+        card: {
+            display: 'table-row',
+            width: '100%',
+            padding: 0,
+            boxShadow: 'none',
+            cursor: 'pointer'
+        },
+        cardOpen: {
+            display: 'table-row',
+            width: '100%',
+            padding: 0,
+            boxShadow: 'none',
+            position: 'relative'
+        },
+        select: {
+            margin: '2px 0 0 0',
+            paddingTop: '1px',
+            minHeight: '18px'
+        },
+        name: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '8px'
+        },
+        nameSpan: {
+            margin: '1px 5px 0 0'
+        },
+        item: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '9px',
+            whiteSpace: 'nowrap'
+        },
+        roles: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '0 8px 8px 8px'
+        },
+        icon: {
+            marginRight: '3px'
+        },
+        tag: {
+            margin: '8px 5px 0 5px',
+            height: '20px'
+        },
+        bars: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '8px',
+            width: '30px'
+        },
+        bar: {
+            height: '6px',
+            marginBottom: '1px'
+        },
+        barLast: {
+            height: '6px'
+        }
+    };
+    class Service extends React.Component {
+        render() {
+            let service = this.props.service;
+            if (this.props.open) {
+                return React.createElement("div", { className: "bp3-card bp3-row", style: css.cardOpen }, React.createElement(ServiceDetailed_1.default, { service: this.props.service, authorities: this.props.authorities, selected: this.props.selected, onSelect: this.props.onSelect, onClose: () => {
+                        this.props.onOpen();
+                    } }));
+            }
+            let cardStyle = Object.assign({}, css.card);
+            let roles = [];
+            for (let role of service.roles) {
+                roles.push(React.createElement("div", { className: "bp3-tag bp3-intent-primary", style: css.tag, key: role }, role));
+            }
+            return React.createElement("div", { className: "bp3-card bp3-row", style: cardStyle, onClick: evt => {
+                    let target = evt.target;
+                    if (target.className.indexOf('open-ignore') !== -1) {
+                        return;
+                    }
+                    this.props.onOpen();
+                } }, React.createElement("div", { className: "bp3-cell", style: css.name }, React.createElement("div", { className: "layout horizontal" }, React.createElement("label", { className: "bp3-control bp3-checkbox open-ignore", style: css.select }, React.createElement("input", { type: "checkbox", className: "open-ignore", checked: this.props.selected, onClick: evt => {
+                    this.props.onSelect(evt.shiftKey);
+                } }), React.createElement("span", { className: "bp3-control-indicator open-ignore" })), React.createElement("div", { style: css.nameSpan }, service.name))), React.createElement("div", { className: "flex bp3-cell", style: css.roles }, roles));
         }
     }
     exports.default = Service;
     
 });
-System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "app/stores/ServicesStore.js", "app/stores/AuthoritiesStore.js", "app/actions/ServiceActions.js", "app/actions/AuthorityActions.js", "app/components/NonState.js", "app/components/Service.js", "app/components/Page.js", "app/components/PageHeader.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/SearchInput.js", ["npm:react@16.11.0.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    class SearchInput extends React.Component {
+        render() {
+            return React.createElement("div", { className: "bp3-input-group", style: this.props.style }, React.createElement("span", { className: "bp3-icon bp3-icon-search" }), React.createElement("input", { className: "bp3-input bp3-round", type: "text", autoCapitalize: "off", spellCheck: false, placeholder: this.props.placeholder, value: this.props.value || '', onChange: evt => {
+                    this.props.onChange(evt.target.value);
+                } }));
+        }
+    }
+    exports.default = SearchInput;
+    
+});
+System.registerDynamic("app/components/ServicesFilter.js", ["npm:react@16.11.0.js", "app/components/SearchInput.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const SearchInput_1 = $__require("app/components/SearchInput.js");
+    const css = {
+        filters: {
+            margin: '-15px 0 5px 0'
+        },
+        input: {
+            width: '200px',
+            margin: '5px'
+        },
+        role: {
+            width: '150px',
+            margin: '5px'
+        },
+        type: {
+            margin: '5px'
+        },
+        check: {
+            margin: '12px 5px 8px 5px'
+        }
+    };
+    class ServicesFilter extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                menu: false
+            };
+        }
+        render() {
+            if (this.props.filter === null) {
+                return React.createElement("div", null);
+            }
+            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Service ID", value: this.props.filter.id, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.id = val;
+                    } else {
+                        delete filter.id;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Name", value: this.props.filter.name, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.name = val;
+                    } else {
+                        delete filter.name;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.role, placeholder: "Role", value: this.props.filter.role, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.role = val;
+                    } else {
+                        delete filter.role;
+                    }
+                    this.props.onFilter(filter);
+                } }));
+        }
+    }
+    exports.default = ServicesFilter;
+    
+});
+System.registerDynamic("app/components/ServicesPage.js", ["npm:react@16.11.0.js", "app/stores/ServicesStore.js", "app/actions/ServiceActions.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
+    const ServiceActions = $__require("app/actions/ServiceActions.js");
+    const css = {
+        button: {
+            userSelect: 'none',
+            margin: '0 5px 0 0'
+        },
+        buttonLast: {
+            userSelect: 'none',
+            margin: '0 0 0 0'
+        },
+        link: {
+            cursor: 'pointer',
+            userSelect: 'none',
+            margin: '7px 5px 0 0'
+        },
+        current: {
+            opacity: 0.5
+        }
+    };
+    class ServicesPage extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { page: ServicesStore_1.default.page, pageCount: ServicesStore_1.default.pageCount, pages: ServicesStore_1.default.pages, count: ServicesStore_1.default.count }));
+            };
+            this.state = {
+                page: ServicesStore_1.default.page,
+                pageCount: ServicesStore_1.default.pageCount,
+                pages: ServicesStore_1.default.pages,
+                count: ServicesStore_1.default.count
+            };
+        }
+        componentDidMount() {
+            ServicesStore_1.default.addChangeListener(this.onChange);
+        }
+        componentWillUnmount() {
+            ServicesStore_1.default.removeChangeListener(this.onChange);
+        }
+        render() {
+            let page = this.state.page;
+            let pages = this.state.pages;
+            if (pages <= 1) {
+                return React.createElement("div", null);
+            }
+            let links = [];
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
+            for (let i = start; i < end; i++) {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign(Object.assign({}, css.link), css.current) : css.link, onClick: () => {
+                        ServiceActions.traverse(i);
+                        if (this.props.onPage) {
+                            this.props.onPage();
+                        }
+                    } }, i + 1));
+            }
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
+                    ServiceActions.traverse(0);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    ServiceActions.traverse(Math.max(0, this.state.page - 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), links, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    ServiceActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    ServiceActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
+        }
+    }
+    exports.default = ServicesPage;
+    
+});
+System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "app/stores/ServicesStore.js", "app/stores/AuthoritiesStore.js", "app/actions/ServiceActions.js", "app/actions/AuthorityActions.js", "app/components/Service.js", "app/components/ServicesFilter.js", "app/components/ServicesPage.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/NonState.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -14675,11 +14926,28 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "a
     const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
     const AuthorityActions = $__require("app/actions/AuthorityActions.js");
-    const NonState_1 = $__require("app/components/NonState.js");
     const Service_1 = $__require("app/components/Service.js");
+    const ServicesFilter_1 = $__require("app/components/ServicesFilter.js");
+    const ServicesPage_1 = $__require("app/components/ServicesPage.js");
     const Page_1 = $__require("app/components/Page.js");
     const PageHeader_1 = $__require("app/components/PageHeader.js");
+    const NonState_1 = $__require("app/components/NonState.js");
+    const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
     const css = {
+        items: {
+            width: '100%',
+            marginTop: '-5px',
+            display: 'table',
+            borderSpacing: '0 5px'
+        },
+        itemsBox: {
+            width: '100%',
+            overflowY: 'auto'
+        },
+        placeholder: {
+            opacity: 0,
+            width: '100%'
+        },
         header: {
             marginTop: '-19px'
         },
@@ -14697,13 +14965,45 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "a
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
-                this.setState(Object.assign(Object.assign({}, this.state), { services: ServicesStore_1.default.services, authorities: AuthoritiesStore_1.default.authorities }));
+                let services = ServicesStore_1.default.services;
+                let selected = {};
+                let curSelected = this.state.selected;
+                let opened = {};
+                let curOpened = this.state.opened;
+                services.forEach(service => {
+                    if (curSelected[service.id]) {
+                        selected[service.id] = true;
+                    }
+                    if (curOpened[service.id]) {
+                        opened[service.id] = true;
+                    }
+                });
+                this.setState(Object.assign(Object.assign({}, this.state), { services: services, filter: ServicesStore_1.default.filter, authorities: AuthoritiesStore_1.default.authorities, selected: selected, opened: opened }));
+            };
+            this.onDelete = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
+                ServiceActions.removeMulti(Object.keys(this.state.selected)).then(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { selected: {}, disabled: false }));
+                }).catch(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                });
             };
             this.state = {
                 services: ServicesStore_1.default.services,
+                filter: ServicesStore_1.default.filter,
                 authorities: AuthoritiesStore_1.default.authorities,
+                selected: {},
+                opened: {},
+                newOpened: false,
+                lastSelected: null,
                 disabled: false
             };
+        }
+        get selected() {
+            return !!Object.keys(this.state.selected).length;
+        }
+        get opened() {
+            return !!Object.keys(this.state.opened).length;
         }
         componentDidMount() {
             ServicesStore_1.default.addChangeListener(this.onChange);
@@ -14718,9 +15018,60 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "a
         render() {
             let servicesDom = [];
             this.state.services.forEach(service => {
-                servicesDom.push(React.createElement(Service_1.default, { key: service.id, service: service, authorities: this.state.authorities }));
+                servicesDom.push(React.createElement(Service_1.default, { key: service.id, service: service, authorities: this.state.authorities, selected: !!this.state.selected[service.id], open: !!this.state.opened[service.id], onSelect: shift => {
+                        let selected = Object.assign({}, this.state.selected);
+                        if (shift) {
+                            let services = this.state.services;
+                            let start;
+                            let end;
+                            for (let i = 0; i < services.length; i++) {
+                                let usr = services[i];
+                                if (usr.id === service.id) {
+                                    start = i;
+                                } else if (usr.id === this.state.lastSelected) {
+                                    end = i;
+                                }
+                            }
+                            if (start !== undefined && end !== undefined) {
+                                if (start > end) {
+                                    end = [start, start = end][0];
+                                }
+                                for (let i = start; i <= end; i++) {
+                                    selected[services[i].id] = true;
+                                }
+                                this.setState(Object.assign(Object.assign({}, this.state), { lastSelected: service.id, selected: selected }));
+                                return;
+                            }
+                        }
+                        if (selected[service.id]) {
+                            delete selected[service.id];
+                        } else {
+                            selected[service.id] = true;
+                        }
+                        this.setState(Object.assign(Object.assign({}, this.state), { lastSelected: service.id, selected: selected }));
+                    }, onOpen: () => {
+                        let opened = Object.assign({}, this.state.opened);
+                        if (opened[service.id]) {
+                            delete opened[service.id];
+                        } else {
+                            opened[service.id] = true;
+                        }
+                        this.setState(Object.assign(Object.assign({}, this.state), { opened: opened }));
+                    } }));
             });
-            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Services"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+            let filterClass = 'bp3-button bp3-intent-primary bp3-icon-filter ';
+            if (this.state.filter) {
+                filterClass += 'bp3-active';
+            }
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Services"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("button", { className: filterClass, style: css.button, type: "button", onClick: () => {
+                    if (this.state.filter === null) {
+                        ServiceActions.filter({});
+                    } else {
+                        ServiceActions.filter(null);
+                    }
+                } }, "Filters"), React.createElement("button", { className: "bp3-button bp3-intent-warning bp3-icon-chevron-up", style: css.button, disabled: !this.opened, type: "button", onClick: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { opened: {} }));
+                } }, "Collapse All"), React.createElement(ConfirmButton_1.default, { label: "Delete Selected", className: "bp3-intent-danger bp3-icon-delete", progressClassName: "bp3-intent-danger", style: css.button, disabled: !this.selected || this.state.disabled, onConfirm: this.onDelete }), React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
                     this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
                     ServiceActions.create({
                         id: null,
@@ -14731,7 +15082,11 @@ System.registerDynamic("app/components/Services.js", ["npm:react@16.11.0.js", "a
                     }).catch(() => {
                         this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                     });
-                } }, "New")))), React.createElement("div", null, servicesDom), React.createElement(NonState_1.default, { hidden: !!servicesDom.length, iconClass: "bp3-icon-cloud", title: "No services", description: "Add a new service to get started." }));
+                } }, "New")))), React.createElement(ServicesFilter_1.default, { filter: this.state.filter, onFilter: filter => {
+                    ServiceActions.filter(filter);
+                }, authorities: this.state.authorities }), React.createElement("div", { style: css.itemsBox }, React.createElement("div", { style: css.items }, servicesDom, React.createElement("tr", { className: "bp3-card bp3-row", style: css.placeholder }, React.createElement("td", { colSpan: 5, style: css.placeholder })))), React.createElement(NonState_1.default, { hidden: !!servicesDom.length, iconClass: "bp3-icon-cloud", title: "No services", description: "Add a new service to get started." }), React.createElement(ServicesPage_1.default, { onPage: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { selected: {}, lastSelected: null }));
+                } }));
         }
     }
     exports.default = Services;
@@ -18954,6 +19309,183 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@5.1
     });
     
 });
+System.registerDynamic("app/types/LogTypes.js", [], true, function ($__require, exports, module) {
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.SYNC = 'log.sync';
+  exports.TRAVERSE = 'log.traverse';
+  exports.FILTER = 'log.filter';
+  exports.CHANGE = 'log.change';
+  
+});
+System.registerDynamic("app/stores/LogsStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/LogTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("app/EventEmitter.js");
+    const LogTypes = $__require("app/types/LogTypes.js");
+    const GlobalTypes = $__require("app/types/GlobalTypes.js");
+    class LogsStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._logs = Object.freeze([]);
+            this._filter = null;
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get logs() {
+            return this._logs;
+        }
+        get logsM() {
+            let logs = [];
+            this._logs.forEach(log => {
+                logs.push(Object.assign({}, log));
+            });
+            return logs;
+        }
+        get page() {
+            return this._page || 0;
+        }
+        get pageCount() {
+            return this._pageCount || 50;
+        }
+        get pages() {
+            return Math.ceil(this.count / this.pageCount);
+        }
+        get filter() {
+            return this._filter;
+        }
+        get count() {
+            return this._count || 0;
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _traverse(page) {
+            this._page = Math.min(this.pages, page);
+        }
+        _filterCallback(filter) {
+            if (this._filter !== null && filter === null || this._filter === {} && filter !== null || filter && this._filter && filter.level !== this._filter.level) {
+                this._traverse(0);
+            }
+            this._filter = filter;
+            this.emitChange();
+        }
+        _sync(logs, count) {
+            for (let i = 0; i < logs.length; i++) {
+                logs[i] = Object.freeze(logs[i]);
+            }
+            this._count = count;
+            this._logs = Object.freeze(logs);
+            this._page = Math.min(this.pages, this.page);
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case LogTypes.TRAVERSE:
+                    this._traverse(action.data.page);
+                    break;
+                case LogTypes.FILTER:
+                    this._filterCallback(action.data.filter);
+                    break;
+                case LogTypes.SYNC:
+                    this._sync(action.data.logs, action.data.count);
+                    break;
+            }
+        }
+    }
+    exports.default = new LogsStore();
+    
+});
+System.registerDynamic("app/actions/LogActions.js", ["npm:superagent@5.1.0.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/types/LogTypes.js", "app/stores/LogsStore.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const SuperAgent = $__require("npm:superagent@5.1.0.js");
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventDispatcher_1 = $__require("app/dispatcher/EventDispatcher.js");
+    const Alert = $__require("app/Alert.js");
+    const Csrf = $__require("app/Csrf.js");
+    const Loader_1 = $__require("app/Loader.js");
+    const LogTypes = $__require("app/types/LogTypes.js");
+    const LogsStore_1 = $__require("app/stores/LogsStore.js");
+    const MiscUtils = $__require("app/utils/MiscUtils.js");
+    let syncId;
+    function sync() {
+        let curSyncId = MiscUtils.uuid();
+        syncId = curSyncId;
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.get('/log').query(Object.assign(Object.assign({}, LogsStore_1.default.filter), { page: LogsStore_1.default.page, page_count: LogsStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (curSyncId !== syncId) {
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to load logs');
+                    reject(err);
+                    return;
+                }
+                Dispatcher_1.default.dispatch({
+                    type: LogTypes.SYNC,
+                    data: {
+                        logs: res.body.logs,
+                        count: res.body.count
+                    }
+                });
+                resolve();
+            });
+        });
+    }
+    exports.sync = sync;
+    function traverse(page) {
+        Dispatcher_1.default.dispatch({
+            type: LogTypes.TRAVERSE,
+            data: {
+                page: page
+            }
+        });
+        return sync();
+    }
+    exports.traverse = traverse;
+    function filter(filt) {
+        Dispatcher_1.default.dispatch({
+            type: LogTypes.FILTER,
+            data: {
+                filter: filt
+            }
+        });
+        return sync();
+    }
+    exports.filter = filter;
+    EventDispatcher_1.default.register(action => {
+        switch (action.type) {
+            case LogTypes.CHANGE:
+                sync();
+                break;
+        }
+    });
+    
+});
 System.registerDynamic('npm:events@3.0.0/events.js', [], true, function ($__require, exports, module) {
   // Copyright Joyent, Inc. and other Node contributors.
   //
@@ -19388,18 +19920,6 @@ System.registerDynamic("app/EventEmitter.js", ["npm:events@3.0.0.js"], true, fun
     exports.default = EventEmitter;
     
 });
-System.registerDynamic("app/types/LogTypes.js", [], true, function ($__require, exports, module) {
-  "use strict";
-
-  var global = this || self,
-      GLOBAL = global;
-  Object.defineProperty(exports, "__esModule", { value: true });
-  exports.SYNC = 'log.sync';
-  exports.TRAVERSE = 'log.traverse';
-  exports.FILTER = 'log.filter';
-  exports.CHANGE = 'log.change';
-  
-});
 System.registerDynamic("app/types/GlobalTypes.js", [], true, function ($__require, exports, module) {
   "use strict";
 
@@ -19409,7 +19929,7 @@ System.registerDynamic("app/types/GlobalTypes.js", [], true, function ($__requir
   exports.CHANGE = 'change';
   
 });
-System.registerDynamic("app/stores/LogsStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/LogTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/ServiceTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -19417,30 +19937,31 @@ System.registerDynamic("app/stores/LogsStore.js", ["app/dispatcher/Dispatcher.js
     Object.defineProperty(exports, "__esModule", { value: true });
     const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
     const EventEmitter_1 = $__require("app/EventEmitter.js");
-    const LogTypes = $__require("app/types/LogTypes.js");
+    const ServiceTypes = $__require("app/types/ServiceTypes.js");
     const GlobalTypes = $__require("app/types/GlobalTypes.js");
-    class LogsStore extends EventEmitter_1.default {
+    class ServicesStore extends EventEmitter_1.default {
         constructor() {
             super(...arguments);
-            this._logs = Object.freeze([]);
+            this._services = Object.freeze([]);
             this._filter = null;
+            this._map = {};
             this._token = Dispatcher_1.default.register(this._callback.bind(this));
         }
-        get logs() {
-            return this._logs;
+        get services() {
+            return this._services;
         }
-        get logsM() {
-            let logs = [];
-            this._logs.forEach(log => {
-                logs.push(Object.assign({}, log));
+        get servicesM() {
+            let services = [];
+            this._services.forEach(service => {
+                services.push(Object.assign({}, service));
             });
-            return logs;
+            return services;
         }
         get page() {
             return this._page || 0;
         }
         get pageCount() {
-            return this._pageCount || 50;
+            return this._pageCount || 20;
         }
         get pages() {
             return Math.ceil(this.count / this.pageCount);
@@ -19450,6 +19971,13 @@ System.registerDynamic("app/stores/LogsStore.js", ["app/dispatcher/Dispatcher.js
         }
         get count() {
             return this._count || 0;
+        }
+        service(id) {
+            let i = this._map[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._services[i];
         }
         emitChange() {
             this.emitDefer(GlobalTypes.CHANGE);
@@ -19464,114 +19992,38 @@ System.registerDynamic("app/stores/LogsStore.js", ["app/dispatcher/Dispatcher.js
             this._page = Math.min(this.pages, page);
         }
         _filterCallback(filter) {
-            if (this._filter !== null && filter === null || this._filter === {} && filter !== null || filter && this._filter && filter.level !== this._filter.level) {
+            if (this._filter !== null && filter === null || this._filter === {} && filter !== null || filter && this._filter && filter.name !== this._filter.name) {
                 this._traverse(0);
             }
             this._filter = filter;
             this.emitChange();
         }
-        _sync(logs, count) {
-            for (let i = 0; i < logs.length; i++) {
-                logs[i] = Object.freeze(logs[i]);
+        _sync(services, count) {
+            this._map = {};
+            for (let i = 0; i < services.length; i++) {
+                services[i] = Object.freeze(services[i]);
+                this._map[services[i].id] = i;
             }
             this._count = count;
-            this._logs = Object.freeze(logs);
+            this._services = Object.freeze(services);
             this._page = Math.min(this.pages, this.page);
             this.emitChange();
         }
         _callback(action) {
             switch (action.type) {
-                case LogTypes.TRAVERSE:
+                case ServiceTypes.TRAVERSE:
                     this._traverse(action.data.page);
                     break;
-                case LogTypes.FILTER:
+                case ServiceTypes.FILTER:
                     this._filterCallback(action.data.filter);
                     break;
-                case LogTypes.SYNC:
-                    this._sync(action.data.logs, action.data.count);
+                case ServiceTypes.SYNC:
+                    this._sync(action.data.services, action.data.count);
                     break;
             }
         }
     }
-    exports.default = new LogsStore();
-    
-});
-System.registerDynamic("app/actions/LogActions.js", ["npm:superagent@5.1.0.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/types/LogTypes.js", "app/stores/LogsStore.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
-    "use strict";
-
-    var global = this || self,
-        GLOBAL = global;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const SuperAgent = $__require("npm:superagent@5.1.0.js");
-    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
-    const EventDispatcher_1 = $__require("app/dispatcher/EventDispatcher.js");
-    const Alert = $__require("app/Alert.js");
-    const Csrf = $__require("app/Csrf.js");
-    const Loader_1 = $__require("app/Loader.js");
-    const LogTypes = $__require("app/types/LogTypes.js");
-    const LogsStore_1 = $__require("app/stores/LogsStore.js");
-    const MiscUtils = $__require("app/utils/MiscUtils.js");
-    let syncId;
-    function sync() {
-        let curSyncId = MiscUtils.uuid();
-        syncId = curSyncId;
-        let loader = new Loader_1.default().loading();
-        return new Promise((resolve, reject) => {
-            SuperAgent.get('/log').query(Object.assign(Object.assign({}, LogsStore_1.default.filter), { page: LogsStore_1.default.page, page_count: LogsStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
-                loader.done();
-                if (res && res.status === 401) {
-                    window.location.href = '/login';
-                    resolve();
-                    return;
-                }
-                if (curSyncId !== syncId) {
-                    resolve();
-                    return;
-                }
-                if (err) {
-                    Alert.errorRes(res, 'Failed to load logs');
-                    reject(err);
-                    return;
-                }
-                Dispatcher_1.default.dispatch({
-                    type: LogTypes.SYNC,
-                    data: {
-                        logs: res.body.logs,
-                        count: res.body.count
-                    }
-                });
-                resolve();
-            });
-        });
-    }
-    exports.sync = sync;
-    function traverse(page) {
-        Dispatcher_1.default.dispatch({
-            type: LogTypes.TRAVERSE,
-            data: {
-                page: page
-            }
-        });
-        return sync();
-    }
-    exports.traverse = traverse;
-    function filter(filt) {
-        Dispatcher_1.default.dispatch({
-            type: LogTypes.FILTER,
-            data: {
-                filter: filt
-            }
-        });
-        return sync();
-    }
-    exports.filter = filter;
-    EventDispatcher_1.default.register(action => {
-        switch (action.type) {
-            case LogTypes.CHANGE:
-                sync();
-                break;
-        }
-    });
+    exports.default = new ServicesStore();
     
 });
 System.registerDynamic("app/types/ServiceTypes.js", [], true, function ($__require, exports, module) {
@@ -19581,10 +20033,12 @@ System.registerDynamic("app/types/ServiceTypes.js", [], true, function ($__requi
       GLOBAL = global;
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.SYNC = 'service.sync';
+  exports.TRAVERSE = 'service.traverse';
+  exports.FILTER = 'service.filter';
   exports.CHANGE = 'service.change';
   
 });
-System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/types/ServiceTypes.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/stores/ServicesStore.js", "app/types/ServiceTypes.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -19596,6 +20050,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
     const Alert = $__require("app/Alert.js");
     const Csrf = $__require("app/Csrf.js");
     const Loader_1 = $__require("app/Loader.js");
+    const ServicesStore_1 = $__require("app/stores/ServicesStore.js");
     const ServiceTypes = $__require("app/types/ServiceTypes.js");
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     let syncId;
@@ -19604,7 +20059,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
         syncId = curSyncId;
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
-            SuperAgent.get('/service').set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+            SuperAgent.get('/service').query(Object.assign(Object.assign({}, ServicesStore_1.default.filter), { page: ServicesStore_1.default.page, page_count: ServicesStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
                 loader.done();
                 if (res && res.status === 401) {
                     window.location.href = '/login';
@@ -19623,7 +20078,8 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
                 Dispatcher_1.default.dispatch({
                     type: ServiceTypes.SYNC,
                     data: {
-                        services: res.body
+                        services: res.body.services,
+                        count: res.body.count
                     }
                 });
                 resolve();
@@ -19631,6 +20087,26 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
         });
     }
     exports.sync = sync;
+    function traverse(page) {
+        Dispatcher_1.default.dispatch({
+            type: ServiceTypes.TRAVERSE,
+            data: {
+                page: page
+            }
+        });
+        return sync();
+    }
+    exports.traverse = traverse;
+    function filter(filt) {
+        Dispatcher_1.default.dispatch({
+            type: ServiceTypes.FILTER,
+            data: {
+                filter: filt
+            }
+        });
+        return sync();
+    }
+    exports.filter = filter;
     function commit(service) {
         let loader = new Loader_1.default().loading();
         return new Promise((resolve, reject) => {
@@ -19686,6 +20162,26 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
         });
     }
     exports.remove = remove;
+    function removeMulti(serviceIds) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.delete('/service').send(serviceIds).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to delete services');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.removeMulti = removeMulti;
     EventDispatcher_1.default.register(action => {
         switch (action.type) {
             case ServiceTypes.CHANGE:
