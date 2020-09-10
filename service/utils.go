@@ -61,7 +61,6 @@ func GetMulti(db *database.Database, serviceIds []primitive.ObjectID) (
 }
 
 func GetAll(db *database.Database) (services []*Service, err error) {
-
 	coll := db.Services()
 	services = []*Service{}
 
