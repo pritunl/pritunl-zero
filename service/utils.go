@@ -158,3 +158,21 @@ func Remove(db *database.Database, serviceId primitive.ObjectID) (err error) {
 
 	return
 }
+
+func RemoveMulti(db *database.Database, serviceIds []primitive.ObjectID) (
+	err error) {
+
+	coll := db.Services()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"_id": &bson.M{
+			"$in": serviceIds,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
