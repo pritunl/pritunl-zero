@@ -3,7 +3,9 @@ package service
 import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func Get(db *database.Database, serviceId primitive.ObjectID) (
@@ -83,6 +85,55 @@ func GetAll(db *database.Database) (services []*Service, err error) {
 		}
 
 		services = append(services, srvce)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func GetAllPaged(db *database.Database, query *bson.M,
+	page, pageCount int64) (services []*Service, count int64, err error) {
+
+	coll := db.Services()
+	services = []*Service{}
+
+	count, err = coll.CountDocuments(db, query)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	page = utils.Min64(page, count/pageCount)
+	skip := utils.Min64(page*pageCount, count)
+
+	cursor, err := coll.Find(
+		db,
+		query,
+		&options.FindOptions{
+			Sort: &bson.D{
+				{"name", 1},
+			},
+			Skip:  &skip,
+			Limit: &pageCount,
+		},
+	)
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		srvce := &Service{}
+		err = cursor.Decode(srvce)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		services = append(services, srvce)
+		srvce = &Service{}
 	}
 
 	err = cursor.Err()
