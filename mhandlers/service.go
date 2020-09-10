@@ -199,6 +199,31 @@ func serviceDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func servicesDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	dta := []primitive.ObjectID{}
+
+	err := c.Bind(&dta)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = service.RemoveMulti(db, dta)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "service.change")
+
+	c.JSON(200, nil)
+}
+
 func servicesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 

@@ -99,6 +99,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/service", servicesGet)
 	csrfGroup.PUT("/service/:service_id", servicePut)
 	csrfGroup.POST("/service", servicePost)
+	csrfGroup.DELETE("/service", servicesDelete)
 	csrfGroup.DELETE("/service/:service_id", serviceDelete)
 
 	csrfGroup.GET("/session/:user_id", sessionsGet)
