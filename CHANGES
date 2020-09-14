@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix WebSocket connection issue
+
 Version 1.0.1752.12 2020-09-10
 ------------------------------
 
