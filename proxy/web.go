@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/node"
