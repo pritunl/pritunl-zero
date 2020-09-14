@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
@@ -25,6 +24,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
+	"github.com/sirupsen/logrus"
 )
 
 type Host struct {
@@ -116,7 +116,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 					if network.Contains(clientIp) {
 						if wsProxies != nil && wsLen > 0 &&
 							strings.ToLower(
-								r.Header.Get("Upgrade")) != "" {
+								r.Header.Get("Upgrade")) == "websocket" {
 
 							wsProxies[rand.Intn(wsLen)].ServeHTTP(
 								w, r, db, authorizer.NewProxy(nil))
@@ -231,7 +231,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if wsLen == 0 && r.Header.Get("Upgrade") != "" {
+	if wsLen != 0 && strings.ToLower(r.Header.Get("Upgrade")) == "websocket" {
 		wsProxies[rand.Intn(wsLen)].ServeHTTP(w, r, db, authr)
 		return true
 	}

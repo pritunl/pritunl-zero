@@ -3,8 +3,8 @@ package middlewear
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/audit"
@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
+	"github.com/sirupsen/logrus"
 )
 
 const robots = `User-agent: *
@@ -315,7 +316,7 @@ func CsrfToken(c *gin.Context) {
 	}
 
 	token := ""
-	if c.Request.Header.Get("Upgrade") != "" {
+	if strings.ToLower(c.Request.Header.Get("Upgrade")) == "websocket" {
 		token = c.Query("csrf_token")
 	} else {
 		token = c.Request.Header.Get("Csrf-Token")

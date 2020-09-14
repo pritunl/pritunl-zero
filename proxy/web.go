@@ -22,6 +22,7 @@ import (
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type web struct {
