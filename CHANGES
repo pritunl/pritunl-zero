@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Support Elasticsearch 7
 Fix WebSocket connection issue
 
 Version 1.0.1752.12 2020-09-10
