@@ -31,6 +31,6 @@ type Request struct {
 }
 
 func (r *Request) Index() (err error) {
-	Index("zero-requests", "request", r)
+	Index("zero-requests", r)
 	return
 }
