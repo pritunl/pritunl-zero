@@ -9,13 +9,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
-	elastic "gopkg.in/olivere/elastic.v6"
+	"github.com/sirupsen/logrus"
+	elastic "gopkg.in/olivere/elastic.v7"
 )
 
 var (
@@ -34,7 +34,7 @@ type mapping struct {
 	Index bool
 }
 
-func Index(index, typ string, data interface{}) {
+func Index(index string, data interface{}) {
 	clnt := client
 	if clnt == nil {
 		return
@@ -42,8 +42,7 @@ func Index(index, typ string, data interface{}) {
 
 	id := primitive.NewObjectID().Hex()
 
-	request := elastic.NewBulkIndexRequest().Index(index).Type(typ).
-		Id(id).Doc(data)
+	request := elastic.NewBulkIndexRequest().Index(index).Id(id).Doc(data)
 
 	lock.Lock()
 	buffer.PushBack(request)
@@ -52,7 +51,7 @@ func Index(index, typ string, data interface{}) {
 	return
 }
 
-func putIndex(clnt *elastic.Client, index string, typ string,
+func putIndex(clnt *elastic.Client, index string,
 	mappings []mapping) (err error) {
 
 	exists, err := clnt.IndexExists(index).Do(ctx)
@@ -74,7 +73,7 @@ func putIndex(clnt *elastic.Client, index string, typ string,
 			properties[mapping.Field] = struct {
 				Enabled bool `json:"enabled"`
 			}{
-				Enabled: false,
+				Enabled: mapping.Index,
 			}
 		} else {
 			properties[mapping.Field] = struct {
@@ -95,11 +94,7 @@ func putIndex(clnt *elastic.Client, index string, typ string,
 		Mappings: map[string]interface{}{},
 	}
 
-	data.Mappings[typ] = struct {
-		Properties map[string]interface{} `json:"properties"`
-	}{
-		Properties: properties,
-	}
+	data.Mappings["properties"] = properties
 
 	_, err = clnt.CreateIndex(index).BodyJson(data).Do(ctx)
 	if err != nil {
@@ -214,13 +209,13 @@ func update(addrs []string) (err error) {
 	mappings = append(mappings, mapping{
 		Field: "query",
 		Type:  "object",
-		Index: true,
+		Index: false,
 	})
 
 	mappings = append(mappings, mapping{
 		Field: "header",
 		Type:  "object",
-		Index: true,
+		Index: false,
 	})
 
 	mappings = append(mappings, mapping{
@@ -230,7 +225,7 @@ func update(addrs []string) (err error) {
 		Index: false,
 	})
 
-	err = putIndex(clnt, "zero-requests", "request", mappings)
+	err = putIndex(clnt, "zero-requests", mappings)
 	if err != nil {
 		client = nil
 		return
