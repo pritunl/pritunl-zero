@@ -318,7 +318,7 @@ export default class Services extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!servicesDom.length}
-				iconClass="bp3-icon-compressed"
+				iconClass="bp3-icon-cloud"
 				title="No services"
 				description="Add a new service to get started."
 			/>
