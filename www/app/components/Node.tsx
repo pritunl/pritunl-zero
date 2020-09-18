@@ -163,9 +163,17 @@ export default class Node extends React.Component<Props, State> {
 				if (!this.state.changed) {
 					this.setState({
 						...this.state,
-						message: '',
-						changed: false,
 						node: null,
+						changed: false,
+					});
+				}
+			}, 1000);
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						message: '',
 					});
 				}
 			}, 3000);
