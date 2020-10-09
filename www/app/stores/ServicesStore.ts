@@ -6,6 +6,7 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class ServicesStore extends EventEmitter {
 	_services: ServiceTypes.ServicesRo = Object.freeze([]);
+	_services_name: ServiceTypes.ServicesRo = Object.freeze([]);
 	_page: number;
 	_pageCount: number;
 	_filter: ServiceTypes.Filter = null;
@@ -20,6 +21,20 @@ class ServicesStore extends EventEmitter {
 	get servicesM(): ServiceTypes.Services {
 		let services: ServiceTypes.Services = [];
 		this._services.forEach((service: ServiceTypes.ServiceRo): void => {
+			services.push({
+				...service,
+			});
+		});
+		return services;
+	}
+
+	get servicesName(): ServiceTypes.ServicesRo {
+		return this._services_name;
+	}
+
+	get servicesNameM(): ServiceTypes.Services {
+		let services: ServiceTypes.Services = [];
+		this._services_name.forEach((service: ServiceTypes.ServiceRo): void => {
 			services.push({
 				...service,
 			});
@@ -97,6 +112,15 @@ class ServicesStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_sync_names(services: ServiceTypes.Service[]): void {
+		for (let i = 0; i < services.length; i++) {
+			services[i] = Object.freeze(services[i]);
+		}
+
+		this._services_name = Object.freeze(services);
+		this.emitChange();
+	}
+
 	_callback(action: ServiceTypes.ServiceDispatch): void {
 		switch (action.type) {
 			case ServiceTypes.TRAVERSE:
@@ -109,6 +133,10 @@ class ServicesStore extends EventEmitter {
 
 			case ServiceTypes.SYNC:
 				this._sync(action.data.services, action.data.count);
+				break;
+
+			case ServiceTypes.SYNC_NAMES:
+				this._sync_names(action.data.services);
 				break;
 		}
 	}
