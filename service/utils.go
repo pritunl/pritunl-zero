@@ -96,6 +96,41 @@ func GetAll(db *database.Database) (services []*Service, err error) {
 	return
 }
 
+func GetAllName(db *database.Database) (services []*Service, err error) {
+	coll := db.Services()
+	services = []*Service{}
+
+	cursor, err := coll.Find(
+		db,
+		&bson.M{},
+		&options.FindOptions{
+			Projection: &bson.D{
+				{"name", 1},
+			},
+		},
+	)
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		srvc := &Service{}
+		err = cursor.Decode(srvc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		services = append(services, srvc)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAllPaged(db *database.Database, query *bson.M,
 	page, pageCount int64) (services []*Service, count int64, err error) {
 
