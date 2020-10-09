@@ -10,6 +10,7 @@ import * as ServiceTypes from '../types/ServiceTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
+let nameSyncId: string;
 
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
@@ -185,6 +186,52 @@ export function removeMulti(serviceIds: string[]): Promise<void> {
 					reject(err);
 					return;
 				}
+
+				resolve();
+			});
+	});
+}
+
+export function syncNames(): Promise<void> {
+	let curSyncId = MiscUtils.uuid();
+	nameSyncId = curSyncId;
+
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.get('/service')
+			.query({
+				service_names: "true",
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (curSyncId !== nameSyncId) {
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to load service names');
+					reject(err);
+					return;
+				}
+
+				Dispatcher.dispatch({
+					type: ServiceTypes.SYNC_NAMES,
+					data: {
+						services: res.body,
+					},
+				});
 
 				resolve();
 			});
