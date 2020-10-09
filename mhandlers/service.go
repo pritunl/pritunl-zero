@@ -227,54 +227,66 @@ func servicesDelete(c *gin.Context) {
 func servicesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
-	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
-
-	query := bson.M{}
-
-	serviceId, ok := utils.ParseObjectId(c.Query("id"))
-	if ok {
-		query["_id"] = serviceId
-	}
-
-	name := strings.TrimSpace(c.Query("name"))
-	if name != "" {
-		query["$or"] = []*bson.M{
-			&bson.M{
-				"name": &bson.M{
-					"$regex":   fmt.Sprintf(".*%s.*", name),
-					"$options": "i",
-				},
-			},
-			&bson.M{
-				"key": &bson.M{
-					"$regex":   fmt.Sprintf(".*%s.*", name),
-					"$options": "i",
-				},
-			},
+	serviceNames := c.Query("service_names")
+	if serviceNames == "true" {
+		insts, err := service.GetAllName(db)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
 		}
-	}
 
-	typ := strings.TrimSpace(c.Query("type"))
-	if typ != "" {
-		query["type"] = typ
-	}
+		c.JSON(200, insts)
+	} else {
+		page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+		pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
 
-	organization, ok := utils.ParseObjectId(c.Query("organization"))
-	if ok {
-		query["organization"] = organization
-	}
+		query := bson.M{}
 
-	services, count, err := service.GetAllPaged(db, &query, page, pageCount)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
+		serviceId, ok := utils.ParseObjectId(c.Query("id"))
+		if ok {
+			query["_id"] = serviceId
+		}
 
-	dta := &servicesData{
-		Services: services,
-		Count:    count,
-	}
+		name := strings.TrimSpace(c.Query("name"))
+		if name != "" {
+			query["$or"] = []*bson.M{
+				&bson.M{
+					"name": &bson.M{
+						"$regex":   fmt.Sprintf(".*%s.*", name),
+						"$options": "i",
+					},
+				},
+				&bson.M{
+					"key": &bson.M{
+						"$regex":   fmt.Sprintf(".*%s.*", name),
+						"$options": "i",
+					},
+				},
+			}
+		}
 
-	c.JSON(200, dta)
+		typ := strings.TrimSpace(c.Query("type"))
+		if typ != "" {
+			query["type"] = typ
+		}
+
+		organization, ok := utils.ParseObjectId(c.Query("organization"))
+		if ok {
+			query["organization"] = organization
+		}
+
+		services, count, err := service.GetAllPaged(
+			db, &query, page, pageCount)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		dta := &servicesData{
+			Services: services,
+			Count:    count,
+		}
+
+		c.JSON(200, dta)
+	}
 }
