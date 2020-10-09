@@ -38,7 +38,7 @@ export default class Nodes extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			nodes: NodesStore.nodes,
-			services: ServicesStore.services,
+			services: ServicesStore.servicesName,
 			authorities: AuthoritiesStore.authorities,
 			certificates: CertificatesStore.certificates,
 			disabled: false,
@@ -51,7 +51,7 @@ export default class Nodes extends React.Component<{}, State> {
 		AuthoritiesStore.addChangeListener(this.onChange);
 		CertificatesStore.addChangeListener(this.onChange);
 		NodeActions.sync();
-		ServiceActions.sync();
+		ServiceActions.syncNames();
 		AuthorityActions.sync();
 		CertificateActions.sync();
 	}
@@ -67,7 +67,7 @@ export default class Nodes extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			nodes: NodesStore.nodes,
-			services: ServicesStore.services,
+			services: ServicesStore.servicesName,
 			authorities: AuthoritiesStore.authorities,
 			certificates: CertificatesStore.certificates,
 		});
