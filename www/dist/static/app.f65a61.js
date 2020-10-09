@@ -4581,15 +4581,7 @@ System.registerDynamic("app/components/UsersFilter.js", ["npm:react@16.11.0.js",
             if (this.props.filter === null) {
                 return React.createElement("div", null);
             }
-            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "User ID", value: this.props.filter.id, onChange: val => {
-                    let filter = Object.assign({}, this.props.filter);
-                    if (val) {
-                        filter.id = val;
-                    } else {
-                        delete filter.id;
-                    }
-                    this.props.onFilter(filter);
-                } }), React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Username", value: this.props.filter.username, onChange: val => {
+            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Username", value: this.props.filter.username, onChange: val => {
                     let filter = Object.assign({}, this.props.filter);
                     if (val) {
                         filter.username = val;
@@ -11804,11 +11796,11 @@ System.registerDynamic("app/components/Nodes.js", ["npm:react@16.11.0.js", "app/
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
-                this.setState(Object.assign(Object.assign({}, this.state), { nodes: NodesStore_1.default.nodes, services: ServicesStore_1.default.services, authorities: AuthoritiesStore_1.default.authorities, certificates: CertificatesStore_1.default.certificates }));
+                this.setState(Object.assign(Object.assign({}, this.state), { nodes: NodesStore_1.default.nodes, services: ServicesStore_1.default.servicesName, authorities: AuthoritiesStore_1.default.authorities, certificates: CertificatesStore_1.default.certificates }));
             };
             this.state = {
                 nodes: NodesStore_1.default.nodes,
-                services: ServicesStore_1.default.services,
+                services: ServicesStore_1.default.servicesName,
                 authorities: AuthoritiesStore_1.default.authorities,
                 certificates: CertificatesStore_1.default.certificates,
                 disabled: false
@@ -11820,7 +11812,7 @@ System.registerDynamic("app/components/Nodes.js", ["npm:react@16.11.0.js", "app/
             AuthoritiesStore_1.default.addChangeListener(this.onChange);
             CertificatesStore_1.default.addChangeListener(this.onChange);
             NodeActions.sync();
-            ServiceActions.sync();
+            ServiceActions.syncNames();
             AuthorityActions.sync();
             CertificateActions.sync();
         }
@@ -12997,7 +12989,12 @@ System.registerDynamic("app/components/Authority.js", ["npm:react@16.11.0.js", "
                     this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
-                            this.setState(Object.assign(Object.assign({}, this.state), { message: '', changed: false, authority: null }));
+                            this.setState(Object.assign(Object.assign({}, this.state), { authority: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
                         }
                     }, 3000);
                 }).catch(() => {
@@ -19943,6 +19940,7 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
         constructor() {
             super(...arguments);
             this._services = Object.freeze([]);
+            this._services_name = Object.freeze([]);
             this._filter = null;
             this._map = {};
             this._token = Dispatcher_1.default.register(this._callback.bind(this));
@@ -19953,6 +19951,16 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
         get servicesM() {
             let services = [];
             this._services.forEach(service => {
+                services.push(Object.assign({}, service));
+            });
+            return services;
+        }
+        get servicesName() {
+            return this._services_name;
+        }
+        get servicesNameM() {
+            let services = [];
+            this._services_name.forEach(service => {
                 services.push(Object.assign({}, service));
             });
             return services;
@@ -20009,6 +20017,13 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
             this._page = Math.min(this.pages, this.page);
             this.emitChange();
         }
+        _sync_names(services) {
+            for (let i = 0; i < services.length; i++) {
+                services[i] = Object.freeze(services[i]);
+            }
+            this._services_name = Object.freeze(services);
+            this.emitChange();
+        }
         _callback(action) {
             switch (action.type) {
                 case ServiceTypes.TRAVERSE:
@@ -20019,6 +20034,9 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
                     break;
                 case ServiceTypes.SYNC:
                     this._sync(action.data.services, action.data.count);
+                    break;
+                case ServiceTypes.SYNC_NAMES:
+                    this._sync_names(action.data.services);
                     break;
             }
         }
@@ -20033,6 +20051,7 @@ System.registerDynamic("app/types/ServiceTypes.js", [], true, function ($__requi
       GLOBAL = global;
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.SYNC = 'service.sync';
+  exports.SYNC_NAMES = 'service.sync_names';
   exports.TRAVERSE = 'service.traverse';
   exports.FILTER = 'service.filter';
   exports.CHANGE = 'service.change';
@@ -20054,6 +20073,7 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
     const ServiceTypes = $__require("app/types/ServiceTypes.js");
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     let syncId;
+    let nameSyncId;
     function sync() {
         let curSyncId = MiscUtils.uuid();
         syncId = curSyncId;
@@ -20182,6 +20202,40 @@ System.registerDynamic("app/actions/ServiceActions.js", ["npm:superagent@5.1.0.j
         });
     }
     exports.removeMulti = removeMulti;
+    function syncNames() {
+        let curSyncId = MiscUtils.uuid();
+        nameSyncId = curSyncId;
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.get('/service').query({
+                service_names: "true"
+            }).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (curSyncId !== nameSyncId) {
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to load service names');
+                    reject(err);
+                    return;
+                }
+                Dispatcher_1.default.dispatch({
+                    type: ServiceTypes.SYNC_NAMES,
+                    data: {
+                        services: res.body
+                    }
+                });
+                resolve();
+            });
+        });
+    }
+    exports.syncNames = syncNames;
     EventDispatcher_1.default.register(action => {
         switch (action.type) {
             case ServiceTypes.CHANGE:
