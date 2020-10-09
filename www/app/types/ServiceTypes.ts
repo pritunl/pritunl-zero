@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'service.sync';
+export const SYNC_NAMES = 'service.sync_names';
 export const TRAVERSE = 'service.traverse';
 export const FILTER = 'service.filter';
 export const CHANGE = 'service.change';
