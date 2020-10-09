@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix display issue on nodes page
+
 Version 1.0.1756.22 2020-09-14
 ------------------------------
 
