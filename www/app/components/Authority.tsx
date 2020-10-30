@@ -158,9 +158,17 @@ export default class Authority extends React.Component<Props, State> {
 				if (!this.state.changed) {
 					this.setState({
 						...this.state,
-						message: '',
-						changed: false,
 						authority: null,
+						changed: false,
+					});
+				}
+			}, 1000);
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						message: '',
 					});
 				}
 			}, 3000);
