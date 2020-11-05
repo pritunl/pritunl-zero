@@ -97,7 +97,7 @@ export default class Device extends React.Component<Props, State> {
 						device: null,
 					});
 				}
-			}, 3000);
+			}, 1000);
 		}).catch((): void => {
 			this.setState({
 				...this.state,
