@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -15,6 +14,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -99,6 +99,10 @@ func (u *User) SuperExists(db *database.Database) (
 }
 
 func (u *User) Format() {
+	if u.Type == Local {
+		u.Username = strings.ToLower(u.Username)
+	}
+
 	roles := []string{}
 	rolesSet := set.NewSet()
 
