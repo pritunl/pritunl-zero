@@ -45,7 +45,7 @@ export default class Policies extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			policies: PoliciesStore.policies,
-			services: ServicesStore.services,
+			services: ServicesStore.servicesName,
 			authorities: AuthoritiesStore.authorities,
 			providers: SettingsStore.settings ?
 				SettingsStore.settings.auth_secondary_providers : [],
@@ -59,7 +59,7 @@ export default class Policies extends React.Component<{}, State> {
 		AuthoritiesStore.addChangeListener(this.onChange);
 		SettingsStore.addChangeListener(this.onChange);
 		PolicyActions.sync();
-		ServiceActions.sync();
+		ServiceActions.syncNames();
 		AuthorityActions.sync();
 		SettingsActions.sync();
 	}
@@ -75,7 +75,7 @@ export default class Policies extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			policies: PoliciesStore.policies,
-			services: ServicesStore.services,
+			services: ServicesStore.servicesName,
 			authorities: AuthoritiesStore.authorities,
 			providers: SettingsStore.settings ?
 				SettingsStore.settings.auth_secondary_providers : [],
