@@ -5059,7 +5059,7 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.11.0.js", "app
                         if (!this.state.changed) {
                             this.setState(Object.assign(Object.assign({}, this.state), { changed: false, device: null }));
                         }
-                    }, 3000);
+                    }, 1000);
                 }).catch(() => {
                     this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                 });
@@ -12462,11 +12462,11 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@16.11.0.js", "a
         constructor(props, context) {
             super(props, context);
             this.onChange = () => {
-                this.setState(Object.assign(Object.assign({}, this.state), { policies: PoliciesStore_1.default.policies, services: ServicesStore_1.default.services, authorities: AuthoritiesStore_1.default.authorities, providers: SettingsStore_1.default.settings ? SettingsStore_1.default.settings.auth_secondary_providers : [] }));
+                this.setState(Object.assign(Object.assign({}, this.state), { policies: PoliciesStore_1.default.policies, services: ServicesStore_1.default.servicesName, authorities: AuthoritiesStore_1.default.authorities, providers: SettingsStore_1.default.settings ? SettingsStore_1.default.settings.auth_secondary_providers : [] }));
             };
             this.state = {
                 policies: PoliciesStore_1.default.policies,
-                services: ServicesStore_1.default.services,
+                services: ServicesStore_1.default.servicesName,
                 authorities: AuthoritiesStore_1.default.authorities,
                 providers: SettingsStore_1.default.settings ? SettingsStore_1.default.settings.auth_secondary_providers : [],
                 disabled: false
@@ -12478,7 +12478,7 @@ System.registerDynamic("app/components/Policies.js", ["npm:react@16.11.0.js", "a
             AuthoritiesStore_1.default.addChangeListener(this.onChange);
             SettingsStore_1.default.addChangeListener(this.onChange);
             PolicyActions.sync();
-            ServiceActions.sync();
+            ServiceActions.syncNames();
             AuthorityActions.sync();
             SettingsActions.sync();
         }
@@ -13517,7 +13517,12 @@ System.registerDynamic("app/components/Certificate.js", ["npm:react@16.11.0.js",
                     this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
-                            this.setState(Object.assign(Object.assign({}, this.state), { message: '', changed: false, certificate: null }));
+                            this.setState(Object.assign(Object.assign({}, this.state), { certificate: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
                         }
                     }, 3000);
                 }).catch(() => {
