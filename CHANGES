@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Format username capitalization on update
+Fix display issue on policies tab
 
 Version 1.0.1781.40 2020-10-09
 ------------------------------
