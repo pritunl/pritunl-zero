@@ -424,7 +424,7 @@ export default class Node extends React.Component<Props, State> {
 
 		let services: JSX.Element[] = [];
 		for (let serviceId of (node.services || [])) {
-			let service = ServicesStore.service(serviceId);
+			let service = ServicesStore.serviceName(serviceId);
 			if (!service) {
 				continue;
 			}
