@@ -12,6 +12,7 @@ class ServicesStore extends EventEmitter {
 	_filter: ServiceTypes.Filter = null;
 	_count: number;
 	_map: {[key: string]: number} = {};
+	_map_name: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get services(): ServiceTypes.ServicesRo {
@@ -70,6 +71,14 @@ class ServicesStore extends EventEmitter {
 		return this._services[i];
 	}
 
+	serviceName(id: string): ServiceTypes.ServiceRo {
+		let i = this._map_name[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._services_name[i];
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -113,8 +122,10 @@ class ServicesStore extends EventEmitter {
 	}
 
 	_sync_names(services: ServiceTypes.Service[]): void {
+		this._map_name = {};
 		for (let i = 0; i < services.length; i++) {
 			services[i] = Object.freeze(services[i]);
+			this._map_name[services[i].id] = i;
 		}
 
 		this._services_name = Object.freeze(services);
