@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.1813.70 2020-11-10
+------------------------------
 
 Fix display issue with services
 
