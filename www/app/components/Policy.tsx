@@ -419,7 +419,7 @@ export default class Policy extends React.Component<Props, State> {
 
 		let services: JSX.Element[] = [];
 		for (let serviceId of policy.services || []) {
-			let service = ServicesStore.service(serviceId);
+			let service = ServicesStore.serviceName(serviceId);
 			if (!service) {
 				continue;
 			}
