@@ -11623,7 +11623,7 @@ System.registerDynamic("app/components/Node.js", ["npm:react@16.11.0.js", "app/a
             let active = node.requests_min !== 0 || node.memory !== 0 || node.load1 !== 0 || node.load5 !== 0 || node.load15 !== 0;
             let services = [];
             for (let serviceId of node.services || []) {
-                let service = ServicesStore_1.default.service(serviceId);
+                let service = ServicesStore_1.default.serviceName(serviceId);
                 if (!service) {
                     continue;
                 }
@@ -12099,7 +12099,12 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@16.11.0.js", "app
                     this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
                     setTimeout(() => {
                         if (!this.state.changed) {
-                            this.setState(Object.assign(Object.assign({}, this.state), { message: '', changed: false, policy: null }));
+                            this.setState(Object.assign(Object.assign({}, this.state), { policy: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
                         }
                     }, 3000);
                 }).catch(() => {
@@ -12258,7 +12263,7 @@ System.registerDynamic("app/components/Policy.js", ["npm:react@16.11.0.js", "app
             let policy = this.state.policy || this.props.policy;
             let services = [];
             for (let serviceId of policy.services || []) {
-                let service = ServicesStore_1.default.service(serviceId);
+                let service = ServicesStore_1.default.serviceName(serviceId);
                 if (!service) {
                     continue;
                 }
@@ -19948,6 +19953,7 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
             this._services_name = Object.freeze([]);
             this._filter = null;
             this._map = {};
+            this._map_name = {};
             this._token = Dispatcher_1.default.register(this._callback.bind(this));
         }
         get services() {
@@ -19992,6 +19998,13 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
             }
             return this._services[i];
         }
+        serviceName(id) {
+            let i = this._map_name[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._services_name[i];
+        }
         emitChange() {
             this.emitDefer(GlobalTypes.CHANGE);
         }
@@ -20023,8 +20036,10 @@ System.registerDynamic("app/stores/ServicesStore.js", ["app/dispatcher/Dispatche
             this.emitChange();
         }
         _sync_names(services) {
+            this._map_name = {};
             for (let i = 0; i < services.length; i++) {
                 services[i] = Object.freeze(services[i]);
+                this._map_name[services[i].id] = i;
             }
             this._services_name = Object.freeze(services);
             this.emitChange();
@@ -20919,14 +20934,14 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             });
                         } else if (pathname === '/nodes') {
-                            ServiceActions.sync();
+                            ServiceActions.syncNames();
                             NodeActions.sync().then(() => {
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             }).catch(() => {
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             });
                         } else if (pathname === '/policies') {
-                            ServiceActions.sync();
+                            ServiceActions.syncNames();
                             AuthorityActions.sync();
                             SettingsActions.sync();
                             PolicyActions.sync().then(() => {
