@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/mongo"
@@ -14,6 +13,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -87,6 +87,11 @@ func (d *Database) Policies() (coll *Collection) {
 
 func (d *Database) Devices() (coll *Collection) {
 	coll = d.getCollection("devices")
+	return
+}
+
+func (d *Database) Endpoints() (coll *Collection) {
+	coll = d.getCollection("endpoints")
 	return
 }
 
