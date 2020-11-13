@@ -254,7 +254,7 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 									} else if (pathname === '/nodes') {
-										ServiceActions.sync();
+										ServiceActions.syncNames();
 										NodeActions.sync().then((): void => {
 											this.setState({
 												...this.state,
@@ -267,7 +267,7 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 									} else if (pathname === '/policies') {
-										ServiceActions.sync();
+										ServiceActions.syncNames();
 										AuthorityActions.sync();
 										SettingsActions.sync();
 										PolicyActions.sync().then((): void => {
