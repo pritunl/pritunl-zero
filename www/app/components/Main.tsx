@@ -12,6 +12,7 @@ import Nodes from './Nodes';
 import Policies from './Policies';
 import Authorities from './Authorities';
 import Certificates from './Certificates';
+import Endpoints from './Endpoints';
 import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
@@ -24,6 +25,7 @@ import * as NodeActions from '../actions/NodeActions';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as AuthorityActions from '../actions/AuthorityActions';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as EndpointActions from '../actions/EndpointActions';
 import * as LogActions from '../actions/LogActions';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as SettingsActions from '../actions/SettingsActions';
@@ -146,6 +148,13 @@ export default class Main extends React.Component<{}, State> {
 							to="/certificates"
 						>
 							Certificates
+						</ReactRouter.Link>
+						<ReactRouter.Link
+							className="bp3-button bp3-minimal bp3-icon-shield"
+							style={css.link}
+							to="/endpoints"
+						>
+							Endpoints
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							className="bp3-button bp3-minimal bp3-icon-history"
@@ -295,6 +304,19 @@ export default class Main extends React.Component<{}, State> {
 										});
 									} else if (pathname === '/certificates') {
 										CertificateActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
+									} else if (pathname === '/endpoints') {
+										AuthorityActions.sync();
+										EndpointActions.sync().then((): void => {
 											this.setState({
 												...this.state,
 												disabled: false,
