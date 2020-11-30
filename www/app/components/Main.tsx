@@ -340,6 +340,7 @@ export default class Main extends React.Component<{}, State> {
 											});
 										});
 									} else if (pathname === '/services') {
+										AuthorityActions.sync();
 										ServiceActions.sync().then((): void => {
 											this.setState({
 												...this.state,
