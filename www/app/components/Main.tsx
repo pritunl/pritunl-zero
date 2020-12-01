@@ -425,6 +425,9 @@ export default class Main extends React.Component<{}, State> {
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
 				)}/>
+				<ReactRouter.Route path="/endpoints" render={() => (
+					<Endpoints/>
+				)}/>
 				<ReactRouter.Route path="/logs" render={() => (
 					<Logs/>
 				)}/>
