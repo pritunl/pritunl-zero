@@ -80,6 +80,12 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/device/:user_id/register", deviceU2fRegisterGet)
 	csrfGroup.POST("/device/:user_id/register", deviceU2fRegisterPost)
 
+	csrfGroup.GET("/endpoint", endpointsGet)
+	csrfGroup.PUT("/endpoint/:endpoint_id", endpointPut)
+	csrfGroup.POST("/endpoint", endpointPost)
+	csrfGroup.DELETE("/endpoint", endpointsDelete)
+	csrfGroup.DELETE("/endpoint/:endpoint_id", endpointDelete)
+
 	csrfGroup.GET("/event", eventGet)
 
 	csrfGroup.GET("/log", logsGet)
