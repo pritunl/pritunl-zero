@@ -485,6 +485,17 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.Endpoints(),
+		Keys: &bson.D{
+			{"roles", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.Authorities(),
 		Keys: &bson.D{
 			{"host_tokens", 1},
