@@ -15,7 +15,7 @@ found at [docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
 ```bash
 # Install Go
 sudo yum -y install git
-curl -L https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz | sudo tar -C /usr/local -xz
+curl -L https://golang.org/dl/go1.15.6.linux-amd64.tar.gz | sudo tar -C /usr/local -xz
 tee -a ~/.bashrc << EOF
 export GOPATH=\$HOME/go
 export PATH=/usr/local/go/bin:\$PATH
