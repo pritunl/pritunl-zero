@@ -164,9 +164,17 @@ export default class Policy extends React.Component<Props, State> {
 				if (!this.state.changed) {
 					this.setState({
 						...this.state,
-						message: '',
-						changed: false,
 						policy: null,
+						changed: false,
+					});
+				}
+			}, 1000);
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						message: '',
 					});
 				}
 			}, 3000);
