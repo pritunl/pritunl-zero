@@ -12,6 +12,7 @@ import (
 
 type Endpoint struct {
 	Id    primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	User  primitive.ObjectID `bson:"user,omitempty" json:"user"`
 	Name  string             `bson:"name" json:"name"`
 	Roles []string           `bson:"roles" json:"roles"`
 }
