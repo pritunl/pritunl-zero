@@ -97,6 +97,7 @@ const css = {
 	} as React.CSSProperties,
 	select: {
 		margin: '7px 0px 0px 6px',
+		paddingTop: '3px',
 	} as React.CSSProperties,
 };
 

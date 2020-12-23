@@ -31,7 +31,7 @@ const css = {
 	} as React.CSSProperties,
 	select: {
 		margin: '2px 0 0 0',
-		paddingTop: '1px',
+		paddingTop: '3px',
 		minHeight: '18px',
 	} as React.CSSProperties,
 	name: {
