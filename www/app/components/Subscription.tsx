@@ -265,6 +265,16 @@ export default class Subscription extends React.Component<{}, State> {
 		let periodEnd = MiscUtils.formatDateShort(sub.period_end);
 		let trialEnd = MiscUtils.formatDateShort(sub.trial_end);
 
+		let balance: string;
+		let balanceLabel: string;
+		if (sub.balance < 0) {
+			balance = MiscUtils.formatAmount(sub.balance * -1);
+			balanceLabel = 'Credit';
+		} else {
+			balance = MiscUtils.formatAmount(sub.balance);
+			balanceLabel = 'Balance';
+		}
+
 		return <div>
 			<div className="bp3-card bp3-elevation-2" style={css.card2}>
 				<div
@@ -304,9 +314,9 @@ export default class Subscription extends React.Component<{}, State> {
 						style={css.item}
 						hidden={!sub.balance}
 					>
-						<div className="flex">Balance:</div>
+						<div className="flex">{balanceLabel}:</div>
 						<div>
-							{MiscUtils.formatAmount(sub.balance)}
+							{balance}
 						</div>
 					</div>
 					<div
