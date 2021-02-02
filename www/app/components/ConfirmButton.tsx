@@ -8,11 +8,14 @@ interface Props {
 	style?: React.CSSProperties;
 	grouped?: boolean;
 	className?: string;
+	dialogClassName?: string;
 	hidden?: boolean;
 	progressClassName?: string;
 	label?: string;
+	dialogLabel?: string;
 	confirmMsg?: string;
 	disabled?: boolean;
+	safe?: boolean;
 	onConfirm?: () => void;
 }
 
@@ -25,6 +28,7 @@ interface State {
 const css = {
 	box: {
 		display: 'inline-flex',
+		verticalAlign: 'middle',
 	} as React.CSSProperties,
 	actionProgress: {
 		position: 'absolute',
@@ -47,7 +51,8 @@ const css = {
 		height: '4px',
 	} as React.CSSProperties,
 	dialog: {
-		width: '180px',
+		width: '340px',
+		position: 'absolute',
 	} as React.CSSProperties,
 };
 
@@ -147,6 +152,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
+		let dialog = Constants.mobile || this.props.safe;
+
 		let style = {
 			...this.props.style,
 		};
@@ -157,7 +164,13 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			className += ' bp3-button-empty';
 		}
 
-		if (Constants.mobile) {
+		let dialogClassName = this.props.dialogClassName ||
+			this.props.className || '';
+		if (!this.props.label && !this.props.dialogLabel) {
+			dialogClassName += ' bp3-button-empty';
+		}
+
+		if (dialog) {
 			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
 				'Confirm ' + (this.props.label || '');
 
@@ -168,10 +181,10 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					type="button"
 					hidden={this.props.hidden}
 					disabled={this.props.disabled}
-					onMouseDown={Constants.mobile ? undefined : this.confirm}
-					onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
-					onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
-					onClick={Constants.mobile ? this.openDialog : undefined}
+					onMouseDown={dialog ? undefined : this.confirm}
+					onMouseUp={dialog ? undefined : this.clearConfirm}
+					onMouseLeave={dialog ? undefined : this.clearConfirm}
+					onClick={dialog ? this.openDialog : undefined}
 				>
 					{this.props.label}
 				</button>
@@ -192,10 +205,10 @@ export default class ConfirmButton extends React.Component<Props, State> {
 								onClick={this.closeDialog}
 							>Cancel</button>
 							<button
-								className="bp3-button bp3-intent-primary"
+								className={'bp3-button ' + dialogClassName}
 								type="button"
 								onClick={this.closeDialogConfirm}
-							>Ok</button>
+							>{this.props.dialogLabel || this.props.label}</button>
 						</div>
 					</div>
 				</Blueprint.Dialog>
@@ -233,10 +246,10 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				type="button"
 				hidden={this.props.hidden}
 				disabled={this.props.disabled}
-				onMouseDown={Constants.mobile ? undefined : this.confirm}
-				onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
-				onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
-				onClick={Constants.mobile ? this.openDialog : undefined}
+				onMouseDown={dialog ? undefined : this.confirm}
+				onMouseUp={dialog ? undefined : this.clearConfirm}
+				onMouseLeave={dialog ? undefined : this.clearConfirm}
+				onClick={dialog ? this.openDialog : undefined}
 			>
 				{this.props.label}
 				{confirmElem}
