@@ -404,8 +404,33 @@ func GetTokens(db *database.Database, tokens []string) (
 	return
 }
 
-func Remove(db *database.Database, authrId primitive.ObjectID) (err error) {
-	coll := db.Authorities()
+func Remove(db *database.Database, authrId primitive.ObjectID) (
+	errData *errortypes.ErrorData, err error) {
+
+	coll := db.Services()
+
+	count, err := coll.CountDocuments(db, &bson.M{
+		"client_authority": authrId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
+	}
+
+	if count > 0 {
+		errData = &errortypes.ErrorData{
+			Error:   "authority_in_use_service",
+			Message: "Cannot delete authority in use by service",
+		}
+		return
+	}
+
+	coll = db.Authorities()
 
 	_, err = coll.DeleteOne(db, &bson.M{
 		"_id": authrId,
