@@ -247,9 +247,14 @@ func authorityDelete(c *gin.Context) {
 		return
 	}
 
-	err := authority.Remove(db, authrId)
+	errData, err := authority.Remove(db, authrId)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
 		return
 	}
 
