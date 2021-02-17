@@ -117,13 +117,13 @@ export default class Authorities extends React.Component<{}, State> {
 										}}
 									>
 										<option
-											key="rsa4096"
-											value="rsa4096"
-										>RSA 4096</option>
-										<option
 											key="ecp384"
 											value="ecp384"
 										>EC P384</option>
+										<option
+											key="rsa4096"
+											value="rsa4096"
+										>RSA 4096</option>
 									</select>
 								</div>
 							</div>
@@ -139,7 +139,7 @@ export default class Authorities extends React.Component<{}, State> {
 									});
 									AuthorityActions.create({
 										id: null,
-										algorithm: this.state.algorithm,
+										algorithm: this.state.algorithm || 'ecp384',
 									}).then((): void => {
 										this.setState({
 											...this.state,
