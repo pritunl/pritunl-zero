@@ -173,7 +173,7 @@ export default class Device extends React.Component<Props, State> {
 						<ConfirmButton
 							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
 							progressClassName="bp3-intent-danger"
-							confirmMsg="Confirm node remove"
+							confirmMsg="Confirm device remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
