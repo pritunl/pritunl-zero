@@ -102,6 +102,10 @@ export default class Audit extends React.Component<Props, {}> {
 								label: 'Coordinates',
 								value: AgentUtils.formatCoordinates(agent),
 							},
+							{
+								label: 'IP Address',
+								value: agent.ip || 'Unknown',
+							},
 						]}
 					/>
 				</div>

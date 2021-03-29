@@ -142,6 +142,10 @@ export default class Session extends React.Component<Props, State> {
 								label: 'Coordinates',
 								value: AgentUtils.formatCoordinates(agent),
 							},
+							{
+								label: 'IP Address',
+								value: agent.ip || 'Unknown',
+							},
 						]}
 					/>
 				</div>
