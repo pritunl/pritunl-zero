@@ -627,7 +627,16 @@ System.registerDynamic("app/components/Subscription.js", ["npm:react@16.11.0.js"
             let status = sub.cancel_at_period_end ? 'canceled' : sub.status;
             let periodEnd = MiscUtils.formatDateShort(sub.period_end);
             let trialEnd = MiscUtils.formatDateShort(sub.trial_end);
-            return React.createElement("div", null, React.createElement("div", { className: "bp3-card bp3-elevation-2", style: css.card2 }, React.createElement("div", { className: "bp3-callout bp3-intent-success", style: css.message, hidden: !this.state.message }, this.state.message), React.createElement("div", { className: "layout vertical", style: css.status }, React.createElement("div", { className: "layout horizontal" }, React.createElement("div", { className: "flex" }, "Status:"), React.createElement("div", null, MiscUtils.capitalize(status))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Plan:"), React.createElement("div", null, MiscUtils.capitalize(sub.plan))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Amount:"), React.createElement("div", null, MiscUtils.formatAmount(sub.amount))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Quantity:"), React.createElement("div", null, sub.quantity)), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: !sub.balance }, React.createElement("div", { className: "flex" }, "Balance:"), React.createElement("div", null, MiscUtils.formatAmount(sub.balance))), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: periodEnd === '' }, React.createElement("div", { className: "flex" }, canceling ? 'Ends' : 'Renew', ":"), React.createElement("div", null, periodEnd)), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: trialEnd === '' }, React.createElement("div", { className: "flex" }, "Trial Ends:"), React.createElement("div", null, trialEnd))), React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement(ConfirmButton_1.default, { className: "bp3-intent-danger bp3-icon-disable", progressClassName: "bp3-intent-danger", style: css.button2, disabled: this.state.disabled, hidden: canceling, label: "End Subscription", onConfirm: () => {
+            let balance;
+            let balanceLabel;
+            if (sub.balance < 0) {
+                balance = MiscUtils.formatAmount(sub.balance * -1);
+                balanceLabel = 'Credit';
+            } else {
+                balance = MiscUtils.formatAmount(sub.balance);
+                balanceLabel = 'Balance';
+            }
+            return React.createElement("div", null, React.createElement("div", { className: "bp3-card bp3-elevation-2", style: css.card2 }, React.createElement("div", { className: "bp3-callout bp3-intent-success", style: css.message, hidden: !this.state.message }, this.state.message), React.createElement("div", { className: "layout vertical", style: css.status }, React.createElement("div", { className: "layout horizontal" }, React.createElement("div", { className: "flex" }, "Status:"), React.createElement("div", null, MiscUtils.capitalize(status))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Plan:"), React.createElement("div", null, MiscUtils.capitalize(sub.plan))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Amount:"), React.createElement("div", null, MiscUtils.formatAmount(sub.amount))), React.createElement("div", { className: "layout horizontal", style: css.item }, React.createElement("div", { className: "flex" }, "Quantity:"), React.createElement("div", null, sub.quantity)), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: !sub.balance }, React.createElement("div", { className: "flex" }, balanceLabel, ":"), React.createElement("div", null, balance)), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: periodEnd === '' }, React.createElement("div", { className: "flex" }, canceling ? 'Ends' : 'Renew', ":"), React.createElement("div", null, periodEnd)), React.createElement("div", { className: "layout horizontal", style: css.item, hidden: trialEnd === '' }, React.createElement("div", { className: "flex" }, "Trial Ends:"), React.createElement("div", null, trialEnd))), React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement(ConfirmButton_1.default, { className: "bp3-intent-danger bp3-icon-disable", progressClassName: "bp3-intent-danger", style: css.button2, disabled: this.state.disabled, hidden: canceling, label: "End Subscription", onConfirm: () => {
                     this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
                     SubscriptionActions.cancel(this.state.subscription.url_key).then(() => {
                         this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
@@ -4446,7 +4455,7 @@ System.registerDynamic("app/components/User.js", ["npm:react@16.11.0.js", "npm:r
         },
         select: {
             margin: '2px 0 0 0',
-            paddingTop: '1px',
+            paddingTop: '3px',
             minHeight: '18px'
         },
         name: {
@@ -4941,6 +4950,9 @@ System.registerDynamic("app/components/Session.js", ["npm:react@16.11.0.js", "ap
                 }, {
                     label: 'Coordinates',
                     value: AgentUtils.formatCoordinates(agent)
+                }, {
+                    label: 'IP Address',
+                    value: agent.ip || 'Unknown'
                 }] }))));
         }
     }
@@ -5119,7 +5131,7 @@ System.registerDynamic("app/components/Device.js", ["npm:react@16.11.0.js", "app
             if (device.disabled) {
                 cardStyle.opacity = 0.6;
             }
-            return React.createElement("div", { className: "bp3-card", style: cardStyle }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash", progressClassName: "bp3-intent-danger", confirmMsg: "Confirm node remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement("div", { className: "bp3-input-group flex", style: css.inputGroup }, React.createElement("input", { className: "bp3-input", type: "text", placeholder: "Device name", value: device.name, onChange: evt => {
+            return React.createElement("div", { className: "bp3-card", style: cardStyle }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { style: css.remove }, React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash", progressClassName: "bp3-intent-danger", confirmMsg: "Confirm device remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement("div", { className: "bp3-input-group flex", style: css.inputGroup }, React.createElement("input", { className: "bp3-input", type: "text", placeholder: "Device name", value: device.name, onChange: evt => {
                     this.set('name', evt.target.value);
                 }, onKeyPress: evt => {
                     if (evt.key === 'Enter') {
@@ -5364,6 +5376,9 @@ System.registerDynamic("app/components/Audit.js", ["npm:react@16.11.0.js", "app/
                 }, {
                     label: 'Coordinates',
                     value: AgentUtils.formatCoordinates(agent)
+                }, {
+                    label: 'IP Address',
+                    value: agent.ip || 'Unknown'
                 }] }))));
         }
     }
@@ -5594,6 +5609,9 @@ System.registerDynamic("app/components/Sshcertificate.js", ["npm:react@16.11.0.j
                 }, {
                     label: 'Coordinates',
                     value: AgentUtils.formatCoordinates(agent)
+                }, {
+                    label: 'IP Address',
+                    value: agent.ip || 'Unknown'
                 }] }))));
         }
     }
@@ -13348,11 +13366,11 @@ System.registerDynamic("app/components/Authorities.js", ["npm:react@16.11.0.js",
             });
             return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Authorities"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("div", { className: "bp3-control-group", style: css.group }, React.createElement("div", { style: css.selectBox }, React.createElement("div", { className: "bp3-select", style: css.selectFirst }, React.createElement("select", { style: css.selectInner, value: this.state.algorithm, onChange: evt => {
                     this.setState(Object.assign(Object.assign({}, this.state), { algorithm: evt.target.value }));
-                } }, React.createElement("option", { key: "rsa4096", value: "rsa4096" }, "RSA 4096"), React.createElement("option", { key: "ecp384", value: "ecp384" }, "EC P384")))), React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                } }, React.createElement("option", { key: "ecp384", value: "ecp384" }, "EC P384"), React.createElement("option", { key: "rsa4096", value: "rsa4096" }, "RSA 4096")))), React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
                     this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
                     AuthorityActions.create({
                         id: null,
-                        algorithm: this.state.algorithm
+                        algorithm: this.state.algorithm || 'ecp384'
                     }).then(() => {
                         this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                     }).catch(() => {
@@ -13708,6 +13726,625 @@ System.registerDynamic("app/components/Certificates.js", ["npm:react@16.11.0.js"
         }
     }
     exports.default = Certificates;
+    
+});
+System.registerDynamic("app/components/EndpointDetailed.js", ["npm:react@16.11.0.js", "app/actions/EndpointActions.js", "app/components/PageInput.js", "app/components/PageSave.js", "app/components/PageInfo.js", "app/components/ConfirmButton.js", "app/components/PageInputButton.js", "app/components/Help.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const EndpointActions = $__require("app/actions/EndpointActions.js");
+    const PageInput_1 = $__require("app/components/PageInput.js");
+    const PageSave_1 = $__require("app/components/PageSave.js");
+    const PageInfo_1 = $__require("app/components/PageInfo.js");
+    const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const PageInputButton_1 = $__require("app/components/PageInputButton.js");
+    const Help_1 = $__require("app/components/Help.js");
+    const css = {
+        card: {
+            position: 'relative',
+            padding: '48px 10px 0 10px',
+            width: '100%'
+        },
+        remove: {
+            position: 'absolute',
+            top: '5px',
+            right: '5px'
+        },
+        item: {
+            margin: '9px 5px 0 5px',
+            height: '20px'
+        },
+        itemsLabel: {
+            display: 'block'
+        },
+        itemsAdd: {
+            margin: '8px 0 15px 0'
+        },
+        group: {
+            flex: 1,
+            minWidth: '250px',
+            margin: '0 10px'
+        },
+        save: {
+            paddingBottom: '10px'
+        },
+        button: {
+            height: '30px'
+        },
+        buttons: {
+            cursor: 'pointer',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            padding: '4px',
+            height: '39px',
+            backgroundColor: 'rgba(0, 0, 0, 0.13)'
+        },
+        label: {
+            width: '100%',
+            maxWidth: '280px'
+        },
+        status: {
+            margin: '6px 0 0 1px'
+        },
+        icon: {
+            marginRight: '3px'
+        },
+        inputGroup: {
+            width: '100%'
+        },
+        protocol: {
+            flex: '0 1 auto'
+        },
+        port: {
+            flex: '1'
+        },
+        select: {
+            margin: '7px 0px 0px 6px',
+            paddingTop: '3px'
+        }
+    };
+    class EndpointDetailed extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onSave = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
+                EndpointActions.commit(this.state.endpoint).then(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { message: 'Your changes have been saved', changed: false, disabled: false }));
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { endpoint: null, changed: false }));
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        if (!this.state.changed) {
+                            this.setState(Object.assign(Object.assign({}, this.state), { message: '' }));
+                        }
+                    }, 3000);
+                }).catch(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { message: '', disabled: false }));
+                });
+            };
+            this.onDelete = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
+                EndpointActions.remove(this.props.endpoint.id).then(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                }).catch(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                });
+            };
+            this.onAddRole = () => {
+                let endpoint;
+                if (this.state.changed) {
+                    endpoint = Object.assign({}, this.state.endpoint);
+                } else {
+                    endpoint = Object.assign({}, this.props.endpoint);
+                }
+                let roles = [...endpoint.roles];
+                if (!this.state.addRole) {
+                    return;
+                }
+                if (roles.indexOf(this.state.addRole) === -1) {
+                    roles.push(this.state.addRole);
+                }
+                roles.sort();
+                endpoint.roles = roles;
+                this.setState(Object.assign(Object.assign({}, this.state), { changed: true, message: '', addRole: '', endpoint: endpoint }));
+            };
+            this.state = {
+                disabled: false,
+                changed: false,
+                message: '',
+                addRole: '',
+                endpoint: null
+            };
+        }
+        set(name, val) {
+            let endpoint;
+            if (this.state.changed) {
+                endpoint = Object.assign({}, this.state.endpoint);
+            } else {
+                endpoint = Object.assign({}, this.props.endpoint);
+            }
+            endpoint[name] = val;
+            this.setState(Object.assign(Object.assign({}, this.state), { changed: true, endpoint: endpoint }));
+        }
+        onRemoveRole(role) {
+            let endpoint;
+            if (this.state.changed) {
+                endpoint = Object.assign({}, this.state.endpoint);
+            } else {
+                endpoint = Object.assign({}, this.props.endpoint);
+            }
+            let roles = [...endpoint.roles];
+            let i = roles.indexOf(role);
+            if (i === -1) {
+                return;
+            }
+            roles.splice(i, 1);
+            endpoint.roles = roles;
+            this.setState(Object.assign(Object.assign({}, this.state), { changed: true, message: '', addRole: '', endpoint: endpoint }));
+        }
+        render() {
+            let endpoint = this.state.endpoint || this.props.endpoint;
+            let roles = [];
+            for (let role of endpoint.roles) {
+                roles.push(React.createElement("div", { className: "bp3-tag bp3-tag-removable bp3-intent-primary", style: css.item, key: role }, role, React.createElement("button", { className: "bp3-tag-remove", onMouseUp: () => {
+                        this.onRemoveRole(role);
+                    } })));
+            }
+            return React.createElement("td", { className: "bp3-cell", colSpan: 2, style: css.card }, React.createElement("div", { className: "layout horizontal wrap" }, React.createElement("div", { style: css.group }, React.createElement("div", { className: "layout horizontal", style: css.buttons, onClick: evt => {
+                    let target = evt.target;
+                    if (target.className.indexOf('open-ignore') !== -1) {
+                        return;
+                    }
+                    this.props.onClose();
+                } }, React.createElement("div", null, React.createElement("label", { className: "bp3-control bp3-checkbox open-ignore", style: css.select }, React.createElement("input", { type: "checkbox", className: "open-ignore", checked: this.props.selected, onClick: evt => {
+                    this.props.onSelect(evt.shiftKey);
+                } }), React.createElement("span", { className: "bp3-control-indicator open-ignore" }))), React.createElement("div", { className: "flex" }), React.createElement(ConfirmButton_1.default, { className: "bp3-minimal bp3-intent-danger bp3-icon-trash open-ignore", style: css.button, progressClassName: "bp3-intent-danger", confirmMsg: "Confirm endpoint remove", disabled: this.state.disabled, onConfirm: this.onDelete })), React.createElement(PageInput_1.default, { label: "Name", help: "Name of endpoint", type: "text", placeholder: "Enter name", value: endpoint.name, onChange: val => {
+                    this.set('name', val);
+                } })), React.createElement("div", { style: css.group }, React.createElement(PageInfo_1.default, { fields: [{
+                    label: 'ID',
+                    value: endpoint.id || 'None'
+                }] }), React.createElement("label", { className: "bp3-label" }, "Roles", React.createElement(Help_1.default, { title: "Roles", content: "The user roles that will be allowed access to this endpoint. At least one role must match for the user to access the endpoint." }), React.createElement("div", null, roles)), React.createElement(PageInputButton_1.default, { buttonClass: "bp3-intent-success bp3-icon-add", label: "Add", type: "text", placeholder: "Add role", value: this.state.addRole, onChange: val => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { addRole: val }));
+                }, onSubmit: this.onAddRole }))), React.createElement(PageSave_1.default, { style: css.save, hidden: !this.state.endpoint && !this.state.message, message: this.state.message, changed: this.state.changed, disabled: this.state.disabled, light: true, onCancel: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { changed: false, endpoint: null }));
+                }, onSave: this.onSave }));
+        }
+    }
+    exports.default = EndpointDetailed;
+    
+});
+System.registerDynamic("app/components/Endpoint.js", ["npm:react@16.11.0.js", "app/components/EndpointDetailed.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const EndpointDetailed_1 = $__require("app/components/EndpointDetailed.js");
+    const css = {
+        card: {
+            display: 'table-row',
+            width: '100%',
+            padding: 0,
+            boxShadow: 'none',
+            cursor: 'pointer'
+        },
+        cardOpen: {
+            display: 'table-row',
+            width: '100%',
+            padding: 0,
+            boxShadow: 'none',
+            position: 'relative'
+        },
+        select: {
+            margin: '2px 0 0 0',
+            paddingTop: '3px',
+            minHeight: '18px'
+        },
+        name: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '8px'
+        },
+        nameSpan: {
+            margin: '1px 5px 0 0'
+        },
+        item: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '9px',
+            whiteSpace: 'nowrap'
+        },
+        roles: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '0 8px 8px 8px'
+        },
+        icon: {
+            marginRight: '3px'
+        },
+        tag: {
+            margin: '8px 5px 0 5px',
+            height: '20px'
+        },
+        bars: {
+            verticalAlign: 'top',
+            display: 'table-cell',
+            padding: '8px',
+            width: '30px'
+        },
+        bar: {
+            height: '6px',
+            marginBottom: '1px'
+        },
+        barLast: {
+            height: '6px'
+        }
+    };
+    class Endpoint extends React.Component {
+        render() {
+            let endpoint = this.props.endpoint;
+            if (this.props.open) {
+                return React.createElement("div", { className: "bp3-card bp3-row", style: css.cardOpen }, React.createElement(EndpointDetailed_1.default, { endpoint: this.props.endpoint, authorities: this.props.authorities, selected: this.props.selected, onSelect: this.props.onSelect, onClose: () => {
+                        this.props.onOpen();
+                    } }));
+            }
+            let cardStyle = Object.assign({}, css.card);
+            let roles = [];
+            for (let role of endpoint.roles) {
+                roles.push(React.createElement("div", { className: "bp3-tag bp3-intent-primary", style: css.tag, key: role }, role));
+            }
+            return React.createElement("div", { className: "bp3-card bp3-row", style: cardStyle, onClick: evt => {
+                    let target = evt.target;
+                    if (target.className.indexOf('open-ignore') !== -1) {
+                        return;
+                    }
+                    this.props.onOpen();
+                } }, React.createElement("div", { className: "bp3-cell", style: css.name }, React.createElement("div", { className: "layout horizontal" }, React.createElement("label", { className: "bp3-control bp3-checkbox open-ignore", style: css.select }, React.createElement("input", { type: "checkbox", className: "open-ignore", checked: this.props.selected, onClick: evt => {
+                    this.props.onSelect(evt.shiftKey);
+                } }), React.createElement("span", { className: "bp3-control-indicator open-ignore" })), React.createElement("div", { style: css.nameSpan }, endpoint.name))), React.createElement("div", { className: "flex bp3-cell", style: css.roles }, roles));
+        }
+    }
+    exports.default = Endpoint;
+    
+});
+System.registerDynamic("app/components/EndpointsFilter.js", ["npm:react@16.11.0.js", "app/components/SearchInput.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const SearchInput_1 = $__require("app/components/SearchInput.js");
+    const css = {
+        filters: {
+            margin: '-15px 0 5px 0'
+        },
+        input: {
+            width: '200px',
+            margin: '5px'
+        },
+        role: {
+            width: '150px',
+            margin: '5px'
+        },
+        type: {
+            margin: '5px'
+        },
+        check: {
+            margin: '12px 5px 8px 5px'
+        }
+    };
+    class EndpointsFilter extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = {
+                menu: false
+            };
+        }
+        render() {
+            if (this.props.filter === null) {
+                return React.createElement("div", null);
+            }
+            return React.createElement("div", { className: "layout horizontal wrap", style: css.filters }, React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Endpoint ID", value: this.props.filter.id, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.id = val;
+                    } else {
+                        delete filter.id;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.input, placeholder: "Name", value: this.props.filter.name, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.name = val;
+                    } else {
+                        delete filter.name;
+                    }
+                    this.props.onFilter(filter);
+                } }), React.createElement(SearchInput_1.default, { style: css.role, placeholder: "Role", value: this.props.filter.role, onChange: val => {
+                    let filter = Object.assign({}, this.props.filter);
+                    if (val) {
+                        filter.role = val;
+                    } else {
+                        delete filter.role;
+                    }
+                    this.props.onFilter(filter);
+                } }));
+        }
+    }
+    exports.default = EndpointsFilter;
+    
+});
+System.registerDynamic("app/components/EndpointsPage.js", ["npm:react@16.11.0.js", "app/stores/EndpointsStore.js", "app/actions/EndpointActions.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const EndpointsStore_1 = $__require("app/stores/EndpointsStore.js");
+    const EndpointActions = $__require("app/actions/EndpointActions.js");
+    const css = {
+        button: {
+            userSelect: 'none',
+            margin: '0 5px 0 0'
+        },
+        buttonLast: {
+            userSelect: 'none',
+            margin: '0 0 0 0'
+        },
+        link: {
+            cursor: 'pointer',
+            userSelect: 'none',
+            margin: '7px 5px 0 0'
+        },
+        current: {
+            opacity: 0.5
+        }
+    };
+    class EndpointsPage extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { page: EndpointsStore_1.default.page, pageCount: EndpointsStore_1.default.pageCount, pages: EndpointsStore_1.default.pages, count: EndpointsStore_1.default.count }));
+            };
+            this.state = {
+                page: EndpointsStore_1.default.page,
+                pageCount: EndpointsStore_1.default.pageCount,
+                pages: EndpointsStore_1.default.pages,
+                count: EndpointsStore_1.default.count
+            };
+        }
+        componentDidMount() {
+            EndpointsStore_1.default.addChangeListener(this.onChange);
+        }
+        componentWillUnmount() {
+            EndpointsStore_1.default.removeChangeListener(this.onChange);
+        }
+        render() {
+            let page = this.state.page;
+            let pages = this.state.pages;
+            if (pages <= 1) {
+                return React.createElement("div", null);
+            }
+            let links = [];
+            let start = Math.max(0, page - 7);
+            let end = Math.min(pages, start + 15);
+            for (let i = start; i < end; i++) {
+                links.push(React.createElement("span", { key: i, style: page === i ? Object.assign(Object.assign({}, css.link), css.current) : css.link, onClick: () => {
+                        EndpointActions.traverse(i);
+                        if (this.props.onPage) {
+                            this.props.onPage();
+                        }
+                    } }, i + 1));
+            }
+            return React.createElement("div", { className: "layout horizontal center-justified" }, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-backward", hidden: pages < 5, disabled: page === 0, type: "button", onClick: () => {
+                    EndpointActions.traverse(0);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-left", style: css.button, disabled: page === 0, type: "button", onClick: () => {
+                    EndpointActions.traverse(Math.max(0, this.state.page - 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), links, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-right", style: css.button, disabled: page === pages - 1, type: "button", onClick: () => {
+                    EndpointActions.traverse(Math.min(this.state.pages - 1, this.state.page + 1));
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }), React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-chevron-forward", hidden: pages < 5, disabled: page === pages - 1, type: "button", onClick: () => {
+                    EndpointActions.traverse(this.state.pages - 1);
+                    if (this.props.onPage) {
+                        this.props.onPage();
+                    }
+                } }));
+        }
+    }
+    exports.default = EndpointsPage;
+    
+});
+System.registerDynamic("app/components/Endpoints.js", ["npm:react@16.11.0.js", "app/stores/EndpointsStore.js", "app/stores/AuthoritiesStore.js", "app/actions/EndpointActions.js", "app/actions/AuthorityActions.js", "app/components/Endpoint.js", "app/components/EndpointsFilter.js", "app/components/EndpointsPage.js", "app/components/Page.js", "app/components/PageHeader.js", "app/components/NonState.js", "app/components/ConfirmButton.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const React = $__require("npm:react@16.11.0.js");
+    const EndpointsStore_1 = $__require("app/stores/EndpointsStore.js");
+    const AuthoritiesStore_1 = $__require("app/stores/AuthoritiesStore.js");
+    const EndpointActions = $__require("app/actions/EndpointActions.js");
+    const AuthorityActions = $__require("app/actions/AuthorityActions.js");
+    const Endpoint_1 = $__require("app/components/Endpoint.js");
+    const EndpointsFilter_1 = $__require("app/components/EndpointsFilter.js");
+    const EndpointsPage_1 = $__require("app/components/EndpointsPage.js");
+    const Page_1 = $__require("app/components/Page.js");
+    const PageHeader_1 = $__require("app/components/PageHeader.js");
+    const NonState_1 = $__require("app/components/NonState.js");
+    const ConfirmButton_1 = $__require("app/components/ConfirmButton.js");
+    const css = {
+        items: {
+            width: '100%',
+            marginTop: '-5px',
+            display: 'table',
+            borderSpacing: '0 5px'
+        },
+        itemsBox: {
+            width: '100%',
+            overflowY: 'auto'
+        },
+        placeholder: {
+            opacity: 0,
+            width: '100%'
+        },
+        header: {
+            marginTop: '-19px'
+        },
+        heading: {
+            margin: '19px 0 0 0'
+        },
+        button: {
+            margin: '8px 0 0 8px'
+        },
+        buttons: {
+            marginTop: '8px'
+        }
+    };
+    class Endpoints extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.onChange = () => {
+                let endpoints = EndpointsStore_1.default.endpoints;
+                let selected = {};
+                let curSelected = this.state.selected;
+                let opened = {};
+                let curOpened = this.state.opened;
+                endpoints.forEach(endpoint => {
+                    if (curSelected[endpoint.id]) {
+                        selected[endpoint.id] = true;
+                    }
+                    if (curOpened[endpoint.id]) {
+                        opened[endpoint.id] = true;
+                    }
+                });
+                this.setState(Object.assign(Object.assign({}, this.state), { endpoints: endpoints, filter: EndpointsStore_1.default.filter, authorities: AuthoritiesStore_1.default.authorities, selected: selected, opened: opened }));
+            };
+            this.onDelete = () => {
+                this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
+                EndpointActions.removeMulti(Object.keys(this.state.selected)).then(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { selected: {}, disabled: false }));
+                }).catch(() => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                });
+            };
+            this.state = {
+                endpoints: EndpointsStore_1.default.endpoints,
+                filter: EndpointsStore_1.default.filter,
+                authorities: AuthoritiesStore_1.default.authorities,
+                selected: {},
+                opened: {},
+                newOpened: false,
+                lastSelected: null,
+                disabled: false
+            };
+        }
+        get selected() {
+            return !!Object.keys(this.state.selected).length;
+        }
+        get opened() {
+            return !!Object.keys(this.state.opened).length;
+        }
+        componentDidMount() {
+            EndpointsStore_1.default.addChangeListener(this.onChange);
+            AuthoritiesStore_1.default.addChangeListener(this.onChange);
+            EndpointActions.sync();
+            AuthorityActions.sync();
+        }
+        componentWillUnmount() {
+            EndpointsStore_1.default.removeChangeListener(this.onChange);
+            AuthoritiesStore_1.default.removeChangeListener(this.onChange);
+        }
+        render() {
+            let endpointsDom = [];
+            this.state.endpoints.forEach(endpoint => {
+                endpointsDom.push(React.createElement(Endpoint_1.default, { key: endpoint.id, endpoint: endpoint, authorities: this.state.authorities, selected: !!this.state.selected[endpoint.id], open: !!this.state.opened[endpoint.id], onSelect: shift => {
+                        let selected = Object.assign({}, this.state.selected);
+                        if (shift) {
+                            let endpoints = this.state.endpoints;
+                            let start;
+                            let end;
+                            for (let i = 0; i < endpoints.length; i++) {
+                                let usr = endpoints[i];
+                                if (usr.id === endpoint.id) {
+                                    start = i;
+                                } else if (usr.id === this.state.lastSelected) {
+                                    end = i;
+                                }
+                            }
+                            if (start !== undefined && end !== undefined) {
+                                if (start > end) {
+                                    end = [start, start = end][0];
+                                }
+                                for (let i = start; i <= end; i++) {
+                                    selected[endpoints[i].id] = true;
+                                }
+                                this.setState(Object.assign(Object.assign({}, this.state), { lastSelected: endpoint.id, selected: selected }));
+                                return;
+                            }
+                        }
+                        if (selected[endpoint.id]) {
+                            delete selected[endpoint.id];
+                        } else {
+                            selected[endpoint.id] = true;
+                        }
+                        this.setState(Object.assign(Object.assign({}, this.state), { lastSelected: endpoint.id, selected: selected }));
+                    }, onOpen: () => {
+                        let opened = Object.assign({}, this.state.opened);
+                        if (opened[endpoint.id]) {
+                            delete opened[endpoint.id];
+                        } else {
+                            opened[endpoint.id] = true;
+                        }
+                        this.setState(Object.assign(Object.assign({}, this.state), { opened: opened }));
+                    } }));
+            });
+            let filterClass = 'bp3-button bp3-intent-primary bp3-icon-filter ';
+            if (this.state.filter) {
+                filterClass += 'bp3-active';
+            }
+            return React.createElement(Page_1.default, null, React.createElement(PageHeader_1.default, null, React.createElement("div", { className: "layout horizontal wrap", style: css.header }, React.createElement("h2", { style: css.heading }, "Endpoints"), React.createElement("div", { className: "flex" }), React.createElement("div", { style: css.buttons }, React.createElement("button", { className: filterClass, style: css.button, type: "button", onClick: () => {
+                    if (this.state.filter === null) {
+                        EndpointActions.filter({});
+                    } else {
+                        EndpointActions.filter(null);
+                    }
+                } }, "Filters"), React.createElement("button", { className: "bp3-button bp3-intent-warning bp3-icon-chevron-up", style: css.button, disabled: !this.opened, type: "button", onClick: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { opened: {} }));
+                } }, "Collapse All"), React.createElement(ConfirmButton_1.default, { label: "Delete Selected", className: "bp3-intent-danger bp3-icon-delete", progressClassName: "bp3-intent-danger", style: css.button, disabled: !this.selected || this.state.disabled, onConfirm: this.onDelete }), React.createElement("button", { className: "bp3-button bp3-intent-success bp3-icon-add", style: css.button, disabled: this.state.disabled, type: "button", onClick: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { disabled: true }));
+                    EndpointActions.create({
+                        id: null
+                    }).then(() => {
+                        this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                    }).catch(() => {
+                        this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                    });
+                } }, "New")))), React.createElement(EndpointsFilter_1.default, { filter: this.state.filter, onFilter: filter => {
+                    EndpointActions.filter(filter);
+                }, authorities: this.state.authorities }), React.createElement("div", { style: css.itemsBox }, React.createElement("div", { style: css.items }, endpointsDom, React.createElement("tr", { className: "bp3-card bp3-row", style: css.placeholder }, React.createElement("td", { colSpan: 5, style: css.placeholder })))), React.createElement(NonState_1.default, { hidden: !!endpointsDom.length, iconClass: "bp3-icon-shield", title: "No endpoints", description: "Add a new endpoint to get started." }), React.createElement(EndpointsPage_1.default, { onPage: () => {
+                    this.setState(Object.assign(Object.assign({}, this.state), { selected: {}, lastSelected: null }));
+                } }));
+        }
+    }
+    exports.default = Endpoints;
     
 });
 System.registerDynamic("app/components/Log.js", ["npm:react@16.11.0.js", "npm:@blueprintjs/core@3.19.1.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
@@ -14343,7 +14980,8 @@ System.registerDynamic("app/components/ServiceDetailed.js", ["npm:react@16.11.0.
             flex: '1'
         },
         select: {
-            margin: '7px 0px 0px 6px'
+            margin: '7px 0px 0px 6px',
+            paddingTop: '3px'
         }
     };
     class ServiceDetailed extends React.Component {
@@ -14678,7 +15316,7 @@ System.registerDynamic("app/components/Service.js", ["npm:react@16.11.0.js", "ap
         },
         select: {
             margin: '2px 0 0 0',
-            paddingTop: '1px',
+            paddingTop: '3px',
             minHeight: '18px'
         },
         name: {
@@ -15369,7 +16007,8 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@16.11.0.js
     const MiscUtils = $__require("app/utils/MiscUtils.js");
     const css = {
         box: {
-            display: 'inline-flex'
+            display: 'inline-flex',
+            verticalAlign: 'middle'
         },
         actionProgress: {
             position: 'absolute',
@@ -15392,7 +16031,8 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@16.11.0.js
             height: '4px'
         },
         dialog: {
-            width: '180px'
+            width: '340px',
+            position: 'absolute'
         }
     };
     class ConfirmButton extends React.Component {
@@ -15453,15 +16093,20 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@16.11.0.js
             };
         }
         render() {
+            let dialog = Constants.mobile || this.props.safe;
             let style = Object.assign({}, this.props.style);
             style.position = 'relative';
             let className = this.props.className || '';
             if (!this.props.label) {
                 className += ' bp3-button-empty';
             }
-            if (Constants.mobile) {
+            let dialogClassName = this.props.dialogClassName || this.props.className || '';
+            if (!this.props.label && !this.props.dialogLabel) {
+                dialogClassName += ' bp3-button-empty';
+            }
+            if (dialog) {
                 let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg : 'Confirm ' + (this.props.label || '');
-                return React.createElement("div", { style: css.box }, React.createElement("button", { className: 'bp3-button ' + className, style: style, type: "button", hidden: this.props.hidden, disabled: this.props.disabled, onMouseDown: Constants.mobile ? undefined : this.confirm, onMouseUp: Constants.mobile ? undefined : this.clearConfirm, onMouseLeave: Constants.mobile ? undefined : this.clearConfirm, onClick: Constants.mobile ? this.openDialog : undefined }, this.props.label), React.createElement(Blueprint.Dialog, { title: "Confirm", style: css.dialog, isOpen: this.state.dialog, onClose: this.closeDialog }, React.createElement("div", { className: "bp3-dialog-body" }, confirmMsg), React.createElement("div", { className: "bp3-dialog-footer" }, React.createElement("div", { className: "bp3-dialog-footer-actions" }, React.createElement("button", { className: "bp3-button", type: "button", onClick: this.closeDialog }, "Cancel"), React.createElement("button", { className: "bp3-button bp3-intent-primary", type: "button", onClick: this.closeDialogConfirm }, "Ok")))));
+                return React.createElement("div", { style: css.box }, React.createElement("button", { className: 'bp3-button ' + className, style: style, type: "button", hidden: this.props.hidden, disabled: this.props.disabled, onMouseDown: dialog ? undefined : this.confirm, onMouseUp: dialog ? undefined : this.clearConfirm, onMouseLeave: dialog ? undefined : this.clearConfirm, onClick: dialog ? this.openDialog : undefined }, this.props.label), React.createElement(Blueprint.Dialog, { title: "Confirm", style: css.dialog, isOpen: this.state.dialog, onClose: this.closeDialog }, React.createElement("div", { className: "bp3-dialog-body" }, confirmMsg), React.createElement("div", { className: "bp3-dialog-footer" }, React.createElement("div", { className: "bp3-dialog-footer-actions" }, React.createElement("button", { className: "bp3-button", type: "button", onClick: this.closeDialog }, "Cancel"), React.createElement("button", { className: 'bp3-button ' + dialogClassName, type: "button", onClick: this.closeDialogConfirm }, this.props.dialogLabel || this.props.label)))));
             } else {
                 let confirmElem;
                 if (this.state.confirming) {
@@ -15479,7 +16124,7 @@ System.registerDynamic("app/components/ConfirmButton.js", ["npm:react@16.11.0.js
                     }
                     confirmElem = React.createElement("div", { className: 'bp3-progress-bar bp3-no-stripes ' + (this.props.progressClassName || ''), style: progressStyle }, React.createElement("div", { className: "bp3-progress-meter", style: confirmStyle }));
                 }
-                return React.createElement("button", { className: 'bp3-button ' + className, style: style, type: "button", hidden: this.props.hidden, disabled: this.props.disabled, onMouseDown: Constants.mobile ? undefined : this.confirm, onMouseUp: Constants.mobile ? undefined : this.clearConfirm, onMouseLeave: Constants.mobile ? undefined : this.clearConfirm, onClick: Constants.mobile ? this.openDialog : undefined }, this.props.label, confirmElem);
+                return React.createElement("button", { className: 'bp3-button ' + className, style: style, type: "button", hidden: this.props.hidden, disabled: this.props.disabled, onMouseDown: dialog ? undefined : this.confirm, onMouseUp: dialog ? undefined : this.clearConfirm, onMouseLeave: dialog ? undefined : this.clearConfirm, onClick: dialog ? this.openDialog : undefined }, this.props.label, confirmElem);
             }
         }
     }
@@ -19316,6 +19961,269 @@ System.registerDynamic("app/actions/CertificateActions.js", ["npm:superagent@5.1
     });
     
 });
+System.registerDynamic("app/stores/EndpointsStore.js", ["app/dispatcher/Dispatcher.js", "app/EventEmitter.js", "app/types/EndpointTypes.js", "app/types/GlobalTypes.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventEmitter_1 = $__require("app/EventEmitter.js");
+    const EndpointTypes = $__require("app/types/EndpointTypes.js");
+    const GlobalTypes = $__require("app/types/GlobalTypes.js");
+    class EndpointsStore extends EventEmitter_1.default {
+        constructor() {
+            super(...arguments);
+            this._endpoints = Object.freeze([]);
+            this._filter = null;
+            this._map = {};
+            this._token = Dispatcher_1.default.register(this._callback.bind(this));
+        }
+        get endpoints() {
+            return this._endpoints;
+        }
+        get endpointsM() {
+            let endpoints = [];
+            this._endpoints.forEach(endpoint => {
+                endpoints.push(Object.assign({}, endpoint));
+            });
+            return endpoints;
+        }
+        get page() {
+            return this._page || 0;
+        }
+        get pageCount() {
+            return this._pageCount || 20;
+        }
+        get pages() {
+            return Math.ceil(this.count / this.pageCount);
+        }
+        get filter() {
+            return this._filter;
+        }
+        get count() {
+            return this._count || 0;
+        }
+        endpoint(id) {
+            let i = this._map[id];
+            if (i === undefined) {
+                return null;
+            }
+            return this._endpoints[i];
+        }
+        emitChange() {
+            this.emitDefer(GlobalTypes.CHANGE);
+        }
+        addChangeListener(callback) {
+            this.on(GlobalTypes.CHANGE, callback);
+        }
+        removeChangeListener(callback) {
+            this.removeListener(GlobalTypes.CHANGE, callback);
+        }
+        _traverse(page) {
+            this._page = Math.min(this.pages, page);
+        }
+        _filterCallback(filter) {
+            if (this._filter !== null && filter === null || this._filter === {} && filter !== null || filter && this._filter && filter.name !== this._filter.name) {
+                this._traverse(0);
+            }
+            this._filter = filter;
+            this.emitChange();
+        }
+        _sync(endpoints, count) {
+            this._map = {};
+            for (let i = 0; i < endpoints.length; i++) {
+                endpoints[i] = Object.freeze(endpoints[i]);
+                this._map[endpoints[i].id] = i;
+            }
+            this._count = count;
+            this._endpoints = Object.freeze(endpoints);
+            this._page = Math.min(this.pages, this.page);
+            this.emitChange();
+        }
+        _callback(action) {
+            switch (action.type) {
+                case EndpointTypes.TRAVERSE:
+                    this._traverse(action.data.page);
+                    break;
+                case EndpointTypes.FILTER:
+                    this._filterCallback(action.data.filter);
+                    break;
+                case EndpointTypes.SYNC:
+                    this._sync(action.data.endpoints, action.data.count);
+                    break;
+            }
+        }
+    }
+    exports.default = new EndpointsStore();
+    
+});
+System.registerDynamic("app/types/EndpointTypes.js", [], true, function ($__require, exports, module) {
+  "use strict";
+
+  var global = this || self,
+      GLOBAL = global;
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.SYNC = 'endpoint.sync';
+  exports.SYNC_NAMES = 'endpoint.sync_names';
+  exports.TRAVERSE = 'endpoint.traverse';
+  exports.FILTER = 'endpoint.filter';
+  exports.CHANGE = 'endpoint.change';
+  
+});
+System.registerDynamic("app/actions/EndpointActions.js", ["npm:superagent@5.1.0.js", "app/dispatcher/Dispatcher.js", "app/dispatcher/EventDispatcher.js", "app/Alert.js", "app/Csrf.js", "app/Loader.js", "app/stores/EndpointsStore.js", "app/types/EndpointTypes.js", "app/utils/MiscUtils.js"], true, function ($__require, exports, module) {
+    "use strict";
+
+    var global = this || self,
+        GLOBAL = global;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const SuperAgent = $__require("npm:superagent@5.1.0.js");
+    const Dispatcher_1 = $__require("app/dispatcher/Dispatcher.js");
+    const EventDispatcher_1 = $__require("app/dispatcher/EventDispatcher.js");
+    const Alert = $__require("app/Alert.js");
+    const Csrf = $__require("app/Csrf.js");
+    const Loader_1 = $__require("app/Loader.js");
+    const EndpointsStore_1 = $__require("app/stores/EndpointsStore.js");
+    const EndpointTypes = $__require("app/types/EndpointTypes.js");
+    const MiscUtils = $__require("app/utils/MiscUtils.js");
+    let syncId;
+    function sync() {
+        let curSyncId = MiscUtils.uuid();
+        syncId = curSyncId;
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.get('/endpoint').query(Object.assign(Object.assign({}, EndpointsStore_1.default.filter), { page: EndpointsStore_1.default.page, page_count: EndpointsStore_1.default.pageCount })).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (curSyncId !== syncId) {
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to load endpoints');
+                    reject(err);
+                    return;
+                }
+                Dispatcher_1.default.dispatch({
+                    type: EndpointTypes.SYNC,
+                    data: {
+                        endpoints: res.body.endpoints,
+                        count: res.body.count
+                    }
+                });
+                resolve();
+            });
+        });
+    }
+    exports.sync = sync;
+    function traverse(page) {
+        Dispatcher_1.default.dispatch({
+            type: EndpointTypes.TRAVERSE,
+            data: {
+                page: page
+            }
+        });
+        return sync();
+    }
+    exports.traverse = traverse;
+    function filter(filt) {
+        Dispatcher_1.default.dispatch({
+            type: EndpointTypes.FILTER,
+            data: {
+                filter: filt
+            }
+        });
+        return sync();
+    }
+    exports.filter = filter;
+    function commit(endpoint) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.put('/endpoint/' + endpoint.id).send(endpoint).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to save endpoint');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.commit = commit;
+    function create(endpoint) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.post('/endpoint').send(endpoint).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to create endpoint');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.create = create;
+    function remove(endpointId) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.delete('/endpoint/' + endpointId).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (err) {
+                    Alert.errorRes(res, 'Failed to delete endpoints');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.remove = remove;
+    function removeMulti(endpointIds) {
+        let loader = new Loader_1.default().loading();
+        return new Promise((resolve, reject) => {
+            SuperAgent.delete('/endpoint').send(endpointIds).set('Accept', 'application/json').set('Csrf-Token', Csrf.token).end((err, res) => {
+                loader.done();
+                if (res && res.status === 401) {
+                    window.location.href = '/login';
+                    resolve();
+                    return;
+                }
+                if (err) {
+                    Alert.errorRes(res, 'Failed to delete endpoints');
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+    exports.removeMulti = removeMulti;
+    EventDispatcher_1.default.register(action => {
+        switch (action.type) {
+            case EndpointTypes.CHANGE:
+                sync();
+                break;
+        }
+    });
+    
+});
 System.registerDynamic("app/types/LogTypes.js", [], true, function ($__require, exports, module) {
   "use strict";
 
@@ -20812,7 +21720,7 @@ System.registerDynamic("app/actions/SubscriptionActions.js", ["npm:superagent@5.
     });
     
 });
-System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:react-router-dom@5.1.2.js", "app/Theme.js", "app/stores/SubscriptionStore.js", "app/components/LoadingBar.js", "app/components/Subscription.js", "app/components/Users.js", "app/components/UserDetailed.js", "app/components/Nodes.js", "app/components/Policies.js", "app/components/Authorities.js", "app/components/Certificates.js", "app/components/Logs.js", "app/components/Services.js", "app/components/Settings.js", "app/actions/UserActions.js", "app/actions/SessionActions.js", "app/actions/DeviceActions.js", "app/actions/AuditActions.js", "app/actions/SshcertificateActions.js", "app/actions/NodeActions.js", "app/actions/PolicyActions.js", "app/actions/AuthorityActions.js", "app/actions/CertificateActions.js", "app/actions/LogActions.js", "app/actions/ServiceActions.js", "app/actions/SettingsActions.js", "app/actions/SubscriptionActions.js"], true, function ($__require, exports, module) {
+System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:react-router-dom@5.1.2.js", "app/Theme.js", "app/stores/SubscriptionStore.js", "app/components/LoadingBar.js", "app/components/Subscription.js", "app/components/Users.js", "app/components/UserDetailed.js", "app/components/Nodes.js", "app/components/Policies.js", "app/components/Authorities.js", "app/components/Certificates.js", "app/components/Endpoints.js", "app/components/Logs.js", "app/components/Services.js", "app/components/Settings.js", "app/actions/UserActions.js", "app/actions/SessionActions.js", "app/actions/DeviceActions.js", "app/actions/AuditActions.js", "app/actions/SshcertificateActions.js", "app/actions/NodeActions.js", "app/actions/PolicyActions.js", "app/actions/AuthorityActions.js", "app/actions/CertificateActions.js", "app/actions/EndpointActions.js", "app/actions/LogActions.js", "app/actions/ServiceActions.js", "app/actions/SettingsActions.js", "app/actions/SubscriptionActions.js"], true, function ($__require, exports, module) {
     "use strict";
 
     var global = this || self,
@@ -20830,6 +21738,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
     const Policies_1 = $__require("app/components/Policies.js");
     const Authorities_1 = $__require("app/components/Authorities.js");
     const Certificates_1 = $__require("app/components/Certificates.js");
+    const Endpoints_1 = $__require("app/components/Endpoints.js");
     const Logs_1 = $__require("app/components/Logs.js");
     const Services_1 = $__require("app/components/Services.js");
     const Settings_1 = $__require("app/components/Settings.js");
@@ -20842,6 +21751,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
     const PolicyActions = $__require("app/actions/PolicyActions.js");
     const AuthorityActions = $__require("app/actions/AuthorityActions.js");
     const CertificateActions = $__require("app/actions/CertificateActions.js");
+    const EndpointActions = $__require("app/actions/EndpointActions.js");
     const LogActions = $__require("app/actions/LogActions.js");
     const ServiceActions = $__require("app/actions/ServiceActions.js");
     const SettingsActions = $__require("app/actions/SettingsActions.js");
@@ -20896,7 +21806,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
             if (!this.state.subscription) {
                 return React.createElement("div", null);
             }
-            return React.createElement(ReactRouter.HashRouter, null, React.createElement("div", null, React.createElement("nav", { className: "bp3-navbar layout horizontal", style: css.nav }, React.createElement("div", { className: "bp3-navbar-group bp3-align-left flex", style: css.navTitle }, React.createElement("div", { className: "bp3-navbar-heading", style: css.heading }, "Pritunl Zero")), React.createElement("div", { className: "bp3-navbar-group bp3-align-right", style: css.navGroup }, React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-people", style: css.link, to: "/users" }, "Users"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-cloud", style: css.link, to: "/services" }, "Services"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-layers", style: css.link, to: "/nodes" }, "Nodes"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-filter", style: css.link, to: "/policies" }, "Policies"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-office", style: css.link, to: "/authorities" }, "Authorities"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-endorsed", style: css.link, to: "/certificates" }, "Certificates"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-history", style: css.link, to: "/logs" }, "Logs"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-cog", style: css.link, to: "/settings" }, "Settings"), React.createElement(ReactRouter.Link, { to: "/subscription", style: css.sub }, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-credit-card", style: css.link, onClick: () => {
+            return React.createElement(ReactRouter.HashRouter, null, React.createElement("div", null, React.createElement("nav", { className: "bp3-navbar layout horizontal", style: css.nav }, React.createElement("div", { className: "bp3-navbar-group bp3-align-left flex", style: css.navTitle }, React.createElement("div", { className: "bp3-navbar-heading", style: css.heading }, "Pritunl Zero")), React.createElement("div", { className: "bp3-navbar-group bp3-align-right", style: css.navGroup }, React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-people", style: css.link, to: "/users" }, "Users"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-cloud", style: css.link, to: "/services" }, "Services"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-layers", style: css.link, to: "/nodes" }, "Nodes"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-filter", style: css.link, to: "/policies" }, "Policies"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-office", style: css.link, to: "/authorities" }, "Authorities"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-endorsed", style: css.link, to: "/certificates" }, "Certificates"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-shield", style: css.link, to: "/endpoints" }, "Endpoints"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-history", style: css.link, to: "/logs" }, "Logs"), React.createElement(ReactRouter.Link, { className: "bp3-button bp3-minimal bp3-icon-cog", style: css.link, to: "/settings" }, "Settings"), React.createElement(ReactRouter.Link, { to: "/subscription", style: css.sub }, React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-credit-card", style: css.link, onClick: () => {
                     SubscriptionActions.sync(true);
                 } }, "Subscription")), React.createElement(ReactRouter.Route, { render: props => React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-refresh", disabled: this.state.disabled, onClick: () => {
                         let pathname = props.location.pathname;
@@ -20961,6 +21871,13 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
                             }).catch(() => {
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             });
+                        } else if (pathname === '/endpoints') {
+                            AuthorityActions.sync();
+                            EndpointActions.sync().then(() => {
+                                this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                            }).catch(() => {
+                                this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
+                            });
                         } else if (pathname === '/logs') {
                             LogActions.sync().then(() => {
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
@@ -20968,6 +21885,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             });
                         } else if (pathname === '/services') {
+                            AuthorityActions.sync();
                             ServiceActions.sync().then(() => {
                                 this.setState(Object.assign(Object.assign({}, this.state), { disabled: false }));
                             }).catch(() => {
@@ -20993,7 +21911,7 @@ System.registerDynamic("app/components/Main.js", ["npm:react@16.11.0.js", "npm:r
                 } }, "Logout"), React.createElement("button", { className: "bp3-button bp3-minimal bp3-icon-moon", onClick: () => {
                     Theme.toggle();
                     Theme.save();
-                } }))), React.createElement(LoadingBar_1.default, { intent: "primary" }), React.createElement(ReactRouter.Route, { path: "/", exact: true, render: () => React.createElement(Users_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/users", render: () => React.createElement(Users_1.default, null) }), React.createElement(ReactRouter.Route, { exact: true, path: "/user", render: () => React.createElement(UserDetailed_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/user/:userId", render: props => React.createElement(UserDetailed_1.default, { userId: props.match.params.userId }) }), React.createElement(ReactRouter.Route, { path: "/nodes", render: () => React.createElement(Nodes_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/policies", render: () => React.createElement(Policies_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/authorities", render: () => React.createElement(Authorities_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/certificates", render: () => React.createElement(Certificates_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/logs", render: () => React.createElement(Logs_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/services", render: () => React.createElement(Services_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/settings", render: () => React.createElement(Settings_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/subscription", render: () => React.createElement(Subscription_1.default, null) })));
+                } }))), React.createElement(LoadingBar_1.default, { intent: "primary" }), React.createElement(ReactRouter.Route, { path: "/", exact: true, render: () => React.createElement(Users_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/users", render: () => React.createElement(Users_1.default, null) }), React.createElement(ReactRouter.Route, { exact: true, path: "/user", render: () => React.createElement(UserDetailed_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/user/:userId", render: props => React.createElement(UserDetailed_1.default, { userId: props.match.params.userId }) }), React.createElement(ReactRouter.Route, { path: "/nodes", render: () => React.createElement(Nodes_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/policies", render: () => React.createElement(Policies_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/authorities", render: () => React.createElement(Authorities_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/certificates", render: () => React.createElement(Certificates_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/endpoints", render: () => React.createElement(Endpoints_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/logs", render: () => React.createElement(Logs_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/services", render: () => React.createElement(Services_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/settings", render: () => React.createElement(Settings_1.default, null) }), React.createElement(ReactRouter.Route, { path: "/subscription", render: () => React.createElement(Subscription_1.default, null) })));
         }
     }
     exports.default = Main;
