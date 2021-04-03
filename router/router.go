@@ -14,12 +14,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/acme"
-	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
@@ -29,17 +28,22 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type Router struct {
 	nodeHash         []byte
-	typ              string
+	singleType       bool
+	managementType   bool
+	userType         bool
+	proxyType        bool
 	port             int
 	noRedirectServer bool
 	protocol         string
-	certificates     []*certificate.Certificate
+	certificates     *Certificates
 	managementDomain string
 	userDomain       string
+	stateLock        sync.Mutex
 	mRouter          *gin.Engine
 	uRouter          *gin.Engine
 	pRouter          *gin.Engine
@@ -64,26 +68,33 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		return
 	}
 
-	hst := utils.StripPort(re.Host)
-	if r.typ == node.Management {
-		r.mRouter.ServeHTTP(w, re)
-		return
-	} else if r.typ == node.User {
-		r.uRouter.ServeHTTP(w, re)
-		return
-	} else if strings.Contains(
-		r.typ, node.Management) && hst == r.managementDomain {
-
-		r.mRouter.ServeHTTP(w, re)
-		return
-	} else if strings.Contains(r.typ, node.User) && hst == r.userDomain {
-		r.uRouter.ServeHTTP(w, re)
-		return
-	} else {
-		if !r.proxy.ServeHTTP(w, re) {
-			r.pRouter.ServeHTTP(w, re)
+	if r.singleType {
+		if r.managementType {
+			r.mRouter.ServeHTTP(w, re)
+		} else if r.userType {
+			r.uRouter.ServeHTTP(w, re)
+		} else if r.proxyType {
+			if !r.proxy.ServeHTTP(w, re) {
+				r.pRouter.ServeHTTP(w, re)
+			}
+		} else {
+			utils.WriteStatus(w, 520)
 		}
 		return
+	} else {
+		hst := utils.StripPort(re.Host)
+		if r.managementType && hst == r.managementDomain {
+			r.mRouter.ServeHTTP(w, re)
+			return
+		} else if r.userType && hst == r.userDomain {
+			r.uRouter.ServeHTTP(w, re)
+			return
+		} else if r.proxyType {
+			if !r.proxy.ServeHTTP(w, re) {
+				r.pRouter.ServeHTTP(w, re)
+			}
+			return
+		}
 	}
 
 	if re.URL.Path == "/check" {
@@ -169,11 +180,22 @@ func (r *Router) startRedirect() {
 }
 
 func (r *Router) initWeb() (err error) {
-	r.typ = node.Self.Type
+	r.managementType = node.Self.IsManagement()
+	r.userType = node.Self.IsUser()
+	r.proxyType = node.Self.IsProxy()
 	r.managementDomain = node.Self.ManagementDomain
 	r.userDomain = node.Self.UserDomain
-	r.certificates = node.Self.CertificateObjs
 	r.noRedirectServer = node.Self.NoRedirectServer
+
+	if r.managementType && !r.userType && !r.proxyType {
+		r.singleType = true
+	} else if r.userType && !r.proxyType && !r.managementType {
+		r.singleType = true
+	} else if r.proxyType && !r.managementType && !r.userType {
+		r.singleType = true
+	} else {
+		r.singleType = false
+	}
 
 	r.port = node.Self.Port
 	if r.port == 0 {
@@ -185,7 +207,7 @@ func (r *Router) initWeb() (err error) {
 		r.protocol = "https"
 	}
 
-	if strings.Contains(r.typ, node.Management) {
+	if r.managementType {
 		r.mRouter = gin.New()
 
 		if !constants.Production {
@@ -195,7 +217,7 @@ func (r *Router) initWeb() (err error) {
 		mhandlers.Register(r.mRouter)
 	}
 
-	if strings.Contains(r.typ, node.User) {
+	if r.userType {
 		r.uRouter = gin.New()
 
 		if !constants.Production {
@@ -205,7 +227,7 @@ func (r *Router) initWeb() (err error) {
 		uhandlers.Register(r.uRouter)
 	}
 
-	if strings.Contains(r.typ, node.Proxy) {
+	if r.proxyType {
 		r.pRouter = gin.New()
 
 		if !constants.Production {
@@ -229,15 +251,6 @@ func (r *Router) initWeb() (err error) {
 		WriteTimeout:      writeTimeout,
 		IdleTimeout:       idleTimeout,
 		MaxHeaderBytes:    4096,
-	}
-
-	if r.protocol != "http" &&
-		(r.certificates == nil || len(r.certificates) == 0) {
-
-		_, _, err = node.SelfCert()
-		if err != nil {
-			return
-		}
 	}
 
 	return
@@ -273,70 +286,11 @@ func (r *Router) startWeb() {
 		}
 	} else {
 		tlsConfig := &tls.Config{
-			MinVersion: tls.VersionTLS12,
-			MaxVersion: tls.VersionTLS13,
+			MinVersion:     tls.VersionTLS12,
+			MaxVersion:     tls.VersionTLS13,
+			GetCertificate: r.certificates.GetCertificate,
 		}
 		tlsConfig.Certificates = []tls.Certificate{}
-
-		if r.certificates != nil {
-			for _, cert := range r.certificates {
-				keypair, err := tls.X509KeyPair(
-					[]byte(cert.Certificate),
-					[]byte(cert.Key),
-				)
-				if err != nil {
-					err = &errortypes.ReadError{
-						errors.Wrap(
-							err,
-							"router: Failed to load certificate",
-						),
-					}
-					logrus.WithFields(logrus.Fields{
-						"error": err,
-					}).Error("router: Web server certificate error")
-					err = nil
-					continue
-				}
-
-				tlsConfig.Certificates = append(
-					tlsConfig.Certificates,
-					keypair,
-				)
-			}
-		}
-
-		if len(tlsConfig.Certificates) == 0 {
-			certPem, keyPem, err := node.SelfCert()
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("router: Web server self certificate error")
-				return
-			}
-
-			keypair, err := tls.X509KeyPair(certPem, keyPem)
-			if err != nil {
-				err = &errortypes.ReadError{
-					errors.Wrap(
-						err,
-						"router: Failed to load self certificate",
-					),
-				}
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("router: Web server self certificate error")
-				return
-			}
-
-			tlsConfig.Certificates = append(
-				tlsConfig.Certificates,
-				keypair,
-			)
-		}
-
-		tlsConfig.BuildNameToCertificate()
-
-		r.webServer.TLSConfig = tlsConfig
 
 		listener, err := tls.Listen("tcp", r.webServer.Addr, tlsConfig)
 		if err != nil {
@@ -371,6 +325,16 @@ func (r *Router) startWeb() {
 func (r *Router) initServers() (err error) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
+
+	err = r.certificates.Init()
+	if err != nil {
+		return
+	}
+
+	err = r.updateState()
+	if err != nil {
+		return
+	}
 
 	err = r.initRedirect()
 	if err != nil {
@@ -491,9 +455,38 @@ func (r *Router) watchNode() {
 	}
 }
 
+func (r *Router) updateState() (err error) {
+	db := database.GetDatabase()
+	defer db.Close()
+
+	r.stateLock.Lock()
+	defer r.stateLock.Unlock()
+
+	err = r.certificates.Update(db)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *Router) watchState() {
+	for {
+		time.Sleep(4 * time.Second)
+
+		err := r.updateState()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("proxy: Failed to load proxy state")
+		}
+	}
+}
+
 func (r *Router) Run() (err error) {
 	r.nodeHash = r.hashNode()
 	go r.watchNode()
+	go r.watchState()
 
 	for {
 		err = r.initServers()
@@ -524,6 +517,7 @@ func (r *Router) Init() {
 		gin.SetMode(gin.DebugMode)
 	}
 
+	r.certificates = &Certificates{}
 	r.proxy = &proxy.Proxy{}
 	r.proxy.Init()
 }
