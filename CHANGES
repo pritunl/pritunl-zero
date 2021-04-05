@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Interface improvements
+Improve certificate management
 
 Version 1.0.1813.70 2020-11-10
 ------------------------------
