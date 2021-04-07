@@ -15,13 +15,17 @@ import (
 )
 
 type Certificates struct {
-	selfCert  *tls.Certificate
-	domainMap map[string]*tls.Certificate
+	selfCert    *tls.Certificate
+	domainMap   map[string]*tls.Certificate
+	wildcardMap map[string]*tls.Certificate
 }
 
 func (c *Certificates) Init() (err error) {
 	if c.domainMap == nil {
 		c.domainMap = map[string]*tls.Certificate{}
+	}
+	if c.wildcardMap == nil {
+		c.wildcardMap = map[string]*tls.Certificate{}
 	}
 
 	if c.selfCert == nil {
@@ -72,6 +76,13 @@ func (c *Certificates) GetCertificate(info *tls.ClientHelloInfo) (
 
 	cert = c.domainMap[name]
 	if cert == nil {
+		index := strings.Index(name, ".")
+		if index > 0 {
+			cert = c.wildcardMap[name[index+1:]]
+		}
+	}
+
+	if cert == nil {
 		cert = c.selfCert
 	}
 
@@ -108,6 +119,7 @@ func (c *Certificates) Update(db *database.Database) (err error) {
 	}
 
 	domainMap := map[string]*tls.Certificate{}
+	wildcardMap := map[string]*tls.Certificate{}
 	for _, cert := range certificates {
 		keypair, e := tls.X509KeyPair(
 			[]byte(cert.Certificate),
@@ -125,8 +137,6 @@ func (c *Certificates) Update(db *database.Database) (err error) {
 		}
 		tlsCert := &keypair
 
-		// TODO Support wildcard certificates
-
 		x509Cert := tlsCert.Leaf
 		if x509Cert == nil {
 			var e error
@@ -135,11 +145,25 @@ func (c *Certificates) Update(db *database.Database) (err error) {
 				continue
 			}
 		}
+
 		if len(x509Cert.Subject.CommonName) > 0 {
-			domainMap[x509Cert.Subject.CommonName] = tlsCert
+			if strings.HasPrefix(x509Cert.Subject.CommonName, "*.") {
+				base := strings.Replace(
+					x509Cert.Subject.CommonName,
+					"*.", "", 1,
+				)
+				wildcardMap[base] = tlsCert
+			} else {
+				domainMap[x509Cert.Subject.CommonName] = tlsCert
+			}
 		}
 		for _, san := range x509Cert.DNSNames {
-			domainMap[san] = tlsCert
+			if strings.HasPrefix(san, "*.") {
+				base := strings.Replace(san, "*.", "", 1)
+				wildcardMap[base] = tlsCert
+			} else {
+				domainMap[san] = tlsCert
+			}
 		}
 	}
 
