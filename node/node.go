@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -21,6 +20,7 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -56,6 +56,18 @@ type Node struct {
 	CertificateObjs      []*certificate.Certificate `bson:"-" json:"-"`
 	reqLock              sync.Mutex                 `bson:"-" json:"-"`
 	reqCount             *list.List                 `bson:"-" json:"-"`
+}
+
+func (n *Node) IsManagement() bool {
+	return strings.Contains(n.Type, Management)
+}
+
+func (n *Node) IsUser() bool {
+	return strings.Contains(n.Type, User)
+}
+
+func (n *Node) IsProxy() bool {
+	return strings.Contains(n.Type, Proxy)
 }
 
 func (n *Node) AddRequest() {
