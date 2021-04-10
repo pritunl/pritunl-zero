@@ -232,7 +232,7 @@ export default class Endpoints extends React.Component<{}, State> {
 		return <Page>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
-					<h2 style={css.heading}>Endpoints</h2>
+					<h2 style={css.heading}>Endpoints (beta)</h2>
 					<div className="flex"/>
 					<div style={css.buttons}>
 						<button
