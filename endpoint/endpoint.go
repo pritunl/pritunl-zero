@@ -7,6 +7,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
@@ -31,6 +32,22 @@ func (e *Endpoint) Validate(db *database.Database) (
 
 func (e *Endpoint) Format() {
 	sort.Strings(e.Roles)
+}
+
+func (e *Endpoint) InsertDoc(db *database.Database, doc endpoints.Doc) (
+	err error) {
+
+	coll := doc.GetCollection(db)
+
+	doc.SetEndpoint(e.Id)
+
+	_, err = coll.InsertOne(db, doc)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
 }
 
 func (e *Endpoint) Commit(db *database.Database) (err error) {
