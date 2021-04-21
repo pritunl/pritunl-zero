@@ -95,6 +95,11 @@ func (d *Database) Endpoints() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsSystem() (coll *Collection) {
+	coll = d.getCollection("endpoints_system")
+	return
+}
+
 func (d *Database) Sessions() (coll *Collection) {
 	coll = d.getCollection("sessions")
 	return
