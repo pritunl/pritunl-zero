@@ -98,7 +98,7 @@ export function commit(device: DeviceTypes.Device): Promise<void> {
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.put('/device/' + device.user + '/' + device.id)
+			.put('/device/' + device.id)
 			.send(device)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
