@@ -13,9 +13,9 @@ type Doc interface {
 	Print()
 }
 
-func GenerateId(endpoint, clientId primitive.ObjectID) []byte {
+func GenerateId(endpointId, clientId primitive.ObjectID) []byte {
 	hash := md5.New()
-	hash.Write([]byte(endpoint.Hex()))
+	hash.Write([]byte(endpointId.Hex()))
 	hash.Write([]byte(clientId.Hex()))
 	return hash.Sum(nil)
 }
