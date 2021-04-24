@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"encoding/json"
 	"sort"
 
 	"github.com/dropbox/godropbox/container/set"
@@ -89,6 +90,26 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 		err = database.ParseError(err)
 		return
 	}
+
+	return
+}
+
+func ProcessDoc(db *database.Database, endpt *Endpoint,
+	docType string, docData string) (err error) {
+
+	doc := endpoints.GetObj(docType)
+
+	err = json.Unmarshal([]byte(docData), doc)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "endpoints: Failed to parse doc"),
+		}
+		return
+	}
+
+	doc.SetEndpoint(endpt.Id)
+
+	doc.Print()
 
 	return
 }

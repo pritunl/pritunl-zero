@@ -2,12 +2,9 @@ package endpoints
 
 import (
 	"crypto/md5"
-	"encoding/json"
 
-	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 type Doc interface {
@@ -30,20 +27,4 @@ func GetObj(typ string) Doc {
 	default:
 		return nil
 	}
-}
-
-func ProcessDoc(docType string, docData string) (err error) {
-	docObj := GetObj(docType)
-
-	err = json.Unmarshal([]byte(docData), docObj)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "endpoints: Failed to parse doc"),
-		}
-		return
-	}
-
-	docObj.Print()
-
-	return
 }
