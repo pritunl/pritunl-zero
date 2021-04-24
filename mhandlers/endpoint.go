@@ -1,13 +1,16 @@
 package mhandlers
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
@@ -16,6 +19,12 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
+)
+
+const (
+	endpointWriteTimeout = 10 * time.Second
+	endpointPingInterval = 30 * time.Second
+	endpointPingWait     = 40 * time.Second
 )
 
 type endpointData struct {
@@ -236,4 +245,98 @@ func endpointsGet(c *gin.Context) {
 	}
 
 	c.JSON(200, dta)
+}
+
+func endpointCommGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+	socket := &endpoint.WebSocket{}
+
+	_ = db
+
+	defer func() {
+		socket.Close()
+		endpoint.WebSocketsLock.Lock()
+		endpoint.WebSockets.Remove(socket)
+		endpoint.WebSocketsLock.Unlock()
+	}()
+
+	endpoint.WebSocketsLock.Lock()
+	endpoint.WebSockets.Add(socket)
+	endpoint.WebSocketsLock.Unlock()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	socket.Cancel = cancel
+
+	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "mhandlers: Failed to upgrade request"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+	socket.Conn = conn
+
+	err = conn.SetReadDeadline(time.Now().Add(endpointPingWait))
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "mhandlers: Failed to set read deadline"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	conn.SetPongHandler(func(x string) (err error) {
+		err = conn.SetReadDeadline(time.Now().Add(endpointPingWait))
+		if err != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(err, "mhandlers: Failed to set read deadline"),
+			}
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		return
+	})
+
+	ticker := time.NewTicker(endpointPingInterval)
+	socket.Ticker = ticker
+
+	go func() {
+		defer func() {
+			recover()
+		}()
+		for {
+			msgType, msgByte, err := conn.ReadMessage()
+			if err != nil {
+				conn.Close()
+				break
+			}
+
+			if msgType != websocket.TextMessage {
+				continue
+			}
+
+			msg := string(msgByte)
+
+			_ = msg
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			err = conn.WriteControl(websocket.PingMessage, []byte{},
+				time.Now().Add(endpointWriteTimeout))
+			if err != nil {
+				err = &errortypes.RequestError{
+					errors.Wrap(err,
+						"mhandlers: Failed to set write control"),
+				}
+				return
+			}
+		}
+	}
 }
