@@ -10,6 +10,7 @@ import (
 type Doc interface {
 	GetCollection(*database.Database) *database.Collection
 	SetEndpoint(primitive.ObjectID)
+	Print()
 }
 
 func GenerateId(endpoint, clientId primitive.ObjectID) []byte {
