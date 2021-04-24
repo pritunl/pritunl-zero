@@ -18,3 +18,12 @@ func GenerateId(endpoint, clientId primitive.ObjectID) []byte {
 	hash.Write([]byte(clientId.Hex()))
 	return hash.Sum(nil)
 }
+
+func GetObj(typ string) Doc {
+	switch typ {
+	case "system":
+		return &System{}
+	default:
+		return nil
+	}
+}
