@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
@@ -28,4 +29,18 @@ func (d *System) GetCollection(db *database.Database) *database.Collection {
 func (d *System) SetEndpoint(id primitive.ObjectID) {
 	d.Id = GenerateId(id, d.ClientId)
 	d.Endpoint = id
+}
+
+func (d *System) Print() {
+	fmt.Println("***************************************************")
+	fmt.Println("Id:", string(d.Id))
+	fmt.Println("Timestamp:", d.Timestamp)
+	fmt.Println("Type: system")
+
+	fmt.Println("CpuUsage:", d.CpuUsage)
+	fmt.Println("MemTotal:", d.MemTotal)
+	fmt.Println("MemUsage:", d.MemUsage)
+	fmt.Println("SwapTotal:", d.SwapTotal)
+	fmt.Println("SwapUsage:", d.SwapUsage)
+	fmt.Println("***************************************************")
 }
