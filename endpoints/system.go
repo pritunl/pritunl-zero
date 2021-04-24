@@ -33,7 +33,7 @@ func (d *System) SetEndpoint(id primitive.ObjectID) {
 
 func (d *System) Print() {
 	fmt.Println("***************************************************")
-	fmt.Println("Id:", string(d.Id))
+	fmt.Printf("Id: %x\n", d.Id)
 	fmt.Println("Timestamp:", d.Timestamp)
 	fmt.Println("Type: system")
 
