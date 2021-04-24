@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -251,7 +252,17 @@ func endpointCommGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	socket := &endpoint.WebSocket{}
 
-	_ = db
+	endpointId, ok := utils.ParseObjectId(c.Param("endpoint_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	endpt, err := endpoint.Get(db, endpointId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
 
 	defer func() {
 		socket.Close()
@@ -319,7 +330,23 @@ func endpointCommGet(c *gin.Context) {
 
 			msg := string(msgByte)
 
-			_ = msg
+			sepIndex := strings.Index(msg, ":")
+			if sepIndex == -1 {
+				continue
+			}
+
+			docType := msg[:sepIndex]
+			doc := msg[sepIndex+1:]
+
+			err = endpoint.ProcessDoc(db, endpt, docType, doc)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("mhandlers: Failed to process doc")
+
+				conn.Close()
+				return
+			}
 		}
 	}()
 
