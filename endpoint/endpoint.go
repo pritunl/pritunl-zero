@@ -109,7 +109,10 @@ func ProcessDoc(db *database.Database, endpt *Endpoint,
 
 	doc.SetEndpoint(endpt.Id)
 
-	doc.Print()
+	err = endpt.InsertDoc(db, doc)
+	if err != nil {
+		return
+	}
 
 	return
 }
