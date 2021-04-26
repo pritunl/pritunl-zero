@@ -13,7 +13,6 @@ type System struct {
 	ClientId  primitive.ObjectID `bson:"-" json:"i"`
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
-	Type      string             `bson:"x" json:"x"`
 
 	CpuUsage  float64 `bson:"cu" json:"cu"`
 	MemTotal  int     `bson:"mt" json:"mt"`
