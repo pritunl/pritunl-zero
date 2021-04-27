@@ -321,7 +321,7 @@ func endpointCommGet(c *gin.Context) {
 			msgType, msgByte, err := conn.ReadMessage()
 			if err != nil {
 				conn.Close()
-				break
+				return
 			}
 
 			if msgType != websocket.TextMessage {
