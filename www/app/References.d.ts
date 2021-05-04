@@ -35,5 +35,5 @@ declare module 'react-stripe-checkout' {
 		closed?: () => void;
 	}
 
-	export default class ReactStripeCheckout extends React.Component<ReactStripeCheckoutProps> {}
+	export default class ReactStripeCheckout extends React.Component<ReactStripeCheckoutProps, {}> {}
 }
