@@ -1,18 +1,13 @@
 package mhandlers
 
 import (
-	"net/http"
-	"os"
-	"path"
-	"path/filepath"
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
+	"net/http"
 )
 
 var (
@@ -140,39 +135,10 @@ func Register(engine *gin.Engine) {
 		fs := gin.Dir(config.StaticTestingRoot, false)
 		fileServer = http.FileServer(fs)
 
-		pushFiles = []string{}
-		walk := path.Join(config.StaticTestingRoot, "app")
-		err := filepath.Walk(walk, func(
-			pth string, _ os.FileInfo, e error) (err error) {
-
-			if e != nil {
-				err = e
-				return
-			}
-
-			if strings.HasSuffix(pth, ".js") ||
-				strings.HasSuffix(pth, ".js.map") {
-
-				pth = strings.Replace(pth, walk, "/app", 1)
-				pushFiles = append(pushFiles, pth)
-			}
-
-			return
-		})
-		if err != nil {
-			panic(err)
-		}
-
 		sessGroup.GET("/", staticTestingGet)
 		engine.GET("/login", staticTestingGet)
 		engine.GET("/logo.png", staticTestingGet)
-		authGroup.GET("/config.js", staticTestingGet)
-		authGroup.GET("/build.js", staticTestingGet)
-		authGroup.GET("/app/*path", staticTestingGet)
-		authGroup.GET("/dist/*path", staticTestingGet)
-		authGroup.GET("/styles/*path", staticTestingGet)
-		authGroup.GET("/node_modules/*path", staticTestingGet)
-		authGroup.GET("/jspm_packages/*path", staticTestingGet)
+		authGroup.GET("/static/*path", staticTestingGet)
 	}
 }
 
