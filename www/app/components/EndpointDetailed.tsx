@@ -311,6 +311,8 @@ export default class EndpointDetailed extends React.Component<Props, State> {
                   type="checkbox"
                   className="open-ignore"
                   checked={this.props.selected}
+									onChange={(evt): void => {
+									}}
                   onClick={(evt): void => {
 										this.props.onSelect(evt.shiftKey);
 									}}
