@@ -29,7 +29,7 @@ var (
 		),
 	}
 	StaticTestingRoot = []string{
-		"www",
+		"www/dist-dev",
 		"/usr/share/pritunl-zero/www",
 		path.Join(
 			build.Default.GOPATH,
