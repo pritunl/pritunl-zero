@@ -90,13 +90,7 @@ func Register(engine *gin.Engine) {
 		sessGroup.GET("/", staticTestingGet)
 		engine.GET("/login", staticTestingGet)
 		engine.GET("/logo.png", staticTestingGet)
-		authGroup.GET("/config.js", staticTestingGet)
-		authGroup.GET("/build.js", staticTestingGet)
-		authGroup.GET("/uapp/*path", staticTestingGet)
-		authGroup.GET("/dist/*path", staticTestingGet)
-		authGroup.GET("/styles/*path", staticTestingGet)
-		authGroup.GET("/node_modules/*path", staticTestingGet)
-		authGroup.GET("/jspm_packages/*path", staticTestingGet)
+		authGroup.GET("/static/*path", staticTestingGet)
 	}
 }
 
