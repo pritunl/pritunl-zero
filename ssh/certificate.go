@@ -115,7 +115,11 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 	}
 
 	if pageCount != 0 {
-		page = utils.Min64(page, count/pageCount)
+		maxPage := count / pageCount
+		if count == pageCount {
+			maxPage = 0
+		}
+		page = utils.Min64(page, maxPage)
 		skip := utils.Min64(page*pageCount, count)
 		opts.Skip = &skip
 		opts.Limit = &pageCount
