@@ -2,6 +2,8 @@
 import * as React from 'react';
 import * as ChartJs from 'chart.js';
 import * as MiscUtils from '../utils/MiscUtils';
+import * as EndpointActions from '../actions/EndpointActions';
+import * as EndpointTypes from '../types/EndpointTypes';
 import Help from './Help';
 
 ChartJs.Chart.register(ChartJs.LineController);
@@ -60,7 +62,7 @@ export default class Chart extends React.Component<Props, State> {
 		this.chartRef = React.createRef();
 	}
 
-	config(): ChartJs.ChartConfiguration {
+	config(data: EndpointTypes.SystemChart): ChartJs.ChartConfiguration {
 		let dataMem = [] as ChartJs.ScatterDataPoint[];
 		let cur = 40;
 		for (let i = 0; i < 188; i++) {
@@ -163,21 +165,21 @@ export default class Chart extends React.Component<Props, State> {
 			data: {
 				datasets: [
 					{
-						label: 'Memory Usage',
-						data: dataMem,
-						fill: 'origin',
-						pointRadius: 0,
-						backgroundColor: 'rgba(255, 99, 132, 0.2)',
-						borderColor: 'rgba(255, 99, 132, 1)',
-						borderWidth: 2,
-					},
-					{
 						label: 'CPU Usage',
-						data: dataCpu,
+						data: data.cpu_usage,
 						fill: 'origin',
 						pointRadius: 0,
 						backgroundColor: 'rgba(19, 124, 189, 0.2)',
 						borderColor: 'rgba(19, 124, 189, 1)',
+						borderWidth: 2,
+					},
+					{
+						label: 'Memory Usage',
+						data: data.mem_usage,
+						fill: 'origin',
+						pointRadius: 0,
+						backgroundColor: 'rgba(255, 99, 132, 0.2)',
+						borderColor: 'rgba(255, 99, 132, 1)',
 						borderWidth: 2,
 					},
 				],
@@ -186,10 +188,15 @@ export default class Chart extends React.Component<Props, State> {
 	}
 
 	componentDidMount(): void {
-		let chart = new ChartJs.Chart(
-			this.chartRef.current,
-			this.config(),
-		);
+		EndpointActions.chart('5facaf6119095293ebb71257', 'system').then((
+				data: EndpointTypes.SystemChart): void => {
+			let chart = new ChartJs.Chart(
+				this.chartRef.current,
+				this.config(data),
+			);
+		}).catch((): void => {
+		});
+
 	}
 
 	componentWillUnmount(): void {
