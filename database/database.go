@@ -625,6 +625,18 @@ func addIndexes() (err error) {
 		return
 	}
 
+	index = &Index{
+		Collection: db.EndpointsSystem(),
+		Keys: &bson.D{
+			{"e", 1},
+			{"t", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
 	return
 }
 
