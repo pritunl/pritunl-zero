@@ -34,3 +34,13 @@ export interface EndpointDispatch {
 		count?: number;
 	};
 }
+
+export interface Chart {
+	x: number;
+	y: number;
+}
+
+export interface SystemChart {
+	cpu_usage: Chart[];
+	mem_usage: Chart[];
+}
