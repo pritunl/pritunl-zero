@@ -81,6 +81,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.DELETE("/endpoint", endpointsDelete)
 	csrfGroup.DELETE("/endpoint/:endpoint_id", endpointDelete)
 	dbGroup.GET("/endpoint/:endpoint_id/comm", endpointCommGet)
+	csrfGroup.GET("/endpoint/:endpoint_id/data", endpointDataGet)
 
 	csrfGroup.GET("/event", eventGet)
 

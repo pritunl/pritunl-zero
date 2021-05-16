@@ -367,3 +367,36 @@ func endpointCommGet(c *gin.Context) {
 		}
 	}
 }
+
+func endpointDataGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	endpointId, ok := utils.ParseObjectId(c.Param("endpoint_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	resource := c.Query("resource")
+	start, _ := strconv.ParseInt(c.Query("start"), 10, 0)
+	end, _ := strconv.ParseInt(c.Query("end"), 10, 0)
+
+	_ = start // TODO
+	_ = end   // TODO
+
+	endpt, err := endpoint.Get(db, endpointId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	startTemp := time.Now().Add(-168 * time.Hour) // TODO
+
+	data, err := endpt.GetData(db, resource, startTemp, time.Now())
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.JSON(200, data)
+}
