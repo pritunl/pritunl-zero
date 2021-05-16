@@ -82,7 +82,7 @@ export function init() {
 	if (Blueprint.Toaster) {
 		toaster = Blueprint.Toaster.create({
 			position: Blueprint.Position.BOTTOM,
-		});
+		}, document.getElementById('toaster'));
 	} else {
 		console.error('Failed to load toaster')
 	}
