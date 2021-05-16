@@ -44,3 +44,57 @@ func (d *System) Print() {
 	fmt.Println("SwapUsage:", d.SwapUsage)
 	fmt.Println("***************************************************")
 }
+
+type SystemChart struct {
+	CpuUsage []*Chart `json:"cpu_usage"`
+	MemUsage []*Chart `json:"mem_usage"`
+}
+
+func GetSystemChart(db *database.Database, endpoint primitive.ObjectID,
+	start, end time.Time) (chart *SystemChart, err error) {
+
+	coll := db.EndpointsSystem()
+	cpuUsage := []*Chart{}
+	memUsage := []*Chart{}
+
+	cursor, err := coll.Find(
+		db,
+		&bson.M{},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		doc := &System{}
+		err = cursor.Decode(doc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		cpuUsage = append(cpuUsage, &Chart{
+			X: doc.Timestamp.Unix() * 1000,
+			Y: doc.CpuUsage,
+		})
+		memUsage = append(memUsage, &Chart{
+			X: doc.Timestamp.Unix() * 1000,
+			Y: doc.MemUsage,
+		})
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	chart = &SystemChart{
+		CpuUsage: cpuUsage,
+		MemUsage: memUsage,
+	}
+
+	return
+}
