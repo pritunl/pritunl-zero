@@ -3,6 +3,7 @@ package endpoint
 import (
 	"encoding/json"
 	"sort"
+	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
@@ -45,7 +46,11 @@ func (e *Endpoint) InsertDoc(db *database.Database, doc endpoints.Doc) (
 	_, err = coll.InsertOne(db, doc)
 	if err != nil {
 		err = database.ParseError(err)
-		return
+		if _, ok := err.(*database.DuplicateKeyError); ok {
+			err = nil
+		} else {
+			return
+		}
 	}
 
 	return
