@@ -99,6 +99,17 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 	return
 }
 
+func (e *Endpoint) GetData(db *database.Database, resource string,
+	start, end time.Time) (data interface{}, err error) {
+
+	data, err = endpoints.GetChart(db, e.Id, resource, start, end)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func ProcessDoc(db *database.Database, endpt *Endpoint,
 	docType string, docData string) (err error) {
 
