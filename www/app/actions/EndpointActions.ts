@@ -10,6 +10,7 @@ import * as EndpointTypes from '../types/EndpointTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
+let chartSyncIds: {[key: string]: string} = {};
 
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
@@ -187,6 +188,47 @@ export function removeMulti(endpointIds: string[]): Promise<void> {
 				}
 
 				resolve();
+			});
+	});
+}
+
+export function chart(endpointId: string, resource: string): Promise<any> {
+	let curChartSyncId = MiscUtils.uuid();
+	chartSyncIds[resource] = curChartSyncId;
+
+	let loader = new Loader().loading();
+
+	return new Promise<any>((resolve, reject): void => {
+		SuperAgent
+			.get('/endpoint/' + endpointId + '/data')
+			.query({
+				resource: resource,
+				start: 0, // TODO
+				end: 0, // TODO
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve(null);
+					return;
+				}
+
+				if (curChartSyncId !== chartSyncIds[resource]) {
+					resolve(null);
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to load endpoint chart');
+					reject(err);
+					return;
+				}
+
+				resolve(res.body);
 			});
 	});
 }
