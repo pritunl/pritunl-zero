@@ -21,6 +21,11 @@ type Doc interface {
 	Print()
 }
 
+type Chart struct {
+	X int64   `json:"x"`
+	Y float64 `json:"y"`
+}
+
 func GenerateId(endpointId primitive.ObjectID,
 	timestamp time.Time) primitive.Binary {
 
@@ -40,5 +45,18 @@ func GetObj(typ string) Doc {
 		return &System{}
 	default:
 		return nil
+	}
+}
+
+func GetChart(db *database.Database, endpoint primitive.ObjectID,
+	typ string, start, end time.Time) (interface{}, error) {
+
+	switch typ {
+	case "system":
+		return GetSystemChart(db, endpoint, start, end)
+	default:
+		return nil, &errortypes.UnknownError{
+			errors.New("endpoints: Unknown resource type"),
+		}
 	}
 }
