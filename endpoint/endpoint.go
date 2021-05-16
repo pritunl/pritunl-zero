@@ -41,7 +41,7 @@ func (e *Endpoint) InsertDoc(db *database.Database, doc endpoints.Doc) (
 
 	coll := doc.GetCollection(db)
 
-	doc.SetEndpoint(e.Id)
+	doc.Format(e.Id)
 
 	_, err = coll.InsertOne(db, doc)
 	if err != nil {
@@ -122,8 +122,6 @@ func ProcessDoc(db *database.Database, endpt *Endpoint,
 		}
 		return
 	}
-
-	doc.SetEndpoint(endpt.Id)
 
 	err = endpt.InsertDoc(db, doc)
 	if err != nil {

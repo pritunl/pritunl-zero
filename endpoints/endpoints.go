@@ -9,7 +9,7 @@ import (
 
 type Doc interface {
 	GetCollection(*database.Database) *database.Collection
-	SetEndpoint(primitive.ObjectID)
+	Format(primitive.ObjectID)
 	Print()
 }
 
