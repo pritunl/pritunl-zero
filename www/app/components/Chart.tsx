@@ -23,9 +23,6 @@ interface State {
 	disabled: boolean;
 }
 
-const css = {
-};
-
 class LineTracerController extends ChartJs.LineController {
 	draw(): void {
 		super.draw();
@@ -194,20 +191,15 @@ export default class Chart extends React.Component<Props, State> {
 				this.chartRef.current,
 				this.config(data),
 			);
-		}).catch((): void => {
-		});
-
+		})
 	}
 
 	componentWillUnmount(): void {
 	}
 
 	render(): JSX.Element {
-		return <div>
-			<div className="bp3-border">Memory Usage</div>
-			<canvas
-				ref={this.chartRef}
-			/>
-		</div>;
+		return <canvas
+			ref={this.chartRef}
+		/>;
 	}
 }
