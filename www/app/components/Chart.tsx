@@ -12,6 +12,7 @@ ChartJs.Chart.register(ChartJs.LinearScale);
 ChartJs.Chart.register(ChartJs.TimeScale);
 ChartJs.Chart.register(ChartJs.PointElement);
 ChartJs.Chart.register(ChartJs.LineElement);
+ChartJs.Chart.register(ChartJs.Title);
 ChartJs.Chart.register(ChartJs.Tooltip);
 ChartJs.Chart.register(ChartJs.Filler);
 
@@ -146,6 +147,15 @@ export default class Chart extends React.Component<Props, State> {
 					},
 				},
 				plugins: {
+					title: {
+						display: true,
+						text: 'System Usage',
+						color: 'rgba(255, 255, 255, 1)',
+						padding: 3,
+						font: {
+							size: 13,
+						},
+					},
 					tooltip: {
 						mode: 'index',
 						intersect: false,
