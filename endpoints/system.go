@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
 type System struct {
-	Id        []byte             `bson:"_id" json:"id"`
-	ClientId  primitive.ObjectID `bson:"-" json:"i"`
+	Id        primitive.Binary   `bson:"_id" json:"id"`
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
@@ -25,9 +25,10 @@ func (d *System) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsSystem()
 }
 
-func (d *System) SetEndpoint(id primitive.ObjectID) {
-	d.Id = GenerateId(id, d.ClientId)
+func (d *System) Format(id primitive.ObjectID) {
 	d.Endpoint = id
+	d.Timestamp = d.Timestamp.UTC().Truncate(1 * time.Minute)
+	d.Id = GenerateId(id, d.Timestamp)
 }
 
 func (d *System) Print() {
