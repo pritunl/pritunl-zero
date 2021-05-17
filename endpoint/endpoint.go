@@ -1,10 +1,15 @@
 package endpoint
 
 import (
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha512"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
@@ -34,6 +39,13 @@ type ClientKey struct {
 type ServerKey struct {
 	PrivateKey string `bson:"private_key" json:"-"`
 	PublicKey  string `bson:"public_key" json:"-"`
+}
+
+type RegisterData struct {
+	Timestamp int64  `json:"timestamp"`
+	Nonce     string `json:"nonce"`
+	PublicKey string `json:"public_key"`
+	Signature string `json:"signature"`
 }
 
 func (e *Endpoint) GenerateKey() (err error) {
@@ -83,6 +95,93 @@ func (e *Endpoint) Validate(db *database.Database) (
 
 func (e *Endpoint) Format() {
 	sort.Strings(e.Roles)
+}
+
+func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
+	resData *RegisterData, errData *errortypes.ErrorData, err error) {
+
+	if e.ClientKey == nil || e.ServerKey == nil {
+		errData = &errortypes.ErrorData{
+			Error:   "not_initialized",
+			Message: "Endpoint key not initialized",
+		}
+		return
+	}
+
+	if e.ClientKey.PublicKey != "" {
+		errData = &errortypes.ErrorData{
+			Error:   "already_registered",
+			Message: "Endpoint is already registered",
+		}
+		return
+	}
+
+	authString := strings.Join([]string{
+		strconv.FormatInt(reqData.Timestamp, 10),
+		reqData.Nonce,
+		reqData.PublicKey,
+	}, "&")
+
+	hashFunc := hmac.New(sha512.New, []byte(e.ClientKey.Secret))
+	hashFunc.Write([]byte(authString))
+	rawSignature := hashFunc.Sum(nil)
+	testSig := base64.StdEncoding.EncodeToString(rawSignature)
+
+	if subtle.ConstantTimeCompare([]byte(
+		reqData.Signature), []byte(testSig)) != 1 {
+
+		errData = &errortypes.ErrorData{
+			Error:   "authentication_error",
+			Message: "Register signature does not match",
+		}
+		return
+	}
+
+	clientPubKey, err := base64.StdEncoding.DecodeString(reqData.PublicKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "endpoint: Failed to parse register public key"),
+		}
+		return
+	}
+
+	e.ClientKey.PublicKey = base64.StdEncoding.EncodeToString(clientPubKey)
+
+	resData = &RegisterData{
+		Timestamp: time.Now().Unix(),
+		Nonce:     reqData.Nonce,
+		PublicKey: e.ServerKey.PublicKey,
+	}
+
+	authString = strings.Join([]string{
+		strconv.FormatInt(resData.Timestamp, 10),
+		resData.Nonce,
+		resData.PublicKey,
+	}, "&")
+
+	hashFunc = hmac.New(sha512.New, []byte(e.ClientKey.Secret))
+	hashFunc.Write([]byte(authString))
+	rawSignature = hashFunc.Sum(nil)
+	resData.Signature = base64.StdEncoding.EncodeToString(rawSignature)
+
+	fields := set.NewSet(
+		"client_key",
+	)
+
+	errData, err = e.Validate(db)
+	if err != nil {
+		return
+	}
+	if errData != nil {
+		return
+	}
+
+	err = e.CommitFields(db, fields)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (e *Endpoint) InsertDoc(db *database.Database, doc endpoints.Doc) (
