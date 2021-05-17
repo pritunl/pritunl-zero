@@ -1,6 +1,8 @@
 package endpoint
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"sort"
 	"time"
@@ -11,13 +13,53 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
+	"golang.org/x/crypto/nacl/box"
 )
 
 type Endpoint struct {
-	Id    primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	User  primitive.ObjectID `bson:"user,omitempty" json:"user"`
-	Name  string             `bson:"name" json:"name"`
-	Roles []string           `bson:"roles" json:"roles"`
+	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	User      primitive.ObjectID `bson:"user,omitempty" json:"user"`
+	Name      string             `bson:"name" json:"name"`
+	Roles     []string           `bson:"roles" json:"roles"`
+	ClientKey *ClientKey         `bson:"client_key" json:"client_key"`
+	ServerKey *ServerKey         `bson:"server_key" json:"server_key"`
+}
+
+type ClientKey struct {
+	PublicKey string `bson:"public_key" json:"-"`
+	Secret    string `bson:"secret" json:"secret"`
+}
+
+type ServerKey struct {
+	PrivateKey string `bson:"private_key" json:"-"`
+	PublicKey  string `bson:"public_key" json:"-"`
+}
+
+func (e *Endpoint) GenerateKey() (err error) {
+	pubKey, privKey, err := box.GenerateKey(rand.Reader)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "endpoint: Failed to generate nacl key"),
+		}
+		return
+	}
+
+	secret, err := utils.RandStr(64)
+	if err != nil {
+		return
+	}
+
+	e.ClientKey = &ClientKey{
+		Secret: secret,
+	}
+
+	e.ServerKey = &ServerKey{
+		PublicKey:  base64.RawStdEncoding.EncodeToString(pubKey[:]),
+		PrivateKey: base64.RawStdEncoding.EncodeToString(privKey[:]),
+	}
+
+	return
 }
 
 func (e *Endpoint) Validate(db *database.Database) (
@@ -25,6 +67,13 @@ func (e *Endpoint) Validate(db *database.Database) (
 
 	if e.Roles == nil {
 		e.Roles = []string{}
+	}
+
+	if e.ClientKey == nil || e.ServerKey == nil {
+		err = e.GenerateKey()
+		if err != nil {
+			return
+		}
 	}
 
 	e.Format()
