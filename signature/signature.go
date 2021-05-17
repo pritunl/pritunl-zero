@@ -60,7 +60,7 @@ func (s *Signature) Validate(db *database.Database) (err error) {
 		return
 	}
 
-	if time.Since(s.Timestamp) > time.Duration(
+	if utils.SinceAbs(s.Timestamp) > time.Duration(
 		settings.Auth.Window)*time.Second {
 
 		err = &errortypes.AuthenticationError{

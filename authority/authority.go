@@ -1246,7 +1246,7 @@ func (a *Authority) ValidateHsmSignature(
 		return
 	}
 
-	if time.Since(timestamp) > time.Duration(
+	if utils.SinceAbs(timestamp) > time.Duration(
 		settings.Auth.Window)*time.Second {
 
 		err = &errortypes.AuthenticationError{
