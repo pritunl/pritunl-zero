@@ -18,6 +18,8 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/nonce"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/nacl/box"
 )
@@ -67,8 +69,8 @@ func (e *Endpoint) GenerateKey() (err error) {
 	}
 
 	e.ServerKey = &ServerKey{
-		PublicKey:  base64.RawStdEncoding.EncodeToString(pubKey[:]),
-		PrivateKey: base64.RawStdEncoding.EncodeToString(privKey[:]),
+		PublicKey:  base64.StdEncoding.EncodeToString(pubKey[:]),
+		PrivateKey: base64.StdEncoding.EncodeToString(privKey[:]),
 	}
 
 	return
@@ -97,6 +99,62 @@ func (e *Endpoint) Format() {
 	sort.Strings(e.Roles)
 }
 
+func (e *Endpoint) ValidateSignature(db *database.Database,
+	timestampStr, nonc, sig, method string) (errData *errortypes.ErrorData,
+	err error) {
+
+	if len(nonc) < 16 || len(nonc) > 128 {
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Invalid authentication nonce"),
+		}
+		return
+	}
+
+	timestampInt, _ := strconv.ParseInt(timestampStr, 10, 64)
+	if timestampInt == 0 {
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Invalid authentication timestamp"),
+		}
+		return
+	}
+
+	timestamp := time.Unix(timestampInt, 0)
+	if utils.SinceAbs(timestamp) > time.Duration(
+		settings.Auth.WindowLong)*time.Second {
+
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Authentication timestamp outside window"),
+		}
+		return
+	}
+
+	authString := strings.Join([]string{
+		timestampStr,
+		nonc,
+		method,
+	}, "&")
+
+	err = nonce.Validate(db, nonc)
+	if err != nil {
+		return
+	}
+
+	hashFunc := hmac.New(sha512.New, []byte(e.ClientKey.Secret))
+	hashFunc.Write([]byte(authString))
+	rawSignature := hashFunc.Sum(nil)
+	testSig := base64.URLEncoding.EncodeToString(rawSignature)
+
+	if subtle.ConstantTimeCompare([]byte(sig), []byte(testSig)) != 1 {
+		errData = &errortypes.ErrorData{
+			Error:   "authentication_error",
+			Message: "Register signature does not match",
+		}
+		return
+	}
+
+	return
+}
+
 func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 	resData *RegisterData, errData *errortypes.ErrorData, err error) {
 
@@ -104,6 +162,30 @@ func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 		errData = &errortypes.ErrorData{
 			Error:   "not_initialized",
 			Message: "Endpoint key not initialized",
+		}
+		return
+	}
+
+	if len(reqData.Nonce) < 16 || len(reqData.Nonce) > 128 {
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Invalid authentication nonce"),
+		}
+		return
+	}
+
+	if len(reqData.PublicKey) < 16 || len(reqData.PublicKey) > 512 {
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Invalid public key"),
+		}
+		return
+	}
+
+	timestamp := time.Unix(reqData.Timestamp, 0)
+	if utils.SinceAbs(timestamp) > time.Duration(
+		settings.Auth.WindowLong)*time.Second {
+
+		err = &errortypes.AuthenticationError{
+			errors.New("endpoint: Authentication timestamp outside window"),
 		}
 		return
 	}
