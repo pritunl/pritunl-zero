@@ -74,6 +74,8 @@ func endpointPut(c *gin.Context) {
 	fields := set.NewSet(
 		"name",
 		"roles",
+		"client_key",
+		"server_key",
 	)
 
 	errData, err := endpt.Validate(db)
@@ -246,6 +248,52 @@ func endpointsGet(c *gin.Context) {
 	}
 
 	c.JSON(200, dta)
+}
+
+func endpointRegisterPut(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &endpoint.RegisterData{}
+
+	endpointId, ok := utils.ParseObjectId(c.Param("endpoint_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	err := c.Bind(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	endpt, err := endpoint.Get(db, endpointId)
+	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			utils.AbortWithError(c, 404, err)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	resData, errData, err := endpt.Register(db, data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	c.JSON(200, resData)
 }
 
 func endpointCommGet(c *gin.Context) {
