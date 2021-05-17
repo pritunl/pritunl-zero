@@ -100,9 +100,10 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 }
 
 func (e *Endpoint) GetData(db *database.Database, resource string,
-	start, end time.Time) (data interface{}, err error) {
+	start, end time.Time, interval time.Duration) (
+	data interface{}, err error) {
 
-	data, err = endpoints.GetChart(db, e.Id, resource, start, end)
+	data, err = endpoints.GetChart(db, e.Id, resource, start, end, interval)
 	if err != nil {
 		return
 	}

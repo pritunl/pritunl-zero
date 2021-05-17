@@ -49,11 +49,12 @@ func GetObj(typ string) Doc {
 }
 
 func GetChart(db *database.Database, endpoint primitive.ObjectID,
-	typ string, start, end time.Time) (interface{}, error) {
+	typ string, start, end time.Time, interval time.Duration) (
+	interface{}, error) {
 
 	switch typ {
 	case "system":
-		return GetSystemChart(db, endpoint, start, end)
+		return GetSystemChart(db, endpoint, start, end, interval)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
