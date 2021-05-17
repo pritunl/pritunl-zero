@@ -111,21 +111,16 @@ func (e *Endpoint) GetData(db *database.Database, resource string,
 	return
 }
 
-func ProcessDoc(db *database.Database, endpt *Endpoint,
-	docType string, docData string) (err error) {
+func UnmarshalDoc(docType string, docData string) (
+	doc endpoints.Doc, err error) {
 
-	doc := endpoints.GetObj(docType)
+	doc = endpoints.GetObj(docType)
 
 	err = json.Unmarshal([]byte(docData), doc)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "endpoints: Failed to parse doc"),
 		}
-		return
-	}
-
-	err = endpt.InsertDoc(db, doc)
-	if err != nil {
 		return
 	}
 
