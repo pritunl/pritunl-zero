@@ -336,13 +336,22 @@ func endpointCommGet(c *gin.Context) {
 			}
 
 			docType := msg[:sepIndex]
-			doc := msg[sepIndex+1:]
+			docData := msg[sepIndex+1:]
 
-			err = endpoint.ProcessDoc(db, endpt, docType, doc)
+			doc, err := endpoint.UnmarshalDoc(docType, docData)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"error": err,
-				}).Error("mhandlers: Failed to process doc")
+				}).Error("mhandlers: Failed to unmarshal doc")
+
+				continue
+			}
+
+			err = endpt.InsertDoc(db, doc)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("mhandlers: Failed to insert doc")
 
 				conn.Close()
 				return
@@ -390,9 +399,10 @@ func endpointDataGet(c *gin.Context) {
 		return
 	}
 
-	startTemp := time.Now().Add(-168 * time.Hour) // TODO
+	startTemp := time.Now().UTC().Add(-192 * time.Hour) // TODO
 
-	data, err := endpt.GetData(db, resource, startTemp, time.Now())
+	data, err := endpt.GetData(db, resource, startTemp,
+		time.Time{}, 1*time.Minute)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
