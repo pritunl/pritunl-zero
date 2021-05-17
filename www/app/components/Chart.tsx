@@ -61,26 +61,6 @@ export default class Chart extends React.Component<Props, State> {
 	}
 
 	config(data: EndpointTypes.SystemChart): ChartJs.ChartConfiguration {
-		let dataMem = [] as ChartJs.ScatterDataPoint[];
-		let cur = 40;
-		for (let i = 0; i < 188; i++) {
-			cur += MiscUtils.random(-2000, 2000) / 1000;
-			dataMem.push({
-				x: new Date(2021, 5, 12, 5, 20).getTime() + (i * 300000),
-				y: cur,
-			})
-		}
-
-		let dataCpu = [] as ChartJs.ScatterDataPoint[];
-		cur = 20;
-		for (let i = 0; i < 188; i++) {
-			cur += MiscUtils.random(-2000, 2000) / 1000;
-			dataCpu.push({
-				x: new Date(2021, 5, 12, 5, 20).getTime() + (i * 300000),
-				y: cur,
-			})
-		}
-
 		return {
 			type: 'line',
 			options: {
