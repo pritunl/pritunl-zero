@@ -306,9 +306,28 @@ func endpointCommGet(c *gin.Context) {
 		return
 	}
 
+	timestamp := c.Request.Header.Get("Pritunl-Endpoint-Timestamp")
+	nonce := c.Request.Header.Get("Pritunl-Endpoint-Nonce")
+	sig := c.Request.Header.Get("Pritunl-Endpoint-Signature")
+
 	endpt, err := endpoint.Get(db, endpointId)
 	if err != nil {
+		if _, ok := err.(*database.NotFoundError); ok {
+			utils.AbortWithError(c, 404, err)
+		} else {
+			utils.AbortWithError(c, 500, err)
+		}
+		return
+	}
+
+	errData, err := endpt.ValidateSignature(
+		db, timestamp, nonce, sig, "communicate")
+	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+	if errData != nil {
+		c.JSON(401, errData)
 		return
 	}
 
