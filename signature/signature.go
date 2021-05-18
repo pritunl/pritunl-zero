@@ -15,6 +15,7 @@ import (
 	"github.com/pritunl/pritunl-zero/nonce"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Signature struct {
