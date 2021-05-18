@@ -10,7 +10,7 @@ import * as EndpointTypes from '../types/EndpointTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
-let chartSyncIds: {[key: string]: string} = {};
+let chartSyncReqs: {[key: string]: SuperAgent.Request} = {};
 
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
@@ -192,45 +192,52 @@ export function removeMulti(endpointIds: string[]): Promise<void> {
 	});
 }
 
-export function chart(endpointId: string, resource: string): Promise<any> {
+export function chart(endpointId: string, resource: string,
+		period: number, interval: number): Promise<any> {
 	let curChartSyncId = MiscUtils.uuid();
-	chartSyncIds[resource] = curChartSyncId;
 
 	let loader = new Loader().loading();
 
 	return new Promise<any>((resolve, reject): void => {
-		SuperAgent
-			.get('/endpoint/' + endpointId + '/data')
+		let req = SuperAgent.get('/endpoint/' + endpointId + '/data')
 			.query({
 				resource: resource,
-				start: 0, // TODO
-				end: 0, // TODO
+				period: period.toString(),
+				interval: interval.toString(),
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
-			.end((err: any, res: SuperAgent.Response): void => {
+			.on('abort', () => {
 				loader.done();
-
-				if (res && res.status === 401) {
-					window.location.href = '/login';
-					resolve(null);
-					return;
-				}
-
-				if (curChartSyncId !== chartSyncIds[resource]) {
-					resolve(null);
-					return;
-				}
-
-				if (err) {
-					Alert.errorRes(res, 'Failed to load endpoint chart');
-					reject(err);
-					return;
-				}
-
-				resolve(res.body);
+				resolve(null);
 			});
+		chartSyncReqs[curChartSyncId] = req;
+
+		req.end((err: any, res: SuperAgent.Response): void => {
+			delete chartSyncReqs[curChartSyncId];
+			loader.done();
+
+			if (res && res.status === 401) {
+				window.location.href = '/login';
+				resolve(null);
+				return;
+			}
+
+			if (err) {
+				Alert.errorRes(res, 'Failed to load endpoint chart');
+				reject(err);
+				return;
+			}
+
+			resolve(res.body);
+		});
 	});
+}
+
+export function chartCancel(): void {
+	for (let [key, val] of Object.entries(chartSyncReqs)) {
+		val.abort();
+	}
 }
 
 EventDispatcher.register((action: EndpointTypes.EndpointDispatch) => {
