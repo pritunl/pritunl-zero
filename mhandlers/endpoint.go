@@ -395,26 +395,7 @@ func endpointCommGet(c *gin.Context) {
 				continue
 			}
 
-			msg := string(msgByte)
-
-			sepIndex := strings.Index(msg, ":")
-			if sepIndex == -1 {
-				continue
-			}
-
-			docType := msg[:sepIndex]
-			docData := msg[sepIndex+1:]
-
-			doc, err := endpoint.UnmarshalDoc(docType, docData)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("mhandlers: Failed to unmarshal doc")
-
-				continue
-			}
-
-			err = endpt.InsertDoc(db, doc)
+			err = endpt.InsertDoc(db, msgByte)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"error": err,
