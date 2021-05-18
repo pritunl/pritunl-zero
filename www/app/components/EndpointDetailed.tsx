@@ -8,7 +8,9 @@ import PageSave from './PageSave';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import PageInputButton from './PageInputButton';
+import EndpointCharts from './EndpointCharts';
 import Help from './Help';
+import PageSwitch from "./PageSwitch";
 
 interface Props {
 	endpoint: EndpointTypes.EndpointRo;
@@ -23,6 +25,7 @@ interface State {
 	changed: boolean;
 	message: string;
 	addRole: string;
+	showCharts: boolean;
 	endpoint: EndpointTypes.Endpoint;
 }
 
@@ -103,6 +106,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			message: '',
 			addRole: '',
 			endpoint: null,
+			showCharts: false,
 		};
 	}
 
@@ -340,6 +344,17 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
+					<PageSwitch
+						label="Show charts"
+						help="Show endpoint charts."
+						checked={this.state.showCharts}
+						onToggle={(): void => {
+							this.setState({
+								...this.state,
+								showCharts: !this.state.showCharts,
+							});
+						}}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
@@ -376,6 +391,10 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 					/>
 				</div>
 			</div>
+			<EndpointCharts
+				endpoint={endpoint.id}
+				disabled={!this.state.showCharts}
+			/>
 			<PageSave
 				style={css.save}
 				hidden={!this.state.endpoint && !this.state.message}
