@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha512"
@@ -21,16 +22,20 @@ import (
 	"github.com/pritunl/pritunl-zero/nonce"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/nacl/box"
 )
 
 type Endpoint struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	User      primitive.ObjectID `bson:"user,omitempty" json:"user"`
-	Name      string             `bson:"name" json:"name"`
-	Roles     []string           `bson:"roles" json:"roles"`
-	ClientKey *ClientKey         `bson:"client_key" json:"client_key"`
-	ServerKey *ServerKey         `bson:"server_key" json:"server_key"`
+	Id            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	User          primitive.ObjectID `bson:"user,omitempty" json:"user"`
+	Name          string             `bson:"name" json:"name"`
+	Roles         []string           `bson:"roles" json:"roles"`
+	ClientKey     *ClientKey         `bson:"client_key" json:"client_key"`
+	ServerKey     *ServerKey         `bson:"server_key" json:"server_key"`
+	keyLoaded     bool               `bson:"-" json:"-"`
+	clientPubKey  [32]byte           `bson:"-" json:"-"`
+	serverPrivKey [32]byte           `bson:"-" json:"-"`
 }
 
 type ClientKey struct {
@@ -48,6 +53,41 @@ type RegisterData struct {
 	Nonce     string `json:"nonce"`
 	PublicKey string `json:"public_key"`
 	Signature string `json:"signature"`
+}
+
+func (e *Endpoint) GetKeys() (clientPubKey, serverPrivKey *[32]byte,
+	err error) {
+
+	if !e.keyLoaded {
+		clientPubKeySl, er := base64.StdEncoding.DecodeString(
+			e.ClientKey.PublicKey)
+		if er != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(er,
+					"stream: Failed to decode client private key"),
+			}
+			return
+		}
+		copy(e.clientPubKey[:], clientPubKeySl)
+
+		serverPubKeySl, er := base64.StdEncoding.DecodeString(
+			e.ServerKey.PrivateKey)
+		if er != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(er,
+					"stream: Failed to decode server public key"),
+			}
+			return
+		}
+		copy(e.serverPrivKey[:], serverPubKeySl)
+
+		e.keyLoaded = true
+	}
+
+	clientPubKey = &e.clientPubKey
+	serverPrivKey = &e.serverPrivKey
+
+	return
 }
 
 func (e *Endpoint) GenerateKey() (err error) {
