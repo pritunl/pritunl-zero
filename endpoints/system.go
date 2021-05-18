@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -59,8 +60,9 @@ type SystemChart struct {
 	SwapUsage []*Chart `json:"swap_usage"`
 }
 
-func GetSystemChartSingle(db *database.Database, endpoint primitive.ObjectID,
-	start, end time.Time) (chart *SystemChart, err error) {
+func GetSystemChartSingle(c context.Context, db *database.Database,
+	endpoint primitive.ObjectID, start, end time.Time) (
+	chart *SystemChart, err error) {
 
 	coll := db.EndpointsSystem()
 	cpuUsage := []*Chart{}
@@ -75,7 +77,7 @@ func GetSystemChartSingle(db *database.Database, endpoint primitive.ObjectID,
 	}
 
 	cursor, err := coll.Find(
-		db,
+		c,
 		&bson.M{
 			"e": endpoint,
 			"t": timeQuery,
@@ -90,9 +92,9 @@ func GetSystemChartSingle(db *database.Database, endpoint primitive.ObjectID,
 		err = database.ParseError(err)
 		return
 	}
-	defer cursor.Close(db)
+	defer cursor.Close(c)
 
-	for cursor.Next(db) {
+	for cursor.Next(c) {
 		doc := &System{}
 		err = cursor.Decode(doc)
 		if err != nil {
@@ -129,12 +131,12 @@ func GetSystemChartSingle(db *database.Database, endpoint primitive.ObjectID,
 	return
 }
 
-func GetSystemChart(db *database.Database, endpoint primitive.ObjectID,
-	start, end time.Time, interval time.Duration) (
-	chart *SystemChart, err error) {
+func GetSystemChart(c context.Context, db *database.Database,
+	endpoint primitive.ObjectID, start, end time.Time,
+	interval time.Duration) (chart *SystemChart, err error) {
 
 	if interval == 1*time.Minute {
-		chart, err = GetSystemChartSingle(db, endpoint, start, end)
+		chart, err = GetSystemChartSingle(c, db, endpoint, start, end)
 		return
 	}
 
@@ -150,7 +152,7 @@ func GetSystemChart(db *database.Database, endpoint primitive.ObjectID,
 		timeQuery = append(timeQuery, bson.E{"$lte", end})
 	}
 
-	cursor, err := coll.Aggregate(db, []*bson.M{
+	cursor, err := coll.Aggregate(c, []*bson.M{
 		&bson.M{
 			"$match": &bson.M{
 				"e": endpoint,
@@ -198,9 +200,9 @@ func GetSystemChart(db *database.Database, endpoint primitive.ObjectID,
 		err = database.ParseError(err)
 		return
 	}
-	defer cursor.Close(db)
+	defer cursor.Close(c)
 
-	for cursor.Next(db) {
+	for cursor.Next(c) {
 		doc := &SystemAgg{}
 		err = cursor.Decode(doc)
 		if err != nil {

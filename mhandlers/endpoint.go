@@ -435,11 +435,16 @@ func endpointDataGet(c *gin.Context) {
 	}
 
 	resource := c.Query("resource")
-	start, _ := strconv.ParseInt(c.Query("start"), 10, 0)
-	end, _ := strconv.ParseInt(c.Query("end"), 10, 0)
 
-	_ = start // TODO
-	_ = end   // TODO
+	period, _ := strconv.ParseInt(c.Query("period"), 10, 0)
+	if period == 0 {
+		period = 1440
+	}
+
+	interval, _ := strconv.ParseInt(c.Query("interval"), 10, 0)
+	if interval == 0 {
+		interval = 24
+	}
 
 	endpt, err := endpoint.Get(db, endpointId)
 	if err != nil {
@@ -447,10 +452,11 @@ func endpointDataGet(c *gin.Context) {
 		return
 	}
 
-	startTemp := time.Now().UTC().Add(-192 * time.Hour) // TODO
+	startTime := time.Now().UTC().Add(time.Duration(-period) * time.Minute)
+	endTime := time.Now().UTC()
 
-	data, err := endpt.GetData(db, resource, startTemp,
-		time.Time{}, 1*time.Minute)
+	data, err := endpt.GetData(c, db, resource, startTime,
+		endTime, 1*time.Minute)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
