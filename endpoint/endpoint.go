@@ -306,12 +306,55 @@ func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 	return
 }
 
-func (e *Endpoint) InsertDoc(db *database.Database, doc endpoints.Doc) (
-	err error) {
+func (e *Endpoint) InsertDoc(db *database.Database,
+	msgData []byte) (err error) {
 
-	coll := doc.GetCollection(db)
+	if len(msgData) < 32 {
+		logrus.WithFields(logrus.Fields{
+			"data_len": len(msgData),
+		}).Error("endpoint: Data too short")
+		return
+	}
+
+	clientPubKey, serverPrivKey, err := e.GetKeys()
+	if err != nil {
+		return
+	}
+
+	var nonceAr [24]byte
+	copy(nonceAr[:], msgData[:24])
+
+	docData, valid := box.Open([]byte{}, msgData[24:],
+		&nonceAr, clientPubKey, serverPrivKey)
+	if !valid {
+		logrus.WithFields(logrus.Fields{
+			"data_len": len(docData),
+		}).Error("endpoint: Failed to decrypt doc")
+		return
+	}
+
+	sepIndex := bytes.Index(docData, []byte(":"))
+	if sepIndex == -1 {
+		logrus.WithFields(logrus.Fields{
+			"data_len": len(docData),
+		}).Error("endpoint: Failed to parse doc type")
+		return
+	}
+
+	docType := docData[:sepIndex]
+
+	doc, err := UnmarshalDoc(string(docType), docData[sepIndex+1:])
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("endpoint: Failed to unmarshal doc")
+		err = nil
+		return
+	}
 
 	doc.Format(e.Id)
+
+	coll := doc.GetCollection(db)
 
 	_, err = coll.InsertOne(db, doc)
 	if err != nil {
@@ -381,12 +424,12 @@ func (e *Endpoint) GetData(db *database.Database, resource string,
 	return
 }
 
-func UnmarshalDoc(docType string, docData string) (
+func UnmarshalDoc(docType string, docData []byte) (
 	doc endpoints.Doc, err error) {
 
 	doc = endpoints.GetObj(docType)
 
-	err = json.Unmarshal([]byte(docData), doc)
+	err = json.Unmarshal(docData, doc)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "endpoints: Failed to parse doc"),
