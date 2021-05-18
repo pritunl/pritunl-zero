@@ -1,0 +1,287 @@
+/// <reference path="../References.d.ts"/>
+import * as React from 'react';
+import * as ChartJs from 'chart.js';
+import * as EndpointActions from '../actions/EndpointActions';
+import * as EndpointTypes from '../types/EndpointTypes';
+import * as ChartTypes from '../types/ChartTypes';
+
+interface Props {
+	endpoint: string;
+	resource: string;
+	sync: number;
+	period: number;
+	interval: number;
+	onLoading: () => void;
+	onLoaded: () => void;
+}
+
+interface State {
+	disabled: boolean;
+}
+
+export default class EndpointChart extends React.Component<Props, State> {
+	data: EndpointTypes.SystemChart;
+	sync: number;
+	period: number;
+	interval: number;
+	chart: ChartJs.Chart;
+	chartRef: React.RefObject<HTMLCanvasElement>;
+
+	constructor(props: any, context: any) {
+		super(props, context);
+		this.state = {
+			disabled: false,
+		};
+		this.chartRef = React.createRef();
+	}
+
+	ticks = (axis: ChartJs.Scale) => {
+		let ticks = axis.ticks;
+		let newTicks: ChartJs.Tick[] = [];
+		let dataset = this.data.cpu_usage;
+		let tickMod = 3600000; // 1 hour
+		let len = dataset.length;
+
+		if (len) {
+			let first = dataset[0] as ChartJs.ScatterDataPoint;
+			let last = dataset[len-1] as ChartJs.ScatterDataPoint;
+			let range = last.x - first.x;
+
+			if (range >= 1451520000) {
+				tickMod = 172800000; // 2 day
+			} else if (range >= 611280000) {
+				tickMod = 86400000; // 1 day
+			} else if (range >= 276480000) {
+				tickMod = 43200000; // 12 hours
+			} else if (range >= 89280000) {
+				tickMod = 21600000; // 6 hours
+			} else {
+				tickMod = 3600000; // 1 hours
+			}
+		}
+
+		for (let i = 0; i < ticks.length; i++) {
+			let tick = ticks[i];
+
+			if (tick.value % tickMod === 0) {
+				newTicks.push(tick);
+			}
+		}
+
+		axis.ticks = newTicks;
+	}
+
+	config = (): ChartJs.ChartConfiguration => {
+		let labels = ChartTypes.getChartLabels(this.props.resource, this.data);
+
+		let config = {
+			type: 'line',
+			options: {
+				scales: {
+					x: {
+						type: 'time',
+						title: {
+							display: true,
+							text: 'Time',
+							color: 'rgba(255, 255, 255, 1)',
+							padding: 0,
+							font: {
+								weight: 'bold',
+							},
+						},
+						time: {
+							unit: 'minute',
+							displayFormats: {
+								minute: 'HH:mm',
+							},
+						},
+						ticks: {
+							stepSize: 1,
+							count: 100,
+							maxTicksLimit: 100,
+							color: 'rgba(255, 255, 255, 1)',
+							source: 'data',
+						},
+						grid: {
+							color: 'rgba(255, 255, 255, 0.2)',
+						},
+						beforeTickToLabelConversion: this.ticks,
+					},
+					y: {
+						min: 0,
+						max: 100,
+						offset: false,
+						beginAtZero: true,
+						title: {
+							display: true,
+							text: labels.resource_label,
+							color: 'rgba(255, 255, 255, 1)',
+							padding: 0,
+							font: {
+								weight: 'bold',
+							},
+						},
+						ticks: {
+							color: 'rgba(255, 255, 255, 1)',
+						},
+						grid: {
+							color: 'rgba(255, 255, 255, 0.2)',
+						},
+					},
+				},
+				plugins: {
+					title: {
+						display: true,
+						text: labels.title,
+						color: 'rgba(255, 255, 255, 1)',
+						padding: 3,
+						font: {
+							size: 13,
+						},
+					},
+					tooltip: {
+						mode: 'index',
+						intersect: false,
+						backgroundColor: 'rgba(0, 0, 0, 0.7)',
+						callbacks: {
+							label(item): string {
+								let raw = item.raw as any;
+								if (labels.resource_fixed) {
+									return item.dataset.label + ' ' +
+										raw.y.toFixed(labels.resource_fixed) +
+										labels.resource_suffix;
+								}
+								return item.dataset.label + ' ' + raw.y +
+									labels.resource_suffix;
+							},
+						},
+					},
+				},
+			},
+			data: {
+				datasets: [],
+			},
+		} as ChartJs.ChartConfiguration;
+
+		let backgroundColors = [
+			'rgba(19, 124, 189, 0.2)',
+			'rgba(255, 99, 132, 0.2)',
+		];
+		let borderColors = [
+			'rgba(19, 124, 189, 1)',
+			'rgba(255, 99, 132, 1)',
+		];
+
+		let data = ChartTypes.getChartData(this.props.resource, this.data);
+		for (let i = 0; i < labels.datasets.length; i++) {
+			let datasetLabels = labels.datasets[i];
+
+			config.data.datasets.push({
+				label: datasetLabels.label,
+				data: data[i],
+				fill: 'origin',
+				pointRadius: 0,
+				backgroundColor: backgroundColors[i],
+				borderColor: borderColors[i],
+				borderWidth: 2,
+			} as ChartJs.ChartDataset);
+		}
+
+		return config;
+	}
+
+	update(sync: number, period: number, interval: number): void {
+		this.sync = sync;
+		this.period = period;
+		this.interval = interval;
+
+		let loading = true;
+		this.props.onLoading();
+
+		EndpointActions.chart(
+			this.props.endpoint,
+			this.props.resource,
+			this.period,
+			this.interval,
+		).then((data: EndpointTypes.SystemChart): void => {
+			if (loading) {
+				loading = false;
+				this.props.onLoaded();
+			}
+
+			if (data) {
+				this.data = data;
+				this.updateChart();
+			}
+		}).catch((): void => {
+			if (loading) {
+				loading = false;
+				this.props.onLoaded();
+			}
+		});
+	}
+
+	updateChart(): void {
+		let data = ChartTypes.getChartData(this.props.resource, this.data);
+
+		for (let i = 0; i < data.length; i++) {
+			this.chart.data.datasets[i].data = data[i];
+		}
+
+		this.chart.update();
+	}
+
+	componentDidMount(): void {
+		this.sync = this.props.sync;
+		this.period = this.props.period;
+		this.interval = this.props.interval;
+
+		let loading = true;
+		this.props.onLoading();
+
+		EndpointActions.chart(
+			this.props.endpoint,
+			this.props.resource,
+			this.period,
+			this.interval,
+		).then((data: EndpointTypes.SystemChart): void => {
+			if (loading) {
+				loading = false;
+				this.props.onLoaded();
+			}
+
+			if (data) {
+				this.data = data;
+				this.chart = new ChartJs.Chart(
+					this.chartRef.current,
+					this.config(),
+				);
+			}
+		}).catch((): void => {
+			if (loading) {
+				loading = false;
+				this.props.onLoaded();
+			}
+		});
+	}
+
+	componentWillUnmount(): void {
+		if (this.chart) {
+			this.chart.destroy();
+		}
+	}
+
+	render(): JSX.Element {
+		if ((this.sync !== undefined && this.period !== undefined &&
+				this.interval !== undefined) &&
+				(this.props.sync !== this.sync ||
+				this.props.period !== this.period ||
+				this.props.interval !== this.interval)) {
+			this.update(this.props.sync, this.props.period, this.props.interval);
+		}
+
+		return <canvas
+			ref={this.chartRef}
+		/>;
+	}
+}
