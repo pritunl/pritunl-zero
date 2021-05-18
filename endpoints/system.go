@@ -41,7 +41,7 @@ func (d *System) Format(id primitive.ObjectID) {
 
 func (d *System) Print() {
 	fmt.Println("***************************************************")
-	fmt.Printf("Id: %x\n", d.Id)
+	fmt.Printf("Id: %x\n", d.Id.Data)
 	fmt.Println("Timestamp:", d.Timestamp)
 	fmt.Println("Type: system")
 
