@@ -1,4 +1,6 @@
 /// <reference path="../References.d.ts"/>
+import * as ChartTypes from '../types/ChartTypes';
+
 export const SYNC = 'endpoint.sync';
 export const SYNC_NAMES = 'endpoint.sync_names';
 export const TRAVERSE = 'endpoint.traverse';
@@ -35,12 +37,7 @@ export interface EndpointDispatch {
 	};
 }
 
-export interface Chart {
-	x: number;
-	y: number;
-}
-
 export interface SystemChart {
-	cpu_usage: Chart[];
-	mem_usage: Chart[];
+	cpu_usage: ChartTypes.Points;
+	mem_usage: ChartTypes.Points;
 }
