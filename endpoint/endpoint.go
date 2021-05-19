@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha512"
@@ -412,11 +413,12 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 	return
 }
 
-func (e *Endpoint) GetData(db *database.Database, resource string,
-	start, end time.Time, interval time.Duration) (
+func (e *Endpoint) GetData(c context.Context, db *database.Database,
+	resource string, start, end time.Time, interval time.Duration) (
 	data interface{}, err error) {
 
-	data, err = endpoints.GetChart(db, e.Id, resource, start, end, interval)
+	data, err = endpoints.GetChart(c, db, e.Id, resource,
+		start, end, interval)
 	if err != nil {
 		return
 	}
