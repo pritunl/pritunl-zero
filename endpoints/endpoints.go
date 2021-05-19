@@ -21,7 +21,6 @@ type Doc interface {
 	GetCollection(*database.Database) *database.Collection
 	Format(primitive.ObjectID) time.Time
 	StaticData() *bson.M
-	Print()
 }
 
 type Chart struct {

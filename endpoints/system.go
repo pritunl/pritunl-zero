@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -46,18 +45,6 @@ func (d *System) StaticData() *bson.M {
 		"data.mem_total":  d.MemTotal,
 		"data.swap_total": d.SwapTotal,
 	}
-}
-
-func (d *System) Print() {
-	fmt.Println("***************************************************")
-	fmt.Printf("Id: %x\n", d.Id.Data)
-	fmt.Println("Timestamp:", d.Timestamp)
-	fmt.Println("Type: system")
-
-	fmt.Println("CpuUsage:", d.CpuUsage)
-	fmt.Println("MemUsage:", d.MemUsage)
-	fmt.Println("SwapUsage:", d.SwapUsage)
-	fmt.Println("***************************************************")
 }
 
 type SystemChart struct {
