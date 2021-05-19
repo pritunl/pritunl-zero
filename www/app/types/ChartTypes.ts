@@ -18,6 +18,8 @@ export interface Labels {
 	resource_label: string;
 	resource_suffix: string;
 	resource_fixed: number;
+	resource_min: number;
+	resource_max: number;
 	datasets: Datasets;
 }
 
@@ -29,6 +31,8 @@ export function getChartLabels(resource: string, data: any): Labels {
 				resource_label: 'Percent',
 				resource_suffix: '%',
 				resource_fixed: 2,
+				resource_min: 0,
+				resource_max: 100,
 				datasets: [
 					{
 						label: 'CPU Usage',

@@ -80,7 +80,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 	ticks = (axis: ChartJs.Scale) => {
 		let ticks = axis.ticks;
 		let newTicks: ChartJs.Tick[] = [];
-		let dataset = this.data.cpu_usage;
+		let dataset = Object.values(this.data)[0];
 		let tickMod = 3600000; // 1 hour
 		let len = dataset.length;
 
@@ -152,8 +152,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 						beforeTickToLabelConversion: this.ticks,
 					},
 					y: {
-						min: 0,
-						max: 100,
+						min: labels.resource_min,
+						max: labels.resource_max,
 						offset: false,
 						beginAtZero: true,
 						title: {
