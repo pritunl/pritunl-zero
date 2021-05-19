@@ -360,10 +360,10 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 		return
 	}
 
-	doc.Format(e.Id)
+	timestamp := doc.Format(e.Id)
 
 	staticData := doc.StaticData()
-	if staticData != nil {
+	if staticData != nil && timestamp == timestamp.Truncate(5*time.Minute) {
 		coll := db.Endpoints()
 		err = coll.UpdateId(e.Id, &bson.M{
 			"$set": staticData,
