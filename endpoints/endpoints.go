@@ -19,7 +19,7 @@ const (
 
 type Doc interface {
 	GetCollection(*database.Database) *database.Collection
-	Format(primitive.ObjectID)
+	Format(primitive.ObjectID) time.Time
 	StaticData() *bson.M
 	Print()
 }

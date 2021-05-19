@@ -34,10 +34,11 @@ func (d *System) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsSystem()
 }
 
-func (d *System) Format(id primitive.ObjectID) {
+func (d *System) Format(id primitive.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Timestamp = d.Timestamp.UTC().Truncate(1 * time.Minute)
 	d.Id = GenerateId(id, d.Timestamp)
+	return d.Timestamp
 }
 
 func (d *System) StaticData() *bson.M {
