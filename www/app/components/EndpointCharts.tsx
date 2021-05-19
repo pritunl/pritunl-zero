@@ -56,12 +56,35 @@ export default class EndpointCharts extends React.Component<Props, State> {
 		this.state = {
 			sync: 0,
 			period: 1440,
-			interval: 1,
+			interval: 5,
 			loading: {},
 			cancelable: {},
 		};
 
 		this.loading = {};
+	}
+
+	getDefaultInterval(period: number): number {
+		switch (period) {
+			case 1440:
+				return 5;
+			case 4320:
+				return 30;
+			case 10080:
+				return 30;
+			case 20160:
+				return 60;
+			case 43200:
+				return 120;
+			case 86400:
+				return 360;
+			case 129600:
+				return 1440;
+			case 172800:
+				return 4320;
+			default:
+				return 360;
+		}
 	}
 
 	setLoading(resource: string): void {
@@ -117,6 +140,26 @@ export default class EndpointCharts extends React.Component<Props, State> {
 			return <div/>;
 		}
 
+		let intervalMin = 0;
+		let intervalMax = 0;
+		if (this.state.period > 43200) {
+			intervalMin = 120;
+		} else if (this.state.period > 20160) {
+			intervalMin = 30;
+		} else if (this.state.period > 4320) {
+			intervalMin = 5;
+		}
+
+		if (this.state.period <= 1440) {
+			intervalMax = 720;
+		} else if (this.state.period <= 4320) {
+			intervalMax = 1440;
+		} else if (this.state.period <= 10080) {
+			intervalMax = 4320;
+		} else {
+			intervalMax = 10080;
+		}
+
 		let refreshDisabled = false;
 		let refreshLabel = '';
 		let refreshClass = 'bp3-button';
@@ -163,20 +206,30 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						help="Select chart time range."
 						value={this.state.period.toString()}
 						onChange={(val: string): void => {
+							let period = parseInt(val, 10);
 							this.setState({
 								...this.state,
-								period: parseInt(val, 10),
+								period: period,
+								interval: this.getDefaultInterval(period),
 							});
 						}}
 					>
-						<option value="1440">24 hours</option>
-						<option value="4320">3 days</option>
-						<option value="10080">7 days</option>
-						<option value="20160">14 days</option>
-						<option value="43200">30 days</option>
-						<option value="86400">60 days</option>
-						<option value="129600">90 days</option>
-						<option value="172800">120 days</option>
+						<option
+							value="1440">24 hours</option>
+						<option
+							value="4320">3 days</option>
+						<option
+							value="10080">7 days</option>
+						<option
+							value="20160">14 days</option>
+						<option
+							value="43200">30 days</option>
+						<option
+							value="86400">60 days</option>
+						<option
+							value="129600" hidden={true}>90 days</option>
+						<option
+							value="172800" hidden={true}>120 days</option>
 					</PageSelect>
 				</div>
 				<div style={css.group}>
@@ -191,16 +244,46 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							});
 						}}
 					>
-						<option value="1">1 minute</option>
-						<option value="5">5 minutes</option>
-						<option value="30">30 minutes</option>
-						<option value="60">1 hour</option>
-						<option value="120">2 hours</option>
-						<option value="360">6 hours</option>
-						<option value="720">12 hours</option>
-						<option value="1440">24 hours</option>
-						<option value="4320">3 days</option>
-						<option value="10080">7 days</option>
+						<option
+							value="1"
+							hidden={1 < intervalMin || 1 > intervalMax}
+						>1 minute</option>
+						<option
+							value="5"
+							hidden={5 < intervalMin || 5 > intervalMax}
+						>5 minutes</option>
+						<option
+							value="30"
+							hidden={30 < intervalMin || 30 > intervalMax}
+						>30 minutes</option>
+						<option
+							value="60"
+							hidden={60 < intervalMin || 60 > intervalMax}
+						>1 hour</option>
+						<option
+							value="120"
+							hidden={120 < intervalMin || 120 > intervalMax}
+						>2 hours</option>
+						<option
+							value="360"
+							hidden={360 < intervalMin || 360 > intervalMax}
+						>6 hours</option>
+						<option
+							value="720"
+							hidden={720 < intervalMin || 720 > intervalMax}
+						>12 hours</option>
+						<option
+							value="1440"
+							hidden={1440 < intervalMin || 1440 > intervalMax}
+						>24 hours</option>
+						<option
+							value="4320"
+							hidden={4320 < intervalMin || 4320 > intervalMax}
+						>3 days</option>
+						<option
+							value="10080"
+							hidden={10080 < intervalMin || 10080 > intervalMax}
+						>7 days</option>
 					</PageSelect>
 					<PageNumInput
 						label="Hours Select"
@@ -213,10 +296,10 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						onChange={(val: number): void => {
 							this.setState({
 								...this.state,
-								period: val * 60,
+								period: val,
 							});
 						}}
-						value={this.state.period * 60}
+						value={this.state.period}
 					/>
 				</div>
 			</div>
