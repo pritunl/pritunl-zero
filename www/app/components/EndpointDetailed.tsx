@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as EndpointTypes from '../types/EndpointTypes';
 import * as AuthorityTypes from "../types/AuthorityTypes";
 import * as EndpointActions from '../actions/EndpointActions';
+import * as PageInfos from './PageInfo';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 import PageInfo from './PageInfo';
@@ -267,6 +268,29 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 		let endpoint: EndpointTypes.Endpoint = this.state.endpoint ||
 			this.props.endpoint;
 
+		let fields: PageInfos.Field[] = [
+			{
+				label: 'ID',
+				value: this.props.endpoint.id || 'None',
+			},
+		];
+
+		let endpointData = endpoint.data;
+		if (endpointData) {
+			if (endpointData.mem_total) {
+				fields.push({
+					label: 'Memory',
+					value: endpointData.mem_total + 'mb',
+				});
+			}
+			if (endpointData.swap_total) {
+				fields.push({
+					label: 'Swap',
+					value: endpointData.swap_total + 'mb',
+				});
+			}
+		}
+
 		let roles: JSX.Element[] = [];
 		for (let role of endpoint.roles) {
 			roles.push(
@@ -358,12 +382,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 				</div>
 				<div style={css.group}>
 					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: endpoint.id || 'None',
-							},
-						]}
+						fields={fields}
 					/>
 					<label className="bp3-label">
 						Roles
