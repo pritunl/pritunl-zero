@@ -18,6 +18,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -126,6 +127,13 @@ func (e *Endpoint) GenerateKey() (err error) {
 
 func (e *Endpoint) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
+
+	if e.Id.IsZero() {
+		e.Id, err = utils.RandObjectId()
+		if err != nil {
+			return
+		}
+	}
 
 	if e.Roles == nil {
 		e.Roles = []string{}
@@ -363,7 +371,9 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 	timestamp := doc.Format(e.Id)
 
 	staticData := doc.StaticData()
-	if staticData != nil && timestamp == timestamp.Truncate(5*time.Minute) {
+	if staticData != nil && (!constants.Production ||
+		timestamp == timestamp.Truncate(5*time.Minute)) {
+
 		coll := db.Endpoints()
 		err = coll.UpdateId(e.Id, &bson.M{
 			"$set": staticData,
@@ -411,13 +421,6 @@ func (e *Endpoint) CommitFields(db *database.Database, fields set.Set) (
 
 func (e *Endpoint) Insert(db *database.Database) (err error) {
 	coll := db.Endpoints()
-
-	if !e.Id.IsZero() {
-		err = &errortypes.DatabaseError{
-			errors.New("endpoint: Endpoint already exists"),
-		}
-		return
-	}
 
 	_, err = coll.InsertOne(db, e)
 	if err != nil {
