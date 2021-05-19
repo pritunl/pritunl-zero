@@ -66,6 +66,14 @@ export default class EndpointCharts extends React.Component<Props, State> {
 
 	getDefaultInterval(period: number): number {
 		switch (period) {
+			case 60:
+				return 1;
+			case 180:
+				return 1;
+			case 360:
+				return 5;
+			case 720:
+				return 5;
 			case 1440:
 				return 5;
 			case 4320:
@@ -150,7 +158,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 			intervalMin = 5;
 		}
 
-		if (this.state.period <= 1440) {
+		if (this.state.period <= 60) {
+			intervalMax = 30;
+		} else if (this.state.period <= 180) {
+			intervalMax = 60;
+		} else if (this.state.period <= 360) {
+			intervalMax = 120;
+		} else if (this.state.period <= 720) {
+			intervalMax = 360;
+		} else if (this.state.period <= 1440) {
 			intervalMax = 720;
 		} else if (this.state.period <= 4320) {
 			intervalMax = 1440;
@@ -214,22 +230,18 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							});
 						}}
 					>
-						<option
-							value="1440">24 hours</option>
-						<option
-							value="4320">3 days</option>
-						<option
-							value="10080">7 days</option>
-						<option
-							value="20160">14 days</option>
-						<option
-							value="43200">30 days</option>
-						<option
-							value="86400">60 days</option>
-						<option
-							value="129600" hidden={true}>90 days</option>
-						<option
-							value="172800" hidden={true}>120 days</option>
+						<option value="60">1 hour</option>
+						<option value="180">3 hours</option>
+						<option value="360">6 hours</option>
+						<option value="720">12 hours</option>
+						<option value="1440">24 hours</option>
+						<option value="4320">3 days</option>
+						<option value="10080">7 days</option>
+						<option value="20160">14 days</option>
+						<option value="43200">30 days</option>
+						<option value="86400">60 days</option>
+						<option value="129600" hidden={true}>90 days</option>
+						<option value="172800" hidden={true}>120 days</option>
 					</PageSelect>
 				</div>
 				<div style={css.group}>
@@ -285,22 +297,6 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							hidden={10080 < intervalMin || 10080 > intervalMax}
 						>7 days</option>
 					</PageSelect>
-					<PageNumInput
-						label="Hours Select"
-						help="Select time range to view."
-						min={1}
-						minorStepSize={1}
-						stepSize={6}
-						majorStepSize={12}
-						selectAllOnFocus={true}
-						onChange={(val: number): void => {
-							this.setState({
-								...this.state,
-								period: val,
-							});
-						}}
-						value={this.state.period}
-					/>
 				</div>
 			</div>
 			<div className="layout horizontal wrap">
@@ -312,10 +308,10 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						period={this.state.period}
 						interval={this.state.interval}
 						onLoading={(): void => {
-							this.setLoading('chart1');
+							this.setLoading('system');
 						}}
 						onLoaded={(): void => {
-							this.setLoaded('chart1');
+							this.setLoaded('system');
 						}}
 					/>
 					<EndpointChart
@@ -325,38 +321,38 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						period={this.state.period}
 						interval={this.state.interval}
 						onLoading={(): void => {
-							this.setLoading('chart2');
+							this.setLoading('system2');
 						}}
 						onLoaded={(): void => {
-							this.setLoaded('chart2');
+							this.setLoaded('system2');
 						}}
 					/>
 				</div>
 				<div style={css.chartGroup}>
 					<EndpointChart
 						endpoint={this.props.endpoint}
-						resource={'system'}
+						resource={'load'}
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
 						onLoading={(): void => {
-							this.setLoading('chart3');
+							this.setLoading('load');
 						}}
 						onLoaded={(): void => {
-							this.setLoaded('chart3');
+							this.setLoaded('load');
 						}}
 					/>
 					<EndpointChart
 						endpoint={this.props.endpoint}
-						resource={'system'}
+						resource={'load'}
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
 						onLoading={(): void => {
-							this.setLoading('chart4');
+							this.setLoading('load2');
 						}}
 						onLoaded={(): void => {
-							this.setLoaded('chart4');
+							this.setLoaded('load2');
 						}}
 					/>
 				</div>
