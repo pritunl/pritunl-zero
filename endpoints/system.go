@@ -17,9 +17,9 @@ type System struct {
 	Timestamp time.Time          `bson:"t" json:"t"`
 
 	CpuUsage  float64 `bson:"cu" json:"cu"`
-	MemTotal  int     `bson:"mt" json:"mt"`
+	MemTotal  int     `bson:"-" json:"mt"`
 	MemUsage  float64 `bson:"mu" json:"mu"`
-	SwapTotal int     `bson:"st" json:"st"`
+	SwapTotal int     `bson:"-" json:"st"`
 	SwapUsage float64 `bson:"su" json:"su"`
 }
 
@@ -40,6 +40,13 @@ func (d *System) Format(id primitive.ObjectID) {
 	d.Id = GenerateId(id, d.Timestamp)
 }
 
+func (d *System) StaticData() *bson.M {
+	return &bson.M{
+		"data.mem_total":  d.MemTotal,
+		"data.swap_total": d.SwapTotal,
+	}
+}
+
 func (d *System) Print() {
 	fmt.Println("***************************************************")
 	fmt.Printf("Id: %x\n", d.Id.Data)
@@ -47,9 +54,7 @@ func (d *System) Print() {
 	fmt.Println("Type: system")
 
 	fmt.Println("CpuUsage:", d.CpuUsage)
-	fmt.Println("MemTotal:", d.MemTotal)
 	fmt.Println("MemUsage:", d.MemUsage)
-	fmt.Println("SwapTotal:", d.SwapTotal)
 	fmt.Println("SwapUsage:", d.SwapUsage)
 	fmt.Println("***************************************************")
 }

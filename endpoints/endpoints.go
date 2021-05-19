@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -19,6 +20,7 @@ const (
 type Doc interface {
 	GetCollection(*database.Database) *database.Collection
 	Format(primitive.ObjectID)
+	StaticData() *bson.M
 	Print()
 }
 
