@@ -11,6 +11,12 @@ export interface Endpoint {
 	id: string;
 	name?: string;
 	roles?: string[];
+	data?: EndpointData;
+}
+
+export interface EndpointData {
+	mem_total?: number;
+	swap_total?: number;
 }
 
 export interface Filter {
