@@ -1,13 +1,15 @@
 package mhandlers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/handlers"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
-	"net/http"
 )
 
 var (
@@ -80,8 +82,12 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/endpoint", endpointPost)
 	csrfGroup.DELETE("/endpoint", endpointsDelete)
 	csrfGroup.DELETE("/endpoint/:endpoint_id", endpointDelete)
-	dbGroup.GET("/endpoint/:endpoint_id/comm", endpointCommGet)
 	csrfGroup.GET("/endpoint/:endpoint_id/data", endpointDataGet)
+
+	dbGroup.PUT("/endpoint/:endpoint_id/register",
+		handlers.EndpointRegisterPut)
+	dbGroup.GET("/endpoint/:endpoint_id/comm",
+		handlers.EndpointCommGet)
 
 	csrfGroup.GET("/event", eventGet)
 
