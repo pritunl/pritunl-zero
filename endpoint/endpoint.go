@@ -16,6 +16,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
@@ -34,9 +35,15 @@ type Endpoint struct {
 	Roles         []string           `bson:"roles" json:"roles"`
 	ClientKey     *ClientKey         `bson:"client_key" json:"client_key"`
 	ServerKey     *ServerKey         `bson:"server_key" json:"server_key"`
+	Data          *Data              `bson:"data" json:"data"`
 	keyLoaded     bool               `bson:"-" json:"-"`
 	clientPubKey  [32]byte           `bson:"-" json:"-"`
 	serverPrivKey [32]byte           `bson:"-" json:"-"`
+}
+
+type Data struct {
+	MemTotal  int `bson:"mem_total" json:"mem_total"`
+	SwapTotal int `bson:"swap_total" json:"swap_total"`
 }
 
 type ClientKey struct {
@@ -354,6 +361,14 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 	}
 
 	doc.Format(e.Id)
+
+	staticData := doc.StaticData()
+	if staticData != nil {
+		coll := db.Endpoints()
+		err = coll.UpdateId(e.Id, &bson.M{
+			"$set": staticData,
+		})
+	}
 
 	coll := doc.GetCollection(db)
 
