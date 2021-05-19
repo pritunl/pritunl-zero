@@ -19,6 +19,48 @@ interface State {
 	disabled: boolean;
 }
 
+// const colors = [
+// 	'#d50000', // red
+// 	'#c51162', // pink
+// 	'#aa00ff', // purple
+// 	'#6200ea', // deep purple
+// 	'#304ffe', // indigo
+// 	'#2962ff', // blue
+// 	'#0091ea', // light blue
+// 	'#00b8d4', // cyan
+// 	'#00bfa5', // teal
+// 	'#00c853', // green
+// 	'#64dd17', // light green
+// 	'#aeea00', // lime
+// 	'#ffd600', // yellow
+// 	'#ffab00', // amber
+// 	'#ff6d00', // orange
+// 	'#dd2c00', // deep orange
+// 	'#5d4037', // brown
+// 	'#455a64', // blue grey
+// ];
+
+const colors = [
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+];
+
 export default class EndpointChart extends React.Component<Props, State> {
 	data: EndpointTypes.SystemChart;
 	sync: number;
@@ -47,7 +89,9 @@ export default class EndpointChart extends React.Component<Props, State> {
 			let last = dataset[len-1] as ChartJs.ScatterDataPoint;
 			let range = last.x - first.x;
 
-			if (range >= 1451520000) {
+			if (range >= 2833920000) {
+				tickMod = 604800000; // 7 day
+			} else if (range >= 1451520000) {
 				tickMod = 172800000; // 2 day
 			} else if (range >= 611280000) {
 				tickMod = 86400000; // 1 day
@@ -163,15 +207,6 @@ export default class EndpointChart extends React.Component<Props, State> {
 			},
 		} as ChartJs.ChartConfiguration;
 
-		let backgroundColors = [
-			'rgba(19, 124, 189, 0.2)',
-			'rgba(255, 99, 132, 0.2)',
-		];
-		let borderColors = [
-			'rgba(19, 124, 189, 1)',
-			'rgba(255, 99, 132, 1)',
-		];
-
 		let data = ChartTypes.getChartData(this.props.resource, this.data);
 		for (let i = 0; i < labels.datasets.length; i++) {
 			let datasetLabels = labels.datasets[i];
@@ -181,8 +216,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 				data: data[i],
 				fill: 'origin',
 				pointRadius: 0,
-				backgroundColor: backgroundColors[i],
-				borderColor: borderColors[i],
+				backgroundColor: colors[i] + '15',
+				borderColor: colors[i],
 				borderWidth: 2,
 			} as ChartJs.ChartDataset);
 		}
