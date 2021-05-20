@@ -47,4 +47,11 @@ export interface EndpointDispatch {
 export interface SystemChart {
 	cpu_usage: ChartTypes.Points;
 	mem_usage: ChartTypes.Points;
+	swap_usage: ChartTypes.Points;
+}
+
+export interface LoadChart {
+	load1: ChartTypes.Points;
+	load5: ChartTypes.Points;
+	load15: ChartTypes.Points;
 }

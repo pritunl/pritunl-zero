@@ -40,6 +40,29 @@ export function getChartLabels(resource: string, data: any): Labels {
 					{
 						label: 'Memory Usage',
 					},
+					{
+						label: 'Swap Usage',
+					},
+				]
+			};
+		case 'load':
+			return {
+				title: 'Load Average',
+				resource_label: 'Load',
+				resource_suffix: '',
+				resource_fixed: 2,
+				resource_min: 0,
+				resource_max: undefined,
+				datasets: [
+					{
+						label: 'Load1',
+					},
+					{
+						label: 'Load5',
+					},
+					{
+						label: 'Load15',
+					},
 				]
 			};
 	}
@@ -52,6 +75,13 @@ export function getChartData(resource: string, data: any): Chart {
 			return [
 				data.cpu_usage,
 				data.mem_usage,
+				data.swap_usage,
+			];
+		case 'load':
+			return [
+				data.load1,
+				data.load5,
+				data.load15,
 			];
 	}
 	return undefined;
