@@ -45,6 +45,8 @@ func GetObj(typ string) Doc {
 	switch typ {
 	case "system":
 		return &System{}
+	case "load":
+		return &Load{}
 	default:
 		return nil
 	}
@@ -57,6 +59,8 @@ func GetChart(c context.Context, db *database.Database,
 	switch typ {
 	case "system":
 		return GetSystemChart(c, db, endpoint, start, end, interval)
+	case "load":
+		return GetLoadChart(c, db, endpoint, start, end, interval)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
