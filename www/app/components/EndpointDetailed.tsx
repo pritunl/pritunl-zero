@@ -277,6 +277,12 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 
 		let endpointData = endpoint.data;
 		if (endpointData) {
+			if (endpointData.cpu_cores) {
+				fields.push({
+					label: 'CPU Cores',
+					value: endpointData.cpu_cores,
+				});
+			}
 			if (endpointData.mem_total) {
 				fields.push({
 					label: 'Memory',

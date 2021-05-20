@@ -15,6 +15,7 @@ export interface Endpoint {
 }
 
 export interface EndpointData {
+	cpu_cores?: number;
 	mem_total?: number;
 	swap_total?: number;
 }
