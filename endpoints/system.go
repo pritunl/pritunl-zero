@@ -15,6 +15,7 @@ type System struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
+	CpuCores  int     `bson:"-" json:"cc"`
 	CpuUsage  float64 `bson:"cu" json:"cu"`
 	MemTotal  int     `bson:"-" json:"mt"`
 	MemUsage  float64 `bson:"mu" json:"mu"`
@@ -42,6 +43,7 @@ func (d *System) Format(id primitive.ObjectID) time.Time {
 
 func (d *System) StaticData() *bson.M {
 	return &bson.M{
+		"data.cpu_cores":  d.CpuCores,
 		"data.mem_total":  d.MemTotal,
 		"data.swap_total": d.SwapTotal,
 	}
@@ -105,7 +107,7 @@ func GetSystemChartSingle(c context.Context, db *database.Database,
 		})
 		swapUsage = append(swapUsage, &Chart{
 			X: doc.Timestamp.Unix() * 1000,
-			Y: doc.MemUsage,
+			Y: doc.SwapUsage,
 		})
 	}
 
@@ -213,7 +215,7 @@ func GetSystemChart(c context.Context, db *database.Database,
 		})
 		swapUsage = append(swapUsage, &Chart{
 			X: doc.Id,
-			Y: doc.MemUsage,
+			Y: doc.SwapUsage,
 		})
 	}
 
