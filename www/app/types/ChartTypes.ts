@@ -1,5 +1,5 @@
 /// <reference path="../References.d.ts"/>
-import * as ChartJs from 'chart.js';
+import * as EndpointTypes from '../types/EndpointTypes';
 
 export interface Point {
 	x: number;
@@ -63,7 +63,26 @@ export function getChartLabels(resource: string, data: any): Labels {
 					{
 						label: 'Load15',
 					},
-				]
+				],
+			};
+		case 'disk':
+			let diskData = data as EndpointTypes.DiskChart;
+			let datasets: Datasets = [];
+
+			for (let key of Object.keys(diskData).sort()) {
+				datasets.push({
+					label: key,
+				} as Dataset);
+			}
+
+			return {
+				title: 'Disks',
+				resource_label: 'Usage',
+				resource_suffix: '%',
+				resource_fixed: 3,
+				resource_min: 0,
+				resource_max: 100,
+				datasets: datasets,
 			};
 	}
 	return undefined;
@@ -83,6 +102,15 @@ export function getChartData(resource: string, data: any): Chart {
 				data.load5,
 				data.load15,
 			];
+		case 'disk':
+			let diskData = data as EndpointTypes.DiskChart;
+			let chart: Chart = [];
+
+			for (let key of Object.keys(diskData).sort()) {
+				chart.push(diskData[key]);
+			}
+
+			return chart;
 	}
 	return undefined;
 }
