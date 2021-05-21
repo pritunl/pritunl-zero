@@ -1,6 +1,7 @@
 package middlewear
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -381,11 +382,15 @@ func AuthHsm(c *gin.Context) {
 func Recovery(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			logrus.WithFields(logrus.Fields{
-				"client": node.Self.GetRemoteAddr(c.Request),
-				"error":  errors.New(fmt.Sprintf("%s", r)),
-			}).Error("middlewear: Handler panic")
-			utils.AbortWithStatus(c, 500)
+			if c.Request.Context().Err() != context.Canceled {
+				logrus.WithFields(logrus.Fields{
+					"client": node.Self.GetRemoteAddr(c.Request),
+					"error":  errors.New(fmt.Sprintf("%s", r)),
+				}).Error("middlewear: Handler panic")
+			}
+			if c.Request.Context().Err() == nil {
+				utils.AbortWithStatus(c, 500)
+			}
 			return
 		}
 	}()
