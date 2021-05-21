@@ -50,6 +50,7 @@ type auth struct {
 	Providers          []*Provider          `bson:"providers"`
 	SecondaryProviders []*SecondaryProvider `bson:"secondary_providers"`
 	Window             int                  `bson:"window" json:"window" default:"60"`
+	WindowLong         int                  `bson:"window_long" json:"window_long" default:"300"`
 	SecondaryExpire    int                  `bson:"secondary_expire" json:"secondary_expire" default:"60"`
 	AdminExpire        int                  `bson:"admin_expire" json:"admin_expire" default:"1440"`
 	AdminMaxDuration   int                  `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
