@@ -105,6 +105,11 @@ func (d *Database) EndpointsLoad() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsDisk() (coll *Collection) {
+	coll = d.getCollection("endpoints_disk")
+	return
+}
+
 func (d *Database) Sessions() (coll *Collection) {
 	coll = d.getCollection("sessions")
 	return
@@ -644,6 +649,18 @@ func addIndexes() (err error) {
 
 	index = &Index{
 		Collection: db.EndpointsLoad(),
+		Keys: &bson.D{
+			{"e", 1},
+			{"t", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsDisk(),
 		Keys: &bson.D{
 			{"e", 1},
 			{"t", 1},
