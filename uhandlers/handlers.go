@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/handlers"
 	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/static"
@@ -63,6 +64,11 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/device/:device_id/sign", deviceU2fSignPost)
 	csrfGroup.GET("/device/:device_id/register", deviceU2fRegisterGet)
 	csrfGroup.POST("/device/:device_id/register", deviceU2fRegisterPost)
+
+	dbGroup.PUT("/endpoint/:endpoint_id/register",
+		handlers.EndpointRegisterPut)
+	dbGroup.GET("/endpoint/:endpoint_id/comm",
+		handlers.EndpointCommGet)
 
 	hsmAuthGroup.GET("/hsm", hsmGet)
 
