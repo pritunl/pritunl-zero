@@ -9,6 +9,7 @@ import (
 	"regexp"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
@@ -55,6 +56,16 @@ func RandBytes(size int) (bytes []byte, err error) {
 		return
 	}
 
+	return
+}
+
+func RandObjectId() (oid primitive.ObjectID, err error) {
+	rid, err := RandBytes(12)
+	if err != nil {
+		return
+	}
+
+	copy(oid[:], rid)
 	return
 }
 
