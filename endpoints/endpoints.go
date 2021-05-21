@@ -47,6 +47,8 @@ func GetObj(typ string) Doc {
 		return &System{}
 	case "load":
 		return &Load{}
+	case "disk":
+		return &Disk{}
 	default:
 		return nil
 	}
@@ -61,6 +63,8 @@ func GetChart(c context.Context, db *database.Database,
 		return GetSystemChart(c, db, endpoint, start, end, interval)
 	case "load":
 		return GetLoadChart(c, db, endpoint, start, end, interval)
+	case "disk":
+		return GetDiskChart(c, db, endpoint, start, end, interval)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
