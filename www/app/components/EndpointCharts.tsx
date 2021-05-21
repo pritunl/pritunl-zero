@@ -316,15 +316,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 					/>
 					<EndpointChart
 						endpoint={this.props.endpoint}
-						resource={'system'}
+						resource={'disk'}
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
 						onLoading={(): void => {
-							this.setLoading('system2');
+							this.setLoading('disk');
 						}}
 						onLoaded={(): void => {
-							this.setLoaded('system2');
+							this.setLoaded('disk');
 						}}
 					/>
 				</div>
