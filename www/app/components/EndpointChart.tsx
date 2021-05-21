@@ -2,7 +2,6 @@
 import * as React from 'react';
 import * as ChartJs from 'chart.js';
 import * as EndpointActions from '../actions/EndpointActions';
-import * as EndpointTypes from '../types/EndpointTypes';
 import * as ChartTypes from '../types/ChartTypes';
 
 interface Props {
@@ -62,7 +61,7 @@ const colors = [
 ];
 
 export default class EndpointChart extends React.Component<Props, State> {
-	data: EndpointTypes.SystemChart;
+	data: ChartTypes.ChartData;
 	sync: number;
 	period: number;
 	interval: number;
@@ -238,7 +237,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 			this.props.resource,
 			this.period,
 			this.interval,
-		).then((data: EndpointTypes.SystemChart): void => {
+		).then((data: ChartTypes.ChartData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
@@ -279,7 +278,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 			this.props.resource,
 			this.period,
 			this.interval,
-		).then((data: EndpointTypes.SystemChart): void => {
+		).then((data: ChartTypes.ChartData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
