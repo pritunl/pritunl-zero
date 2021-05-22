@@ -15,6 +15,10 @@ export interface Endpoint {
 }
 
 export interface EndpointData {
+	hostname?: string;
+	uptime?: number;
+	platform?: string;
+	virtualization?: string;
 	cpu_cores?: number;
 	mem_total?: number;
 	swap_total?: number;
@@ -57,3 +61,5 @@ export interface LoadChart {
 }
 
 export type DiskChart = {[key: string]: ChartTypes.Points};
+
+export type NetworkChart = {[key: string]: ChartTypes.Points};
