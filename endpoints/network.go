@@ -49,7 +49,7 @@ func ParseInterface(i *Interface) *InterfaceStatic {
 
 type NetworkAgg struct {
 	Id struct {
-		Interface string `bson:"i"`
+		Interface string `bson:"n"`
 		Timestamp int64  `bson:"t"`
 	} `bson:"_id"`
 	BytesSent   uint64 `bson:"bs"`
@@ -132,45 +132,75 @@ func GetNetworkChartSingle(c context.Context, db *database.Database,
 		}
 
 		for _, iface := range doc.Interfaces {
-			pathInterfaces := chart[iface.Name]
-			if pathInterfaces == nil {
-				pathInterfaces = []*ChartUint{}
+			timestamp := doc.Timestamp.Unix() * 1000
+
+			ifaceChart := chart[iface.Name+"-bs"]
+			if ifaceChart == nil {
+				ifaceChart = []*ChartUint{}
 			}
-			chart[iface.Name+"-us"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
+			chart[iface.Name+"-bs"] = append(ifaceChart, &ChartUint{
+				X: timestamp,
 				Y: iface.BytesSent,
 			})
-			chart[iface.Name+"-ur"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
+			ifaceChart = chart[iface.Name+"-br"]
+			if ifaceChart == nil {
+				ifaceChart = []*ChartUint{}
+			}
+			chart[iface.Name+"-br"] = append(ifaceChart, &ChartUint{
+				X: timestamp,
 				Y: iface.BytesSent,
 			})
 
-			chart[iface.Name+"-ps"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.PacketsSent,
-			})
-			chart[iface.Name+"-pr"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.PacketsSent,
-			})
-
-			chart[iface.Name+"-es"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.ErrorsSent,
-			})
-			chart[iface.Name+"-er"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.ErrorsSent,
-			})
-
-			chart[iface.Name+"-ds"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.DropsSent,
-			})
-			chart[iface.Name+"-dr"] = append(pathInterfaces, &ChartUint{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: iface.DropsSent,
-			})
+			//ifaceChart = chart[iface.Name+"-ps"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-ps"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.PacketsSent,
+			//})
+			//ifaceChart = chart[iface.Name+"-pr"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-pr"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.PacketsSent,
+			//})
+			//
+			//ifaceChart = chart[iface.Name+"-es"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-es"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.ErrorsSent,
+			//})
+			//ifaceChart = chart[iface.Name+"-er"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-er"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.ErrorsSent,
+			//})
+			//
+			//ifaceChart = chart[iface.Name+"-ds"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-ds"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.DropsSent,
+			//})
+			//ifaceChart = chart[iface.Name+"-dr"]
+			//if ifaceChart == nil {
+			//	ifaceChart = []*ChartUint{}
+			//}
+			//chart[iface.Name+"-dr"] = append(ifaceChart, &ChartUint{
+			//	X: timestamp,
+			//	Y: iface.DropsSent,
+			//})
 		}
 	}
 
@@ -210,7 +240,7 @@ func GetNetworkChart(c context.Context, db *database.Database,
 			},
 		},
 		&bson.M{
-			"$unwind": "$m",
+			"$unwind": "$i",
 		},
 		&bson.M{
 			"$group": &bson.M{
@@ -233,32 +263,32 @@ func GetNetworkChart(c context.Context, db *database.Database,
 							},
 						},
 					}},
-					{"i", "$m.i"},
+					{"n", "$i.n"},
 				},
 				"bs": &bson.D{
-					{"$avg", "$m.bs"},
+					{"$sum", "$i.bs"},
 				},
 				"br": &bson.D{
-					{"$avg", "$m.br"},
+					{"$sum", "$i.br"},
 				},
-				"ps": &bson.D{
-					{"$avg", "$m.ps"},
-				},
-				"pr": &bson.D{
-					{"$avg", "$m.pr"},
-				},
-				"es": &bson.D{
-					{"$avg", "$m.es"},
-				},
-				"er": &bson.D{
-					{"$avg", "$m.er"},
-				},
-				"ds": &bson.D{
-					{"$avg", "$m.ds"},
-				},
-				"dr": &bson.D{
-					{"$avg", "$m.dr"},
-				},
+				//"ps": &bson.D{
+				//	{"$avg", "$i.ps"},
+				//},
+				//"pr": &bson.D{
+				//	{"$avg", "$i.pr"},
+				//},
+				//"es": &bson.D{
+				//	{"$avg", "$i.es"},
+				//},
+				//"er": &bson.D{
+				//	{"$avg", "$i.er"},
+				//},
+				//"ds": &bson.D{
+				//	{"$avg", "$i.ds"},
+				//},
+				//"dr": &bson.D{
+				//	{"$avg", "$i.dr"},
+				//},
 			},
 		},
 		&bson.M{
@@ -281,45 +311,73 @@ func GetNetworkChart(c context.Context, db *database.Database,
 			return
 		}
 
-		pathInterfaces := chart[doc.Id.Interface]
-		if pathInterfaces == nil {
-			pathInterfaces = []*ChartUint{}
+		ifaceChart := chart[doc.Id.Interface+"-bs"]
+		if ifaceChart == nil {
+			ifaceChart = []*ChartUint{}
 		}
-		chart[doc.Id.Interface+"-bs"] = append(pathInterfaces, &ChartUint{
+		chart[doc.Id.Interface+"-bs"] = append(ifaceChart, &ChartUint{
 			X: doc.Id.Timestamp,
 			Y: doc.BytesSent,
 		})
-		chart[doc.Id.Interface+"-br"] = append(pathInterfaces, &ChartUint{
+		ifaceChart = chart[doc.Id.Interface+"-br"]
+		if ifaceChart == nil {
+			ifaceChart = []*ChartUint{}
+		}
+		chart[doc.Id.Interface+"-br"] = append(ifaceChart, &ChartUint{
 			X: doc.Id.Timestamp,
-			Y: doc.BytesRecv,
+			Y: doc.BytesSent,
 		})
 
-		chart[doc.Id.Interface+"-ps"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.PacketsSent,
-		})
-		chart[doc.Id.Interface+"-pr"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.PacketsRecv,
-		})
-
-		chart[doc.Id.Interface+"-es"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.ErrorsSent,
-		})
-		chart[doc.Id.Interface+"-er"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.ErrorsRecv,
-		})
-
-		chart[doc.Id.Interface+"-ds"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.DropsSent,
-		})
-		chart[doc.Id.Interface+"-dr"] = append(pathInterfaces, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.DropsRecv,
-		})
+		//ifaceChart = chart[doc.Id.Interface+"-ps"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-ps"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.PacketsSent,
+		//})
+		//ifaceChart = chart[doc.Id.Interface+"-pr"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-pr"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.PacketsSent,
+		//})
+		//
+		//ifaceChart = chart[doc.Id.Interface+"-es"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-es"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.ErrorsSent,
+		//})
+		//ifaceChart = chart[doc.Id.Interface+"-er"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-er"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.ErrorsSent,
+		//})
+		//
+		//ifaceChart = chart[doc.Id.Interface+"-ds"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-ds"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.DropsSent,
+		//})
+		//ifaceChart = chart[doc.Id.Interface+"-dr"]
+		//if ifaceChart == nil {
+		//	ifaceChart = []*ChartUint{}
+		//}
+		//chart[doc.Id.Interface+"-dr"] = append(ifaceChart, &ChartUint{
+		//	X: doc.Id.Timestamp,
+		//	Y: doc.DropsSent,
+		//})
 	}
 
 	err = cursor.Err()
