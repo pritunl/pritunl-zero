@@ -110,6 +110,11 @@ func (d *Database) EndpointsDisk() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsNetwork() (coll *Collection) {
+	coll = d.getCollection("endpoints_network")
+	return
+}
+
 func (d *Database) Sessions() (coll *Collection) {
 	coll = d.getCollection("sessions")
 	return
@@ -661,6 +666,18 @@ func addIndexes() (err error) {
 
 	index = &Index{
 		Collection: db.EndpointsDisk(),
+		Keys: &bson.D{
+			{"e", 1},
+			{"t", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsNetwork(),
 		Keys: &bson.D{
 			{"e", 1},
 			{"t", 1},
