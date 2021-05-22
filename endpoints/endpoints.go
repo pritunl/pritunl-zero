@@ -72,6 +72,8 @@ func GetChart(c context.Context, db *database.Database,
 		return GetLoadChart(c, db, endpoint, start, end, interval)
 	case "disk":
 		return GetDiskChart(c, db, endpoint, start, end, interval)
+	case "network":
+		return GetNetworkChart(c, db, endpoint, start, end, interval)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
