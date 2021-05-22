@@ -58,6 +58,63 @@ const colors = [
 	'#455a64', // blue grey
 	'#64dd17', // light green
 	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
 ];
 
 export default class EndpointChart extends React.Component<Props, State> {
