@@ -43,9 +43,13 @@ type Endpoint struct {
 }
 
 type Data struct {
-	CpuCores  int `bson:"cpu_cores" json:"cpu_cores"`
-	MemTotal  int `bson:"mem_total" json:"mem_total"`
-	SwapTotal int `bson:"swap_total" json:"swap_total"`
+	Hostname       string `bson:"hostname" json:"hostname"`
+	Uptime         uint64 `bson:"uptime" json:"uptime"`
+	Platform       string `bson:"platform" json:"platform"`
+	Virtualization string `bson:"virtualization" json:"virtualization"`
+	CpuCores       int    `bson:"cpu_cores" json:"cpu_cores"`
+	MemTotal       int    `bson:"mem_total" json:"mem_total"`
+	SwapTotal      int    `bson:"swap_total" json:"swap_total"`
 }
 
 type ClientKey struct {
