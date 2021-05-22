@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ChartJs from 'chart.js';
 import * as EndpointActions from '../actions/EndpointActions';
 import * as ChartTypes from '../types/ChartTypes';
+import * as MiscUtils from '../utils/MiscUtils';
 
 interface Props {
 	endpoint: string;
@@ -246,12 +247,24 @@ export default class EndpointChart extends React.Component<Props, State> {
 						callbacks: {
 							label(item): string {
 								let raw = item.raw as any;
+
+								let val = '';
+								switch (labels.resource_type) {
+									case 'bytes':
+										val = MiscUtils.formatBytes(raw.y, labels.resource_fixed);
+										break;
+									case 'float':
+										val = raw.y.toFixed(labels.resource_fixed);
+										break;
+									default:
+										val = raw.y;
+								}
+
 								if (labels.resource_fixed) {
 									return item.dataset.label + ' ' +
-										raw.y.toFixed(labels.resource_fixed) +
-										labels.resource_suffix;
+										val + labels.resource_suffix;
 								}
-								return item.dataset.label + ' ' + raw.y +
+								return item.dataset.label + ' ' + val +
 									labels.resource_suffix;
 							},
 						},
