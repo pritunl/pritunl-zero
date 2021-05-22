@@ -13,13 +13,16 @@ export interface Dataset {
 }
 export type Datasets = Dataset[];
 
+export type ChartData = {[key: string]: Points};
+
 export interface Labels {
 	title: string;
 	resource_label: string;
+	resource_type: string;
 	resource_suffix: string;
 	resource_fixed: number;
 	resource_min: number;
-	resource_max: number;
+	resource_max?: number;
 	datasets: Datasets;
 }
 
@@ -29,8 +32,9 @@ export function getChartLabels(resource: string, data: any): Labels {
 			return {
 				title: 'System Usage',
 				resource_label: 'Percent',
+				resource_type: 'float',
 				resource_suffix: '%',
-				resource_fixed: 2,
+				resource_fixed: 3,
 				resource_min: 0,
 				resource_max: 100,
 				datasets: [
@@ -43,16 +47,16 @@ export function getChartLabels(resource: string, data: any): Labels {
 					{
 						label: 'Swap Usage',
 					},
-				]
+				],
 			};
 		case 'load':
 			return {
 				title: 'Load Average',
 				resource_label: 'Load',
+				resource_type: 'float',
 				resource_suffix: '',
-				resource_fixed: 2,
+				resource_fixed: 4,
 				resource_min: 0,
-				resource_max: undefined,
 				datasets: [
 					{
 						label: 'Load1',
@@ -67,10 +71,10 @@ export function getChartLabels(resource: string, data: any): Labels {
 			};
 		case 'disk':
 			let diskData = data as EndpointTypes.DiskChart;
-			let datasets: Datasets = [];
+			let diskDatasets: Datasets = [];
 
 			for (let key of Object.keys(diskData).sort()) {
-				datasets.push({
+				diskDatasets.push({
 					label: key,
 				} as Dataset);
 			}
