@@ -277,6 +277,30 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 
 		let endpointData = endpoint.data;
 		if (endpointData) {
+			if (endpointData.hostname) {
+				fields.push({
+					label: 'Hostname',
+					value: endpointData.hostname,
+				});
+			}
+			if (endpointData.uptime) {
+				fields.push({
+					label: 'Uptime',
+					value: endpointData.uptime,
+				});
+			}
+			if (endpointData.platform) {
+				fields.push({
+					label: 'Platform',
+					value: endpointData.platform,
+				});
+			}
+			if (endpointData.virtualization) {
+				fields.push({
+					label: 'Virtualization',
+					value: endpointData.virtualization,
+				});
+			}
 			if (endpointData.cpu_cores) {
 				fields.push({
 					label: 'CPU Cores',
