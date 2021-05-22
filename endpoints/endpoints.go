@@ -23,9 +23,14 @@ type Doc interface {
 	StaticData() *bson.M
 }
 
-type Chart struct {
+type ChartFloat struct {
 	X int64   `json:"x"`
 	Y float64 `json:"y"`
+}
+
+type ChartUint struct {
+	X int64  `json:"x"`
+	Y uint64 `json:"y"`
 }
 
 func GenerateId(endpointId primitive.ObjectID,
@@ -49,6 +54,8 @@ func GetObj(typ string) Doc {
 		return &Load{}
 	case "disk":
 		return &Disk{}
+	case "network":
+		return &Network{}
 	default:
 		return nil
 	}

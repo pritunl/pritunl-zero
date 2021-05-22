@@ -15,12 +15,17 @@ type System struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
-	CpuCores  int     `bson:"-" json:"cc"`
-	CpuUsage  float64 `bson:"cu" json:"cu"`
-	MemTotal  int     `bson:"-" json:"mt"`
-	MemUsage  float64 `bson:"mu" json:"mu"`
-	SwapTotal int     `bson:"-" json:"st"`
-	SwapUsage float64 `bson:"su" json:"su"`
+	Hostname       string  `bson:"-" json:"h"`
+	Uptime         uint64  `bson:"-" json:"u"`
+	Virtualization string  `bson:"-" json:"v"`
+	Platform       string  `bson:"-" json:"p"`
+	Processes      uint64  `bson:"pc" json:"pc"`
+	CpuCores       int     `bson:"-" json:"cc"`
+	CpuUsage       float64 `bson:"cu" json:"cu"`
+	MemTotal       int     `bson:"-" json:"mt"`
+	MemUsage       float64 `bson:"mu" json:"mu"`
+	SwapTotal      int     `bson:"-" json:"st"`
+	SwapUsage      float64 `bson:"su" json:"su"`
 }
 
 type SystemAgg struct {
@@ -43,16 +48,20 @@ func (d *System) Format(id primitive.ObjectID) time.Time {
 
 func (d *System) StaticData() *bson.M {
 	return &bson.M{
-		"data.cpu_cores":  d.CpuCores,
-		"data.mem_total":  d.MemTotal,
-		"data.swap_total": d.SwapTotal,
+		"data.hostname":       d.Hostname,
+		"data.uptime":         d.Uptime,
+		"data.virtualization": d.Virtualization,
+		"data.platform":       d.Platform,
+		"data.cpu_cores":      d.CpuCores,
+		"data.mem_total":      d.MemTotal,
+		"data.swap_total":     d.SwapTotal,
 	}
 }
 
 type SystemChart struct {
-	CpuUsage  []*Chart `json:"cpu_usage"`
-	MemUsage  []*Chart `json:"mem_usage"`
-	SwapUsage []*Chart `json:"swap_usage"`
+	CpuUsage  []*ChartFloat `json:"cpu_usage"`
+	MemUsage  []*ChartFloat `json:"mem_usage"`
+	SwapUsage []*ChartFloat `json:"swap_usage"`
 }
 
 func GetSystemChartSingle(c context.Context, db *database.Database,
@@ -60,9 +69,9 @@ func GetSystemChartSingle(c context.Context, db *database.Database,
 	chart *SystemChart, err error) {
 
 	coll := db.EndpointsSystem()
-	cpuUsage := []*Chart{}
-	memUsage := []*Chart{}
-	swapUsage := []*Chart{}
+	cpuUsage := []*ChartFloat{}
+	memUsage := []*ChartFloat{}
+	swapUsage := []*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -97,15 +106,15 @@ func GetSystemChartSingle(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &Chart{
+		cpuUsage = append(cpuUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.CpuUsage,
 		})
-		memUsage = append(memUsage, &Chart{
+		memUsage = append(memUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.MemUsage,
 		})
-		swapUsage = append(swapUsage, &Chart{
+		swapUsage = append(swapUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.SwapUsage,
 		})
@@ -136,9 +145,9 @@ func GetSystemChart(c context.Context, db *database.Database,
 	}
 
 	coll := db.EndpointsSystem()
-	cpuUsage := []*Chart{}
-	memUsage := []*Chart{}
-	swapUsage := []*Chart{}
+	cpuUsage := []*ChartFloat{}
+	memUsage := []*ChartFloat{}
+	swapUsage := []*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -205,15 +214,15 @@ func GetSystemChart(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &Chart{
+		cpuUsage = append(cpuUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.CpuUsage,
 		})
-		memUsage = append(memUsage, &Chart{
+		memUsage = append(memUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.MemUsage,
 		})
-		swapUsage = append(swapUsage, &Chart{
+		swapUsage = append(swapUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.SwapUsage,
 		})

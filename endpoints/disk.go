@@ -32,8 +32,8 @@ type MountStatic struct {
 }
 
 type MountChart struct {
-	Path string   `json:"path"`
-	Data []*Chart `json:"data"`
+	Path string        `json:"path"`
+	Data []*ChartFloat `json:"data"`
 }
 
 func ParseMount(mn *Mount) *MountStatic {
@@ -81,10 +81,10 @@ type DiskChart struct {
 
 func GetDiskChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
-	chart map[string][]*Chart, err error) {
+	chart map[string][]*ChartFloat, err error) {
 
 	coll := db.EndpointsDisk()
-	chart = map[string][]*Chart{}
+	chart = map[string][]*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -122,9 +122,9 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 		for _, mount := range doc.Mounts {
 			pathMounts := chart[mount.Path]
 			if pathMounts == nil {
-				pathMounts = []*Chart{}
+				pathMounts = []*ChartFloat{}
 			}
-			chart[mount.Path] = append(pathMounts, &Chart{
+			chart[mount.Path] = append(pathMounts, &ChartFloat{
 				X: doc.Timestamp.Unix() * 1000,
 				Y: mount.Used,
 			})
@@ -142,7 +142,7 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 
 func GetDiskChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time,
-	interval time.Duration) (chart map[string][]*Chart, err error) {
+	interval time.Duration) (chart map[string][]*ChartFloat, err error) {
 
 	if interval == 1*time.Minute {
 		chart, err = GetDiskChartSingle(c, db, endpoint, start, end)
@@ -150,7 +150,7 @@ func GetDiskChart(c context.Context, db *database.Database,
 	}
 
 	coll := db.EndpointsDisk()
-	chart = map[string][]*Chart{}
+	chart = map[string][]*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -219,9 +219,9 @@ func GetDiskChart(c context.Context, db *database.Database,
 
 		pathMounts := chart[doc.Id.Path]
 		if pathMounts == nil {
-			pathMounts = []*Chart{}
+			pathMounts = []*ChartFloat{}
 		}
-		chart[doc.Id.Path] = append(pathMounts, &Chart{
+		chart[doc.Id.Path] = append(pathMounts, &ChartFloat{
 			X: doc.Id.Timestamp,
 			Y: doc.Used,
 		})

@@ -43,9 +43,9 @@ func (d *Load) StaticData() *bson.M {
 }
 
 type LoadChart struct {
-	Load1  []*Chart `json:"load1"`
-	Load5  []*Chart `json:"load5"`
-	Load15 []*Chart `json:"load15"`
+	Load1  []*ChartFloat `json:"load1"`
+	Load5  []*ChartFloat `json:"load5"`
+	Load15 []*ChartFloat `json:"load15"`
 }
 
 func GetLoadChartSingle(c context.Context, db *database.Database,
@@ -53,9 +53,9 @@ func GetLoadChartSingle(c context.Context, db *database.Database,
 	chart *LoadChart, err error) {
 
 	coll := db.EndpointsLoad()
-	cpuUsage := []*Chart{}
-	memUsage := []*Chart{}
-	swapUsage := []*Chart{}
+	cpuUsage := []*ChartFloat{}
+	memUsage := []*ChartFloat{}
+	swapUsage := []*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -90,15 +90,15 @@ func GetLoadChartSingle(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &Chart{
+		cpuUsage = append(cpuUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.Load1,
 		})
-		memUsage = append(memUsage, &Chart{
+		memUsage = append(memUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.Load5,
 		})
-		swapUsage = append(swapUsage, &Chart{
+		swapUsage = append(swapUsage, &ChartFloat{
 			X: doc.Timestamp.Unix() * 1000,
 			Y: doc.Load15,
 		})
@@ -129,9 +129,9 @@ func GetLoadChart(c context.Context, db *database.Database,
 	}
 
 	coll := db.EndpointsLoad()
-	cpuUsage := []*Chart{}
-	memUsage := []*Chart{}
-	swapUsage := []*Chart{}
+	cpuUsage := []*ChartFloat{}
+	memUsage := []*ChartFloat{}
+	swapUsage := []*ChartFloat{}
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -198,15 +198,15 @@ func GetLoadChart(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &Chart{
+		cpuUsage = append(cpuUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.Load1,
 		})
-		memUsage = append(memUsage, &Chart{
+		memUsage = append(memUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.Load5,
 		})
-		swapUsage = append(swapUsage, &Chart{
+		swapUsage = append(swapUsage, &ChartFloat{
 			X: doc.Id,
 			Y: doc.Load15,
 		})
