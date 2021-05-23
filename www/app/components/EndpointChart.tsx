@@ -224,6 +224,14 @@ export default class EndpointChart extends React.Component<Props, State> {
 						},
 						ticks: {
 							color: 'rgba(255, 255, 255, 1)',
+							callback: function(val: number): number | string {
+								switch (labels.resource_type) {
+									case 'bytes':
+										return MiscUtils.formatBytes(val, 0);
+									default:
+										return val;
+								}
+							}
 						},
 						grid: {
 							color: 'rgba(255, 255, 255, 0.2)',
