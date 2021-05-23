@@ -53,7 +53,7 @@ type Data struct {
 }
 
 type ClientKey struct {
-	PublicKey string `bson:"public_key" json:"-"`
+	PublicKey string `bson:"public_key" json:"public_key"`
 	Secret    string `bson:"secret" json:"secret"`
 }
 
