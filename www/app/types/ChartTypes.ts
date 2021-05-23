@@ -82,11 +82,47 @@ export function getChartLabels(resource: string, data: any): Labels {
 			return {
 				title: 'Disks',
 				resource_label: 'Usage',
+				resource_type: 'float',
 				resource_suffix: '%',
 				resource_fixed: 3,
 				resource_min: 0,
 				resource_max: 100,
-				datasets: datasets,
+				datasets: diskDatasets,
+			};
+		case 'network':
+			let netData = data as EndpointTypes.NetworkChart;
+			let netDatasets: Datasets = [];
+
+			for (let key of Object.keys(netData).sort()) {
+				let keys = key.split('-');
+				let iface = keys.slice(0, keys.length-1).join('-');
+				let dataType = keys[keys.length-1];
+
+				let label = '';
+				switch (dataType) {
+					case 'bs':
+						label = 'Transmitted';
+						break;
+					case 'br':
+						label = 'Received';
+						break;
+					default:
+						label = 'Unknown';
+				}
+
+				netDatasets.push({
+					label: iface + ' ' + label,
+				} as Dataset);
+			}
+
+			return {
+				title: 'Network Traffic',
+				resource_label: 'Traffic',
+				resource_type: 'bytes',
+				resource_suffix: '',
+				resource_fixed: 2,
+				resource_min: 0,
+				datasets: netDatasets,
 			};
 	}
 	return undefined;
@@ -108,13 +144,22 @@ export function getChartData(resource: string, data: any): Chart {
 			];
 		case 'disk':
 			let diskData = data as EndpointTypes.DiskChart;
-			let chart: Chart = [];
+			let diskChart: Chart = [];
 
 			for (let key of Object.keys(diskData).sort()) {
-				chart.push(diskData[key]);
+				diskChart.push(diskData[key]);
 			}
 
-			return chart;
+			return diskChart;
+		case 'network':
+			let netData = data as EndpointTypes.NetworkChart;
+			let netChart: Chart = [];
+
+			for (let key of Object.keys(netData).sort()) {
+				netChart.push(netData[key]);
+			}
+
+			return netChart;
 	}
 	return undefined;
 }
