@@ -25,6 +25,7 @@ var (
 	failedBuffer = list.New()
 	lock         = sync.Mutex{}
 	failedLock   = sync.Mutex{}
+	reconnect    = false
 )
 
 type mapping struct {
@@ -243,7 +244,7 @@ func watchSearch() {
 		addrs := settings.Elastic.Addresses
 		newHash := hashAddresses(addrs)
 
-		if bytes.Compare(hash, newHash) != 0 {
+		if bytes.Compare(hash, newHash) != 0 || reconnect {
 			err := update(addrs)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
@@ -254,6 +255,7 @@ func watchSearch() {
 			}
 
 			hash = newHash
+			reconnect = false
 		}
 
 		time.Sleep(1 * time.Second)
@@ -273,7 +275,12 @@ func sendRequests(clnt *elastic.Client,
 
 		_, err = bulk.Do(ctx)
 		if err != nil {
-			time.Sleep(1 * time.Second)
+			if i == 2 {
+				reconnect = true
+				time.Sleep(3 * time.Second)
+			} else {
+				time.Sleep(1 * time.Second)
+			}
 			continue
 		}
 
