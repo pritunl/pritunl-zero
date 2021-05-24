@@ -4,6 +4,7 @@ import * as EndpointTypes from '../types/EndpointTypes';
 import * as AuthorityTypes from "../types/AuthorityTypes";
 import * as EndpointActions from '../actions/EndpointActions';
 import * as PageInfos from './PageInfo';
+import * as MiscUtils from '../utils/MiscUtils';
 import PageInput from './PageInput';
 import PageSave from './PageSave';
 import PageInfo from './PageInfo';
@@ -286,7 +287,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			if (endpointData.uptime) {
 				fields.push({
 					label: 'Uptime',
-					value: endpointData.uptime,
+					value: MiscUtils.formatUptime(endpointData.uptime),
 				});
 			}
 			if (endpointData.platform) {
