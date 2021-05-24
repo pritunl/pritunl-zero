@@ -108,7 +108,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			message: '',
 			addRole: '',
 			endpoint: null,
-			showCharts: false,
+			showCharts: true,
 		};
 	}
 
