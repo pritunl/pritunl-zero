@@ -399,22 +399,6 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<PageSwitch
-						label="Show charts"
-						help="Show endpoint charts."
-						checked={this.state.showCharts}
-						onToggle={(): void => {
-							this.setState({
-								...this.state,
-								showCharts: !this.state.showCharts,
-							});
-						}}
-					/>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={fields}
-					/>
 					<label className="bp3-label">
 						Roles
 						<Help
@@ -438,6 +422,22 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 							});
 						}}
 						onSubmit={this.onAddRole}
+					/>
+					<PageSwitch
+						label="Show charts"
+						help="Show endpoint charts."
+						checked={this.state.showCharts}
+						onToggle={(): void => {
+							this.setState({
+								...this.state,
+								showCharts: !this.state.showCharts,
+							});
+						}}
+					/>
+				</div>
+				<div style={css.group}>
+					<PageInfo
+						fields={fields}
 					/>
 				</div>
 			</div>
