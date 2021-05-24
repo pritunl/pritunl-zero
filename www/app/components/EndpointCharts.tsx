@@ -56,7 +56,7 @@ export default class EndpointCharts extends React.Component<Props, State> {
 		this.state = {
 			sync: 0,
 			period: 1440,
-			interval: 5,
+			interval: 30,
 			loading: {},
 			cancelable: {},
 		};
@@ -75,7 +75,7 @@ export default class EndpointCharts extends React.Component<Props, State> {
 			case 720:
 				return 5;
 			case 1440:
-				return 5;
+				return 30;
 			case 4320:
 				return 30;
 			case 10080:
