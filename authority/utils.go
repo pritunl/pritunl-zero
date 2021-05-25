@@ -447,3 +447,28 @@ func Remove(db *database.Database, authrId primitive.ObjectID) (
 
 	return
 }
+
+func RemoveNode(db *database.Database,
+	authrId primitive.ObjectID) (err error) {
+
+	coll := db.Nodes()
+
+	_, err = coll.UpdateMany(db, &bson.M{
+		"authorities": authrId,
+	}, &bson.M{
+		"$pull": &bson.M{
+			"authorities": authrId,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
+	}
+
+	return
+}
