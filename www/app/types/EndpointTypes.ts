@@ -11,6 +11,9 @@ export interface Endpoint {
 	id: string;
 	name?: string;
 	roles?: string[];
+	client_key?: ClientKey;
+	has_client_key?: boolean;
+	reset_client_key?: boolean;
 	data?: EndpointData;
 }
 
@@ -22,6 +25,10 @@ export interface EndpointData {
 	cpu_cores?: number;
 	mem_total?: number;
 	swap_total?: number;
+}
+
+export interface ClientKey {
+	secret?: string;
 }
 
 export interface Filter {
