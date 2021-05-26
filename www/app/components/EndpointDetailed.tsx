@@ -57,10 +57,12 @@ const css = {
 		minWidth: '250px',
 		margin: '0 10px',
 	} as React.CSSProperties,
+	controlButton: {
+		marginRight: '10px',
+	} as React.CSSProperties,
 	save: {
 		paddingBottom: '10px',
 	} as React.CSSProperties,
-
 	button: {
 		height: '30px',
 	} as React.CSSProperties,
@@ -131,6 +133,52 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			...this.state,
 			changed: true,
 			endpoint: endpoint,
+		});
+	}
+
+	onResetClientKey = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+
+		let endpoint = {
+			...this.props.endpoint,
+			reset_client_key: true,
+		};
+
+		EndpointActions.commit(endpoint).then((): void => {
+			this.setState({
+				...this.state,
+				message: 'Client key reset',
+				changed: false,
+				disabled: false,
+			});
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						endpoint: null,
+						changed: false,
+					});
+				}
+			}, 1000);
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						message: '',
+					});
+				}
+			}, 3000);
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
 		});
 	}
 
@@ -460,7 +508,19 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 					});
 				}}
 				onSave={this.onSave}
-			/>
+			>
+				<ConfirmButton
+					label="Reset Key"
+					className="bp3-intent-danger bp3-icon-key"
+					progressClassName="bp3-intent-danger"
+					style={css.controlButton}
+					hidden={!endpoint.has_client_key}
+					disabled={this.state.disabled}
+					onConfirm={(): void => {
+						this.onResetClientKey();
+					}}
+				/>
+			</PageSave>
 		</td>;
 	}
 }
