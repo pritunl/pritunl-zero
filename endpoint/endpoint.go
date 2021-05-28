@@ -172,6 +172,14 @@ func (e *Endpoint) ValidateSignature(db *database.Database,
 	timestampStr, nonc, sig, method string) (errData *errortypes.ErrorData,
 	err error) {
 
+	if e.ClientKey == nil || e.ServerKey == nil {
+		errData = &errortypes.ErrorData{
+			Error:   "not_initialized",
+			Message: "Endpoint key not initialized",
+		}
+		return
+	}
+
 	if len(nonc) < 16 || len(nonc) > 128 {
 		err = &errortypes.AuthenticationError{
 			errors.New("endpoint: Invalid authentication nonce"),
