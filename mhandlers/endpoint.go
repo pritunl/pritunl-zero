@@ -20,9 +20,10 @@ import (
 )
 
 type endpointData struct {
-	Id    primitive.ObjectID `json:"id"`
-	Name  string             `json:"name"`
-	Roles []string           `json:"roles"`
+	Id             primitive.ObjectID `json:"id"`
+	Name           string             `json:"name"`
+	Roles          []string           `json:"roles"`
+	ResetClientKey bool               `json:"reset_client_key"`
 }
 
 type endpointsData struct {
@@ -61,6 +62,14 @@ func endpointPut(c *gin.Context) {
 
 	endpt.Name = data.Name
 	endpt.Roles = data.Roles
+
+	if data.ResetClientKey {
+		err = endpt.GenerateKey()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
 
 	fields := set.NewSet(
 		"name",
