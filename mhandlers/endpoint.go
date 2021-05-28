@@ -97,6 +97,8 @@ func endpointPut(c *gin.Context) {
 
 	event.PublishDispatch(db, "endpoint.change")
 
+	endpt.Json()
+
 	c.JSON(200, endpt)
 }
 
@@ -142,6 +144,8 @@ func endpointPost(c *gin.Context) {
 	}
 
 	event.PublishDispatch(db, "endpoint.change")
+
+	endpt.Json()
 
 	c.JSON(200, endpt)
 }
@@ -240,6 +244,10 @@ func endpointsGet(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
+	}
+
+	for _, endpt := range endpoints {
+		endpt.Json()
 	}
 
 	dta := &endpointsData{
