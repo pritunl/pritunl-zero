@@ -152,6 +152,10 @@ func (e *Endpoint) Validate(db *database.Database) (
 		}
 	}
 
+	if e.Data == nil {
+		e.Data = &Data{}
+	}
+
 	e.Format()
 
 	return
