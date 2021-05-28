@@ -65,6 +65,8 @@ func EndpointRegisterPut(c *gin.Context) {
 		return
 	}
 
+	event.PublishDispatch(db, "endpoint.change")
+
 	c.JSON(200, resData)
 }
 
