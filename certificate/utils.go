@@ -53,12 +53,42 @@ func GetAll(db *database.Database) (certs []*Certificate, err error) {
 func Remove(db *database.Database, certId primitive.ObjectID) (err error) {
 	coll := db.Certificates()
 
+	err = RemoveNode(db, certId)
+	if err != nil {
+		return
+	}
+
 	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": certId,
 	})
 	if err != nil {
 		err = database.ParseError(err)
 		return
+	}
+
+	return
+}
+
+func RemoveNode(db *database.Database,
+	certId primitive.ObjectID) (err error) {
+
+	coll := db.Nodes()
+
+	_, err = coll.UpdateMany(db, &bson.M{
+		"certificates": certId,
+	}, &bson.M{
+		"$pull": &bson.M{
+			"certificates": certId,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		switch err.(type) {
+		case *database.NotFoundError:
+			err = nil
+		default:
+			return
+		}
 	}
 
 	return
