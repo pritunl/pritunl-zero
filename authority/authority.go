@@ -27,7 +27,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
@@ -40,6 +39,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -1517,6 +1517,11 @@ func (a *Authority) Validate(db *database.Database) (
 	if !a.ProxyHosting {
 		a.ProxyPort = 0
 		a.ProxyHostname = ""
+
+		err = RemoveNode(db, a.Id)
+		if err != nil {
+			return
+		}
 	} else {
 		a.HostProxy = ""
 		if a.ProxyHostname == "" {

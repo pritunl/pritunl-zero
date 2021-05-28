@@ -407,6 +407,11 @@ func GetTokens(db *database.Database, tokens []string) (
 func Remove(db *database.Database, authrId primitive.ObjectID) (
 	errData *errortypes.ErrorData, err error) {
 
+	err = RemoveNode(db, authrId)
+	if err != nil {
+		return
+	}
+
 	coll := db.Services()
 
 	count, err := coll.CountDocuments(db, &bson.M{
