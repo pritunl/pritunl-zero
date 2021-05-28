@@ -273,6 +273,11 @@ func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 		reqData.PublicKey,
 	}, "&")
 
+	err = nonce.Validate(db, reqData.Nonce)
+	if err != nil {
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, []byte(e.ClientKey.Secret))
 	hashFunc.Write([]byte(authString))
 	rawSignature := hashFunc.Sum(nil)
