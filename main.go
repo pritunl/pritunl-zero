@@ -37,6 +37,10 @@ func Init() {
 func main() {
 	defer time.Sleep(1 * time.Second)
 
+	flag.Usage = func() {
+		fmt.Println(help)
+	}
+
 	flag.Parse()
 
 	switch flag.Arg(0) {
