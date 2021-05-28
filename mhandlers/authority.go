@@ -159,6 +159,7 @@ func authorityPut(c *gin.Context) {
 	}
 
 	event.PublishDispatch(db, "authority.change")
+	event.PublishDispatch(db, "node.change")
 
 	authr.Json()
 
@@ -259,6 +260,7 @@ func authorityDelete(c *gin.Context) {
 	}
 
 	event.PublishDispatch(db, "authority.change")
+	event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nil)
 }

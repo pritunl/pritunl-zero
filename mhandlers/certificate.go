@@ -192,6 +192,7 @@ func certificateDelete(c *gin.Context) {
 	}
 
 	event.PublishDispatch(db, "certificate.change")
+	event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nil)
 }
