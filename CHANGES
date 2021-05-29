@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Add endpoint monitoring
 Interface improvements
 Support wildcard certificates
 
