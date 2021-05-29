@@ -389,6 +389,15 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			);
 		}
 
+		let secretKey = '';
+		if (!endpoint.has_client_key) {
+			if (endpoint.client_key) {
+				secretKey = endpoint.id + '_' + endpoint.client_key.secret;
+			} else {
+				secretKey = 'unknown';
+			}
+		}
+
 		return <td
 			className="bp3-cell"
 			colSpan={2}
@@ -446,6 +455,17 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 						onChange={(val): void => {
 							this.set('name', val);
 						}}
+					/>
+					<PageInput
+						hidden={endpoint.has_client_key}
+						disabled={this.state.disabled}
+						readOnly={true}
+						autoSelect={true}
+						label="Registration Key"
+						help="Key for endpoint registration"
+						type="text"
+						placeholder=""
+						value={secretKey}
 					/>
 					<label className="bp3-label">
 						Roles
