@@ -149,8 +149,59 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
+func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
+	err error) {
+
+	coll := db.EndpointsSystem()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.EndpointsLoad()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.EndpointsDisk()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.EndpointsNetwork()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func Remove(db *database.Database,
 	endpointId primitive.ObjectID) (err error) {
+
+	err = RemoveData(db, endpointId)
+	if err != nil {
+		return
+	}
 
 	coll := db.Endpoints()
 
@@ -169,6 +220,13 @@ func RemoveMulti(db *database.Database, endpointIds []primitive.ObjectID) (
 	err error) {
 
 	coll := db.Endpoints()
+
+	for _, endpointId := range endpointIds {
+		err = RemoveData(db, endpointId)
+		if err != nil {
+			return
+		}
+	}
 
 	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": &bson.M{
