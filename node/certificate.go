@@ -10,11 +10,11 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/sirupsen/logrus"
 )
 
 func selfCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
@@ -47,7 +47,7 @@ func selfCert(parent *x509.Certificate, parentKey *ecdsa.PrivateKey) (
 	certTempl := &x509.Certificate{
 		SerialNumber: serial,
 		Subject: pkix.Name{
-			Organization: []string{"Pritunl Cloud"},
+			Organization: []string{"Pritunl Zero"},
 		},
 		NotBefore: time.Now().Add(-24 * time.Hour),
 		NotAfter:  time.Now().Add(26280 * time.Hour),
