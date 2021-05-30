@@ -168,6 +168,7 @@ func (c *Certificates) Update(db *database.Database) (err error) {
 	}
 
 	c.domainMap = domainMap
+	c.wildcardMap = wildcardMap
 
 	return
 }
