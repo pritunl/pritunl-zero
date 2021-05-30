@@ -37,6 +37,16 @@ export function formatBytes(bytes: number, decimals: number): string {
 	}
 }
 
+export function formatUptime(time: number): string {
+	let days = Math.floor(time / 86400);
+	time -= days * 86400;
+	let hours = Math.floor(time / 3600);
+	time -= hours * 3600;
+	let minutes = Math.floor(time / 60);
+	time -= minutes * 60;
+	return days + 'd ' + hours + 'h ' + minutes + 'm ' + time + 's';
+}
+
 export function formatDate(dateStr: string): string {
 	if (!dateStr || dateStr === '0001-01-01T00:00:00Z') {
 		return '';
