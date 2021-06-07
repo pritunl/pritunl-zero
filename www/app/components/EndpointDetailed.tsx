@@ -390,12 +390,14 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 		}
 
 		let secretKey = '';
+		let secretUri = '';
 		if (!endpoint.has_client_key) {
 			if (endpoint.client_key) {
 				secretKey = endpoint.id + '_' + endpoint.client_key.secret;
 			} else {
 				secretKey = 'unknown';
 			}
+			secretUri = 'pritunl://' + window.location.host + '/' + secretKey;
 		}
 
 		return <td
@@ -506,6 +508,17 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 				<div style={css.group}>
 					<PageInfo
 						fields={fields}
+					/>
+					<PageInput
+						hidden={endpoint.has_client_key}
+						disabled={this.state.disabled}
+						readOnly={true}
+						autoSelect={true}
+						label="Registration URI"
+						help="URI for endpoint registration"
+						type="text"
+						placeholder=""
+						value={secretUri}
 					/>
 				</div>
 			</div>
