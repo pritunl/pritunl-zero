@@ -497,6 +497,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 						label="Show charts"
 						help="Show endpoint charts."
 						checked={this.state.showCharts}
+						hidden={!endpointData.hostname}
 						onToggle={(): void => {
 							this.setState({
 								...this.state,
