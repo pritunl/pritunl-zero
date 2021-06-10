@@ -324,7 +324,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			},
 		];
 
-		let endpointData = endpoint.data;
+		let endpointData = endpoint.data || {};
 		if (endpointData) {
 			if (endpointData.hostname) {
 				fields.push({
