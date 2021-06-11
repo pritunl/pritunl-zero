@@ -58,6 +58,8 @@ export default class Help extends React.Component<Props, State> {
 					title={this.props.title}
 					style={css.dialog}
 					isOpen={this.state.popover}
+					usePortal={true}
+					portalContainer={document.body}
 					onClose={(): void => {
 						this.setState({
 							...this.state,

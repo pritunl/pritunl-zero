@@ -149,6 +149,8 @@ export default class Log extends React.Component<Props, State> {
 				title="Stack Trace"
 				style={css.dialog}
 				isOpen={this.state.stack}
+				usePortal={true}
+				portalContainer={document.body}
 				onClose={(): void => {
 					this.setState({
 						...this.state,
