@@ -1223,13 +1223,6 @@ func (a *Authority) ValidateHsmSignature(
 		return
 	}
 
-	if timestampInt == 0 {
-		err = &errortypes.ApiError{
-			errors.New("authority: Invalid authentication timestamp"),
-		}
-		return
-	}
-
 	timestamp := time.Unix(timestampInt, 0)
 
 	if token == "" || token != a.HsmToken {
