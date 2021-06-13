@@ -525,7 +525,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			</div>
 			<EndpointCharts
 				endpoint={endpoint.id}
-				disabled={!this.state.showCharts}
+				disabled={!endpointData.hostname || !this.state.showCharts}
 			/>
 			<PageSave
 				style={css.save}
