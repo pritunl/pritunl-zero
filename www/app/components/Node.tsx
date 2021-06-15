@@ -282,7 +282,17 @@ export default class Node extends React.Component<Props, State> {
 			return;
 		}
 
-		let authorityId = this.state.addAuthority || this.props.authorities[0].id;
+		let authorityId = this.state.addAuthority;
+
+		if (!authorityId) {
+			for (let authority of this.props.authorities) {
+				if (!authority.proxy_hosting) {
+					continue;
+				}
+				authorityId = authority.id;
+				break;
+			}
+		}
 
 		if (this.state.changed) {
 			node = {
