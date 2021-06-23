@@ -3,6 +3,10 @@ export function uuid(): string {
 	return (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
 }
 
+export function random(min: number, max: number): number {
+	return Math.round(Math.random() * (max - min) + min);
+}
+
 export function zeroPad(num: number, width: number): string {
 	if (num < Math.pow(10, width)) {
 		return ('0'.repeat(width - 1) + num).slice(-width);
