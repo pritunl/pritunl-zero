@@ -179,6 +179,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					title="Confirm"
 					style={css.dialog}
 					isOpen={this.state.dialog}
+					usePortal={true}
+					portalContainer={document.body}
 					onClose={this.closeDialog}
 				>
 					<div className="bp3-dialog-body">
