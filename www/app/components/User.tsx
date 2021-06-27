@@ -113,6 +113,8 @@ export default class User extends React.Component<Props, {}> {
 						<input
 							type="checkbox"
 							checked={this.props.selected}
+							onChange={(evt): void => {
+							}}
 							onClick={(evt): void => {
 								this.props.onSelect(evt.shiftKey);
 							}}
