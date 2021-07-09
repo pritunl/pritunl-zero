@@ -21,6 +21,7 @@ import (
 type User struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Type            string             `bson:"type" json:"type"`
+	Provider        primitive.ObjectID `bson:"provider" json:"provider"`
 	Username        string             `bson:"username" json:"username"`
 	Password        string             `bson:"password" json:"-"`
 	DefaultPassword string             `bson:"default_password" json:"-"`
