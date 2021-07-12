@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -158,6 +160,50 @@ func GoogleRoles(provider *settings.Provider, username string) (
 
 	for _, group := range results.Groups {
 		roles = append(roles, group.Name)
+	}
+
+	return
+}
+
+func GoogleSync(db *database.Database, usr *user.User) (
+	active bool, err error) {
+
+	reqVals := url.Values{}
+	reqVals.Set("user", usr.Username)
+	reqVals.Set("license", settings.System.License)
+
+	reqUrl, _ := url.Parse(settings.Auth.Server + "/update/google")
+	reqUrl.RawQuery = reqVals.Encode()
+
+	req, err := http.NewRequest(
+		"GET",
+		reqUrl.String(),
+		nil,
+	)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Google request failed"),
+		}
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Google request failed"),
+		}
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		active = true
+	} else {
+		err = &errortypes.RequestError{
+			errors.Newf("auth: Google request bad status %d",
+				resp.StatusCode),
+		}
+		return
 	}
 
 	return
