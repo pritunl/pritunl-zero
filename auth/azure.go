@@ -13,6 +13,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -131,6 +132,10 @@ type azureMembership struct {
 
 type azureMemberData struct {
 	Value []azureMembership `json:"value"`
+}
+
+type azureUserData struct {
+	AccountEnabled bool `json:"accountEnabled"`
 }
 
 func azureGetToken(provider *settings.Provider) (token string, err error) {
@@ -259,6 +264,74 @@ func AzureRoles(provider *settings.Provider, username string) (
 
 		roles = append(roles, membership.DisplayName)
 	}
+
+	return
+}
+
+func AzureSync(db *database.Database, usr *user.User,
+	provider *settings.Provider) (active bool, err error) {
+
+	token, err := azureGetToken(provider)
+	if err != nil {
+		return
+	}
+
+	reqUrl, err := url.Parse(fmt.Sprintf(
+		"https://graph.windows.net/%s/users/%s",
+		provider.Tenant,
+		usr.Username,
+	))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse azure url"),
+		}
+		return
+	}
+
+	query := reqUrl.Query()
+	query.Set("api-version", "1.6")
+	reqUrl.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(
+		"GET",
+		reqUrl.String(),
+		nil,
+	)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Failed to create azure request"),
+		}
+		return
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Azure request failed"),
+		}
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
+		}
+		return
+	}
+
+	data := &azureUserData{}
+	err = json.NewDecoder(resp.Body).Decode(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse response"),
+		}
+		return
+	}
+
+	active = data.AccountEnabled
 
 	return
 }
