@@ -329,6 +329,7 @@ func Callback(db *database.Database, sig, query string) (
 			usr = &user.User{
 				Type:     provider.Type,
 				Username: username,
+				Provider: provider.Id,
 				Roles:    roles,
 			}
 
@@ -359,6 +360,9 @@ func Callback(db *database.Database, sig, query string) (
 			return
 		}
 	} else {
+		fields := set.NewSet("provider")
+		usr.Provider = provider.Id
+
 		switch provider.RoleManagement {
 		case settings.Merge:
 			changed := usr.RolesMerge(roles)
@@ -372,12 +376,7 @@ func Callback(db *database.Database, sig, query string) (
 					return
 				}
 
-				err = usr.CommitFields(db, set.NewSet("roles"))
-				if err != nil {
-					return
-				}
-
-				event.PublishDispatch(db, "user.change")
+				fields.Add("roles")
 			}
 			break
 		case settings.Overwrite:
@@ -392,15 +391,17 @@ func Callback(db *database.Database, sig, query string) (
 					return
 				}
 
-				err = usr.CommitFields(db, set.NewSet("roles"))
-				if err != nil {
-					return
-				}
-
-				event.PublishDispatch(db, "user.change")
+				fields.Add("roles")
 			}
 			break
 		}
+
+		err = usr.CommitFields(db, fields)
+		if err != nil {
+			return
+		}
+
+		event.PublishDispatch(db, "user.change")
 	}
 
 	return
