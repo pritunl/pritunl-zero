@@ -1,15 +1,10 @@
 package auth
 
 import (
-	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 )
@@ -24,51 +19,30 @@ func SyncUser(db *database.Database, usr *user.User) (
 		return
 	}
 
-	if usr.Type == user.Google {
-		reqVals := url.Values{}
-		reqVals.Set("user", usr.Username)
-		reqVals.Set("license", settings.System.License)
+	provider := settings.Auth.GetProvider(usr.Provider)
 
-		reqUrl, _ := url.Parse(settings.Auth.Server + "/update/google")
-		reqUrl.RawQuery = reqVals.Encode()
+	if usr.Type == user.Azure && provider != nil &&
+		provider.Type == user.Azure {
 
-		req, e := http.NewRequest(
-			"GET",
-			reqUrl.String(),
-			nil,
-		)
-		if e != nil {
-			err = &errortypes.RequestError{
-				errors.Wrap(e, "auth: Auth request failed"),
-			}
+		active, err = AzureSync(db, usr, provider)
+		if err != nil {
 			return
 		}
-
-		resp, e := client.Do(req)
-		if e != nil {
-			err = &errortypes.RequestError{
-				errors.Wrap(e, "auth: Auth request failed"),
-			}
+	} else if usr.Type == user.Google {
+		active, err = GoogleSync(db, usr)
+		if err != nil {
 			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode == 200 {
-			active = true
-
-			usr.LastSync = time.Now()
-			err = usr.CommitFields(db, set.NewSet("last_sync"))
-			if err != nil {
-				return
-			}
-		} else {
-			logrus.WithFields(logrus.Fields{
-				"username":    usr.Username,
-				"status_code": resp.StatusCode,
-			}).Info("session: User single sign-on sync failed")
 		}
 	} else {
 		active = true
+	}
+
+	if active {
+		usr.LastSync = time.Now()
+		err = usr.CommitFields(db, set.NewSet("last_sync"))
+		if err != nil {
+			return
+		}
 	}
 
 	return
