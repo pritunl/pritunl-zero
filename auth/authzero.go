@@ -12,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -449,6 +450,93 @@ func AuthZeroRoles(provider *settings.Provider, username string) (
 		}
 		return
 	}
+
+	return
+}
+
+func AuthZeroSync(db *database.Database, usr *user.User,
+	provider *settings.Provider) (active bool, err error) {
+
+	token, err := authZeroGetToken(provider)
+	if err != nil {
+		return
+	}
+
+	reqUrl, err := url.Parse(fmt.Sprintf(
+		"https://%s.auth0.com/api/v2/users",
+		provider.Domain,
+	))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse auth0 url"),
+		}
+		return
+	}
+
+	query := reqUrl.Query()
+	query.Set("search_engine", "v3")
+	query.Set("email", usr.Username)
+	reqUrl.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(
+		"GET",
+		reqUrl.String(),
+		nil,
+	)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Failed to create auth0 request"),
+		}
+		return
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: auth0 request failed"),
+		}
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
+		}
+		return
+	}
+
+	data := []*authZeroUser{}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse response"),
+		}
+		return
+	}
+
+	userId := ""
+
+	for _, authUser := range data {
+		if authUser.Email != usr.Username {
+			continue
+		}
+
+		userId = authUser.UserId
+
+		break
+	}
+
+	if userId == "" {
+		err = &errortypes.NotFoundError{
+			errors.Wrap(err, "auth: Failed to find auth0 user"),
+		}
+		return
+	}
+
+	active = true
 
 	return
 }
