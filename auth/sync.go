@@ -21,7 +21,14 @@ func SyncUser(db *database.Database, usr *user.User) (
 
 	provider := settings.Auth.GetProvider(usr.Provider)
 
-	if usr.Type == user.Azure && provider != nil &&
+	if usr.Type == user.AuthZero && provider != nil &&
+		provider.Type == user.AuthZero {
+
+		active, err = AuthZeroSync(db, usr, provider)
+		if err != nil {
+			return
+		}
+	} else if usr.Type == user.Azure && provider != nil &&
 		provider.Type == user.Azure {
 
 		active, err = AzureSync(db, usr, provider)
