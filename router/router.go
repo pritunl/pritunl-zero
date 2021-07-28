@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/endpoint"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/mhandlers"
@@ -401,6 +402,7 @@ func (r *Router) Restart() {
 
 	event.WebSocketsStop()
 	proxy.WebSocketsStop()
+	endpoint.WebSocketsStop()
 
 	r.redirectServer = nil
 	r.webServer = nil
