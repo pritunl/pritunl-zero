@@ -119,7 +119,7 @@ func EndpointCommGet(c *gin.Context) {
 	ctx, cancel := context.WithCancel(context.Background())
 	socket.Cancel = cancel
 
-	conn, err := event.Upgrader.Upgrade(c.Writer, c.Request, nil)
+	conn, err := endpoint.Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "mhandlers: Failed to upgrade request"),
