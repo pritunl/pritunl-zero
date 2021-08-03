@@ -110,6 +110,11 @@ func (d *Database) EndpointsDisk() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsDiskIo() (coll *Collection) {
+	coll = d.getCollection("endpoints_diskio")
+	return
+}
+
 func (d *Database) EndpointsNetwork() (coll *Collection) {
 	coll = d.getCollection("endpoints_network")
 	return
