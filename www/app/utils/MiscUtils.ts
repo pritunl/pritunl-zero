@@ -41,6 +41,14 @@ export function formatBytes(bytes: number, decimals: number): string {
 	}
 }
 
+export function formatMs(ms: number): string {
+	if (ms < 1000) {
+		return ms + 'ms';
+	} else {
+		return (ms / 1000) + 's';
+	}
+}
+
 export function formatUptime(time: number): string {
 	let days = Math.floor(time / 86400);
 	time -= days * 86400;
