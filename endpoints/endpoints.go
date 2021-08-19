@@ -54,6 +54,8 @@ func GetObj(typ string) Doc {
 		return &Load{}
 	case "disk":
 		return &Disk{}
+	case "diskio":
+		return &DiskIo{}
 	case "network":
 		return &Network{}
 	default:
@@ -72,6 +74,8 @@ func GetChart(c context.Context, db *database.Database,
 		return GetLoadChart(c, db, endpoint, start, end, interval)
 	case "disk":
 		return GetDiskChart(c, db, endpoint, start, end, interval)
+	case "diskio":
+		return GetDiskIoChart(c, db, endpoint, start, end, interval)
 	case "network":
 		return GetNetworkChart(c, db, endpoint, start, end, interval)
 	default:
