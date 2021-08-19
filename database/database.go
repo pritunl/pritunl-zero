@@ -682,6 +682,18 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsDiskIo(),
+		Keys: &bson.D{
+			{"e", 1},
+			{"t", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsNetwork(),
 		Keys: &bson.D{
 			{"e", 1},
