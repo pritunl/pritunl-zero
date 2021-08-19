@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add diskio to endpoints
+
 Version 1.0.2019.78 2021-06-04
 ------------------------------
 
