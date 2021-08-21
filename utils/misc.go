@@ -81,6 +81,7 @@ var safeChars = set.NewSet(
 	'#',
 	'!',
 	'&',
+	' ',
 )
 
 func FilterStr(s string, n int) string {
