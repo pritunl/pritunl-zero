@@ -228,6 +228,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 								switch (labels.resource_type) {
 									case 'bytes':
 										return MiscUtils.formatBytes(val, 0);
+									case 'milliseconds':
+										return MiscUtils.formatMs(val);
 									default:
 										return val;
 								}
@@ -260,6 +262,9 @@ export default class EndpointChart extends React.Component<Props, State> {
 								switch (labels.resource_type) {
 									case 'bytes':
 										val = MiscUtils.formatBytes(raw.y, labels.resource_fixed);
+										break;
+									case 'milliseconds':
+										val = MiscUtils.formatMs(raw.y);
 										break;
 									case 'float':
 										val = raw.y.toFixed(labels.resource_fixed);
