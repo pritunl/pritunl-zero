@@ -357,6 +357,38 @@ export default class EndpointCharts extends React.Component<Props, State> {
 					/>
 				</div>
 			</div>
+			<div className="layout horizontal wrap">
+				<div style={css.chartGroup}>
+					<EndpointChart
+						endpoint={this.props.endpoint}
+						resource={'diskio0'}
+						sync={this.state.sync}
+						period={this.state.period}
+						interval={this.state.interval}
+						onLoading={(): void => {
+							this.setLoading('diskio0');
+						}}
+						onLoaded={(): void => {
+							this.setLoaded('diskio0');
+						}}
+					/>
+				</div>
+				<div style={css.chartGroup}>
+					<EndpointChart
+						endpoint={this.props.endpoint}
+						resource={'diskio1'}
+						sync={this.state.sync}
+						period={this.state.period}
+						interval={this.state.interval}
+						onLoading={(): void => {
+							this.setLoading('diskio1');
+						}}
+						onLoaded={(): void => {
+							this.setLoaded('diskio1');
+						}}
+					/>
+				</div>
+			</div>
 		</div>;
 	}
 }
