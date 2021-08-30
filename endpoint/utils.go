@@ -153,7 +153,6 @@ func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
 	err error) {
 
 	coll := db.EndpointsSystem()
-
 	_, err = coll.DeleteMany(db, &bson.M{
 		"e": endpointId,
 	})
@@ -163,7 +162,6 @@ func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
 	}
 
 	coll = db.EndpointsLoad()
-
 	_, err = coll.DeleteMany(db, &bson.M{
 		"e": endpointId,
 	})
@@ -191,7 +189,6 @@ func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
 	}
 
 	coll = db.EndpointsNetwork()
-
 	_, err = coll.DeleteMany(db, &bson.M{
 		"e": endpointId,
 	})
