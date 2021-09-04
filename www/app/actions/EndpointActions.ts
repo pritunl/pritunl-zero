@@ -198,6 +198,8 @@ export function chart(endpointId: string, resource: string,
 
 	let loader = new Loader().loading();
 
+	resource = resource.replace(/[0-9]/g, '');
+
 	return new Promise<any>((resolve, reject): void => {
 		let req = SuperAgent.get('/endpoint/' + endpointId + '/data')
 			.query({
