@@ -8,7 +8,6 @@ import Loader from '../Loader';
 import * as DeviceTypes from '../types/DeviceTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import DevicesStore from '../stores/DevicesStore';
-import * as PolicyTypes from "../types/PolicyTypes";
 
 let syncId: string;
 
