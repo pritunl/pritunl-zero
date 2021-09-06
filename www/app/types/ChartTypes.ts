@@ -247,5 +247,6 @@ export function getChartData(resource: string, data: any): Chart {
 
 			return netChart;
 	}
+
 	return undefined;
 }
