@@ -359,13 +359,13 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			if (endpointData.mem_total) {
 				fields.push({
 					label: 'Memory',
-					value: endpointData.mem_total + 'mb',
+					value: endpointData.mem_total + 'MB',
 				});
 			}
 			if (endpointData.swap_total) {
 				fields.push({
 					label: 'Swap',
-					value: endpointData.swap_total + 'mb',
+					value: endpointData.swap_total + 'MB',
 				});
 			}
 		}
