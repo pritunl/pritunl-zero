@@ -100,7 +100,9 @@ func CookieSessionUser(db *database.Database, w http.ResponseWriter,
 	return
 }
 
-func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
+func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string,
+	wildcard bool) bool {
+
 	port := ""
 	if node.Self.Protocol == "http" {
 		if node.Self.Port != 80 {
@@ -124,9 +126,18 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string) bool {
 		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	}
 
-	if origin != "" && origin != match && origin != matchSec {
-		utils.WriteUnauthorized(w, "CSRF origin error")
-		return false
+	if wildcard {
+		if origin != "" && !utils.Match(matchSec, origin) &&
+			!utils.Match(match, origin) {
+
+			utils.WriteUnauthorized(w, "CSRF origin error")
+			return false
+		}
+	} else {
+		if origin != "" && origin != match && origin != matchSec {
+			utils.WriteUnauthorized(w, "CSRF origin error")
+			return false
+		}
 	}
 
 	return true
