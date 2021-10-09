@@ -5,4 +5,7 @@ const (
 	SmartCard = "smart_card"
 	Ssh       = "ssh"
 	Secondary = "secondary"
+	Phone     = "phone"
+	Call      = "call"
+	Message   = "message"
 )
