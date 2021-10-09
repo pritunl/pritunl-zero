@@ -21,6 +21,7 @@ interface State {
 	deviceType: string;
 	deviceName: string;
 	devicePubKey: string;
+	devicePhoneNumber: string;
 	showEnded: boolean;
 	disabled: boolean;
 }
@@ -56,6 +57,7 @@ export default class Devices extends React.Component<Props, State> {
 			deviceName: '',
 			deviceType: '',
 			devicePubKey: '',
+			devicePhoneNumber: '',
 			showEnded: false,
 			disabled: false,
 		};
@@ -169,6 +171,7 @@ export default class Devices extends React.Component<Props, State> {
 				user: this.props.userId,
 				name: this.state.deviceName,
 				type: this.state.deviceType,
+				mode: 'ssh',
 				ssh_public_key: this.state.devicePubKey,
 			}).then((): void => {
 				this.setState({
@@ -176,6 +179,42 @@ export default class Devices extends React.Component<Props, State> {
 					disabled: false,
 					deviceName: '',
 					devicePubKey: '',
+					devicePhoneNumber: '',
+				});
+
+				Alert.success('Successfully registered device');
+			}).catch((): void => {
+				this.setState({
+					...this.state,
+					disabled: false,
+				});
+			});
+		} else if (this.state.deviceType === 'phone_call' ||
+			this.state.deviceType === 'phone_sms') {
+
+			this.setState({
+				...this.state,
+				disabled: true,
+			});
+
+			let deviceTypes = this.state.deviceType.split('_');
+			let deviceMode = deviceTypes[0];
+			let deviceType = deviceTypes[1];
+
+			DeviceActions.create({
+				id: null,
+				user: this.props.userId,
+				name: this.state.deviceName,
+				type: deviceType,
+				mode: deviceMode,
+				number: this.state.devicePhoneNumber,
+			}).then((): void => {
+				this.setState({
+					...this.state,
+					disabled: false,
+					deviceName: '',
+					devicePubKey: '',
+					devicePhoneNumber: '',
 				});
 
 				Alert.success('Successfully registered device');
@@ -227,6 +266,8 @@ export default class Devices extends React.Component<Props, State> {
 								>
 									<option value="u2f">U2F</option>
 									<option value="smart_card">Smart Card</option>
+									<option value="phone_call">Phone (Call)</option>
+									<option value="phone_message">Phone (SMS)</option>
 								</select>
 							</div>
 							<div className="layout horizontal" style={css.inputBox}>
@@ -258,6 +299,25 @@ export default class Devices extends React.Component<Props, State> {
 										this.setState({
 											...this.state,
 											devicePubKey: evt.target.value,
+										});
+									}}
+									onKeyPress={(evt): void => {
+										if (evt.key === 'Enter') {
+											this.addDevice();
+										}
+									}}
+								/>
+								<input
+									className="bp3-input"
+									hidden={this.state.deviceType !== 'phone_call' &&
+										this.state.deviceType !== 'phone_sms'}
+									type="text"
+									placeholder="Device phone number"
+									value={this.state.devicePhoneNumber}
+									onChange={(evt): void => {
+										this.setState({
+											...this.state,
+											devicePhoneNumber: evt.target.value,
 										});
 									}}
 									onKeyPress={(evt): void => {
