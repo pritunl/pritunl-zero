@@ -25,6 +25,7 @@ type Device struct {
 	Disabled     bool               `bson:"disabled" json:"disabled"`
 	ActiveUntil  time.Time          `bson:"activeactive_until_until" json:"active_until"`
 	LastActive   time.Time          `bson:"last_active" json:"last_active"`
+	Number       string             `bson:"number" json:"number"`
 	SshPublicKey string             `bson:"ssh_public_key" json:"ssh_public_key"`
 	U2fRaw       []byte             `bson:"u2f_raw" json:"-"`
 	U2fCounter   uint32             `bson:"u2f_counter" json:"-"`
@@ -53,27 +54,12 @@ func (d *Device) Validate(db *database.Database) (
 		return
 	}
 
-	if d.Type != U2f && d.Type != SmartCard {
-		errData = &errortypes.ErrorData{
-			Error:   "device_type_invalid",
-			Message: "Device type is invalid",
-		}
-		return
-	}
-
-	if d.Mode != Ssh && d.Mode != Secondary {
-		errData = &errortypes.ErrorData{
-			Error:   "device_mode_invalid",
-			Message: "Device mode is invalid",
-		}
-		return
-	}
-
-	if d.Mode == Ssh {
+	switch d.Mode {
+	case Ssh:
 		if d.Type != SmartCard {
 			errData = &errortypes.ErrorData{
-				Error:   "device_mode_type_invalid",
-				Message: "Device mode and type is invalid",
+				Error:   "device_type_invalid",
+				Message: "Device type is invalid",
 			}
 			return
 		}
@@ -93,6 +79,44 @@ func (d *Device) Validate(db *database.Database) (
 			}
 			return
 		}
+		break
+	case Secondary:
+		if d.Type != U2f {
+			errData = &errortypes.ErrorData{
+				Error:   "device_type_invalid",
+				Message: "Device type is invalid",
+			}
+			return
+		}
+		break
+	case Phone:
+		if d.Type != Call && d.Type != Message {
+			errData = &errortypes.ErrorData{
+				Error:   "device_type_invalid",
+				Message: "Device type is invalid",
+			}
+			return
+		}
+
+		if len(d.Number) == 10 {
+			d.Number = "+1" + d.Number
+		}
+
+		if len(d.Number) < 10 {
+			errData = &errortypes.ErrorData{
+				Error:   "device_number_invalid",
+				Message: "Device phone number invalid",
+			}
+			return
+		}
+
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "device_mode_invalid",
+			Message: "Device mode is invalid",
+		}
+		return
 	}
 
 	return
