@@ -22,6 +22,8 @@ type deviceData struct {
 	User         primitive.ObjectID `json:"user"`
 	Name         string             `json:"name"`
 	Type         string             `json:"type"`
+	Mode         string             `json:"mode"`
+	Number       string             `json:"number"`
 	SshPublicKey string             `json:"ssh_public_key"`
 }
 
@@ -99,9 +101,10 @@ func devicePost(c *gin.Context) {
 		return
 	}
 
-	devc := device.New(data.User, data.Type, device.Ssh)
+	devc := device.New(data.User, data.Type, data.Mode)
 
 	devc.Name = data.Name
+	devc.Number = data.Number
 	devc.SshPublicKey = data.SshPublicKey
 
 	errData, err := devc.Validate(db)
