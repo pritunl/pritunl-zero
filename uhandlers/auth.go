@@ -114,7 +114,7 @@ func authSessionPost(c *gin.Context) {
 	}
 
 	if devAuth {
-		deviceCount, err := device.Count(db, usr.Id)
+		deviceCount, err := device.CountSecondary(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -310,7 +310,7 @@ func authSecondaryPost(c *gin.Context) {
 	}
 
 	if deviceAuth {
-		deviceCount, err := device.Count(db, usr.Id)
+		deviceCount, err := device.CountSecondary(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
@@ -537,7 +537,7 @@ func authCallbackGet(c *gin.Context) {
 	}
 
 	if devAuth {
-		deviceCount, err := device.Count(db, usr.Id)
+		deviceCount, err := device.CountSecondary(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return

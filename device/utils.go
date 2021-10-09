@@ -152,7 +152,7 @@ func GetAllMode(db *database.Database, userId primitive.ObjectID,
 	return
 }
 
-func Count(db *database.Database, userId primitive.ObjectID) (
+func CountSecondary(db *database.Database, userId primitive.ObjectID) (
 	count int64, err error) {
 
 	coll := db.Devices()

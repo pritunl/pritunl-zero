@@ -96,7 +96,7 @@ func sshValidatePut(c *gin.Context) {
 	}
 
 	if deviceAuth {
-		deviceCount, err := device.Count(db, usr.Id)
+		deviceCount, err := device.CountSecondary(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return

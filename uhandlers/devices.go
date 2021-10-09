@@ -109,7 +109,7 @@ func deviceDelete(c *gin.Context) {
 		return
 	}
 
-	count, err := device.Count(db, usr.Id)
+	count, err := device.CountSecondary(db, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -130,7 +130,7 @@ func deviceDelete(c *gin.Context) {
 		return
 	}
 
-	count, err = device.Count(db, usr.Id)
+	count, err = device.CountSecondary(db, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -254,7 +254,7 @@ func deviceU2fRegisterGet(c *gin.Context) {
 		return
 	}
 
-	deviceCount, err := device.Count(db, usr.Id)
+	deviceCount, err := device.CountSecondary(db, usr.Id)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -379,7 +379,7 @@ func deviceU2fRegisterPost(c *gin.Context) {
 
 	var devc *device.Device
 	if data.Type == device.SmartCard {
-		deviceCount, err := device.Count(db, usr.Id)
+		deviceCount, err := device.CountSecondary(db, usr.Id)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
