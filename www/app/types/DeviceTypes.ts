@@ -11,6 +11,7 @@ export interface Device {
 	timestamp?: string;
 	disabled?: boolean;
 	active_until?: string;
+	number?: string;
 	last_active?: string;
 	ssh_public_key?: string;
 }
