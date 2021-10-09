@@ -136,6 +136,12 @@ export default class Device extends React.Component<Props, State> {
 			case 'smart_card':
 				deviceType = 'Smart Card';
 				break;
+			case 'call':
+				deviceType = 'Call';
+				break;
+			case 'message':
+				deviceType = 'SMS';
+				break;
 		}
 
 		let deviceMode = 'Unknown';
@@ -146,13 +152,21 @@ export default class Device extends React.Component<Props, State> {
 			case 'ssh':
 				deviceMode = 'SSH';
 				break;
+			case 'phone':
+				deviceMode = 'Phone';
+				break;
 		}
 
-		let deviceSshKey: PageInfos.Field;
+		let deviceOther: PageInfos.Field;
 		if (device.type === 'smart_card') {
-			deviceSshKey = {
+			deviceOther = {
 				label: 'SSH Public Key',
 				value: device.ssh_public_key,
+			};
+		} else if (device.type === 'call' || device.type === 'sms') {
+			deviceOther = {
+				label: 'Phone Number',
+				value: device.number,
 			};
 		}
 
@@ -214,7 +228,7 @@ export default class Device extends React.Component<Props, State> {
 								label: 'Type',
 								value: deviceType,
 							},
-							deviceSshKey,
+							deviceOther,
 						]}
 					/>
 				</div>
