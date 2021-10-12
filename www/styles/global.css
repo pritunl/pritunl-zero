@@ -138,6 +138,13 @@ body.bp3-dark {
   }
 }
 
+.bp3-toast-container.bp3-toast-container-bottom {
+  position: fixed !important;
+}
+.bp3-toast-container.bp3-toast-container-inline {
+  position: fixed !important;
+}
+
 /*******************************
           Flex Layout
 *******************************/
