@@ -258,7 +258,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			Host:      u.Host,
 			Path:      r.URL.Path,
 			Query:     r.URL.Query(),
-			Header:    r.Header,
+			Header:    r.Header.Clone(),
 		}
 
 		if authr.IsValid() {

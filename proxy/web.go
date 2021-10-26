@@ -69,7 +69,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 					Host:      req.URL.Host,
 					Path:      req.URL.Path,
 					Query:     req.URL.Query(),
-					Header:    req.Header,
+					Header:    req.Header.Clone(),
 				}
 
 				if authr.IsValid() {

@@ -87,7 +87,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			Host:      reqUrl.Host,
 			Path:      reqUrl.Path,
 			Query:     reqUrl.Query(),
-			Header:    r.Header,
+			Header:    r.Header.Clone(),
 		}
 
 		if authr.IsValid() {
