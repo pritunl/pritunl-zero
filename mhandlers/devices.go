@@ -225,6 +225,67 @@ func deviceU2fRegisterGet(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
+func deviceAlertPost(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := &deviceData{}
+
+	devcId, ok := utils.ParseObjectId(c.Param("resource_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	err := c.Bind(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	devc, err := device.Get(db, devcId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	errData, err := devc.TestAlert(db)
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "device.change")
+
+	c.JSON(200, devc)
+}
+
+func deviceMethodPost(c *gin.Context) {
+	switch c.Param("method") {
+	case "alert":
+		deviceAlertPost(c)
+		return
+	case "register":
+		deviceU2fRegisterPost(c)
+		return
+	default:
+		utils.AbortWithStatus(c, 404)
+		return
+	}
+
+	return
+}
+
 type devicesU2fRegisterData struct {
 	Token    string                   `json:"token"`
 	Name     string                   `json:"name"`
