@@ -28,6 +28,7 @@ import (
 )
 
 type Host struct {
+	Id                primitive.ObjectID
 	Service           *service.Service
 	Domain            *service.Domain
 	WhitelistNetworks []*net.IPNet
@@ -36,19 +37,41 @@ type Host struct {
 }
 
 type Proxy struct {
-	Hosts     map[string]*Host
-	wProxies  map[string][]*web
-	wsProxies map[string][]*webSocket
-	wiProxies map[string][]*webIsolated
+	Hosts         map[string]*Host
+	WildcardHosts map[string]*Host
+	wProxies      map[primitive.ObjectID][]*web
+	wsProxies     map[primitive.ObjectID][]*webSocket
+	wiProxies     map[primitive.ObjectID][]*webIsolated
+}
+
+func (p *Proxy) MatchHost(domain string) (hst *Host, wildcard bool) {
+	hst = p.Hosts[domain]
+	if hst == nil {
+		for matchDomain, matchHost := range p.WildcardHosts {
+			if utils.Match(matchDomain, domain) {
+				hst = matchHost
+				wildcard = true
+				break
+			}
+		}
+	}
+
+	return
 }
 
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
-	hst := utils.StripPort(r.Host)
+	host, wildcard := p.MatchHost(utils.StripPort(r.Host))
 
-	host := p.Hosts[hst]
-	wProxies := p.wProxies[hst]
-	wsProxies := p.wsProxies[hst]
-	wiProxies := p.wiProxies[hst]
+	var hostId primitive.ObjectID
+	if host == nil {
+		hostId = primitive.NilObjectID
+	} else {
+		hostId = host.Id
+	}
+
+	wProxies := p.wProxies[hostId]
+	wsProxies := p.wsProxies[hostId]
+	wiProxies := p.wiProxies[hostId]
 
 	wLen := 0
 	if wProxies != nil {
@@ -76,7 +99,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if !host.Service.DisableCsrfCheck {
-		valid := auth.CsrfCheck(w, r, host.Domain.Domain)
+		valid := auth.CsrfCheck(w, r, host.Domain.Domain, wildcard)
 		if !valid {
 			return true
 		}
@@ -255,6 +278,7 @@ func (p *Proxy) reloadHosts(db *database.Database,
 	services []primitive.ObjectID) (err error) {
 
 	hosts := map[string]*Host{}
+	wildcardHosts := map[string]*Host{}
 	appId := ""
 	facets := []string{}
 
@@ -350,6 +374,7 @@ func (p *Proxy) reloadHosts(db *database.Database,
 			}
 
 			srvcDomain := &Host{
+				Id:                primitive.NewObjectID(),
 				Service:           srvc,
 				Domain:            domain,
 				WhitelistNetworks: whitelistNets,
@@ -357,7 +382,11 @@ func (p *Proxy) reloadHosts(db *database.Database,
 				ClientCertificate: cert,
 			}
 
-			hosts[domain.Domain] = srvcDomain
+			if strings.Contains(domain.Domain, "*") {
+				wildcardHosts[domain.Domain] = srvcDomain
+			} else {
+				hosts[domain.Domain] = srvcDomain
+			}
 		}
 	}
 
@@ -365,6 +394,7 @@ func (p *Proxy) reloadHosts(db *database.Database,
 	settings.Local.Facets = facets
 
 	p.Hosts = hosts
+	p.WildcardHosts = wildcardHosts
 
 	return
 }
@@ -372,33 +402,35 @@ func (p *Proxy) reloadHosts(db *database.Database,
 func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 	err error) {
 
-	wProxies := map[string][]*web{}
-	wsProxies := map[string][]*webSocket{}
-	wiProxies := map[string][]*webIsolated{}
+	wProxies := map[primitive.ObjectID][]*web{}
+	wsProxies := map[primitive.ObjectID][]*webSocket{}
+	wiProxies := map[primitive.ObjectID][]*webIsolated{}
 
-	for domain, host := range p.Hosts {
-		domainProxies := []*web{}
-		for _, server := range host.Service.Servers {
-			prxy := newWeb(proto, port, host, server)
-			domainProxies = append(domainProxies, prxy)
-		}
-		wProxies[domain] = domainProxies
-
-		if host.Service.WebSockets {
-			domainWsProxies := []*webSocket{}
+	for _, hostSet := range []map[string]*Host{p.Hosts, p.WildcardHosts} {
+		for _, host := range hostSet {
+			domainProxies := []*web{}
 			for _, server := range host.Service.Servers {
-				prxy := newWebSocket(proto, port, host, server)
-				domainWsProxies = append(domainWsProxies, prxy)
+				prxy := newWeb(proto, port, host, server)
+				domainProxies = append(domainProxies, prxy)
 			}
-			wsProxies[domain] = domainWsProxies
-		}
+			wProxies[host.Id] = domainProxies
 
-		domainIsoProxies := []*webIsolated{}
-		for _, server := range host.Service.Servers {
-			prxy := newWebIsolated(proto, port, host, server)
-			domainIsoProxies = append(domainIsoProxies, prxy)
+			if host.Service.WebSockets {
+				domainWsProxies := []*webSocket{}
+				for _, server := range host.Service.Servers {
+					prxy := newWebSocket(proto, port, host, server)
+					domainWsProxies = append(domainWsProxies, prxy)
+				}
+				wsProxies[host.Id] = domainWsProxies
+			}
+
+			domainIsoProxies := []*webIsolated{}
+			for _, server := range host.Service.Servers {
+				prxy := newWebIsolated(proto, port, host, server)
+				domainIsoProxies = append(domainIsoProxies, prxy)
+			}
+			wiProxies[host.Id] = domainIsoProxies
 		}
-		wiProxies[domain] = domainIsoProxies
 	}
 
 	p.wProxies = wProxies
@@ -434,9 +466,9 @@ func (p *Proxy) watchNode() {
 		err := p.update()
 		if err != nil {
 			p.Hosts = map[string]*Host{}
-			p.wProxies = map[string][]*web{}
-			p.wsProxies = map[string][]*webSocket{}
-			p.wiProxies = map[string][]*webIsolated{}
+			p.wProxies = map[primitive.ObjectID][]*web{}
+			p.wsProxies = map[primitive.ObjectID][]*webSocket{}
+			p.wiProxies = map[primitive.ObjectID][]*webIsolated{}
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
@@ -449,7 +481,8 @@ func (p *Proxy) watchNode() {
 
 func (p *Proxy) Init() {
 	p.Hosts = map[string]*Host{}
-	p.wProxies = map[string][]*web{}
-	p.wsProxies = map[string][]*webSocket{}
+	p.wProxies = map[primitive.ObjectID][]*web{}
+	p.wsProxies = map[primitive.ObjectID][]*webSocket{}
+	p.wiProxies = map[primitive.ObjectID][]*webIsolated{}
 	go p.watchNode()
 }
