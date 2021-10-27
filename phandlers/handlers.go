@@ -26,7 +26,7 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 
 	engine.Use(func(c *gin.Context) {
 		var srvc *service.Service
-		host := prxy.Hosts[utils.StripPort(c.Request.Host)]
+		host, _ := prxy.MatchHost(utils.StripPort(c.Request.Host))
 		if host != nil {
 			srvc = host.Service
 		}
