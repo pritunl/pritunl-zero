@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.2164.36 2021-10-27
+------------------------------
 
 Support for wildcard in service domains
 Fix issue with Elasticsearch logging
