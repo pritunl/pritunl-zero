@@ -144,6 +144,25 @@ func (s *Service) Validate(db *database.Database) (
 		s.WhitelistPaths = []*WhitelistPath{}
 	}
 
+	for _, domain := range s.Domains {
+		wildcardCount := strings.Count(domain.Domain, "*")
+		if wildcardCount > 1 {
+			errData = &errortypes.ErrorData{
+				Error:   "domain_wildcards_invalid",
+				Message: "Only one wildcard supported in external domain",
+			}
+			return
+		} else if wildcardCount == 1 {
+			if domain.Domain[0] != '*' {
+				errData = &errortypes.ErrorData{
+					Error:   "domain_wildcard_invalid",
+					Message: "External domain must start with wildcard",
+				}
+				return
+			}
+		}
+	}
+
 	for _, server := range s.Servers {
 		if server.Protocol != "http" && server.Protocol != "https" {
 			errData = &errortypes.ErrorData{
