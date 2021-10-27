@@ -25,7 +25,9 @@ type AlertParams struct {
 	Message string `json:"message"`
 }
 
-func Alert(number, message, alertType string) (err error) {
+func Alert(number, message, alertType string) (
+	errData *errortypes.ErrorData, err error) {
+
 	params := &AlertParams{
 		License: settings.System.License,
 		Number:  number,
@@ -74,13 +76,19 @@ func Alert(number, message, alertType string) (err error) {
 			body = string(data)
 		}
 
+		errData = &errortypes.ErrorData{}
+		err = json.Unmarshal(data, errData)
+		if err != nil || errData.Error == "" {
+			errData = nil
+		}
+
 		err = &errortypes.RequestError{
-			errors.Wrapf(
-				err,
+			errors.Newf(
 				"alert: Alert server error %d - %s",
 				resp.StatusCode,
 				body),
 		}
+
 		return
 	}
 
