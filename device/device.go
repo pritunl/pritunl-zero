@@ -9,6 +9,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/u2flib"
@@ -116,6 +117,23 @@ func (d *Device) Validate(db *database.Database) (
 			Error:   "device_mode_invalid",
 			Message: "Device mode is invalid",
 		}
+		return
+	}
+
+	return
+}
+
+func (d *Device) TestAlert(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	d.LastActive = time.Now()
+	err = d.CommitFields(db, set.NewSet("last_active"))
+	if err != nil {
+		return
+	}
+
+	errData, err = alert.Alert(d.Number, "Test alert message", d.Type)
+	if err != nil {
 		return
 	}
 
