@@ -301,7 +301,7 @@ func deviceU2fRegisterPost(c *gin.Context) {
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 	data := &devicesU2fRegisterData{}
 
-	usrId, ok := utils.ParseObjectId(c.Param("user_id"))
+	usrId, ok := utils.ParseObjectId(c.Param("resource_id"))
 	if !ok {
 		utils.AbortWithStatus(c, 400)
 		return
