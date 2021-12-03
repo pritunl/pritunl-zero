@@ -190,7 +190,7 @@ export default class Devices extends React.Component<Props, State> {
 				});
 			});
 		} else if (this.state.deviceType === 'phone_call' ||
-			this.state.deviceType === 'phone_sms') {
+			this.state.deviceType === 'phone_message') {
 
 			this.setState({
 				...this.state,
@@ -246,7 +246,7 @@ export default class Devices extends React.Component<Props, State> {
 		return <div>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
-					<h2 style={css.heading}>User Security Devices</h2>
+					<h2 style={css.heading}>User Devices</h2>
 					<div className="flex"/>
 					<div style={css.groupBox} className="layout horizontal">
 						<div
@@ -310,7 +310,7 @@ export default class Devices extends React.Component<Props, State> {
 								<input
 									className="bp3-input"
 									hidden={this.state.deviceType !== 'phone_call' &&
-										this.state.deviceType !== 'phone_sms'}
+										this.state.deviceType !== 'phone_message'}
 									type="text"
 									placeholder="Device phone number"
 									value={this.state.devicePhoneNumber}
