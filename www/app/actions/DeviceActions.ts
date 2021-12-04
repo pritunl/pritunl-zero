@@ -92,6 +92,34 @@ export function create(device: DeviceTypes.Device): Promise<void> {
 	});
 }
 
+export function testAlert(deviceId: string): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.post('/device/' + deviceId + '/alert')
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to send test alert');
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
+	});
+}
+
 export function commit(device: DeviceTypes.Device): Promise<void> {
 	let loader = new Loader().loading();
 
