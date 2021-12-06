@@ -124,18 +124,16 @@ type azureTokenData struct {
 	TokenType   string `json:"token_type"`
 }
 
-type azureMembership struct {
-	ObjectType      string `json:"objectType"`
-	DisplayName     string `json:"displayName"`
-	SecurityEnabled bool   `json:"securityEnabled"`
-}
-
 type azureMemberData struct {
-	Value []azureMembership `json:"value"`
+	Value []string `json:"value"`
 }
 
 type azureUserData struct {
 	AccountEnabled bool `json:"accountEnabled"`
+}
+
+type azureGroupData struct {
+	DisplayName string `json:"displayName"`
 }
 
 func azureGetToken(provider *settings.Provider) (token string, err error) {
@@ -143,7 +141,7 @@ func azureGetToken(provider *settings.Provider) (token string, err error) {
 	reqForm.Add("grant_type", "client_credentials")
 	reqForm.Add("client_id", provider.ClientId)
 	reqForm.Add("client_secret", provider.ClientSecret)
-	reqForm.Add("resource", "https://graph.windows.net")
+	reqForm.Add("resource", "https://graph.microsoft.com")
 
 	req, err := http.NewRequest(
 		"POST",
@@ -192,20 +190,13 @@ func azureGetToken(provider *settings.Provider) (token string, err error) {
 	return
 }
 
-func AzureRoles(provider *settings.Provider, username string) (
-	roles []string, err error) {
-
-	roles = []string{}
-
-	token, err := azureGetToken(provider)
-	if err != nil {
-		return
-	}
+func azureGetGroupName(provider *settings.Provider, token, groupId string) (
+	name string, err error) {
 
 	reqUrl, err := url.Parse(fmt.Sprintf(
-		"https://graph.windows.net/%s/users/%s/memberOf",
+		"https://graph.microsoft.com/v1.0/%s/groups/%s",
 		provider.Tenant,
-		username,
+		groupId,
 	))
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -215,7 +206,7 @@ func AzureRoles(provider *settings.Provider, username string) (
 	}
 
 	query := reqUrl.Query()
-	query.Set("api-version", "1.6")
+	query.Set("$select", "displayName")
 	reqUrl.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(
@@ -248,6 +239,82 @@ func AzureRoles(provider *settings.Provider, username string) (
 		return
 	}
 
+	data := &azureGroupData{}
+	err = json.NewDecoder(resp.Body).Decode(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse response"),
+		}
+		return
+	}
+
+	name = data.DisplayName
+
+	return
+}
+
+func AzureRoles(provider *settings.Provider, username string) (
+	roles []string, err error) {
+
+	roles = []string{}
+
+	token, err := azureGetToken(provider)
+	if err != nil {
+		return
+	}
+
+	reqUrl, err := url.Parse(fmt.Sprintf(
+		"https://graph.microsoft.com/v1.0/%s/users/%s/getMemberGroups",
+		provider.Tenant,
+		username,
+	))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "auth: Failed to parse azure url"),
+		}
+		return
+	}
+
+	reqData, err := json.Marshal(struct {
+		SecurityEnabledOnly string `json:"securityEnabledOnly"`
+	}{
+		SecurityEnabledOnly: "false",
+	})
+	if err != nil {
+		return
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		reqUrl.String(),
+		bytes.NewBuffer(reqData),
+	)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Failed to create azure request"),
+		}
+		return
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Azure request failed"),
+		}
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		err = &errortypes.RequestError{
+			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
+		}
+		return
+	}
+
 	data := &azureMemberData{}
 	err = json.NewDecoder(resp.Body).Decode(data)
 	if err != nil {
@@ -257,12 +324,14 @@ func AzureRoles(provider *settings.Provider, username string) (
 		return
 	}
 
-	for _, membership := range data.Value {
-		if membership.ObjectType != "Group" {
-			continue
+	for _, groupId := range data.Value {
+		groupName, e := azureGetGroupName(provider, token, groupId)
+		if e != nil {
+			err = e
+			return
 		}
 
-		roles = append(roles, membership.DisplayName)
+		roles = append(roles, groupName)
 	}
 
 	return
@@ -277,7 +346,7 @@ func AzureSync(db *database.Database, usr *user.User,
 	}
 
 	reqUrl, err := url.Parse(fmt.Sprintf(
-		"https://graph.windows.net/%s/users/%s",
+		"https://graph.microsoft.com/v1.0/%s/users/%s",
 		provider.Tenant,
 		usr.Username,
 	))
@@ -289,7 +358,7 @@ func AzureSync(db *database.Database, usr *user.User,
 	}
 
 	query := reqUrl.Query()
-	query.Set("api-version", "1.6")
+	query.Set("$select", "accountEnabled")
 	reqUrl.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(
