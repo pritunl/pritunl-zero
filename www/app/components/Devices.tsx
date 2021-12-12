@@ -87,6 +87,7 @@ export default class Devices extends React.Component<Props, State> {
 		if (resp.errorCode) {
 			this.u2fToken = null;
 			this.setState({
+				...this.state,
 				disabled: false,
 			});
 
@@ -132,6 +133,7 @@ export default class Devices extends React.Component<Props, State> {
 
 	registerSign = (): void => {
 		this.setState({
+			...this.state,
 			disabled: true,
 		});
 
@@ -163,6 +165,7 @@ export default class Devices extends React.Component<Props, State> {
 	addDevice = (): void => {
 		if (this.state.deviceType === 'smart_card') {
 			this.setState({
+				...this.state,
 				disabled: true,
 			});
 
