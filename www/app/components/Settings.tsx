@@ -298,13 +298,33 @@ export default class Settings extends React.Component<{}, State> {
 						}}
 					/>
 					<PageInput
-						label="Elasticsearch Address"
-						help="Address of Elasticsearch server"
+						label="ElasticSearch Address"
+						help="Address of ElasticSearch server, use comma separated list for multiple addresses."
 						type="text"
-						placeholder="Elasticsearch address"
+						placeholder="ElasticSearch address"
 						value={this.state.settings.elastic_address}
 						onChange={(val): void => {
 							this.set('elastic_address', val);
+						}}
+					/>
+					<PageInput
+						label="ElasticSearch Username"
+						help="Username of ElasticSearch server"
+						type="text"
+						placeholder="ElasticSearch username"
+						value={this.state.settings.elastic_username}
+						onChange={(val): void => {
+							this.set('elastic_username', val);
+						}}
+					/>
+					<PageInput
+						label="ElasticSearch Password"
+						help="Password of ElasticSearch server"
+						type="text"
+						placeholder="ElasticSearch password"
+						value={this.state.settings.elastic_password}
+						onChange={(val): void => {
+							this.set('elastic_password', val);
 						}}
 					/>
 					<PageSwitch
