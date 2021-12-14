@@ -13,16 +13,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/search"
+	"github.com/pritunl/pritunl-zero/searches"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type webIsolated struct {
@@ -80,7 +80,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	stripCookieHeaders(req)
 
 	if settings.Elastic.ProxyRequests {
-		index := search.Request{
+		index := searches.Request{
 			Address:   node.Self.GetRemoteAddr(r),
 			Timestamp: time.Now(),
 			Scheme:    reqUrl.Scheme,
@@ -101,7 +101,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		}
 
 		contentType := strings.ToLower(r.Header.Get("Content-Type"))
-		if search.RequestTypes.Contains(contentType) &&
+		if searches.RequestTypes.Contains(contentType) &&
 			req.ContentLength != 0 && srcBody != nil {
 
 			index.Body = string(srcBody)

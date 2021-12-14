@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gorilla/websocket"
@@ -19,11 +18,12 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/search"
+	"github.com/pritunl/pritunl-zero/searches"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/pritunl-zero/validator"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -251,7 +251,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	}
 
 	if settings.Elastic.ProxyRequests {
-		index := search.Request{
+		index := searches.Request{
 			Address:   node.Self.GetRemoteAddr(r),
 			Timestamp: time.Now(),
 			Scheme:    scheme,

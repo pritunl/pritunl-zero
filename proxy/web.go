@@ -17,7 +17,7 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/pritunl/pritunl-zero/node"
-	"github.com/pritunl/pritunl-zero/search"
+	"github.com/pritunl/pritunl-zero/searches"
 	"github.com/pritunl/pritunl-zero/service"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -62,7 +62,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 			stripCookieHeaders(req)
 
 			if settings.Elastic.ProxyRequests {
-				index := search.Request{
+				index := searches.Request{
 					Address:   node.Self.GetRemoteAddr(req),
 					Timestamp: time.Now(),
 					Scheme:    req.URL.Scheme,
@@ -83,7 +83,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 				}
 
 				contentType := strings.ToLower(req.Header.Get("Content-Type"))
-				if search.RequestTypes.Contains(contentType) &&
+				if searches.RequestTypes.Contains(contentType) &&
 					req.ContentLength != 0 &&
 					req.Body != nil {
 
