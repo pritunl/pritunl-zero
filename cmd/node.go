@@ -6,7 +6,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/config"
@@ -15,6 +14,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/router"
 	"github.com/pritunl/pritunl-zero/sync"
+	"github.com/sirupsen/logrus"
 )
 
 func Node() (err error) {
@@ -42,7 +42,7 @@ func Node() (err error) {
 
 	go func() {
 		err = routr.Run()
-		if err != nil {
+		if err != nil && !constants.Interrupt {
 			panic(err)
 		}
 	}()
