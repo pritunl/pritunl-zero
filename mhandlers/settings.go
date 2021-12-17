@@ -24,6 +24,8 @@ type settingsData struct {
 	AuthUserExpire         int                           `json:"auth_user_expire"`
 	AuthUserMaxDuration    int                           `json:"auth_user_max_duration"`
 	ElasticAddress         string                        `json:"elastic_address"`
+	ElasticUsername        string                        `json:"elastic_username"`
+	ElasticPassword        string                        `json:"elastic_password"`
 	ElasticProxyRequests   bool                          `json:"elastic_proxy_requests"`
 }
 
@@ -37,6 +39,8 @@ func getSettingsData() *settingsData {
 		AuthProxyMaxDuration:   settings.Auth.ProxyMaxDuration,
 		AuthUserExpire:         settings.Auth.UserExpire,
 		AuthUserMaxDuration:    settings.Auth.UserMaxDuration,
+		ElasticUsername:        settings.Elastic.Username,
+		ElasticPassword:        settings.Elastic.Password,
 		ElasticProxyRequests:   settings.Elastic.ProxyRequests,
 	}
 
@@ -85,6 +89,16 @@ func settingsPut(c *gin.Context) {
 			}
 		}
 		fields.Add("addresses")
+	}
+
+	if settings.Elastic.Username != data.ElasticUsername {
+		settings.Elastic.Username = data.ElasticUsername
+		fields.Add("username")
+	}
+
+	if settings.Elastic.Password != data.ElasticPassword {
+		settings.Elastic.Password = data.ElasticPassword
+		fields.Add("password")
 	}
 
 	if settings.Elastic.ProxyRequests != data.ElasticProxyRequests {
