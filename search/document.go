@@ -2,6 +2,7 @@ package search
 
 import (
 	"bytes"
+	"container/list"
 	"encoding/json"
 	"io/ioutil"
 	"time"
@@ -17,6 +18,7 @@ type Document struct {
 	Index    string
 	Id       string
 	Data     interface{}
+	NoRetry  bool
 	attempts int
 }
 
@@ -29,7 +31,7 @@ type searchBulkReq struct {
 	Index *searchBulkReqData `json:"index"`
 }
 
-func Index(index string, data interface{}) {
+func Index(index string, data interface{}, noRetry bool) {
 	clnt := Default
 
 	if clnt == nil {
@@ -37,25 +39,28 @@ func Index(index string, data interface{}) {
 	}
 
 	doc := &Document{
-		Index: index + dateSuffix(),
-		Id:    primitive.NewObjectID().Hex(),
-		Data:  data,
+		Index:   index + dateSuffix(),
+		Id:      primitive.NewObjectID().Hex(),
+		Data:    data,
+		NoRetry: noRetry,
 	}
 
-	lock.Lock()
-	buffer.PushBack(doc)
-	lock.Unlock()
+	if len(buffer) <= BufferSize {
+		buffer <- doc
+	}
 
 	return
 }
 
-func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
+func (c *Client) BulkDocuments(docs *list.List, log bool) (err error) {
 	var resp *opensearchapi.Response
 
 	for i := 0; i < 3; i++ {
-		reqsData := [][]byte{}
+		reqsData := bytes.NewBuffer(nil)
 
-		for _, doc := range docs {
+		for elem := docs.Front(); elem != nil; elem = elem.Next() {
+			doc := elem.Value.(*Document)
+
 			if !c.indexes.Contains(doc.Index) {
 				err = c.AddIndex(doc.Index)
 				if err != nil {
@@ -63,6 +68,9 @@ func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
 				}
 			}
 
+			if doc.attempts >= RetryCount {
+				continue
+			}
 			doc.attempts += 1
 
 			indexReq, e := json.Marshal(&searchBulkReq{
@@ -78,7 +86,8 @@ func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
 				return
 			}
 
-			reqsData = append(reqsData, indexReq)
+			reqsData.Write(indexReq)
+			reqsData.Write([]byte("\n"))
 
 			indexDoc, e := json.Marshal(doc.Data)
 			if e != nil {
@@ -88,14 +97,11 @@ func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
 				return
 			}
 
-			reqsData = append(reqsData, indexDoc)
+			reqsData.Write(indexDoc)
+			reqsData.Write([]byte("\n"))
 		}
 
-		data := bytes.Join(reqsData, []byte("\n"))
-
-		data = append(data, []byte("\n")...)
-
-		resp, err = c.clnt.Bulk(bytes.NewBuffer(data))
+		resp, err = c.clnt.Bulk(reqsData)
 		if err != nil {
 			err = &errortypes.DatabaseError{
 				errors.Wrap(err, "search: Bulk insert failed"),
@@ -126,11 +132,17 @@ func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
 	}
 
 	if err != nil || (resp != nil && resp.StatusCode != 200) {
-		failedLock.Lock()
-		for _, doc := range docs {
-			failedBuffer.PushBack(doc)
+		for elem := docs.Front(); elem != nil; elem = elem.Next() {
+			doc := elem.Value.(*Document)
+
+			if doc.attempts >= RetryCount || doc.NoRetry {
+				continue
+			}
+
+			if len(failedBuffer) <= BufferSize {
+				failedBuffer <- doc
+			}
 		}
-		failedLock.Unlock()
 
 		if resp != nil {
 			respBody := ""
@@ -144,16 +156,22 @@ func (c *Client) BulkDocuments(docs []*Document, log bool) (err error) {
 			}
 
 			if log {
-				logrus.WithFields(logrus.Fields{
-					"status_code": resp.StatusCode,
-					"response":    respBody,
-					"error":       err,
-				}).Error("search: Bulk insert failed, moving to buffer")
+				if logLimit() {
+					logrus.WithFields(logrus.Fields{
+						"status_code": resp.StatusCode,
+						"response":    respBody,
+						"error":       err,
+					}).Error("search: Bulk insert failed, moving to buffer")
+				}
+				err = nil
 			}
 		} else if log {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("search: Bulk insert failed, moving to buffer")
+			if logLimit() {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("search: Bulk insert failed, moving to buffer")
+			}
+			err = nil
 		}
 		return
 	}
