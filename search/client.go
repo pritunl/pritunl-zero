@@ -4,12 +4,18 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/pritunl/pritunl-zero/errortypes"
+)
+
+var (
+	ip4reg = regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
+	ip6reg = regexp.MustCompile("/\\[[a-fA-F0-9:]*\\]/")
 )
 
 type Client struct {
@@ -24,6 +30,16 @@ func NewClient(username, password string, addrs []string) (
 		return
 	}
 
+	skipVerify := false
+	for _, addr := range addrs {
+		if len(ip4reg.FindAllString(addr, -1)) > 0 ||
+			len(ip6reg.FindAllString(addr, -1)) > 0 {
+
+			skipVerify = true
+			break
+		}
+	}
+
 	cfg := opensearch.Config{
 		Addresses: addrs,
 		Username:  username,
@@ -36,8 +52,9 @@ func NewClient(username, password string, addrs []string) (
 			}).DialContext,
 			TLSHandshakeTimeout: 5 * time.Second,
 			TLSClientConfig: &tls.Config{
-				MinVersion: tls.VersionTLS12,
-				MaxVersion: tls.VersionTLS13,
+				InsecureSkipVerify: skipVerify,
+				MinVersion:         tls.VersionTLS12,
+				MaxVersion:         tls.VersionTLS13,
 			},
 		},
 	}
