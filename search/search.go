@@ -3,7 +3,6 @@ package search
 import (
 	"bytes"
 	"container/list"
-	"context"
 	"crypto/md5"
 	"io"
 	"sync"
@@ -15,13 +14,22 @@ import (
 )
 
 var (
-	ctx          = context.Background()
-	Default      *Client
-	buffer       = list.New()
-	lock         = sync.Mutex{}
-	failedBuffer = list.New()
-	failedLock   = sync.Mutex{}
-	reconnect    = false
+	Default          *Client
+	buffer           chan *Document
+	failedBuffer     chan *Document
+	reconnect        = false
+	groups           *list.List
+	groupsLock       = sync.Mutex{}
+	failedGroups     *list.List
+	failedGroupsLock = sync.Mutex{}
+)
+
+const (
+	BufferSize       = 2048
+	GroupLimit       = 100
+	FailedGroupLimit = 10
+	RetryCount       = 5
+	ThreadLimit      = 10
 )
 
 func hashConf(username, password string, addrs []string) []byte {
@@ -81,96 +89,166 @@ func watchSearch() {
 	}
 }
 
-func worker() {
+func workerBuffer() {
 	for {
-		time.Sleep(1 * time.Second)
+		entry := <-buffer
 
-		group := []*Document{}
-		groups := [][]*Document{}
+		groupsLock.Lock()
 
-		lock.Lock()
-		for elem := buffer.Front(); elem != nil; elem = elem.Next() {
-			if len(group) >= 100 {
-				groups = append(groups, group)
-				group = []*Document{}
-			}
-			doc := elem.Value.(*Document)
-			group = append(group, doc)
+		group := groups.Back().Value.(*list.List)
+		if group.Len() >= GroupLimit {
+			group = list.New()
+			groups.PushBack(group)
 		}
-		buffer = list.New()
-		lock.Unlock()
 
-		if len(group) > 0 {
-			groups = append(groups, group)
+		group.PushBack(entry)
+
+		groupsLock.Unlock()
+	}
+}
+
+func workerFailedBuffer() {
+	for {
+		entry := <-failedBuffer
+
+		failedGroupsLock.Lock()
+
+		failedGroup := failedGroups.Back().Value.(*list.List)
+		if failedGroup.Len() >= FailedGroupLimit {
+			failedGroup = list.New()
+			failedGroups.PushBack(failedGroup)
 		}
+
+		failedGroup.PushBack(entry)
+
+		failedGroupsLock.Unlock()
+	}
+}
+
+func workerGroup() {
+	for {
+		groupsLock.Lock()
+		curGrps := groups
+		groups = list.New()
+		groups.PushBack(list.New())
+		groupsLock.Unlock()
 
 		clnt := Default
-		if clnt == nil || len(groups) == 0 {
+		if clnt == nil || curGrps.Front().Value.(*list.List).Len() == 0 {
+			time.Sleep(1 * time.Second)
 			continue
 		}
 
-		for _, group := range groups {
-			go func(docs []*Document) {
-				e := clnt.BulkDocuments(docs, false)
-				if e != nil {
-					logrus.WithFields(logrus.Fields{
-						"error": e,
-					}).Error("search: Bulk insert error")
+		for {
+			waiters := sync.WaitGroup{}
+			count := 0
+
+			for elem := curGrps.Front(); elem != nil; elem = curGrps.Front() {
+				group := curGrps.Remove(elem).(*list.List)
+				if group.Len() == 0 {
+					continue
 				}
-			}(group)
+
+				count += 1
+				waiters.Add(1)
+				go func(group *list.List) {
+					err := clnt.BulkDocuments(group, true)
+					if err != nil {
+						if logLimit() {
+							logrus.WithFields(logrus.Fields{
+								"error": err,
+							}).Error("search: Bulk insert error")
+						}
+					}
+
+					waiters.Done()
+				}(group)
+
+				if count >= ThreadLimit {
+					break
+				}
+			}
+
+			waiters.Wait()
+
+			if curGrps.Front() == nil {
+				break
+			}
 		}
 	}
 }
 
-func failedWorker() {
+func workerFailedGroup() {
 	for {
-		time.Sleep(1 * time.Second)
-
-		group := []*Document{}
-		groups := [][]*Document{}
-
-		lock.Lock()
-		for elem := failedBuffer.Front(); elem != nil; elem = elem.Next() {
-			if len(group) >= 10 {
-				groups = append(groups, group)
-				group = []*Document{}
-			}
-			doc := elem.Value.(*Document)
-			group = append(group, doc)
-		}
-		buffer = list.New()
-		lock.Unlock()
-
-		if len(group) > 0 {
-			groups = append(groups, group)
-		}
+		failedGroupsLock.Lock()
+		curGrps := failedGroups
+		failedGroups = list.New()
+		failedGroups.PushBack(list.New())
+		failedGroupsLock.Unlock()
 
 		clnt := Default
-		if clnt == nil || len(groups) == 0 {
+		if clnt == nil || curGrps.Front().Value.(*list.List).Len() == 0 {
+			time.Sleep(1 * time.Second)
 			continue
 		}
 
-		for _, group := range groups {
-			go func(docs []*Document) {
-				e := clnt.BulkDocuments(docs, false)
-				if e != nil {
-					logrus.WithFields(logrus.Fields{
-						"error": e,
-					}).Error("search: Bulk insert retry error")
+		for {
+			waiters := sync.WaitGroup{}
+			count := 0
+
+			for elem := curGrps.Front(); elem != nil; elem = curGrps.Front() {
+				group := curGrps.Remove(elem).(*list.List)
+				if group.Len() == 0 {
+					continue
 				}
-			}(group)
+
+				count += 1
+				waiters.Add(1)
+				go func(group *list.List) {
+					err := clnt.BulkDocuments(group, false)
+					if err != nil {
+						if logLimit() {
+							logrus.WithFields(logrus.Fields{
+								"error": err,
+							}).Error("search: Bulk insert retry error")
+						}
+					}
+
+					waiters.Done()
+				}(group)
+
+				if count >= ThreadLimit {
+					break
+				}
+			}
+
+			waiters.Wait()
+
+			if curGrps.Front() == nil {
+				break
+			}
 		}
 	}
 }
 
 func init() {
+	buffer = make(chan *Document, BufferSize+500)
+	failedBuffer = make(chan *Document, BufferSize+500)
+	groups = list.New()
+	groups.PushBack(list.New())
+	failedGroups = list.New()
+	failedGroups.PushBack(list.New())
+
 	module := requires.New("search")
 	module.After("settings")
 
 	module.Handler = func() (err error) {
 		go watchSearch()
-		go worker()
-		go failedWorker()
+		go workerBuffer()
+		go workerFailedBuffer()
+		go workerGroup()
+		go workerFailedGroup()
+
 		return
 	}
 }
