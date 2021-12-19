@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/opensearch-project/opensearch-go/opensearchapi"
@@ -86,6 +88,8 @@ func (c *Client) AddIndex(index string) (err error) {
 }
 
 func (c *Client) CreateIndex(index string, mappings []*Mapping) (err error) {
+	time.Sleep(time.Duration(rand.Intn(2000)) * time.Millisecond)
+
 	exists, err := c.clnt.Indices.Exists([]string{index})
 	if err != nil {
 		err = &errortypes.DatabaseError{
