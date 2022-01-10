@@ -664,7 +664,7 @@ export default class Authority extends React.Component<Props, State> {
 						Bastion Hostname and Port
 						<Help
 							title="Bastion Hostname and Port"
-							content="Hostname of bastion server and port that SSH nodes will run on. This port cannot be 22 or conflict with existing services on the Pritunl Zero node. Each authority must have a unquie bastion port. The bastion hostname will need to point to a Pritunl Zero bastion node or network load balancer in front of Pritunl Zero bastion nodes."
+							content="Hostname of bastion server and port that SSH nodes will run on. This port cannot be 22 or conflict with existing services on the Pritunl Zero node. Each authority must have a unique bastion port. The bastion hostname will need to point to a Pritunl Zero bastion node or network load balancer in front of Pritunl Zero bastion nodes."
 						/>
 						<div className="bp3-control-group" style={css.inputGroup}>
 							<input
