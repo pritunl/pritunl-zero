@@ -262,6 +262,61 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		</div>;
 	}
 
+	jumpcloud(): JSX.Element {
+		let provider = this.props.provider;
+
+		return <div>
+			<PageInput
+				label="Identity Provider Single Sign-On URL"
+				help="Single sign-on URL found in JumpCloud app settings"
+				type="text"
+				placeholder="JumpCloud single sign-on URL"
+				value={provider.saml_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="Identity Provider Issuer URL"
+				help="Issuer URL found in JumpCloud app settings"
+				type="text"
+				placeholder="JumpCloud issuer URL"
+				value={provider.issuer_url}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.issuer_url = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageTextArea
+				label="X.509 Certificate"
+				help="X.509 certificate found in JumpCloud app settings"
+				placeholder="JumpCloud X.509 certificate"
+				rows={6}
+				value={provider.saml_cert}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.saml_cert = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
+				label="JumpCloud API Key"
+				help="JumpCloud API key for user account status verfication"
+				type="text"
+				placeholder="Auth0 client secret"
+				value={provider.jumpcloud_secret}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.jumpcloud_secret = val;
+					this.props.onChange(state);
+				}}
+			/>
+		</div>;
+	}
+
 	render(): JSX.Element {
 		let provider = this.props.provider;
 		let label = '';
@@ -287,6 +342,10 @@ export default class SettingsProvider extends React.Component<Props, State> {
 			case 'okta':
 				label = 'Okta';
 				options = this.okta();
+				break;
+			case 'jumpcloud':
+				label = 'JumpCloud';
+				options = this.jumpcloud();
 				break;
 		}
 
