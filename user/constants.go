@@ -5,13 +5,14 @@ import (
 )
 
 const (
-	Local    = "local"
-	Api      = "api"
-	Azure    = "azure"
-	AuthZero = "authzero"
-	Google   = "google"
-	OneLogin = "onelogin"
-	Okta     = "okta"
+	Local     = "local"
+	Api       = "api"
+	Azure     = "azure"
+	AuthZero  = "authzero"
+	Google    = "google"
+	OneLogin  = "onelogin"
+	Okta      = "okta"
+	JumpCloud = "jumpcloud"
 )
 
 var (
@@ -23,5 +24,6 @@ var (
 		Google,
 		OneLogin,
 		Okta,
+		JumpCloud,
 	)
 )
