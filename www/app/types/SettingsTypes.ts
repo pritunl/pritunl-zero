@@ -29,8 +29,15 @@ export interface SamlProvider extends Provider {
 	saml_cert?: string;
 }
 
+export interface JumpCloudProvider extends Provider {
+	issuer_url?: string;
+	saml_url?: string;
+	saml_cert?: string;
+	jumpcloud_secret?: string;
+}
+
 export type ProviderAny = Provider & AzureProvider & GoogleProvider &
-	SamlProvider;
+	SamlProvider & JumpCloudProvider;
 export type Providers = ProviderAny[];
 
 export interface SecondaryProvider {
