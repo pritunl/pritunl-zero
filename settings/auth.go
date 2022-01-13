@@ -7,21 +7,22 @@ import (
 var Auth *auth
 
 type Provider struct {
-	Id             primitive.ObjectID `bson:"id" json:"id"`
-	Type           string             `bson:"type" json:"type"`
-	Label          string             `bson:"label" json:"label"`
-	DefaultRoles   []string           `bson:"default_roles" json:"default_roles"`
-	AutoCreate     bool               `bson:"auto_create" json:"auto_create"`
-	RoleManagement string             `bson:"role_management" json:"role_management"`
-	Tenant         string             `bson:"tenant" json:"tenant"`               // azure
-	ClientId       string             `bson:"client_id" json:"client_id"`         // azure + authzero
-	ClientSecret   string             `bson:"client_secret" json:"client_secret"` // azure + authzero
-	Domain         string             `bson:"domain" json:"domain"`               // google + authzero
-	GoogleKey      string             `bson:"google_key" json:"google_key"`       // google
-	GoogleEmail    string             `bson:"google_email" json:"google_email"`   // google
-	IssuerUrl      string             `bson:"issuer_url" json:"issuer_url"`       // saml
-	SamlUrl        string             `bson:"saml_url" json:"saml_url"`           // saml
-	SamlCert       string             `bson:"saml_cert" json:"saml_cert"`         // saml
+	Id              primitive.ObjectID `bson:"id" json:"id"`
+	Type            string             `bson:"type" json:"type"`
+	Label           string             `bson:"label" json:"label"`
+	DefaultRoles    []string           `bson:"default_roles" json:"default_roles"`
+	AutoCreate      bool               `bson:"auto_create" json:"auto_create"`
+	RoleManagement  string             `bson:"role_management" json:"role_management"`
+	Tenant          string             `bson:"tenant" json:"tenant"`                     // azure
+	ClientId        string             `bson:"client_id" json:"client_id"`               // azure + authzero
+	ClientSecret    string             `bson:"client_secret" json:"client_secret"`       // azure + authzero
+	Domain          string             `bson:"domain" json:"domain"`                     // google + authzero
+	GoogleKey       string             `bson:"google_key" json:"google_key"`             // google
+	GoogleEmail     string             `bson:"google_email" json:"google_email"`         // google
+	JumpCloudSecret string             `bson:"jumpcloud_secret" json:"jumpcloud_secret"` // jumpcloud
+	IssuerUrl       string             `bson:"issuer_url" json:"issuer_url"`             // saml
+	SamlUrl         string             `bson:"saml_url" json:"saml_url"`                 // saml
+	SamlCert        string             `bson:"saml_cert" json:"saml_cert"`               // saml
 }
 
 type SecondaryProvider struct {
