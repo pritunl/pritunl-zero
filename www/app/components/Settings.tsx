@@ -206,6 +206,7 @@ export default class Settings extends React.Component<{}, State> {
 						<option value="google">Google</option>
 						<option value="onelogin">OneLogin</option>
 						<option value="okta">Okta</option>
+						<option value="jumpcloud">JumpCloud</option>
 					</PageSelectButton>
 				</PagePanel>
 				<PagePanel>
