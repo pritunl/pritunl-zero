@@ -40,6 +40,11 @@ func SyncUser(db *database.Database, usr *user.User) (
 		if err != nil {
 			return
 		}
+	} else if usr.Type == user.JumpCloud {
+		active, err = JumpcloudSync(db, usr, provider)
+		if err != nil {
+			return
+		}
 	} else {
 		active = true
 	}

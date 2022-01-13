@@ -22,7 +22,9 @@ const (
 func SamlRequest(db *database.Database, location, query string,
 	provider *settings.Provider) (body []byte, err error) {
 
-	if provider.Type != OneLogin && provider.Type != Okta {
+	if provider.Type != OneLogin && provider.Type != Okta &&
+		provider.Type != JumpCloud {
+
 		err = &errortypes.ParseError{
 			errors.New("auth: Invalid provider type"),
 		}

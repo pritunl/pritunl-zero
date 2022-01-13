@@ -114,7 +114,7 @@ func Request(c *gin.Context) {
 
 			c.Redirect(302, redirect)
 			return
-		case OneLogin, Okta:
+		case OneLogin, Okta, JumpCloud:
 			body, err := SamlRequest(db, loc, query, provider)
 			if err != nil {
 				utils.AbortWithError(c, 500, err)
