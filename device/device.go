@@ -2,6 +2,7 @@ package device
 
 import (
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/x509"
 	"strings"
 	"time"
@@ -14,24 +15,30 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/webauthn/webauthn"
 )
 
 type Device struct {
-	Id           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	User         primitive.ObjectID `bson:"user" json:"user"`
-	Name         string             `bson:"name" json:"name"`
-	Type         string             `bson:"type" json:"type"`
-	Mode         string             `bson:"mode" json:"mode"`
-	Timestamp    time.Time          `bson:"timestamp" json:"timestamp"`
-	Disabled     bool               `bson:"disabled" json:"disabled"`
-	ActiveUntil  time.Time          `bson:"activeactive_until_until" json:"active_until"`
-	LastActive   time.Time          `bson:"last_active" json:"last_active"`
-	Number       string             `bson:"number" json:"number"`
-	SshPublicKey string             `bson:"ssh_public_key" json:"ssh_public_key"`
-	U2fRaw       []byte             `bson:"u2f_raw" json:"-"`
-	U2fCounter   uint32             `bson:"u2f_counter" json:"-"`
-	U2fKeyHandle []byte             `bson:"u2f_key_handle" json:"-"`
-	U2fPublicKey []byte             `bson:"u2f_public_key" json:"-"`
+	Id                 primitive.ObjectID      `bson:"_id,omitempty" json:"id"`
+	User               primitive.ObjectID      `bson:"user" json:"user"`
+	Name               string                  `bson:"name" json:"name"`
+	Type               string                  `bson:"type" json:"type"`
+	Mode               string                  `bson:"mode" json:"mode"`
+	Timestamp          time.Time               `bson:"timestamp" json:"timestamp"`
+	Disabled           bool                    `bson:"disabled" json:"disabled"`
+	ActiveUntil        time.Time               `bson:"activeactive_until_until" json:"active_until"`
+	LastActive         time.Time               `bson:"last_active" json:"last_active"`
+	Number             string                  `bson:"number" json:"number"`
+	SshPublicKey       string                  `bson:"ssh_public_key" json:"ssh_public_key"`
+	U2fRaw             []byte                  `bson:"u2f_raw" json:"-"`
+	U2fCounter         uint32                  `bson:"u2f_counter" json:"-"`
+	U2fKeyHandle       []byte                  `bson:"u2f_key_handle" json:"-"`
+	U2fPublicKey       []byte                  `bson:"u2f_public_key" json:"-"`
+	WanId              []byte                  `bson:"wan_id" json:"-"`
+	WanPublicKey       []byte                  `bson:"wan_public_key" json:"-"`
+	WanAttestationType string                  `bson:"wan_attestation_type" json:"-"`
+	WanAuthenticator   *webauthn.Authenticator `bson:"wan_authenticator" json:"-"`
+	WanRpId            string                  `bson:"wab_rp_id" json:"wab_rp_id"`
 }
 
 func (d *Device) Validate(db *database.Database) (
@@ -82,7 +89,7 @@ func (d *Device) Validate(db *database.Database) (
 		}
 		break
 	case Secondary:
-		if d.Type != U2f {
+		if d.Type != U2f && d.Type != WebAuthn {
 			errData = &errortypes.ErrorData{
 				Error:   "device_type_invalid",
 				Message: "Device type is invalid",
@@ -137,6 +144,60 @@ func (d *Device) TestAlert(db *database.Database) (
 		return
 	}
 
+	return
+}
+
+func (d *Device) MarshalWebauthn(cred *webauthn.Credential) {
+	if d.Type == U2f {
+		d.U2fCounter = cred.Authenticator.SignCount
+	} else {
+		d.WanId = cred.ID
+		d.WanPublicKey = cred.PublicKey
+		d.WanAttestationType = cred.AttestationType
+		d.WanAuthenticator = &cred.Authenticator
+	}
+
+	return
+}
+
+func (d *Device) UnmarshalWebauthn() (cred webauthn.Credential, err error) {
+	if d.Type == U2f {
+		pubKeyItf, e := x509.ParsePKIXPublicKey(d.U2fPublicKey)
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "device: Failed to parse device public key"),
+			}
+			return
+		}
+
+		pubKey, ok := pubKeyItf.(*ecdsa.PublicKey)
+		if !ok {
+			err = &errortypes.ParseError{
+				errors.New("device: Device public key invalid type"),
+			}
+			return
+		}
+
+		pubKeyByte := elliptic.Marshal(pubKey.Curve, pubKey.X, pubKey.Y)
+
+		cred = webauthn.Credential{
+			ID:              d.U2fKeyHandle,
+			PublicKey:       pubKeyByte,
+			AttestationType: "fido-u2f",
+			Authenticator: webauthn.Authenticator{
+				AAGUID:    d.U2fRaw,
+				SignCount: d.U2fCounter,
+			},
+		}
+		return
+	}
+
+	cred = webauthn.Credential{
+		ID:              d.WanId,
+		PublicKey:       d.WanPublicKey,
+		AttestationType: d.WanAttestationType,
+		Authenticator:   *d.WanAuthenticator,
+	}
 	return
 }
 
