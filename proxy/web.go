@@ -90,7 +90,7 @@ func (w *web) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 					bodyCopy := &bytes.Buffer{}
 					tee := io.TeeReader(req.Body, bodyCopy)
 					body, _ := ioutil.ReadAll(tee)
-					req.Body.Close()
+					_ = req.Body.Close()
 					req.Body = utils.NopCloser{bodyCopy}
 					index.Body = string(body)
 				}

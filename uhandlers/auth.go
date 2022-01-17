@@ -823,7 +823,7 @@ func authU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "device.change")
+	_ = event.PublishDispatch(db, "device.change")
 
 	err = audit.New(
 		db,

@@ -47,7 +47,7 @@ func publish() {
 	db := database.GetDatabase()
 	defer db.Close()
 
-	event.PublishDispatch(db, "log.change")
+	_ = event.PublishDispatch(db, "log.change")
 }
 
 func initSender() {

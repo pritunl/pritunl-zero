@@ -103,7 +103,7 @@ func nodePut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nde)
 }
@@ -127,7 +127,7 @@ func nodeDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nil)
 }

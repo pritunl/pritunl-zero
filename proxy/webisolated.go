@@ -118,11 +118,13 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		WriteError(rw, r, 500, err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	utils.CopyHeaders(rw.Header(), resp.Header)
 	rw.WriteHeader(resp.StatusCode)
-	io.Copy(rw, resp.Body)
+	_, _ = io.Copy(rw, resp.Body)
 }
 
 func newWebIsolated(proxyProto string, proxyPort int, host *Host,

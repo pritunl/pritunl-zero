@@ -28,7 +28,11 @@ func (s *Store) addDir(dir string) (err error) {
 		fullPath := path.Join(dir, name)
 
 		if info.IsDir() {
-			s.addDir(fullPath)
+			err = s.addDir(fullPath)
+			if err != nil {
+				return
+			}
+
 			continue
 		}
 

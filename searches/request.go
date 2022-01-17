@@ -31,8 +31,8 @@ type Request struct {
 	Body      string      `json:"body"`
 }
 
-func (r *Request) Index() (err error) {
-	search.Index("zero-requests", r)
+func (r *Request) Index() {
+	search.Index("zero-requests", r, false)
 	return
 }
 

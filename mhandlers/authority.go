@@ -158,8 +158,8 @@ func authorityPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "authority.change")
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "authority.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	authr.Json()
 
@@ -228,7 +228,7 @@ func authorityPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "authority.change")
+	_ = event.PublishDispatch(db, "authority.change")
 
 	authr.Json()
 
@@ -259,8 +259,8 @@ func authorityDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "authority.change")
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "authority.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nil)
 }
@@ -388,7 +388,7 @@ func authorityTokenPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "authority.change")
+	_ = event.PublishDispatch(db, "authority.change")
 
 	c.Status(200)
 }
@@ -430,7 +430,7 @@ func authorityTokenDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "authority.change")
+	_ = event.PublishDispatch(db, "authority.change")
 
 	c.Status(200)
 }

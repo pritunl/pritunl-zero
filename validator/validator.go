@@ -28,7 +28,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 			return
 		}
 
-		event.PublishDispatch(db, "user.change")
+		_ = event.PublishDispatch(db, "user.change")
 
 		errAudit = audit.Fields{
 			"error":   "user_disabled",
@@ -109,7 +109,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 			return
 		}
 
-		event.PublishDispatch(db, "user.change")
+		_ = event.PublishDispatch(db, "user.change")
 
 		errAudit = audit.Fields{
 			"error":   "user_disabled",
@@ -179,7 +179,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 			return
 		}
 
-		event.PublishDispatch(db, "user.change")
+		_ = event.PublishDispatch(db, "user.change")
 
 		errAudit = audit.Fields{
 			"error":   "user_disabled",

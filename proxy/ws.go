@@ -168,7 +168,7 @@ func (w *webSocketConn) Run(db *database.Database) {
 				wait <- true
 			}
 		}()
-		io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
+		_, _ = io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
 		wait <- true
 	}()
 	go func() {
@@ -181,7 +181,7 @@ func (w *webSocketConn) Run(db *database.Database) {
 				wait <- true
 			}
 		}()
-		io.Copy(w.front.UnderlyingConn(), w.back.UnderlyingConn())
+		_, _ = io.Copy(w.front.UnderlyingConn(), w.back.UnderlyingConn())
 		wait <- true
 	}()
 	<-wait
@@ -197,10 +197,10 @@ func (w *webSocketConn) Close() {
 		recover()
 	}()
 	if w.back != nil {
-		w.back.Close()
+		_ = w.back.Close()
 	}
 	if w.front != nil {
-		w.front.Close()
+		_ = w.front.Close()
 	}
 }
 
@@ -306,7 +306,9 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		WriteError(rw, r, 500, err)
 		return
 	}
-	defer backConn.Close()
+	defer func() {
+		_ = backConn.Close()
+	}()
 
 	upgradeHeaders := getUpgradeHeaders(backResp)
 	frontConn, err := w.upgrader.Upgrade(rw, r, upgradeHeaders)
@@ -317,7 +319,9 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		WriteError(rw, r, 500, err)
 		return
 	}
-	defer frontConn.Close()
+	defer func() {
+		_ = frontConn.Close()
+	}()
 
 	conn := &webSocketConn{
 		front: frontConn,

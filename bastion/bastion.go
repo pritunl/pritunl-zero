@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
@@ -17,6 +16,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type Bastion struct {
@@ -31,7 +31,7 @@ type Bastion struct {
 
 func (b *Bastion) syncCert() {
 	defer func() {
-		os.RemoveAll(b.path)
+		_ = os.RemoveAll(b.path)
 	}()
 
 	for {
@@ -56,7 +56,7 @@ func (b *Bastion) syncCert() {
 
 func (b *Bastion) wait() {
 	defer func() {
-		os.RemoveAll(b.path)
+		_ = os.RemoveAll(b.path)
 		b.state = false
 		delete(state, b.Authority)
 	}()
@@ -91,7 +91,7 @@ func (b *Bastion) renewHost(db *database.Database) (err error) {
 		b.authr.ProxyHostname, b.authr.ProxyPublicKey, b.authr)
 	if e != nil {
 		b.state = false
-		os.RemoveAll(b.path)
+		_ = os.RemoveAll(b.path)
 		err = e
 		return
 	}
@@ -152,7 +152,7 @@ func (b *Bastion) Start(db *database.Database,
 	err = utils.ExistsMkdir(b.path, 0755)
 	if err != nil {
 		b.state = false
-		os.RemoveAll(b.path)
+		_ = os.RemoveAll(b.path)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (b *Bastion) Start(db *database.Database,
 		err = b.renewHost(db)
 		if err != nil {
 			b.state = false
-			os.RemoveAll(b.path)
+			_ = os.RemoveAll(b.path)
 			return
 		}
 	}
@@ -184,7 +184,7 @@ func (b *Bastion) Start(db *database.Database,
 	)
 	if err != nil {
 		b.state = false
-		os.RemoveAll(b.path)
+		_ = os.RemoveAll(b.path)
 
 		return
 	}
@@ -220,7 +220,7 @@ func (b *Bastion) Stop() (err error) {
 		time.Sleep(15 * time.Second)
 
 		if b.state {
-			utils.ExecOutputLogged(nil, "docker", "kill", b.Container)
+			_, _ = utils.ExecOutputLogged(nil, "docker", "kill", b.Container)
 		}
 	}()
 

@@ -80,8 +80,22 @@ func NewFile(path string) (file *File, err error) {
 		return
 	}
 
-	writer.Write(file.Data)
-	writer.Close()
+	_, err = writer.Write(file.Data)
+	if err != nil {
+		err = &errortypes.WriteError{
+			errors.Wrap(err, "static: Write error"),
+		}
+		return
+	}
+
+	err = writer.Close()
+	if err != nil {
+		err = &errortypes.WriteError{
+			errors.Wrap(err, "static: Close error"),
+		}
+		return
+	}
+
 	file.GzipData = gzipData.Bytes()
 
 	return

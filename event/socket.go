@@ -55,7 +55,7 @@ func (w *WebSocket) Close() {
 		defer func() {
 			recover()
 		}()
-		w.Conn.Close()
+		_ = w.Conn.Close()
 	}()
 }
 

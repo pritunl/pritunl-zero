@@ -35,11 +35,11 @@ const (
 func hashConf(username, password string, addrs []string) []byte {
 	hash := md5.New()
 
-	io.WriteString(hash, username)
-	io.WriteString(hash, password)
+	_, _ = io.WriteString(hash, username)
+	_, _ = io.WriteString(hash, password)
 
 	for _, addr := range addrs {
-		io.WriteString(hash, addr)
+		_, _ = io.WriteString(hash, addr)
 	}
 
 	return hash.Sum(nil)

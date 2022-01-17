@@ -175,7 +175,7 @@ func settingsPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "settings.change")
+	_ = event.PublishDispatch(db, "settings.change")
 
 	data = getSettingsData()
 	c.JSON(200, data)

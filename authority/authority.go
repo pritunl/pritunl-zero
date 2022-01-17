@@ -355,7 +355,7 @@ func (a *Authority) createCertificateLocal(
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
+	_, _ = serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := serialHash.Sum64()
 
 	expire := a.Expire
@@ -418,7 +418,12 @@ func (a *Authority) createCertificateLocal(
 		return
 	}
 
-	certMarshaled = string(MarshalCertificate(cert, comment))
+	certMarshaledByt, err := MarshalCertificate(cert, comment)
+	if err != nil {
+		return
+	}
+
+	certMarshaled = string(certMarshaledByt)
 
 	return
 }
@@ -625,7 +630,13 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 					return false
 				}
 
-				certMarshaled = string(MarshalCertificate(cert, comment))
+				certMarshaledByt, err := MarshalCertificate(cert, comment)
+				if err != nil {
+					eventErr = err
+					return false
+				}
+
+				certMarshaled = string(certMarshaledByt)
 
 				return false
 			})
@@ -680,7 +691,7 @@ func (a *Authority) createHostCertificate(
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
+	_, _ = serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := serialHash.Sum64()
 
 	expire := a.HostExpire
@@ -711,7 +722,12 @@ func (a *Authority) createHostCertificate(
 		return
 	}
 
-	certMarshaled = string(MarshalCertificate(cert, comment))
+	certMarshaledByt, err := MarshalCertificate(cert, comment)
+	if err != nil {
+		return
+	}
+
+	certMarshaled = string(certMarshaledByt)
 
 	return
 }
@@ -886,7 +902,13 @@ func (a *Authority) createHostCertificateHsm(db *database.Database,
 					return false
 				}
 
-				certMarshaled = string(MarshalCertificate(cert, comment))
+				certMarshaledByt, err := MarshalCertificate(cert, comment)
+				if err != nil {
+					eventErr = err
+					return false
+				}
+
+				certMarshaled = string(certMarshaledByt)
 
 				return false
 			})
@@ -952,7 +974,7 @@ func (a *Authority) createRootCertificateLocal() (err error) {
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
+	_, _ = serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := &big.Int{}
 	serial.SetUint64(serialHash.Sum64())
 
@@ -1048,7 +1070,7 @@ func (a *Authority) createClientCertificateLocal() (
 	}
 
 	serialHash := fnv.New64a()
-	serialHash.Write([]byte(primitive.NewObjectID().Hex()))
+	_, _ = serialHash.Write([]byte(primitive.NewObjectID().Hex()))
 	serial := &big.Int{}
 	serial.SetUint64(serialHash.Sum64())
 
@@ -1205,7 +1227,7 @@ func (a *Authority) HandleHsmStatus(db *database.Database,
 	}
 
 	if sendEvent {
-		event.PublishDispatch(db, "authority.change")
+		_ = event.PublishDispatch(db, "authority.change")
 	}
 
 	return

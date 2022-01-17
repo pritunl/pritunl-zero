@@ -112,7 +112,7 @@ func policyPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "policy.change")
+	_ = event.PublishDispatch(db, "policy.change")
 
 	c.JSON(200, polcy)
 }
@@ -170,7 +170,7 @@ func policyPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "policy.change")
+	_ = event.PublishDispatch(db, "policy.change")
 
 	c.JSON(200, polcy)
 }
@@ -194,7 +194,7 @@ func policyDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "policy.change")
+	_ = event.PublishDispatch(db, "policy.change")
 
 	c.JSON(200, nil)
 }

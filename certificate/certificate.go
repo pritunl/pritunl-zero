@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/sirupsen/logrus"
 )
 
 type Info struct {
@@ -196,7 +196,7 @@ func (c *Certificate) Hash() string {
 	hash.Write([]byte(c.AcmeAccount))
 	if c.AcmeDomains != nil {
 		for _, domain := range c.AcmeDomains {
-			io.WriteString(hash, domain)
+			_, _ = io.WriteString(hash, domain)
 		}
 	}
 	return fmt.Sprintf("%x", hash.Sum(nil))

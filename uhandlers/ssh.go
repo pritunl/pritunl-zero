@@ -158,7 +158,7 @@ func sshValidatePut(c *gin.Context) {
 		return
 	}
 
-	event.Publish(db, "ssh_challenge", chal.Id)
+	_ = event.Publish(db, "ssh_challenge", chal.Id)
 
 	c.Status(200)
 }
@@ -207,7 +207,7 @@ func sshValidateDelete(c *gin.Context) {
 		return
 	}
 
-	event.Publish(db, "ssh_challenge", chal.Id)
+	_ = event.Publish(db, "ssh_challenge", chal.Id)
 
 	c.Status(200)
 }
@@ -304,7 +304,7 @@ func sshSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	event.Publish(db, "ssh_challenge", chal.Id)
+	_ = event.Publish(db, "ssh_challenge", chal.Id)
 
 	c.Status(200)
 }
@@ -447,7 +447,7 @@ func sshU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	event.Publish(db, "ssh_challenge", chal.Id)
+	_ = event.Publish(db, "ssh_challenge", chal.Id)
 
 	c.Status(200)
 }

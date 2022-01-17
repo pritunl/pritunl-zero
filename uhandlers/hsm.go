@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
@@ -17,6 +16,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -59,9 +59,21 @@ func hsmGet(c *gin.Context) {
 	}
 	socket.Conn = conn
 
-	conn.SetReadDeadline(time.Now().Add(pingWait))
+	err = conn.SetReadDeadline(time.Now().Add(pingWait))
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "uhandlers: Failed to set read deadline"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
 	conn.SetPongHandler(func(x string) (err error) {
-		conn.SetReadDeadline(time.Now().Add(pingWait))
+		err = conn.SetReadDeadline(time.Now().Add(pingWait))
+		if err != nil {
+			return
+		}
+
 		return
 	})
 
@@ -78,8 +90,13 @@ func hsmGet(c *gin.Context) {
 
 	authr.HsmStatus = authority.Connected
 	authr.HsmTimestamp = time.Now()
-	authr.CommitFields(db, set.NewSet("hsm_status", "hsm_timestamp"))
-	event.PublishDispatch(db, "authority.change")
+	err = authr.CommitFields(db, set.NewSet("hsm_status", "hsm_timestamp"))
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	_ = event.PublishDispatch(db, "authority.change")
 
 	go func() {
 		defer func() {
@@ -103,10 +120,10 @@ func hsmGet(c *gin.Context) {
 				}).Error("uhandlers: Socket hsm listen error")
 
 				authr.HsmStatus = authority.Disconnected
-				authr.CommitFields(db, set.NewSet("hsm_status"))
-				event.PublishDispatch(db, "authority.change")
+				_ = authr.CommitFields(db, set.NewSet("hsm_status"))
+				_ = event.PublishDispatch(db, "authority.change")
 
-				conn.Close()
+				_ = conn.Close()
 				break
 			}
 
@@ -145,12 +162,16 @@ func hsmGet(c *gin.Context) {
 			return
 		case msg, ok := <-sub:
 			if !ok {
-				conn.WriteControl(websocket.CloseMessage, []byte{},
+				_ = conn.WriteControl(websocket.CloseMessage, []byte{},
 					time.Now().Add(writeTimeout))
 				return
 			}
 
-			conn.SetWriteDeadline(time.Now().Add(writeTimeout))
+			err = conn.SetWriteDeadline(time.Now().Add(writeTimeout))
+			if err != nil {
+				return
+			}
+
 			err = conn.WriteJSON(msg.Data)
 			if err != nil {
 				return

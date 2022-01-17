@@ -122,28 +122,65 @@ func parseSubnetMatch(subnetMatch string) (
 	return
 }
 
-func MarshalCertificate(cert *ssh.Certificate, comment string) []byte {
-	b := &bytes.Buffer{}
-	b.WriteString(cert.Type())
-	b.WriteByte(' ')
-	e := base64.NewEncoder(base64.StdEncoding, b)
-	e.Write(cert.Marshal())
-	e.Close()
-	if comment != "" {
-		b.WriteByte(' ')
-		b.Write([]byte(comment))
+func MarshalCertificate(cert *ssh.Certificate, comment string) (
+	data []byte, err error) {
+
+	buffer := &bytes.Buffer{}
+	buffer.WriteString(cert.Type())
+	buffer.WriteByte(' ')
+
+	encoder := base64.NewEncoder(base64.StdEncoding, buffer)
+
+	_, err = encoder.Write(cert.Marshal())
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to write certificate"),
+		}
+		return
 	}
-	return b.Bytes()
+
+	err = encoder.Close()
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to close certificate"),
+		}
+		return
+	}
+
+	if comment != "" {
+		buffer.WriteByte(' ')
+		buffer.Write([]byte(comment))
+	}
+
+	data = buffer.Bytes()
+	return
 }
 
-func MarshalPublicKey(key ssh.PublicKey) []byte {
-	b := &bytes.Buffer{}
-	b.WriteString(key.Type())
-	b.WriteByte(' ')
-	e := base64.NewEncoder(base64.StdEncoding, b)
-	e.Write(key.Marshal())
-	e.Close()
-	return b.Bytes()
+func MarshalPublicKey(key ssh.PublicKey) (data []byte, err error) {
+	buffer := &bytes.Buffer{}
+	buffer.WriteString(key.Type())
+	buffer.WriteByte(' ')
+
+	encoder := base64.NewEncoder(base64.StdEncoding, buffer)
+
+	_, err = encoder.Write(key.Marshal())
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to write public key"),
+		}
+		return
+	}
+
+	err = encoder.Close()
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to close public key"),
+		}
+		return
+	}
+
+	data = buffer.Bytes()
+	return
 }
 
 func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
@@ -169,7 +206,11 @@ func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
-	encodedPub = MarshalPublicKey(pubKey)
+
+	encodedPub, err = MarshalPublicKey(pubKey)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -205,7 +246,11 @@ func GenerateEcKey() (encodedPriv, encodedPub []byte, err error) {
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
-	encodedPub = MarshalPublicKey(pubKey)
+
+	encodedPub, err = MarshalPublicKey(pubKey)
+	if err != nil {
+		return
+	}
 
 	return
 }

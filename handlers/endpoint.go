@@ -65,7 +65,7 @@ func EndpointRegisterPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "endpoint.change")
+	_ = event.PublishDispatch(db, "endpoint.change")
 
 	c.JSON(200, resData)
 }
@@ -161,7 +161,7 @@ func EndpointCommGet(c *gin.Context) {
 		for {
 			msgType, msgByte, err := conn.ReadMessage()
 			if err != nil {
-				conn.Close()
+				_ = conn.Close()
 				return
 			}
 
@@ -175,7 +175,7 @@ func EndpointCommGet(c *gin.Context) {
 					"error": err,
 				}).Error("mhandlers: Failed to insert doc")
 
-				conn.Close()
+				_ = conn.Close()
 				return
 			}
 		}

@@ -97,7 +97,12 @@ func userPut(c *gin.Context) {
 	showSecret := false
 	if usr.Type != data.Type {
 		if data.Type == user.Api {
-			usr.GenerateToken()
+			err = usr.GenerateToken()
+			if err != nil {
+				utils.AbortWithError(c, 500, err)
+				return
+			}
+
 			showSecret = true
 		} else {
 			usr.Token = ""
@@ -118,7 +123,12 @@ func userPut(c *gin.Context) {
 	}
 
 	if usr.Type == user.Api && data.GenerateSecret {
-		usr.GenerateToken()
+		err = usr.GenerateToken()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
 		showSecret = true
 	}
 
@@ -175,7 +185,7 @@ func userPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "user.change")
+	_ = event.PublishDispatch(db, "user.change")
 
 	if !showSecret {
 		usr.Secret = ""
@@ -224,7 +234,11 @@ func userPost(c *gin.Context) {
 	}
 
 	if usr.Type == user.Api {
-		usr.GenerateToken()
+		err = usr.GenerateToken()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
 	}
 
 	errData, err := usr.Validate(db)
@@ -244,7 +258,7 @@ func userPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "user.change")
+	_ = event.PublishDispatch(db, "user.change")
 
 	c.JSON(200, usr)
 }
@@ -351,7 +365,7 @@ func usersDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "user.change")
+	_ = event.PublishDispatch(db, "user.change")
 
 	c.JSON(200, nil)
 }

@@ -473,7 +473,7 @@ func (n *Node) Init() (err error) {
 		return
 	}
 
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	Self = n
 

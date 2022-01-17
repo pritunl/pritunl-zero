@@ -57,7 +57,7 @@ func sessionDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "session.change")
+	_ = event.PublishDispatch(db, "session.change")
 
 	c.JSON(200, nil)
 }

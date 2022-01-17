@@ -95,7 +95,7 @@ func endpointPut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "endpoint.change")
+	_ = event.PublishDispatch(db, "endpoint.change")
 
 	endpt.Json()
 
@@ -143,7 +143,7 @@ func endpointPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "endpoint.change")
+	_ = event.PublishDispatch(db, "endpoint.change")
 
 	endpt.Json()
 
@@ -169,7 +169,7 @@ func endpointDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "endpoint.change")
+	_ = event.PublishDispatch(db, "endpoint.change")
 
 	c.JSON(200, nil)
 }
@@ -194,7 +194,7 @@ func endpointsDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "endpoint.change")
+	_ = event.PublishDispatch(db, "endpoint.change")
 
 	c.JSON(200, nil)
 }

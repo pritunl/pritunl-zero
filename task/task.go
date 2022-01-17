@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -67,11 +67,11 @@ func (t *Task) run(now time.Time) {
 			"task":  t.Name,
 			"error": err,
 		}).Error("task: Task failed")
-		job.Failed(db)
+		_ = job.Failed(db)
 		return
 	}
 
-	job.Finished(db)
+	_ = job.Finished(db)
 }
 
 func runScheduler() {

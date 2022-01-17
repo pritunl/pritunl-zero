@@ -129,34 +129,34 @@ func AbortWithStatus(c *gin.Context, code int) {
 	c.Status(code)
 	r.WriteContentType(c.Writer)
 	c.Writer.WriteHeaderNow()
-	r.Render(c.Writer)
+	_ = r.Render(c.Writer)
 	c.Abort()
 }
 
 func AbortWithError(c *gin.Context, code int, err error) {
 	AbortWithStatus(c, code)
-	c.Error(err)
+	_ = c.Error(err)
 }
 
 func WriteStatus(w http.ResponseWriter, code int) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)
-	fmt.Fprintln(w, GetStatusMessage(code))
+	_, _ = fmt.Fprintln(w, GetStatusMessage(code))
 }
 
 func WriteText(w http.ResponseWriter, code int, text string) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)
-	fmt.Fprintln(w, text)
+	_, _ = fmt.Fprintln(w, text)
 }
 
 func WriteUnauthorized(w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(401)
-	fmt.Fprintln(w, "401 "+msg)
+	_, _ = fmt.Fprintln(w, "401 "+msg)
 }
 
 func CloneHeader(src http.Header) (dst http.Header) {

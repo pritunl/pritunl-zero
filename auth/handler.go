@@ -338,7 +338,7 @@ func Callback(db *database.Database, sig, query string) (
 				return
 			}
 
-			event.PublishDispatch(db, "user.change")
+			_ = event.PublishDispatch(db, "user.change")
 
 			errData, err = usr.Validate(db)
 			if err != nil {
@@ -401,7 +401,7 @@ func Callback(db *database.Database, sig, query string) (
 			return
 		}
 
-		event.PublishDispatch(db, "user.change")
+		_ = event.PublishDispatch(db, "user.change")
 	}
 
 	return

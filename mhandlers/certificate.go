@@ -101,7 +101,7 @@ func certificatePut(c *gin.Context) {
 		}
 	}
 
-	event.PublishDispatch(db, "certificate.change")
+	_ = event.PublishDispatch(db, "certificate.change")
 
 	c.JSON(200, cert)
 }
@@ -167,7 +167,7 @@ func certificatePost(c *gin.Context) {
 		}
 	}
 
-	event.PublishDispatch(db, "certificate.change")
+	_ = event.PublishDispatch(db, "certificate.change")
 
 	c.JSON(200, cert)
 }
@@ -191,8 +191,8 @@ func certificateDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "certificate.change")
-	event.PublishDispatch(db, "node.change")
+	_ = event.PublishDispatch(db, "certificate.change")
+	_ = event.PublishDispatch(db, "node.change")
 
 	c.JSON(200, nil)
 }

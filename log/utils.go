@@ -92,7 +92,7 @@ func Clear(db *database.Database) (err error) {
 		return
 	}
 
-	event.PublishDispatch(db, "log.change")
+	_ = event.PublishDispatch(db, "log.change")
 
 	return
 }

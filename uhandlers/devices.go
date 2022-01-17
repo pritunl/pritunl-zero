@@ -84,7 +84,7 @@ func devicePut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "device.change")
+	_ = event.PublishDispatch(db, "device.change")
 
 	c.JSON(200, devc)
 }
@@ -168,7 +168,7 @@ func deviceDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "device.change")
+	_ = event.PublishDispatch(db, "device.change")
 
 	c.JSON(200, nil)
 }
@@ -446,7 +446,7 @@ func deviceU2fRegisterPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "device.change")
+	_ = event.PublishDispatch(db, "device.change")
 
 	c.JSON(200, nil)
 }

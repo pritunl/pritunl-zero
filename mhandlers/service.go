@@ -113,7 +113,7 @@ func servicePut(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "service.change")
+	_ = event.PublishDispatch(db, "service.change")
 
 	c.JSON(200, srvce)
 }
@@ -170,7 +170,7 @@ func servicePost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "service.change")
+	_ = event.PublishDispatch(db, "service.change")
 
 	c.JSON(200, srvce)
 }
@@ -194,7 +194,7 @@ func serviceDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "service.change")
+	_ = event.PublishDispatch(db, "service.change")
 
 	c.JSON(200, nil)
 }
@@ -219,7 +219,7 @@ func servicesDelete(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "service.change")
+	_ = event.PublishDispatch(db, "service.change")
 
 	c.JSON(200, nil)
 }

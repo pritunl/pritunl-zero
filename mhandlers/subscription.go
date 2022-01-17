@@ -91,8 +91,8 @@ func subscriptionPost(c *gin.Context) {
 		return
 	}
 
-	event.PublishDispatch(db, "subscription.change")
-	event.PublishDispatch(db, "settings.change")
+	_ = event.PublishDispatch(db, "subscription.change")
+	_ = event.PublishDispatch(db, "settings.change")
 
 	c.JSON(200, subscription.Sub)
 }

@@ -87,7 +87,7 @@ func eventGet(c *gin.Context) {
 		for {
 			_, _, err := conn.NextReader()
 			if err != nil {
-				conn.Close()
+				_ = conn.Close()
 				return
 			}
 		}

@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -169,7 +169,7 @@ func init() {
 	module.After("settings")
 
 	module.Handler = func() (err error) {
-		Update()
+		_, _ = Update()
 		go update()
 		return
 	}

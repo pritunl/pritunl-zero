@@ -377,7 +377,7 @@ func (r *Router) Restart() {
 			1*time.Second,
 		)
 		defer redirectCancel()
-		r.redirectServer.Shutdown(redirectCtx)
+		_ = r.redirectServer.Shutdown(redirectCtx)
 	}
 	if r.webServer != nil {
 		webCtx, webCancel := context.WithTimeout(
@@ -385,7 +385,7 @@ func (r *Router) Restart() {
 			1*time.Second,
 		)
 		defer webCancel()
-		r.webServer.Shutdown(webCtx)
+		_ = r.webServer.Shutdown(webCtx)
 	}
 
 	func() {
@@ -393,10 +393,10 @@ func (r *Router) Restart() {
 			recover()
 		}()
 		if r.redirectServer != nil {
-			r.redirectServer.Close()
+			_ = r.redirectServer.Close()
 		}
 		if r.webServer != nil {
-			r.webServer.Close()
+			_ = r.webServer.Close()
 		}
 	}()
 
@@ -421,22 +421,23 @@ func (r *Router) Shutdown() {
 
 func (r *Router) hashNode() []byte {
 	hash := md5.New()
-	io.WriteString(hash, node.Self.Type)
-	io.WriteString(hash, node.Self.ManagementDomain)
-	io.WriteString(hash, node.Self.UserDomain)
-	io.WriteString(hash, strconv.Itoa(node.Self.Port))
-	io.WriteString(hash, fmt.Sprintf("%t", node.Self.NoRedirectServer))
-	io.WriteString(hash, node.Self.Protocol)
+	_, _ = io.WriteString(hash, node.Self.Type)
+	_, _ = io.WriteString(hash, node.Self.ManagementDomain)
+	_, _ = io.WriteString(hash, node.Self.UserDomain)
+	_, _ = io.WriteString(hash, strconv.Itoa(node.Self.Port))
+	_, _ = io.WriteString(hash, fmt.Sprintf("%t", node.Self.NoRedirectServer))
+	_, _ = io.WriteString(hash, node.Self.Protocol)
 
-	io.WriteString(hash, strconv.Itoa(settings.Router.ReadTimeout))
-	io.WriteString(hash, strconv.Itoa(settings.Router.ReadHeaderTimeout))
-	io.WriteString(hash, strconv.Itoa(settings.Router.WriteTimeout))
-	io.WriteString(hash, strconv.Itoa(settings.Router.IdleTimeout))
+	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.ReadTimeout))
+	_, _ = io.WriteString(hash,
+		strconv.Itoa(settings.Router.ReadHeaderTimeout))
+	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.WriteTimeout))
+	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.IdleTimeout))
 
 	certs := node.Self.CertificateObjs
 	if certs != nil {
 		for _, cert := range certs {
-			io.WriteString(hash, cert.Hash())
+			_, _ = io.WriteString(hash, cert.Hash())
 		}
 	}
 
