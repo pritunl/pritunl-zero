@@ -20,6 +20,7 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/webauthn/webauthn"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,6 +42,7 @@ type Node struct {
 	SelfCertificateKey   string                     `bson:"self_certificate" json:"-"`
 	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
+	WebauthnDomain       string                     `bson:"webauthn_domain" json:"webauthn_domain"`
 	Services             []primitive.ObjectID       `bson:"services" json:"services"`
 	Authorities          []primitive.ObjectID       `bson:"authorities" json:"authorities"`
 	RequestsMin          int64                      `bson:"requests_min" json:"requests_min"`
@@ -75,6 +77,29 @@ func (n *Node) AddRequest() {
 	back := n.reqCount.Back()
 	back.Value = back.Value.(int) + 1
 	n.reqLock.Unlock()
+}
+
+func (n *Node) GetWebauthn(origin string) (
+	web *webauthn.WebAuthn, err error) {
+
+	if n.WebauthnDomain == "" {
+		err = &errortypes.ReadError{
+			errors.New("node: Webauthn domain not configured"),
+		}
+		return
+	}
+
+	web, err = webauthn.New(&webauthn.Config{
+		RPDisplayName: "Pritunl Cloud",
+		RPID:          n.WebauthnDomain,
+		RPOrigin:      origin,
+	})
+	if err != nil {
+		err = utils.ParseWebauthnError(err)
+		return
+	}
+
+	return
 }
 
 func (n *Node) Validate(db *database.Database) (
@@ -266,6 +291,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.SelfCertificateKey = nde.SelfCertificateKey
 	n.ManagementDomain = nde.ManagementDomain
 	n.UserDomain = nde.UserDomain
+	n.WebauthnDomain = nde.WebauthnDomain
 	n.Services = nde.Services
 	n.Authorities = nde.Authorities
 	n.ForwardedForHeader = nde.ForwardedForHeader
