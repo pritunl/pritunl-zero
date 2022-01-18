@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as Blueprint from '@blueprintjs/core';
 import * as SuperAgent from 'superagent';
+import * as WebAuthn from '@github/webauthn-json';
 import * as DeviceTypes from '../types/DeviceTypes';
 import DevicesStore from '../stores/DevicesStore';
 import StateStore from '../stores/StateStore';
@@ -97,15 +98,6 @@ const css = {
 	} as React.CSSProperties,
 };
 
-const u2fErrorCodes: {[index: number]: string} = {
-	0: 'ok',
-	1: 'other',
-	2: 'bad request',
-	3: 'configuration unsupported',
-	4: 'device ineligible',
-	5: 'timed out',
-};
-
 export default class Devices extends React.Component<Props, State> {
 	timeout: number;
 	alertKey: string;
@@ -155,37 +147,14 @@ export default class Devices extends React.Component<Props, State> {
 		});
 	}
 
-	u2fRegistered = (resp: any): void => {
-		Alert.dismiss(this.alertKey);
-
-		if (resp.errorCode) {
-			let errorMsg = 'U2F error code ' + resp.errorCode;
-			let u2fMsg = u2fErrorCodes[resp.errorCode as number];
-			if (u2fMsg) {
-				errorMsg += ': ' + u2fMsg;
-			}
-			Alert.error(errorMsg);
-
-			this.setState({
-				...this.state,
-				disabled: false,
-				secondary: null,
-				register: null,
-			});
-
-			return
-		}
-
+	wanRegister = (cred: any): void => {
 		let loader = new Loader().loading();
+
+		cred.device_type = 'webauthn';
 
 		SuperAgent
 			.post('/device/manage/register')
-			.send({
-				type: 'u2f',
-				token: this.state.register.token,
-				name: this.state.deviceName,
-				response: resp,
-			})
+			.send(cred)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -216,7 +185,7 @@ export default class Devices extends React.Component<Props, State> {
 		SuperAgent
 			.post('/device/manage/register')
 			.send({
-				type: 'smart_card',
+				device_type: 'smart_card',
 				token: this.state.register.token,
 				name: this.state.deviceName,
 				ssh_public_key: this.state.sshDevice,
@@ -249,19 +218,24 @@ export default class Devices extends React.Component<Props, State> {
 
 	onRegister = (): void => {
 		this.setState({
+			...this.state,
 			disabled: true,
 		});
 
 		if (this.state.sshDevice) {
 			this.smartCardRegistered();
 		} else {
-			this.alertKey = Alert.info(
-				'Insert your security key and tap the button', 30000);
-
-			(window as any).u2f.register(this.state.register.request.appId,
-				this.state.register.request.registerRequests,
-				this.state.register.request.registeredKeys,
-				this.u2fRegistered, 30);
+			WebAuthn.create(this.state.register.options).then((cred: any): void => {
+				cred.name = this.state.deviceName;
+				cred.token = this.state.register.token;
+				this.wanRegister(cred);
+			}).catch((err: any): void => {
+				Alert.errorRes(err, 'Failed to register device');
+				this.setState({
+					...this.state,
+					disabled: false,
+				});
+			});
 		}
 	}
 
@@ -313,48 +287,29 @@ export default class Devices extends React.Component<Props, State> {
 		</div>;
 	}
 
-	u2fSigned = (resp: any): void => {
+	wanRespond = (resp: any): void => {
 		Alert.dismiss(this.alertKey);
-
-		if (resp.errorCode) {
-			let errorMsg = 'U2F error code ' + resp.errorCode;
-			let u2fMsg = u2fErrorCodes[resp.errorCode as number];
-			if (u2fMsg) {
-				errorMsg += ': ' + u2fMsg;
-			}
-			Alert.error(errorMsg);
-
-			this.setState({
-				...this.state,
-				disabled: false,
-				secondary: null,
-				register: false,
-			});
-
-			return
-		}
 
 		let loader = new Loader().loading();
 
-		let deviceType = 'u2f';
+		let deviceType = 'webauthn';
 		if (this.state.sshDevice) {
 			deviceType = 'smart_card';
 		}
 
+		resp.device_type = deviceType;
+		resp.token = this.state.secondary.token;
+
 		SuperAgent
-			.post('/device/manage/sign')
-			.send({
-				type: deviceType,
-				token: this.state.secondary.token,
-				response: resp,
-			})
+			.post('/device/manage/respond')
+			.send(resp)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
 				if (err) {
-					Alert.errorRes(res, 'Failed to complete device sign');
+					Alert.errorRes(res, 'Failed to complete device authentication');
 					return;
 				}
 
@@ -391,7 +346,7 @@ export default class Devices extends React.Component<Props, State> {
 		});
 
 		SuperAgent
-			.get('/device/manage/sign')
+			.get('/device/manage/request')
 			.query({
 				token: this.state.secondary.token,
 			})
@@ -405,12 +360,17 @@ export default class Devices extends React.Component<Props, State> {
 					return;
 				}
 
-				this.alertKey = Alert.info(
-					'Insert your security key and tap the button', 30000);
-
-				(window as any).u2f.sign(res.body.appId,
-					res.body.challenge, res.body.registeredKeys,
-					this.u2fSigned, 30);
+				WebAuthn.get(res.body).then((cred: any): void => {
+					this.wanRespond(cred);
+				}).catch((err: any): void => {
+					Alert.errorRes(err, 'Failed to authenticate device');
+					this.setState({
+						...this.state,
+						disabled: false,
+						secondary: null,
+						register: false,
+					});
+				});
 			});
 	}
 
@@ -489,7 +449,7 @@ export default class Devices extends React.Component<Props, State> {
 			passcode = this.state.passcode;
 		}
 
-		let deviceType = 'u2f';
+		let deviceType = 'webauthn';
 		if (this.state.sshDevice) {
 			deviceType = 'smart_card';
 		}
@@ -497,7 +457,7 @@ export default class Devices extends React.Component<Props, State> {
 		SuperAgent
 			.put('/device/manage/secondary')
 			.send({
-				type: deviceType,
+				device_type: deviceType,
 				token: this.state.secondary.token,
 				factor: factor,
 				passcode: passcode
@@ -669,7 +629,7 @@ export default class Devices extends React.Component<Props, State> {
 		Alert.dismiss(this.alertKey);
 		let loader = new Loader().loading();
 
-		let deviceType = 'u2f';
+		let deviceType = 'webauthn';
 		if (this.state.sshDevice) {
 			deviceType = 'smart_card';
 		}
@@ -677,7 +637,7 @@ export default class Devices extends React.Component<Props, State> {
 		SuperAgent
 			.get('/device/manage/register')
 			.query({
-				type: deviceType,
+				device_type: deviceType,
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
@@ -771,7 +731,7 @@ export default class Devices extends React.Component<Props, State> {
 					className="bp3-button bp3-intent-success bp3-icon-add"
 					disabled={this.state.disabled}
 					onClick={this.initRegister}
-				>Add U2F Device</button>
+				>Add WebAuthn Device</button>
 			</div>
 		</div>;
 	}
