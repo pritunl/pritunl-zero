@@ -38,7 +38,7 @@ type Device struct {
 	WanPublicKey       []byte                  `bson:"wan_public_key" json:"-"`
 	WanAttestationType string                  `bson:"wan_attestation_type" json:"-"`
 	WanAuthenticator   *webauthn.Authenticator `bson:"wan_authenticator" json:"-"`
-	WanRpId            string                  `bson:"wab_rp_id" json:"wab_rp_id"`
+	WanRpId            string                  `bson:"wan_rp_id" json:"wan_rp_id"`
 }
 
 func (d *Device) Validate(db *database.Database) (
