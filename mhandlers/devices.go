@@ -12,9 +12,8 @@ import (
 	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/secondary"
-	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -171,60 +170,6 @@ func devicesGet(c *gin.Context) {
 	c.JSON(200, devices)
 }
 
-type devicesU2fRegisterRespData struct {
-	Token   string      `json:"token"`
-	Request interface{} `json:"request"`
-}
-
-func deviceU2fRegisterGet(c *gin.Context) {
-	if demo.Blocked(c) {
-		return
-	}
-
-	db := c.MustGet("db").(*database.Database)
-
-	if settings.Local.AppId == "" {
-		errData := &errortypes.ErrorData{
-			Error: "user_node_unavailable",
-			Message: "At least one node must have a user domain configured " +
-				"to use secondary device authentication",
-		}
-		c.JSON(400, errData)
-		return
-	}
-
-	usrId, ok := utils.ParseObjectId(c.Param("user_id"))
-	if !ok {
-		utils.AbortWithStatus(c, 400)
-		return
-	}
-
-	secd, err := secondary.New(db, usrId,
-		secondary.AdminDeviceRegister, secondary.DeviceProvider)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
-
-	jsonResp, errData, err := secd.DeviceRegisterRequest(db)
-	if err != nil {
-		utils.AbortWithError(c, 500, err)
-		return
-	}
-
-	if errData != nil {
-		c.JSON(400, errData)
-		return
-	}
-
-	resp := &devicesU2fRegisterRespData{
-		Token:   secd.Id,
-		Request: jsonResp,
-	}
-
-	c.JSON(200, resp)
-}
-
 func deviceAlertPost(c *gin.Context) {
 	if demo.Blocked(c) {
 		return
@@ -275,9 +220,6 @@ func deviceMethodPost(c *gin.Context) {
 	case "alert":
 		deviceAlertPost(c)
 		return
-	case "register":
-		deviceU2fRegisterPost(c)
-		return
 	default:
 		utils.AbortWithStatus(c, 404)
 		return
@@ -286,33 +228,92 @@ func deviceMethodPost(c *gin.Context) {
 	return
 }
 
-type devicesU2fRegisterData struct {
-	Token    string                   `json:"token"`
-	Name     string                   `json:"name"`
-	Response *u2flib.RegisterResponse `json:"response"`
+type devicesWanRegisterRespData struct {
+	Token   string      `json:"token"`
+	Options interface{} `json:"options"`
 }
 
-func deviceU2fRegisterPost(c *gin.Context) {
+func deviceWanRegisterGet(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+
+	if node.Self.WebauthnDomain == "" {
+		errData := &errortypes.ErrorData{
+			Error:   "webauthn_domain_unavailable",
+			Message: "WebAuthn domain must be configured",
+		}
+		c.JSON(400, errData)
+		return
+	}
+
+	usrId, ok := utils.ParseObjectId(c.Param("user_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	secd, err := secondary.New(db, usrId,
+		secondary.AdminDeviceRegister, secondary.DeviceProvider)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	jsonResp, errData, err := secd.DeviceRegisterRequest(db,
+		utils.GetOrigin(c.Request))
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		c.JSON(400, errData)
+		return
+	}
+
+	resp := &devicesWanRegisterRespData{
+		Token:   secd.Id,
+		Options: jsonResp,
+	}
+
+	c.JSON(200, resp)
+}
+
+type devicesWanRegisterData struct {
+	Token string `json:"token"`
+	Name  string `json:"name"`
+}
+
+func deviceWanRegisterPost(c *gin.Context) {
 	if demo.Blocked(c) {
 		return
 	}
 
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
-	data := &devicesU2fRegisterData{}
+	data := &devicesWanRegisterData{}
 
-	usrId, ok := utils.ParseObjectId(c.Param("resource_id"))
-	if !ok {
-		utils.AbortWithStatus(c, 400)
+	body, err := utils.CopyBody(c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	err := c.Bind(data)
+	err = c.Bind(data)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "handler: Bind error"),
 		}
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	usrId, ok := utils.ParseObjectId(c.Param("resource_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
 		return
 	}
 
@@ -338,7 +339,7 @@ func deviceU2fRegisterPost(c *gin.Context) {
 	}
 
 	devc, errData, err := secd.DeviceRegisterResponse(
-		db, data.Response, data.Name)
+		db, utils.GetOrigin(c.Request), body, data.Name)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return

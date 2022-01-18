@@ -44,10 +44,10 @@ func Register(engine *gin.Engine) {
 	dbGroup.POST("/auth/secondary", authSecondaryPost)
 	dbGroup.GET("/auth/request", authRequestGet)
 	dbGroup.GET("/auth/callback", authCallbackGet)
-	dbGroup.GET("/auth/u2f/sign", authU2fSignGet)
-	dbGroup.POST("/auth/u2f/sign", authU2fSignPost)
-	dbGroup.GET("/auth/u2f/register", authU2fRegisterGet)
-	dbGroup.POST("/auth/u2f/register", authU2fRegisterPost)
+	dbGroup.GET("/auth/webauthn/request", authWanRequestGet)
+	dbGroup.POST("/auth/webauthn/respond", authWanRespondPost)
+	dbGroup.GET("/auth/webauthn/register", authWanRegisterGet)
+	dbGroup.POST("/auth/webauthn/register", authWanRegisterPost)
 	sessGroup.GET("/logout", logoutGet)
 
 	csrfGroup.GET("/authority", authoritysGet)
@@ -75,7 +75,9 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/device", devicePost)
 	csrfGroup.DELETE("/device/:device_id", deviceDelete)
 	csrfGroup.POST("/device/:resource_id/:method", deviceMethodPost)
-	csrfGroup.GET("/device/:user_id/register", deviceU2fRegisterGet)
+	csrfGroup.GET("/device/:user_id/webauthn/register", deviceWanRegisterGet)
+	csrfGroup.POST("/device/:resource_id/webauthn/register",
+		deviceWanRegisterPost)
 
 	csrfGroup.GET("/endpoint", endpointsGet)
 	csrfGroup.PUT("/endpoint/:endpoint_id", endpointPut)
