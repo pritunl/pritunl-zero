@@ -4,6 +4,7 @@
     "@blueprintjs/core": "3.44.0",
     "@blueprintjs/datetime": "3.23.0",
     "@blueprintjs/icons": "3.26.0",
+    "@github/webauthn-json": "0.6.2",
     "@popperjs/core": "2.9.2",
     "@types/chart.js": "2.9.32",
     "@types/flux": "3.1.9",
