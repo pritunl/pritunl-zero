@@ -1,16 +1,20 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
 var (
@@ -86,6 +90,22 @@ var httpErrCodes = map[int]string{
 	508: "Loop Detected",
 	510: "Not Extended",
 	511: "Network Authentication Required",
+}
+
+func CopyBody(r *http.Request) (buffer *bytes.Buffer, err error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Request read error"),
+		}
+		return
+	}
+	_ = r.Body.Close()
+
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	buffer = bytes.NewBuffer(body)
+
+	return
 }
 
 func StripPort(hostport string) string {
@@ -233,6 +253,24 @@ func IsPrivateRequest(r *http.Request) (private bool) {
 	}
 
 	return
+}
+
+func GetOrigin(r *http.Request) string {
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		host := ""
+		switch {
+		case r.Host != "":
+			host = r.Host
+			break
+		case r.URL.Host != "":
+			host = r.URL.Host
+			break
+		}
+		origin = "https://" + host
+	}
+
+	return origin
 }
 
 func init() {
