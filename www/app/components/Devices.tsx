@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as SuperAgent from 'superagent';
+import * as WebAuthn from '@github/webauthn-json';
 import * as DeviceTypes from '../types/DeviceTypes';
 import DevicesStore from '../stores/DevicesStore';
 import * as DeviceActions from '../actions/DeviceActions';
@@ -81,41 +82,55 @@ export default class Devices extends React.Component<Props, State> {
 		});
 	}
 
-	u2fRegistered = (resp: any): void => {
-		Alert.dismiss(this.alertKey);
-
-		if (resp.errorCode) {
-			this.u2fToken = null;
-			this.setState({
-				...this.state,
-				disabled: false,
-			});
-
-			let errorMsg = 'U2F error code ' + resp.errorCode;
-			let u2fMsg = Constants.u2fErrorCodes[resp.errorCode as number];
-			if (u2fMsg) {
-				errorMsg += ': ' + u2fMsg;
-			}
-			Alert.error(errorMsg);
-
-			return
-		}
+	wanRegister = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
 
 		let loader = new Loader().loading();
 
 		SuperAgent
-			.post('/device/' + DevicesStore.userId + '/register')
-			.send({
-				token: this.u2fToken,
-				name: this.state.deviceName,
-				response: resp,
-			})
+			.get('/device/' + DevicesStore.userId + '/webauthn/register')
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
-				this.u2fToken = null;
+				if (err) {
+					Alert.errorRes(res, 'Failed to request device registration');
+					return;
+				}
+
+				this.wanCreate(res.body.token, res.body.options);
+			});
+	}
+
+	wanCreate = (token: string, options: any): void => {
+		WebAuthn.create(options).then((cred: any): void => {
+			cred.name = this.state.deviceName;
+			cred.token = token;
+			this.wanRespond(cred);
+		}).catch((err: any): void => {
+			Alert.errorRes(err, 'Failed to register device');
+			this.setState({
+				...this.state,
+				disabled: false,
+			});
+		});
+	}
+
+	wanRespond = (cred: any): void => {
+		let loader = new Loader().loading();
+
+		SuperAgent
+			.post('/device/' + DevicesStore.userId + '/webauthn/register')
+			.send(cred)
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
 				this.setState({
 					...this.state,
 					disabled: false,
@@ -128,37 +143,6 @@ export default class Devices extends React.Component<Props, State> {
 				}
 
 				Alert.success('Successfully registered device');
-			});
-	}
-
-	registerSign = (): void => {
-		this.setState({
-			...this.state,
-			disabled: true,
-		});
-
-		let loader = new Loader().loading();
-
-		SuperAgent
-			.get('/device/' + DevicesStore.userId + '/register')
-			.set('Accept', 'application/json')
-			.set('Csrf-Token', Csrf.token)
-			.end((err: any, res: SuperAgent.Response): void => {
-				loader.done();
-
-				if (err) {
-					Alert.errorRes(res, 'Failed to request device registration');
-					return;
-				}
-
-				this.u2fToken = res.body.token;
-				this.alertKey = Alert.info(
-					'Insert security key and tap the button', 30000);
-
-				(window as any).u2f.register(res.body.request.appId,
-					res.body.request.registerRequests,
-					res.body.request.registeredKeys,
-					this.u2fRegistered, 30);
 			});
 	}
 
@@ -228,7 +212,7 @@ export default class Devices extends React.Component<Props, State> {
 				});
 			});
 		} else {
-			this.registerSign();
+			this.wanRegister();
 		}
 	}
 
@@ -267,7 +251,7 @@ export default class Devices extends React.Component<Props, State> {
 										});
 									}}
 								>
-									<option value="u2f">U2F</option>
+									<option value="webauthn">WebAuthn</option>
 									<option value="smart_card">Smart Card</option>
 									<option value="phone_call">Phone (Call)</option>
 									<option value="phone_message">Phone (SMS)</option>
