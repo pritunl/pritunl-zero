@@ -11,30 +11,33 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/webauthn/webauthn"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Type            string             `bson:"type" json:"type"`
-	Provider        primitive.ObjectID `bson:"provider" json:"provider"`
-	Username        string             `bson:"username" json:"username"`
-	Password        string             `bson:"password" json:"-"`
-	DefaultPassword string             `bson:"default_password" json:"-"`
-	Token           string             `bson:"token" json:"token"`
-	Secret          string             `bson:"secret" json:"secret"`
-	Theme           string             `bson:"theme" json:"-"`
-	LastActive      time.Time          `bson:"last_active" json:"last_active"`
-	LastSync        time.Time          `bson:"last_sync" json:"last_sync"`
-	Roles           []string           `bson:"roles" json:"roles"`
-	Administrator   string             `bson:"administrator" json:"administrator"`
-	Disabled        bool               `bson:"disabled" json:"disabled"`
-	ActiveUntil     time.Time          `bson:"active_until" json:"active_until"`
-	Permissions     []string           `bson:"permissions" json:"permissions"`
+	Id              primitive.ObjectID    `bson:"_id,omitempty" json:"id"`
+	Type            string                `bson:"type" json:"type"`
+	Provider        primitive.ObjectID    `bson:"provider" json:"provider"`
+	Username        string                `bson:"username" json:"username"`
+	Password        string                `bson:"password" json:"-"`
+	DefaultPassword string                `bson:"default_password" json:"-"`
+	Token           string                `bson:"token" json:"token"`
+	Secret          string                `bson:"secret" json:"secret"`
+	Theme           string                `bson:"theme" json:"-"`
+	LastActive      time.Time             `bson:"last_active" json:"last_active"`
+	LastSync        time.Time             `bson:"last_sync" json:"last_sync"`
+	Roles           []string              `bson:"roles" json:"roles"`
+	Administrator   string                `bson:"administrator" json:"administrator"`
+	Disabled        bool                  `bson:"disabled" json:"disabled"`
+	ActiveUntil     time.Time             `bson:"active_until" json:"active_until"`
+	Permissions     []string              `bson:"permissions" json:"permissions"`
+	WanCredentials  []webauthn.Credential `bson:"-" json:"-"`
 }
 
 func (u *User) Validate(db *database.Database) (
@@ -314,6 +317,60 @@ func (u *User) GenerateToken() (err error) {
 	}
 
 	return
+}
+
+func (u *User) LoadWebAuthnDevices(db *database.Database) (
+	devices []*device.Device, hasU2f bool, err error) {
+
+	devices, err = device.GetAll(db, u.Id)
+	if err != nil {
+		return
+	}
+
+	wanCredentials := []webauthn.Credential{}
+	for _, devc := range devices {
+		switch devc.Type {
+		case device.WebAuthn:
+			break
+		case device.U2f:
+			hasU2f = true
+			break
+		default:
+			continue
+		}
+
+		wanCred, e := devc.UnmarshalWebauthn()
+		if e != nil {
+			err = e
+			return
+		}
+
+		wanCredentials = append(wanCredentials, wanCred)
+	}
+
+	u.WanCredentials = wanCredentials
+
+	return
+}
+
+func (u *User) WebAuthnID() []byte {
+	return u.Id[:]
+}
+
+func (u *User) WebAuthnName() string {
+	return u.Username
+}
+
+func (u *User) WebAuthnDisplayName() string {
+	return u.Username
+}
+
+func (u *User) WebAuthnIcon() string {
+	return ""
+}
+
+func (u *User) WebAuthnCredentials() []webauthn.Credential {
+	return u.WanCredentials
 }
 
 func init() {
