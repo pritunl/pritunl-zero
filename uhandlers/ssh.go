@@ -15,8 +15,8 @@ import (
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secondary"
 	"github.com/pritunl/pritunl-zero/ssh"
-	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/validator"
 )
 
 var (
@@ -309,7 +309,7 @@ func sshSecondaryPut(c *gin.Context) {
 	c.Status(200)
 }
 
-func sshU2fSignGet(c *gin.Context) {
+func sshWanRequestGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	token := c.Query("token")
 
@@ -327,7 +327,8 @@ func sshU2fSignGet(c *gin.Context) {
 		return
 	}
 
-	resp, errData, err := secd.DeviceSignRequest(db)
+	resp, errData, err := secd.DeviceRequest(
+		db, utils.GetOrigin(c.Request))
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -341,17 +342,22 @@ func sshU2fSignGet(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
-type sshU2fSignData struct {
-	Token    string               `json:"token"`
-	Response *u2flib.SignResponse `json:"response"`
+type sshWanRespondData struct {
+	Token string `json:"token"`
 }
 
-func sshU2fSignPost(c *gin.Context) {
+func sshWanRespondPost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
-	data := &sshU2fSignData{}
+	data := &sshWanRespondData{}
 
-	err := c.Bind(data)
+	body, err := utils.CopyBody(c.Request)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = c.Bind(data)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "handler: Bind error"),
@@ -374,7 +380,14 @@ func sshU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	errData, err := secd.DeviceSignResponse(db, data.Response)
+	usr, err := authr.GetUser(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	_, secProviderId, errAudit, errData, err := validator.ValidateUser(
+		db, usr, false, c.Request)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -385,9 +398,35 @@ func sshU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	usr, err := authr.GetUser(db)
+	errData, err = secd.DeviceRespond(
+		db, utils.GetOrigin(c.Request), body)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if errData != nil {
+		if errAudit == nil {
+			errAudit = audit.Fields{
+				"error":   errData.Error,
+				"message": errData.Message,
+			}
+		}
+		errAudit["method"] = "add_device_register"
+
+		err = audit.New(
+			db,
+			c.Request,
+			usr.Id,
+			audit.UserAuthFailed,
+			errAudit,
+		)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(400, errData)
 		return
 	}
 
@@ -403,7 +442,7 @@ func sshU2fSignPost(c *gin.Context) {
 		return
 	}
 
-	_, secProviderId, err, errData := chal.Approve(
+	_, secProviderId, err, errData = chal.Approve(
 		db, usr, c.Request, true, false)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
