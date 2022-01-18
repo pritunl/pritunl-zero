@@ -644,6 +644,19 @@ export default class Node extends React.Component<Props, State> {
 							this.set('user_domain', val);
 						}}
 					/>
+					<PageInput
+						disabled={this.state.disabled}
+						hidden={node.type.indexOf('admin') === -1 &&
+							node.type.indexOf('user') === -1}
+						label="WebAuthn Domain"
+						help="Domain that will be used for WebAuthn relying party identifier. This domain should be the highest level domain for the relevant resources. All other Pritunl Cloud domains handling WebAuthn authentication must be a sub-domain of this domain. Changing this domain will invalidate all existing WebAuthn devices."
+						type="text"
+						placeholder="Enter WebAuthn domain"
+						value={node.webauthn_domain}
+						onChange={(val): void => {
+							this.set('webauthn_domain', val);
+						}}
+					/>
 					<label className="bp3-label" style={css.label}>
 						Protocol and Port
 						<div className="bp3-control-group" style={css.inputGroup}>
