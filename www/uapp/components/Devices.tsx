@@ -51,6 +51,15 @@ interface State {
 const css = {
 	body: {
 		padding: 0,
+		textAlign: 'center',
+	} as React.CSSProperties,
+	bodyRelative: {
+		padding: 0,
+		textAlign: 'center',
+		position: 'relative',
+	} as React.CSSProperties,
+	title: {
+		margin: '10px 0 15px 0',
 	} as React.CSSProperties,
 	description: {
 		opacity: 0.7,
@@ -62,6 +71,10 @@ const css = {
 	button: {
 		margin: '5px',
 		width: '116px',
+	} as React.CSSProperties,
+	centerButton: {
+		margin: '15px auto 0 auto',
+		display: 'block',
 	} as React.CSSProperties,
 	secondaryButton: {
 		margin: '5px auto',
@@ -78,10 +91,8 @@ const css = {
 	stateIcon: {
 		marginBottom: '10px',
 	} as React.CSSProperties,
-	title: {
-		textAlign: 'center',
-	} as React.CSSProperties,
 	group: {
+		marginTop: '15px',
 		width: '100%',
 	} as React.CSSProperties,
 	input: {
@@ -92,8 +103,8 @@ const css = {
 	} as React.CSSProperties,
 	close: {
 		position: 'absolute',
-		top: '7px',
-		right: '7px',
+		top: '-26px',
+		right: '-11px',
 		width: '36px',
 	} as React.CSSProperties,
 };
@@ -241,11 +252,11 @@ export default class Devices extends React.Component<Props, State> {
 
 	register(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					Register Security Device
 				</h4>
 				<span style={css.description}>
@@ -376,11 +387,11 @@ export default class Devices extends React.Component<Props, State> {
 
 	device(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -390,6 +401,7 @@ export default class Devices extends React.Component<Props, State> {
 					className="bp3-button bp3-intent-success bp3-icon-id-number"
 					disabled={this.state.disabled}
 					onClick={this.deviceSign}
+					style={css.centerButton}
 				>Authenticate</button>
 			</div>
 		</div>;
@@ -410,11 +422,11 @@ export default class Devices extends React.Component<Props, State> {
 		}
 
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-sim-card"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					Register Smart Card
 				</h4>
 				<span style={css.description}>
@@ -503,7 +515,7 @@ export default class Devices extends React.Component<Props, State> {
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -696,7 +708,7 @@ export default class Devices extends React.Component<Props, State> {
 			/>);
 		});
 
-		return <div>
+		return <div style={css.bodyRelative}>
 			<button
 				className="bp3-button bp3-minimal bp3-intent-danger"
 				style={css.close}
