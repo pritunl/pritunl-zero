@@ -8,6 +8,10 @@ interface Props {
 const css = {
 	body: {
 		padding: 0,
+		textAlign: 'center',
+	} as React.CSSProperties,
+	title: {
+		margin: '10px 0 15px 0',
 	} as React.CSSProperties,
 	description: {
 		opacity: 0.7,
@@ -25,8 +29,8 @@ const css = {
 export default class Session extends React.Component<Props, {}> {
 	render(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
-				<h4 className="bp3-non-ideal-state-title">
+			<div style={css.body}>
+				<h4 style={css.title}>
 					Pritunl Zero User Console
 				</h4>
 				<span style={css.description}>
