@@ -24,6 +24,8 @@ const css = {
 		marginBottom: '10px',
 	} as React.CSSProperties,
 	info: {
+		textAlign: 'left',
+		paddingLeft: '2px',
 		marginTop: '5px',
 	} as React.CSSProperties,
 	icon: {
@@ -126,6 +128,14 @@ export default class Device extends React.Component<Props, State> {
 		let deviceType = 'Unknown';
 		let deviceIcon: JSX.Element;
 		switch (device.type) {
+			case 'webauthn':
+				deviceType = 'WebAuthn';
+				deviceIcon = <Blueprint.Icon
+					icon="id-number"
+					iconSize={20}
+					style={css.icon}
+				/>;
+				break;
 			case 'u2f':
 				deviceType = 'U2F';
 				deviceIcon = <Blueprint.Icon
@@ -209,6 +219,11 @@ export default class Device extends React.Component<Props, State> {
 				<div style={css.item}>
 					Mode: <span className="bp3-text-muted">
 						{deviceMode}
+					</span>
+				</div>
+				<div style={css.item} hidden={!device.wan_rp_id}>
+					Domain: <span className="bp3-text-muted">
+						{device.wan_rp_id}
 					</span>
 				</div>
 				<div style={css.item}>
