@@ -7,7 +7,6 @@ import * as PageInfos from './PageInfo';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import * as Alert from '../Alert';
-import * as EndpointActions from "../actions/EndpointActions";
 
 interface Props {
 	device: DeviceTypes.DeviceRo;
@@ -155,6 +154,9 @@ export default class Device extends React.Component<Props, State> {
 
 		let deviceType = 'Unknown';
 		switch (device.type) {
+			case 'webauthn':
+				deviceType = 'WebAuthn';
+				break;
 			case 'u2f':
 				deviceType = 'U2F';
 				break;
@@ -183,7 +185,12 @@ export default class Device extends React.Component<Props, State> {
 		}
 
 		let deviceOther: PageInfos.Field;
-		if (device.type === 'smart_card') {
+		if (device.wan_rp_id) {
+			deviceOther = {
+				label: 'WebAuthn Domain',
+				value: device.wan_rp_id,
+			};
+		} else if (device.type === 'smart_card') {
 			deviceOther = {
 				label: 'SSH Public Key',
 				value: device.ssh_public_key,
