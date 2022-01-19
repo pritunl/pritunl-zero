@@ -5,6 +5,7 @@ import * as Csrf from '../Csrf';
 import * as Alert from '../Alert';
 import * as StateActions from '../actions/StateActions';
 import Loader from "../Loader";
+import * as WebAuthn from "@github/webauthn-json";
 
 interface Secondary {
 	token: string;
@@ -61,15 +62,6 @@ const css = {
 	} as React.CSSProperties,
 };
 
-const u2fErrorCodes: {[index: number]: string} = {
-	0: 'ok',
-	1: 'other',
-	2: 'bad request',
-	3: 'configuration unsupported',
-	4: 'device ineligible',
-	5: 'timed out',
-};
-
 export default class Validate extends React.Component<Props, State> {
 	alertKey: string;
 
@@ -83,35 +75,23 @@ export default class Validate extends React.Component<Props, State> {
 		};
 	}
 
-	u2fSigned = (resp: any): void => {
+	wanRespond = (resp: any): void => {
 		Alert.dismiss(this.alertKey);
-
-		if (resp.errorCode) {
-			let errorMsg = 'U2F error code ' + resp.errorCode;
-			let u2fMsg = u2fErrorCodes[resp.errorCode as number];
-			if (u2fMsg) {
-				errorMsg += ': ' + u2fMsg;
-			}
-			Alert.error(errorMsg);
-
-			return
-		}
 
 		let loader = new Loader().loading();
 
+		resp.token = this.state.secondary.token;
+
 		SuperAgent
-			.post('/ssh/u2f/sign')
-			.send({
-				token: this.state.secondary.token,
-				response: resp,
-			})
+			.post('/ssh/webauthn/respond')
+			.send(resp)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
 				loader.done();
 
 				if (err) {
-					Alert.errorRes(res, 'Failed to complete device sign');
+					Alert.errorRes(res, 'Failed to complete device authentication');
 					return;
 				}
 
@@ -146,7 +126,7 @@ export default class Validate extends React.Component<Props, State> {
 		let loader = new Loader().loading();
 
 		SuperAgent
-			.get('/ssh/u2f/sign')
+			.get('/ssh/webauthn/request')
 			.query({
 				token: token,
 			})
@@ -160,12 +140,17 @@ export default class Validate extends React.Component<Props, State> {
 					return;
 				}
 
-				this.alertKey = Alert.info(
-					'Insert your security key and tap the button', 30000);
-
-				(window as any).u2f.sign(res.body.appId,
-					res.body.challenge, res.body.registeredKeys,
-					this.u2fSigned, 30);
+				WebAuthn.get(res.body).then((cred: any): void => {
+					this.wanRespond(cred);
+				}).catch((err: any): void => {
+					Alert.errorRes(err, 'Failed to authenticate device');
+					this.setState({
+						...this.state,
+						disabled: false,
+						secondary: null,
+						secondaryState: null,
+					});
+				});
 			});
 	}
 
