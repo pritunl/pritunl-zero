@@ -17,12 +17,7 @@ const css = {
 		padding: '20px 15px',
 		minWidth: '260px',
 		maxWidth: '320px',
-		margin: '0 auto',
-		position: 'absolute',
-		top: '50%',
-		left: '50%',
-		width: '100%',
-		transform: 'translate(-50%, -50%)',
+		margin: '30px auto',
 	} as React.CSSProperties,
 	loading: {
 		position: 'absolute',
