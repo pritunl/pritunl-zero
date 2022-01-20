@@ -9,6 +9,8 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/mongo"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/mongo/readconcern"
+	"github.com/pritunl/mongo-go-driver/mongo/writeconcern"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -66,6 +68,22 @@ func (d *Database) getCollection(name string) (coll *Collection) {
 	coll = &Collection{
 		db:         d,
 		Collection: d.database.Collection(name),
+	}
+	return
+}
+
+func (d *Database) getCollectionWeak(name string) (coll *Collection) {
+	opts := &options.CollectionOptions{}
+
+	opts.WriteConcern = writeconcern.New(
+		writeconcern.W(1),
+		writeconcern.WTimeout(10*time.Second),
+	)
+	opts.ReadConcern = readconcern.Local()
+
+	coll = &Collection{
+		db:         d,
+		Collection: d.database.Collection(name, opts),
 	}
 	return
 }
@@ -161,7 +179,7 @@ func (d *Database) Settings() (coll *Collection) {
 }
 
 func (d *Database) Events() (coll *Collection) {
-	coll = d.getCollection("events")
+	coll = d.getCollectionWeak("events")
 	return
 }
 
