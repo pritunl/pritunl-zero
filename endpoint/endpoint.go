@@ -51,6 +51,7 @@ type Data struct {
 	CpuCores       int    `bson:"cpu_cores" json:"cpu_cores"`
 	MemTotal       int    `bson:"mem_total" json:"mem_total"`
 	SwapTotal      int    `bson:"swap_total" json:"swap_total"`
+	HugeTotal      int    `bson:"huge_total" json:"huge_total"`
 }
 
 type ClientKey struct {
