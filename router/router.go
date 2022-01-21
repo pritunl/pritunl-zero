@@ -251,7 +251,7 @@ func (r *Router) initWeb() (err error) {
 		ReadHeaderTimeout: readHeaderTimeout,
 		WriteTimeout:      writeTimeout,
 		IdleTimeout:       idleTimeout,
-		MaxHeaderBytes:    4096,
+		MaxHeaderBytes:    settings.Router.MaxHeaderBytes,
 	}
 
 	return
