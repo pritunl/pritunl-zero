@@ -335,7 +335,7 @@ func (n *Node) sync() {
 
 	n.Timestamp = time.Now()
 
-	mem, err := utils.MemoryUsed()
+	mem, err := utils.GetMemInfo()
 	if err != nil {
 		n.Memory = 0
 
@@ -343,7 +343,7 @@ func (n *Node) sync() {
 			"error": err,
 		}).Error("node: Failed to get memory")
 	} else {
-		n.Memory = mem
+		n.Memory = mem.UsedPercent
 	}
 
 	load, err := utils.LoadAverage()
