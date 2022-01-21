@@ -90,7 +90,7 @@ func (n *Node) GetWebauthn(origin string) (
 	}
 
 	web, err = webauthn.New(&webauthn.Config{
-		RPDisplayName: "Pritunl Cloud",
+		RPDisplayName: "Pritunl Zero",
 		RPID:          n.WebauthnDomain,
 		RPOrigin:      origin,
 	})
