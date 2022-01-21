@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Version         = "1.0.2164.36"
+	Version         = "1.0.2250.3"
 	DatabaseVersion = 1
 	ConfPath        = "/etc/pritunl-zero.json"
 	LogPath         = "/var/log/pritunl-zero.log"
@@ -29,11 +29,6 @@ var (
 		),
 	}
 	StaticTestingRoot = []string{
-		"www/dist-dev",
-		"/usr/share/pritunl-zero/www",
-		path.Join(
-			build.Default.GOPATH,
-			"src/github.com/pritunl/pritunl-zero/www",
-		),
+		"/home/cloud/go/src/github.com/pritunl/pritunl-zero/www/dist-dev",
 	}
 )
