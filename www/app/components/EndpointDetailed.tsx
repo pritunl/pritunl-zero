@@ -368,6 +368,12 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 					value: endpointData.swap_total + 'MB',
 				});
 			}
+			if (endpointData.huge_total) {
+				fields.push({
+					label: 'HugePages',
+					value: endpointData.huge_total + 'MB',
+				});
+			}
 		}
 
 		let roles: JSX.Element[] = [];
