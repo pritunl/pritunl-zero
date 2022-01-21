@@ -5,6 +5,7 @@ pritunl-zero changelog
 
 Add support for Azure graph API
 Improve Elasticsearch integration
+Add JumpCloud single sign-on
 
 Version 1.0.2164.36 2021-10-27
 ------------------------------
