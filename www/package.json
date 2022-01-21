@@ -16,7 +16,7 @@
     "@types/react-router": "5.1.13",
     "@types/react-router-dom": "5.1.7",
     "@types/superagent": "4.1.10",
-    "chart.js": "3.2.0",
+    "chart.js": "3.7.0",
     "chartjs-adapter-moment": "1.0.0",
     "events": "3.3.0",
     "flux": "4.0.1",
