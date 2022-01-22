@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/opensearch-project/opensearch-go v1.0.0
 	github.com/pritunl/mongo-go-driver v0.0.0-20210816062132-f388bdb66274
-	github.com/pritunl/webauthn v1.0.0
+	github.com/pritunl/webauthn v1.0.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/ua-parser/uap-go v0.0.0-20211112212520-00c877edfe0f
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce

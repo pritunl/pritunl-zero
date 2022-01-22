@@ -680,8 +680,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/pritunl/mongo-go-driver v0.0.0-20210816062132-f388bdb66274 h1:g11kauXCd8GkfgpoI0uaLRp/Gmip+r5Nd96qtADPQpw=
 github.com/pritunl/mongo-go-driver v0.0.0-20210816062132-f388bdb66274/go.mod h1:4x3Zy3ZKQxjkwNi8MjxYzbu8eZIpnUeWSR9wlzF+mNM=
-github.com/pritunl/webauthn v1.0.0 h1:zexkmz7m8fNs4zl/ly/xuBX40m2WOJH93hwh3TFQW6k=
-github.com/pritunl/webauthn v1.0.0/go.mod h1:uuUDcUsF99VaMUc388Z+KcELcwaBOQ2nvSdR6Z4NbQg=
+github.com/pritunl/webauthn v1.0.1 h1:IQbf0hg/WLE+p3eUIgGbAxJiv8nMMDcCmno/cKd+8SM=
+github.com/pritunl/webauthn v1.0.1/go.mod h1:uuUDcUsF99VaMUc388Z+KcELcwaBOQ2nvSdR6Z4NbQg=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829/go.mod h1:p2iRAGwDERtqlqzRXnrOVns+ignqQo//hLXqYxZYVNs=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
