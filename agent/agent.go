@@ -3,11 +3,11 @@ package agent
 import (
 	"net/http"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/geo"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/sirupsen/logrus"
 	"github.com/ua-parser/uap-go/uaparser"
 )
 
@@ -22,23 +22,40 @@ const (
 	MacOs1012    = "macos_1012"    // macOS 10.12 = Mac OS X (10/12)
 	MacOs1013    = "macos_1013"    // macOS 10.13 = Mac OS X (10/13)
 	MacOs1014    = "macos_1014"    // macOS 10.14 = Mac OS X (10/14)
+	MacOs1015    = "macos_1015"    // macOS 10.15 = Mac OS X (10/15)
+	MacOs11      = "macos_11"      // macOS 11 = Mac OS X (11)
+	MacOs12      = "macos_12"      // macOS 12 = Mac OS X (12)
+	MacOs13      = "macos_13"      // macOS 13 = Mac OS X (13)
+	MacOs14      = "macos_14"      // macOS 14 = Mac OS X (14)
 	WindowsXp    = "windows_xp"    // Windows XP = Windows XP
 	Windows7     = "windows_7"     // Windows 7 = Windows 7
 	WindowsVista = "windows_vista" // Windows Vista = Windows Vista
 	Windows8     = "windows_8"     // Windows 8 = Windows 8 + Windows 8.1 + Windows RT 8.1
 	Windows10    = "windows_10"    // Windows 10 = Windows 10
+	Windows11    = "windows_11"    // Windows 11 = Windows 11
 	ChromeOs     = "chrome_os"     // Chrome OS = Chrome OS
 	Ios8         = "ios_8"         // iOS 8 = iOS (8/x)
 	Ios9         = "ios_9"         // iOS 9 = iOS (9/x)
 	Ios10        = "ios_10"        // iOS 10 = iOS (10/x)
 	Ios11        = "ios_11"        // iOS 11 = iOS (11/x)
 	Ios12        = "ios_12"        // iOS 12 = iOS (12/x)
+	Ios13        = "ios_13"        // iOS 13 = iOS (13/x)
+	Ios14        = "ios_14"        // iOS 14 = iOS (14/x)
+	Ios15        = "ios_15"        // iOS 15 = iOS (15/x)
+	Ios16        = "ios_16"        // iOS 16 = iOS (16/x)
+	Ios17        = "ios_17"        // iOS 17 = iOS (17/x)
+	Ios18        = "ios_18"        // iOS 18 = iOS (18/x)
 	Android4     = "android_4"     // Android KitKat 4.4 = Android (4/4)
 	Android5     = "android_5"     // Android Lollipop 5.0 = Android (5/x)
 	Android6     = "android_6"     // Android Marshmallow 6.0 = Android (6/x)
 	Android7     = "android_7"     // Android Nougat 7.0 = Android (7/x)
 	Android8     = "android_8"     // Android Oreo 8.0 = Android (8/x)
-	Android9     = "android_9"     // Android 9.0 = Android (9/x)
+	Android9     = "android_9"     // Android Pie 9.0 = Android (9/x)
+	Android10    = "android_10"    // Android 10.0 = Android (10/x)
+	Android11    = "android_11"    // Android 11.0 = Android (11/x)
+	Android12    = "android_12"    // Android 12.0 = Android (12/x)
+	Android13    = "android_13"    // Android 13.0 = Android (13/x)
+	Android14    = "android_14"    // Android 14.0 = Android (14/x)
 	Blackberry10 = "blackberry_10" // Blackerry 10 = BlackBerry OS (10/x)
 	WindowsPhone = "windows_phone" // Windows Phone = Windows Phone
 	FirefoxOs    = "firefox_os"    // Firefox OS = Firefox OS
@@ -131,6 +148,21 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "9":
 			agnt.OperatingSystem = Android9
 			break
+		case "10":
+			agnt.OperatingSystem = Android10
+			break
+		case "11":
+			agnt.OperatingSystem = Android11
+			break
+		case "12":
+			agnt.OperatingSystem = Android12
+			break
+		case "13":
+			agnt.OperatingSystem = Android13
+			break
+		case "14":
+			agnt.OperatingSystem = Android14
+			break
 		}
 		break
 	case "BlackBerry OS":
@@ -159,13 +191,32 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "12":
 			agnt.OperatingSystem = Ios12
 			break
+		case "13":
+			agnt.OperatingSystem = Ios13
+			break
+		case "14":
+			agnt.OperatingSystem = Ios14
+			break
+		case "15":
+			agnt.OperatingSystem = Ios15
+			break
+		case "16":
+			agnt.OperatingSystem = Ios16
+			break
+		case "17":
+			agnt.OperatingSystem = Ios17
+			break
+		case "18":
+			agnt.OperatingSystem = Ios18
+			break
 		}
 		break
 	case "Kindle":
 		agnt.OperatingSystem = Kindle
 		break
 	case "Mac OS X":
-		if client.Os.Major == "10" {
+		switch client.Os.Major {
+		case "10":
 			switch client.Os.Minor {
 			case "10":
 				agnt.OperatingSystem = MacOs1010
@@ -182,7 +233,23 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 			case "14":
 				agnt.OperatingSystem = MacOs1014
 				break
+			case "15":
+				agnt.OperatingSystem = MacOs1015
+				break
 			}
+			break
+		case "11":
+			agnt.OperatingSystem = MacOs11
+			break
+		case "12":
+			agnt.OperatingSystem = MacOs12
+			break
+		case "13":
+			agnt.OperatingSystem = MacOs13
+			break
+		case "14":
+			agnt.OperatingSystem = MacOs14
+			break
 		}
 		break
 	case "Windows Phone":
@@ -202,6 +269,9 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		break
 	case "Windows 10":
 		agnt.OperatingSystem = Windows10
+		break
+	case "Windows 11":
+		agnt.OperatingSystem = Windows11
 		break
 	case "Chrome OS":
 		agnt.OperatingSystem = ChromeOs
