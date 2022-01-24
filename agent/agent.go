@@ -22,23 +22,33 @@ const (
 	MacOs1012    = "macos_1012"    // macOS 10.12 = Mac OS X (10/12)
 	MacOs1013    = "macos_1013"    // macOS 10.13 = Mac OS X (10/13)
 	MacOs1014    = "macos_1014"    // macOS 10.14 = Mac OS X (10/14)
+	MacOs1015    = "macos_1015"    // macOS 10.15 = Mac OS X (10/15)
+	MacOs11      = "macos_11"      // macOS 11 = Mac OS X (11)
+	MacOs12      = "macos_12"      // macOS 12 = Mac OS X (12)
 	WindowsXp    = "windows_xp"    // Windows XP = Windows XP
 	Windows7     = "windows_7"     // Windows 7 = Windows 7
 	WindowsVista = "windows_vista" // Windows Vista = Windows Vista
 	Windows8     = "windows_8"     // Windows 8 = Windows 8 + Windows 8.1 + Windows RT 8.1
 	Windows10    = "windows_10"    // Windows 10 = Windows 10
+	Windows11    = "windows_11"    // Windows 11 = Windows 11
 	ChromeOs     = "chrome_os"     // Chrome OS = Chrome OS
 	Ios8         = "ios_8"         // iOS 8 = iOS (8/x)
 	Ios9         = "ios_9"         // iOS 9 = iOS (9/x)
 	Ios10        = "ios_10"        // iOS 10 = iOS (10/x)
 	Ios11        = "ios_11"        // iOS 11 = iOS (11/x)
 	Ios12        = "ios_12"        // iOS 12 = iOS (12/x)
+	Ios13        = "ios_13"        // iOS 13 = iOS (13/x)
+	Ios14        = "ios_14"        // iOS 14 = iOS (14/x)
+	Ios15        = "ios_15"        // iOS 15 = iOS (15/x)
 	Android4     = "android_4"     // Android KitKat 4.4 = Android (4/4)
 	Android5     = "android_5"     // Android Lollipop 5.0 = Android (5/x)
 	Android6     = "android_6"     // Android Marshmallow 6.0 = Android (6/x)
 	Android7     = "android_7"     // Android Nougat 7.0 = Android (7/x)
 	Android8     = "android_8"     // Android Oreo 8.0 = Android (8/x)
-	Android9     = "android_9"     // Android 9.0 = Android (9/x)
+	Android9     = "android_9"     // Android Pie 9.0 = Android (9/x)
+	Android10    = "android_10"    // Android 10.0 = Android (10/x)
+	Android11    = "android_11"    // Android 11.0 = Android (11/x)
+	Android12    = "android_12"    // Android 12.0 = Android (12/x)
 	Blackberry10 = "blackberry_10" // Blackerry 10 = BlackBerry OS (10/x)
 	WindowsPhone = "windows_phone" // Windows Phone = Windows Phone
 	FirefoxOs    = "firefox_os"    // Firefox OS = Firefox OS
@@ -131,6 +141,15 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "9":
 			agnt.OperatingSystem = Android9
 			break
+		case "10":
+			agnt.OperatingSystem = Android10
+			break
+		case "11":
+			agnt.OperatingSystem = Android11
+			break
+		case "12":
+			agnt.OperatingSystem = Android12
+			break
 		}
 		break
 	case "BlackBerry OS":
@@ -159,6 +178,15 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "12":
 			agnt.OperatingSystem = Ios12
 			break
+		case "13":
+			agnt.OperatingSystem = Ios13
+			break
+		case "14":
+			agnt.OperatingSystem = Ios14
+			break
+		case "15":
+			agnt.OperatingSystem = Ios15
+			break
 		}
 		break
 	case "Kindle":
@@ -182,7 +210,16 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 			case "14":
 				agnt.OperatingSystem = MacOs1014
 				break
+			case "15":
+				agnt.OperatingSystem = MacOs1015
+				break
 			}
+		}
+		if client.Os.Major == "11" {
+			agnt.OperatingSystem = MacOs11
+		}
+		if client.Os.Major == "12" {
+			agnt.OperatingSystem = MacOs12
 		}
 		break
 	case "Windows Phone":
@@ -202,6 +239,9 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		break
 	case "Windows 10":
 		agnt.OperatingSystem = Windows10
+		break
+	case "Windows 11":
+		agnt.OperatingSystem = Windows11
 		break
 	case "Chrome OS":
 		agnt.OperatingSystem = ChromeOs
