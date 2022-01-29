@@ -14,6 +14,7 @@ interface Props {
 	label?: string;
 	dialogLabel?: string;
 	confirmMsg?: string;
+	items?: string[];
 	disabled?: boolean;
 	safe?: boolean;
 	onConfirm?: () => void;
@@ -173,6 +174,14 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		if (dialog) {
 			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
 				'Confirm ' + (this.props.label || '');
+			let itemsList: JSX.Element;
+			if (this.props.items) {
+				let items: JSX.Element[] = [];
+				for (let item of this.props.items) {
+					items.push(<li>{item}</li>);
+				}
+				itemsList = <ul>{items}</ul>;
+			}
 
 			return <div style={css.box}>
 				<button
@@ -198,6 +207,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				>
 					<div className="bp3-dialog-body">
 						{confirmMsg}
+						{itemsList}
 					</div>
 					<div className="bp3-dialog-footer">
 						<div className="bp3-dialog-footer-actions">
