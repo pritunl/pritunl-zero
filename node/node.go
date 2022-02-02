@@ -90,7 +90,14 @@ func (n *Node) GetWebauthn(origin string, strict bool) (
 			}
 			return
 		} else {
-			webauthnDomain = n.UserDomain
+			userN := strings.Count(n.UserDomain, ".")
+			adminN := strings.Count(n.ManagementDomain, ".")
+
+			if userN <= adminN {
+				webauthnDomain = n.UserDomain
+			} else {
+				webauthnDomain = n.ManagementDomain
+			}
 		}
 	}
 
