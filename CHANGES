@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix U2F migration to WebAuthn issues
+
 Version 1.0.2250.3 2022-01-21
 -----------------------------
 
