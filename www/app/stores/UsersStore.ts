@@ -10,6 +10,7 @@ class UsersStore extends EventEmitter {
 	_pageCount: number;
 	_filter: UserTypes.Filter = null;
 	_count: number;
+	_map: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get users(): UserTypes.UsersRo {
@@ -46,6 +47,14 @@ class UsersStore extends EventEmitter {
 		return this._count || 0;
 	}
 
+	user(id: string): UserTypes.UserRo {
+		let i = this._map[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._users[i];
+	}
+
 	emitChange(): void {
 		this.emitDefer(GlobalTypes.CHANGE);
 	}
@@ -78,8 +87,10 @@ class UsersStore extends EventEmitter {
 	}
 
 	_sync(users: UserTypes.User[], count: number): void {
+		this._map = {};
 		for (let i = 0; i < users.length; i++) {
 			users[i] = Object.freeze(users[i]);
+			this._map[users[i].id] = i;
 		}
 
 		this._count = count;
