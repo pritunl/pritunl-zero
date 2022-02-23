@@ -13,7 +13,6 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -125,11 +124,13 @@ type azureTokenData struct {
 }
 
 type azureMemberData struct {
-	Value []string `json:"value"`
+	Value []azureGroupData `json:"value"`
 }
 
 type azureUserData struct {
-	AccountEnabled bool `json:"accountEnabled"`
+	Id                string `json:"id"`
+	UserPrincipalName string `json:"userPrincipalName"`
+	AccountEnabled    bool   `json:"accountEnabled"`
 }
 
 type azureGroupData struct {
@@ -190,71 +191,27 @@ func azureGetToken(provider *settings.Provider) (token string, err error) {
 	return
 }
 
-func azureGetGroupName(provider *settings.Provider, token, groupId string) (
-	name string, err error) {
-
-	reqUrl, err := url.Parse(fmt.Sprintf(
-		"https://graph.microsoft.com/v1.0/%s/groups/%s",
-		provider.Tenant,
-		groupId,
-	))
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse azure url"),
-		}
-		return
-	}
-
-	query := reqUrl.Query()
-	query.Set("$select", "displayName")
-	reqUrl.RawQuery = query.Encode()
-
-	req, err := http.NewRequest(
-		"GET",
-		reqUrl.String(),
-		nil,
-	)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Failed to create azure request"),
-		}
-		return
-	}
-
-	req.Header.Add("Authorization", "Bearer "+token)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Azure request failed"),
-		}
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
-		}
-		return
-	}
-
-	data := &azureGroupData{}
-	err = json.NewDecoder(resp.Body).Decode(data)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse response"),
-		}
-		return
-	}
-
-	name = data.DisplayName
-
-	return
-}
-
 func AzureRoles(provider *settings.Provider, username string) (
 	roles []string, err error) {
+
+	userId, active, err := AzureSync(provider, username)
+	if err != nil {
+		return
+	}
+
+	if !active {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Azure sync user disabled"),
+		}
+		return
+	}
+
+	if userId == "" {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "auth: Azure sync missing user ID"),
+		}
+		return
+	}
 
 	roles = []string{}
 
@@ -264,9 +221,8 @@ func AzureRoles(provider *settings.Provider, username string) (
 	}
 
 	reqUrl, err := url.Parse(fmt.Sprintf(
-		"https://graph.microsoft.com/v1.0/%s/users/%s/getMemberGroups",
-		provider.Tenant,
-		username,
+		"https://graph.microsoft.com/v1.0/users/%s/memberOf",
+		userId,
 	))
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -285,7 +241,7 @@ func AzureRoles(provider *settings.Provider, username string) (
 	}
 
 	req, err := http.NewRequest(
-		"POST",
+		"GET",
 		reqUrl.String(),
 		bytes.NewBuffer(reqData),
 	)
@@ -324,11 +280,10 @@ func AzureRoles(provider *settings.Provider, username string) (
 		return
 	}
 
-	for _, groupId := range data.Value {
-		groupName, e := azureGetGroupName(provider, token, groupId)
-		if e != nil {
-			err = e
-			return
+	for _, groupData := range data.Value {
+		groupName := groupData.DisplayName
+		if groupName == "" {
+			continue
 		}
 
 		roles = append(roles, groupName)
@@ -337,8 +292,8 @@ func AzureRoles(provider *settings.Provider, username string) (
 	return
 }
 
-func AzureSync(db *database.Database, usr *user.User,
-	provider *settings.Provider) (active bool, err error) {
+func AzureSync(provider *settings.Provider, username string) (
+	userId string, active bool, err error) {
 
 	token, err := azureGetToken(provider)
 	if err != nil {
@@ -348,7 +303,7 @@ func AzureSync(db *database.Database, usr *user.User,
 	reqUrl, err := url.Parse(fmt.Sprintf(
 		"https://graph.microsoft.com/v1.0/%s/users/%s",
 		provider.Tenant,
-		usr.Username,
+		username,
 	))
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -358,7 +313,7 @@ func AzureSync(db *database.Database, usr *user.User,
 	}
 
 	query := reqUrl.Query()
-	query.Set("$select", "accountEnabled")
+	query.Set("$select", "id,userPrincipalName,accountEnabled")
 	reqUrl.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(
@@ -400,6 +355,20 @@ func AzureSync(db *database.Database, usr *user.User,
 		return
 	}
 
+	if strings.ToLower(username) != strings.ToLower(
+		data.UserPrincipalName) {
+
+		err = &errortypes.ApiError{
+			errors.Wrapf(
+				err,
+				"auth: Azure principal name '%s' does not match user '%s'",
+				data.UserPrincipalName, username,
+			),
+		}
+		return
+	}
+
+	userId = data.Id
 	active = data.AccountEnabled
 
 	return
