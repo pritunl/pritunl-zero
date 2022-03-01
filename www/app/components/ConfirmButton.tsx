@@ -14,6 +14,7 @@ interface Props {
 	label?: string;
 	dialogLabel?: string;
 	confirmMsg?: string;
+	confirmInput?: boolean;
 	items?: string[];
 	disabled?: boolean;
 	safe?: boolean;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 interface State {
+	input: string;
 	dialog: boolean;
 	confirm: number;
 	confirming: string;
@@ -55,12 +57,21 @@ const css = {
 		width: '340px',
 		position: 'absolute',
 	} as React.CSSProperties,
+	label: {
+		width: '100%',
+		maxWidth: '220px',
+		margin: '18px 0 0 0',
+	} as React.CSSProperties,
+	input: {
+		width: '100%',
+	} as React.CSSProperties,
 };
 
 export default class ConfirmButton extends React.Component<Props, State> {
 	constructor(props: Props, context: any) {
 		super(props, context);
 		this.state = {
+			input: '',
 			dialog: false,
 			confirm: 0,
 			confirming: null,
@@ -171,6 +182,31 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			dialogClassName += ' bp3-button-empty';
 		}
 
+		let confirmInput: JSX.Element;
+		if (this.props.confirmInput) {
+			confirmInput = <label
+				className="bp3-label"
+				style={css.label}
+			>
+				Enter "delete" to confirm:
+				<input
+					className="bp3-input"
+					style={css.input}
+					disabled={this.props.disabled}
+					autoCapitalize="off"
+					spellCheck={false}
+					placeholder='Enter "delete" to confirm'
+					value={this.state.input}
+					onChange={(evt): void => {
+						this.setState({
+							...this.state,
+							input: evt.target.value,
+						});
+					}}
+				/>
+			</label>;
+		}
+
 		if (dialog) {
 			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
 				'Confirm ' + (this.props.label || '');
@@ -208,6 +244,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					<div className="bp3-dialog-body">
 						{confirmMsg}
 						{itemsList}
+						{confirmInput}
 					</div>
 					<div className="bp3-dialog-footer">
 						<div className="bp3-dialog-footer-actions">
@@ -219,6 +256,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 							<button
 								className={'bp3-button ' + dialogClassName}
 								type="button"
+								disabled={this.props.confirmInput &&
+									this.state.input !== 'delete'}
 								onClick={this.closeDialogConfirm}
 							>{this.props.dialogLabel || this.props.label}</button>
 						</div>
