@@ -254,7 +254,7 @@ func Connect() (err error) {
 		return
 	}
 
-	err = client.Connect(context.TODO())
+	err = client.Connect(context.Background())
 	if err != nil {
 		err = &ConnectionError{
 			errors.Wrap(err, "database: Connection error"),
