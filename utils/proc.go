@@ -7,9 +7,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/sirupsen/logrus"
 )
 
 func Exec(dir, name string, arg ...string) (err error) {
@@ -23,7 +23,7 @@ func Exec(dir, name string, arg ...string) (err error) {
 
 	err = cmd.Run()
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
 		}
 		return
@@ -39,13 +39,12 @@ func ExecInput(dir, input, name string, arg ...string) (err error) {
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err,
 				"utils: Failed to get stdin in exec '%s'", name),
 		}
 		return
 	}
-	defer stdin.Close()
 
 	if dir != "" {
 		cmd.Dir = dir
@@ -53,7 +52,7 @@ func ExecInput(dir, input, name string, arg ...string) (err error) {
 
 	err = cmd.Start()
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
 		}
 		return
@@ -61,8 +60,17 @@ func ExecInput(dir, input, name string, arg ...string) (err error) {
 
 	_, err = io.WriteString(stdin, input)
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err, "utils: Failed to write stdin in exec '%s'",
+				name),
+		}
+		return
+	}
+
+	err = stdin.Close()
+	if err != nil {
+		err = &errortypes.ExecError{
+			errors.Wrapf(err, "utils: Failed to close stdin in exec '%s'",
 				name),
 		}
 		return
@@ -70,7 +78,7 @@ func ExecInput(dir, input, name string, arg ...string) (err error) {
 
 	err = cmd.Wait()
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
 		}
 		return
@@ -92,7 +100,7 @@ func ExecOutput(dir, name string, arg ...string) (output string, err error) {
 		output = string(outputByt)
 	}
 	if err != nil {
-		err = &errortypes.RequestError{
+		err = &errortypes.ExecError{
 			errors.Wrapf(err, "utils: Failed to exec '%s'", name),
 		}
 		return
