@@ -15,22 +15,31 @@ found at [docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
 ```bash
 # Install Go
 sudo yum -y install git
-curl -L https://golang.org/dl/go1.15.6.linux-amd64.tar.gz | sudo tar -C /usr/local -xz
+
+wget https://go.dev/dl/go1.18.linux-amd64.tar.gz
+echo "e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f go1.18.linux-amd64.tar.gz" | sha256sum -c -
+
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xf go1.18.linux-amd64.tar.gz
+rm -f go1.18.linux-amd64.tar.gz
+
 tee -a ~/.bashrc << EOF
+export GO111MODULE=on
 export GOPATH=\$HOME/go
 export PATH=/usr/local/go/bin:\$PATH
 EOF
 source ~/.bashrc
 
 # Install MongoDB
-sudo tee /etc/yum.repos.d/mongodb-org-4.2.repo << EOF
-[mongodb-org-4.2]
+sudo tee /etc/yum.repos.d/mongodb-org-5.0.repo << EOF
+[mongodb-org-5.0]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.2/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/8/mongodb-org/5.0/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-5.0.asc
 EOF
+
 sudo yum -y install mongodb-org
 sudo service mongod start
 
