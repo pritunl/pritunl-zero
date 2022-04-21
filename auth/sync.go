@@ -31,7 +31,7 @@ func SyncUser(db *database.Database, usr *user.User) (
 	} else if usr.Type == user.Azure && provider != nil &&
 		provider.Type == user.Azure {
 
-		active, err = AzureSync(db, usr, provider)
+		_, active, err = AzureSync(provider, usr.Username)
 		if err != nil {
 			return
 		}
