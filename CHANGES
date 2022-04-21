@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.2340.64 2022-04-21
+------------------------------
 
 Improve Azure graph API
 
