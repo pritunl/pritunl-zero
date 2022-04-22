@@ -303,7 +303,7 @@ func AzureSync(provider *settings.Provider, username string) (
 	reqUrl, err := url.Parse(fmt.Sprintf(
 		"https://graph.microsoft.com/v1.0/%s/users/%s",
 		provider.Tenant,
-		username,
+		url.QueryEscape(username),
 	))
 	if err != nil {
 		err = &errortypes.ParseError{
