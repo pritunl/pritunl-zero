@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Support Azure usernames with special characters
+
 Version 1.0.2340.64 2022-04-21
 ------------------------------
 
