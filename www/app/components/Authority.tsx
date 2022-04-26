@@ -557,9 +557,14 @@ export default class Authority extends React.Component<Props, State> {
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
+							safe={true}
 							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
 							progressClassName="bp3-intent-danger"
-							confirmMsg="Confirm authority remove"
+							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							dialogLabel="Delete Authority"
+							confirmMsg="Permanently delete this authority"
+							confirmInput={true}
+							items={[authority.name]}
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
