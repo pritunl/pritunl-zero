@@ -273,9 +273,14 @@ export default class Certificate extends React.Component<Props, State> {
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
+							safe={true}
 							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
 							progressClassName="bp3-intent-danger"
-							confirmMsg="Confirm certificate remove"
+							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							dialogLabel="Delete Certificate"
+							confirmMsg="Permanently delete this certificate"
+							confirmInput={true}
+							items={[cert.name]}
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
