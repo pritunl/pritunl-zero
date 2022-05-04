@@ -81,7 +81,7 @@ func AzureRequest(db *database.Database, location, query string,
 
 	if resp.StatusCode != 200 {
 		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth server error %d", resp.StatusCode),
+			errors.Newf("auth: Auth server error %d", resp.StatusCode),
 		}
 		return
 	}
@@ -272,7 +272,7 @@ func AzureRoles(provider *settings.Provider, username string) (
 
 		if resp.StatusCode != 200 {
 			err = &errortypes.RequestError{
-				errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
+				errors.Newf("auth: Azure server error %d", resp.StatusCode),
 			}
 			return
 		}
@@ -303,7 +303,7 @@ func AzureRoles(provider *settings.Provider, username string) (
 
 		if time.Since(start) > 45*time.Second {
 			err = &errortypes.RequestError{
-				errors.Wrap(err, "auth: Azure group paging timeout"),
+				errors.New("auth: Azure group paging timeout"),
 			}
 			return
 		}
@@ -361,7 +361,7 @@ func AzureSync(provider *settings.Provider, username string) (
 
 	if resp.StatusCode != 200 {
 		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
+			errors.Newf("auth: Azure server error %d", resp.StatusCode),
 		}
 		return
 	}
