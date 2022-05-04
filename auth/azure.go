@@ -86,8 +86,8 @@ func AzureRequest(db *database.Database, location, query string,
 		return
 	}
 
-	authData := &authData{}
-	err = json.NewDecoder(resp.Body).Decode(authData)
+	athData := &authData{}
+	err = json.NewDecoder(resp.Body).Decode(athData)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(
@@ -112,7 +112,7 @@ func AzureRequest(db *database.Database, location, query string,
 		return
 	}
 
-	redirect = authData.Url
+	redirect = athData.Url
 
 	return
 }
@@ -124,7 +124,8 @@ type azureTokenData struct {
 }
 
 type azureMemberData struct {
-	Value []azureGroupData `json:"value"`
+	NextLink string           `json:"@odata.nextLink"`
+	Value    []azureGroupData `json:"value"`
 }
 
 type azureUserData struct {
@@ -220,73 +221,92 @@ func AzureRoles(provider *settings.Provider, username string) (
 		return
 	}
 
-	reqUrl, err := url.Parse(fmt.Sprintf(
+	reqUrlStr := fmt.Sprintf(
 		"https://graph.microsoft.com/v1.0/users/%s/memberOf",
 		userId,
-	))
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse azure url"),
-		}
-		return
-	}
-
-	reqData, err := json.Marshal(struct {
-		SecurityEnabledOnly string `json:"securityEnabledOnly"`
-	}{
-		SecurityEnabledOnly: "false",
-	})
-	if err != nil {
-		return
-	}
-
-	req, err := http.NewRequest(
-		"GET",
-		reqUrl.String(),
-		bytes.NewBuffer(reqData),
 	)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Failed to create azure request"),
-		}
-		return
-	}
+	start := time.Now()
 
-	req.Header.Add("Authorization", "Bearer "+token)
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		err = &errortypes.RequestError{
-			errors.Wrap(err, "auth: Azure request failed"),
-		}
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
-		}
-		return
-	}
-
-	data := &azureMemberData{}
-	err = json.NewDecoder(resp.Body).Decode(data)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "auth: Failed to parse response"),
-		}
-		return
-	}
-
-	for _, groupData := range data.Value {
-		groupName := groupData.DisplayName
-		if groupName == "" {
-			continue
+	for {
+		reqUrl, e := url.Parse(reqUrlStr)
+		if e != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(e, "auth: Failed to parse azure url"),
+			}
+			return
 		}
 
-		roles = append(roles, groupName)
+		reqData, e := json.Marshal(struct {
+			SecurityEnabledOnly string `json:"securityEnabledOnly"`
+		}{
+			SecurityEnabledOnly: "false",
+		})
+		if e != nil {
+			err = e
+			return
+		}
+
+		req, e := http.NewRequest(
+			"GET",
+			reqUrl.String(),
+			bytes.NewBuffer(reqData),
+		)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "auth: Failed to create azure request"),
+			}
+			return
+		}
+
+		req.Header.Add("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, e := client.Do(req)
+		if e != nil {
+			err = &errortypes.RequestError{
+				errors.Wrap(e, "auth: Azure request failed"),
+			}
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			err = &errortypes.RequestError{
+				errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
+			}
+			return
+		}
+
+		data := &azureMemberData{}
+		err = json.NewDecoder(resp.Body).Decode(data)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "auth: Failed to parse response"),
+			}
+			return
+		}
+
+		for _, groupData := range data.Value {
+			groupName := groupData.DisplayName
+			if groupName == "" {
+				continue
+			}
+
+			roles = append(roles, groupName)
+		}
+
+		if data.NextLink != "" {
+			reqUrlStr = data.NextLink
+		} else {
+			break
+		}
+
+		if time.Since(start) > 45*time.Second {
+			err = &errortypes.RequestError{
+				errors.Wrap(err, "auth: Azure group paging timeout"),
+			}
+			return
+		}
 	}
 
 	return
