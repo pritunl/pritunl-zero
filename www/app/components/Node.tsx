@@ -565,8 +565,13 @@ export default class Node extends React.Component<Props, State> {
 					<div style={css.remove}>
 						<ConfirmButton
 							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							safe={true}
 							progressClassName="bp3-intent-danger"
-							confirmMsg="Confirm node remove"
+							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							dialogLabel="Delete Node"
+							confirmMsg="Permanently delete this node"
+							confirmInput={true}
+							items={[node.name]}
 							disabled={active || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
