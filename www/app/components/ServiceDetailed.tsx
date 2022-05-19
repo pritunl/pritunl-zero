@@ -718,21 +718,19 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div
-						className="layout horizontal"
+						className="layout horizontal tab-close"
 						style={css.buttons}
 						onClick={(evt): void => {
 							let target = evt.target as HTMLElement;
 
-							if (target.className.indexOf('open-ignore') !== -1) {
-								return;
+							if (target.className.indexOf('tab-close') !== -1) {
+								this.props.onClose();
 							}
-
-							this.props.onClose();
 						}}
 					>
             <div>
               <label
-                className="bp3-control bp3-checkbox open-ignore"
+                className="bp3-control bp3-checkbox"
                 style={css.select}
               >
                 <input
@@ -745,15 +743,19 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 										this.props.onSelect(evt.shiftKey);
 									}}
                 />
-                <span className="bp3-control-indicator open-ignore"/>
+                <span className="bp3-control-indicator"/>
               </label>
             </div>
-						<div className="flex"/>
+						<div className="flex tab-close"/>
 						<ConfirmButton
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash open-ignore"
-							style={css.button}
+							safe={true}
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
 							progressClassName="bp3-intent-danger"
-							confirmMsg="Confirm service remove"
+							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							dialogLabel="Delete Service"
+							confirmMsg="Permanently delete this service"
+							confirmInput={true}
+							items={[service.name]}
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
