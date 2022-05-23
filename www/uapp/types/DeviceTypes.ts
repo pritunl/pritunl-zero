@@ -12,6 +12,7 @@ export interface Device {
 	disabled?: boolean;
 	active_until?: string;
 	last_active?: string;
+	wan_rp_id?: string;
 }
 
 export type Devices = Device[];
