@@ -39,6 +39,15 @@ interface State {
 const css = {
 	body: {
 		padding: 0,
+		textAlign: 'center',
+	} as React.CSSProperties,
+	bodyRelative: {
+		padding: 0,
+		textAlign: 'center',
+		position: 'relative',
+	} as React.CSSProperties,
+	title: {
+		margin: '10px 0 15px 0',
 	} as React.CSSProperties,
 	description: {
 		opacity: 0.7,
@@ -156,11 +165,11 @@ export default class Validate extends React.Component<Props, State> {
 
 	device(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -218,11 +227,11 @@ export default class Validate extends React.Component<Props, State> {
 
 	secondary(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">
+				<h4 style={css.title}>
 					{this.state.secondary.label}
 				</h4>
 				<span style={css.description}>
@@ -348,7 +357,7 @@ export default class Validate extends React.Component<Props, State> {
 		}
 
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-endorsed"/>
 				</div>
