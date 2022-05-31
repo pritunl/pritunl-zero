@@ -532,6 +532,13 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 	mode := cipher.NewCBCEncrypter(block, cipIv)
 	mode.CryptBlocks(cipData, cipData)
 
+	if a.HsmSecret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, []byte(a.HsmSecret))
 	hashFunc.Write(cipData)
 	rawSignature := hashFunc.Sum(nil)
@@ -803,6 +810,13 @@ func (a *Authority) createHostCertificateHsm(db *database.Database,
 
 	mode := cipher.NewCBCEncrypter(block, cipIv)
 	mode.CryptBlocks(cipData, cipData)
+
+	if a.HsmSecret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
 
 	hashFunc := hmac.New(sha512.New, []byte(a.HsmSecret))
 	hashFunc.Write(cipData)
@@ -1280,6 +1294,13 @@ func (a *Authority) ValidateHsmSignature(
 
 	err = nonce.Validate(db, nonc)
 	if err != nil {
+		return
+	}
+
+	if a.HsmSecret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
 		return
 	}
 

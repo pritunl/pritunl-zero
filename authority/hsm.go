@@ -79,6 +79,13 @@ func UnmarshalPayload(token, secret string, payload *HsmPayload) (
 		return
 	}
 
+	if secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	cipData := payload.Data
 	hashFunc := hmac.New(sha512.New, []byte(secret))
 	hashFunc.Write(cipData)
