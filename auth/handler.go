@@ -155,6 +155,13 @@ func Callback(db *database.Database, sig, query string) (
 		return
 	}
 
+	if tokn.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, []byte(tokn.Secret))
 	hashFunc.Write([]byte(query))
 	rawSignature := hashFunc.Sum(nil)
