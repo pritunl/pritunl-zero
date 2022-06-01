@@ -221,6 +221,13 @@ func (e *Endpoint) ValidateSignature(db *database.Database,
 		return
 	}
 
+	if e.ClientKey.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, []byte(e.ClientKey.Secret))
 	hashFunc.Write([]byte(authString))
 	rawSignature := hashFunc.Sum(nil)
@@ -291,6 +298,13 @@ func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 		return
 	}
 
+	if e.ClientKey.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, []byte(e.ClientKey.Secret))
 	hashFunc.Write([]byte(authString))
 	rawSignature := hashFunc.Sum(nil)
@@ -327,6 +341,13 @@ func (e *Endpoint) Register(db *database.Database, reqData *RegisterData) (
 		resData.Nonce,
 		resData.PublicKey,
 	}, "&")
+
+	if e.ClientKey.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
 
 	hashFunc = hmac.New(sha512.New, []byte(e.ClientKey.Secret))
 	hashFunc.Write([]byte(authString))
