@@ -8,9 +8,11 @@ import (
 	"encoding/base64"
 	"time"
 
+	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/rokey"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -45,6 +47,13 @@ func (s *Session) CheckSignature(db *database.Database, inSig string) (
 		return
 	}
 
+	if rkey.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
+		return
+	}
+
 	hash := hmac.New(sha512.New, []byte(rkey.Secret))
 	hash.Write([]byte(s.Secret))
 	outSig := base64.RawStdEncoding.EncodeToString(hash.Sum(nil))
@@ -68,6 +77,13 @@ func (s *Session) GenerateSignature(db *database.Database) (
 
 	s.Secret, err = utils.RandStr(64)
 	if err != nil {
+		return
+	}
+
+	if rkey.Secret == "" {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "session: Empty secret"),
+		}
 		return
 	}
 
