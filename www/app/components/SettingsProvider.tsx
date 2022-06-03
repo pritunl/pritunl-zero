@@ -306,7 +306,7 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				label="JumpCloud API Key"
 				help="JumpCloud API key for user account status verfication"
 				type="text"
-				placeholder="Auth0 client secret"
+				placeholder="JumpCloud client secret"
 				value={provider.jumpcloud_secret}
 				onChange={(val: string): void => {
 					let state = this.clone();
