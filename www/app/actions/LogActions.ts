@@ -85,7 +85,9 @@ export function filter(filt: LogTypes.Filter): Promise<void> {
 EventDispatcher.register((action: LogTypes.LogDispatch) => {
 	switch (action.type) {
 		case LogTypes.CHANGE:
-			sync();
+			if (window.location.hash.indexOf('/logs') !== -1) {
+				sync();
+			}
 			break;
 	}
 });
