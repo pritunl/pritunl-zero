@@ -246,12 +246,16 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div>
 						<ConfirmButton
-							label="Delete"
-							className="bp3-intent-danger bp3-icon-delete"
-							progressClassName="bp3-intent-danger"
+							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
 							style={css.button}
-							disabled={this.state.disabled || this.state.locked}
-							hidden={!userId}
+							safe={true}
+							progressClassName="bp3-intent-danger"
+							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							dialogLabel="Delete User"
+							confirmMsg="Permanently delete this user"
+							confirmInput={true}
+							items={[user.username]}
+							disabled={this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
 					</div>
