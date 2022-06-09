@@ -185,6 +185,16 @@ export default class Users extends React.Component<{}, State> {
 			filterClass += 'bp3-active';
 		}
 
+		let selectedNames: string[] = [];
+		for (let userId of Object.keys(this.state.selected)) {
+			let user = UsersStore.user(userId);
+			if (user) {
+				selectedNames.push(user.username || userId);
+			} else {
+				selectedNames.push(userId);
+			}
+		}
+
 		return <Page>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
@@ -209,7 +219,11 @@ export default class Users extends React.Component<{}, State> {
 							label="Delete Selected"
 							className="bp3-intent-danger bp3-icon-delete"
 							progressClassName="bp3-intent-danger"
+							safe={true}
 							style={css.button}
+							confirmMsg="Permanently delete the selected users"
+							confirmInput={true}
+							items={selectedNames}
 							disabled={!this.selected || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
