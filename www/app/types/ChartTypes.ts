@@ -47,6 +47,9 @@ export function getChartLabels(resource: string, data: any): Labels {
 					{
 						label: 'Swap Usage',
 					},
+					{
+						label: 'HugePages Usage',
+					},
 				],
 			};
 		case 'load':
@@ -200,6 +203,7 @@ export function getChartData(resource: string, data: any): Chart {
 				data.cpu_usage,
 				data.mem_usage,
 				data.swap_usage,
+				data.huge_usage,
 			];
 		case 'load':
 			return [
