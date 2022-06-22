@@ -9,13 +9,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme"
 )
 
@@ -101,7 +101,14 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	if order.Status != acme.StatusPending {
+	if order.Status == acme.StatusReady {
+		err = create(db, cert, client, order)
+		if err != nil {
+			return
+		}
+
+		return
+	} else if order.Status != acme.StatusPending {
 		err = &errortypes.RequestError{
 			errors.Newf(
 				"acme: Authorize order status '%s' not pending",
@@ -204,6 +211,27 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 		return
 	}
+
+	if order.Status != acme.StatusReady {
+		err = &errortypes.RequestError{
+			errors.Newf(
+				"acme: Authorize order status '%s' not ready",
+				order.Status,
+			),
+		}
+		return
+	}
+
+	err = create(db, cert, client, order)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func create(db *database.Database, cert *certificate.Certificate,
+	client *acme.Client, order *acme.Order) (err error) {
 
 	var csr []byte
 	var keyPem []byte
