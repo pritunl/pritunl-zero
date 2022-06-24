@@ -2,6 +2,7 @@ package mhandlers
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -274,7 +275,7 @@ func usersGet(c *gin.Context) {
 	username := strings.TrimSpace(c.Query("username"))
 	if username != "" {
 		query["username"] = &bson.M{
-			"$regex":   fmt.Sprintf(".*%s.*", username),
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(username)),
 			"$options": "i",
 		}
 	}

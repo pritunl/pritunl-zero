@@ -2,6 +2,7 @@ package mhandlers
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -252,13 +253,15 @@ func servicesGet(c *gin.Context) {
 			query["$or"] = []*bson.M{
 				&bson.M{
 					"name": &bson.M{
-						"$regex":   fmt.Sprintf(".*%s.*", name),
+						"$regex": fmt.Sprintf(".*%s.*",
+							regexp.QuoteMeta(name)),
 						"$options": "i",
 					},
 				},
 				&bson.M{
 					"key": &bson.M{
-						"$regex":   fmt.Sprintf(".*%s.*", name),
+						"$regex": fmt.Sprintf(".*%s.*",
+							regexp.QuoteMeta(name)),
 						"$options": "i",
 					},
 				},
