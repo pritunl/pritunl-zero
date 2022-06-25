@@ -246,6 +246,9 @@ func Connect() (err error) {
 	}
 
 	opts := options.Client().ApplyURI(config.Config.MongoUri)
+	opts.SetRetryReads(true)
+	opts.SetRetryWrites(true)
+
 	client, err := mongo.NewClient(opts)
 	if err != nil {
 		err = &ConnectionError{
