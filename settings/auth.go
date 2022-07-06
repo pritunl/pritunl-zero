@@ -19,6 +19,7 @@ type Provider struct {
 	Domain          string             `bson:"domain" json:"domain"`                     // google + authzero
 	GoogleKey       string             `bson:"google_key" json:"google_key"`             // google
 	GoogleEmail     string             `bson:"google_email" json:"google_email"`         // google
+	JumpCloudAppId  string             `bson:"jumpcloud_app_id" json:"jumpcloud_app_id"` // jumpcloud
 	JumpCloudSecret string             `bson:"jumpcloud_secret" json:"jumpcloud_secret"` // jumpcloud
 	IssuerUrl       string             `bson:"issuer_url" json:"issuer_url"`             // saml
 	SamlUrl         string             `bson:"saml_url" json:"saml_url"`                 // saml
