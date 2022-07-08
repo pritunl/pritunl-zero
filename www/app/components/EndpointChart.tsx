@@ -137,8 +137,15 @@ export default class EndpointChart extends React.Component<Props, State> {
 	ticks = (axis: ChartJs.Scale) => {
 		let ticks = axis.ticks;
 		let newTicks: ChartJs.Tick[] = [];
-		let dataset = Object.values(this.data)[0];
 		let tickMod = 3600000; // 1 hour
+
+		let dataset: ChartTypes.Points;
+		let datasetKeys = Object.keys(this.data);
+		if (datasetKeys[0] === 'has_data') {
+			dataset = this.data[datasetKeys[datasetKeys.length-1]];
+		} else {
+			dataset = this.data[datasetKeys[0]];
+		}
 		let len = dataset.length;
 
 		if (len) {
