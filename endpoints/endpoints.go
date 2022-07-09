@@ -23,15 +23,12 @@ type Doc interface {
 	StaticData() *bson.M
 }
 
-type ChartFloat struct {
-	X int64   `json:"x"`
-	Y float64 `json:"y"`
+type Point struct {
+	X int64       `json:"x"`
+	Y interface{} `json:"y"`
 }
 
-type ChartUint struct {
-	X int64  `json:"x"`
-	Y uint64 `json:"y"`
-}
+type ChartData = map[string][]*Point
 
 func GenerateId(endpointId primitive.ObjectID,
 	timestamp time.Time) primitive.Binary {
@@ -83,4 +80,62 @@ func GetChart(c context.Context, db *database.Database,
 			errors.New("endpoints: Unknown resource type"),
 		}
 	}
+}
+
+type Chart struct {
+	start    int64
+	end      int64
+	intv     int64
+	valType  int
+	data     ChartData
+	curTimes map[string]int64
+}
+
+func (c *Chart) add(resource string, timestamp int64, value interface{}) {
+	c.data[resource] = append(c.data[resource], &Point{
+		X: timestamp,
+		Y: value,
+	})
+}
+
+func (c *Chart) Add(resource string, timestamp int64, value interface{}) {
+	cur := c.curTimes[resource]
+	if cur == 0 {
+		cur = c.start - c.intv
+	}
+
+	for timestamp-c.intv > cur {
+		cur += c.intv
+		c.add(resource, cur, 0)
+	}
+
+	c.add(resource, timestamp, value)
+	c.curTimes[resource] = timestamp
+}
+
+func (c *Chart) Export() map[string][]*Point {
+	for resource, cur := range c.curTimes {
+		for c.end > cur {
+			cur += c.intv
+			c.add(resource, cur, 0)
+		}
+	}
+
+	return c.data
+}
+
+func NewChart(start, end time.Time, interval time.Duration) (chrt *Chart) {
+	chrt = &Chart{
+		start:    start.UnixMilli(),
+		end:      end.UnixMilli(),
+		intv:     interval.Milliseconds(),
+		data:     ChartData{},
+		curTimes: map[string]int64{},
+	}
+
+	if interval == time.Minute {
+		chrt.end -= time.Minute.Milliseconds()
+	}
+
+	return
 }
