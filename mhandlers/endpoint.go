@@ -32,6 +32,11 @@ type endpointsData struct {
 	Count     int64                `json:"count"`
 }
 
+type endpointChartData struct {
+	HasData bool        `json:"has_data"`
+	Data    interface{} `json:"data"`
+}
+
 func endpointPut(c *gin.Context) {
 	if demo.Blocked(c) {
 		return
@@ -296,5 +301,10 @@ func endpointDataGet(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, data)
+	chartData := &endpointChartData{
+		HasData: len(data) > 0,
+		Data:    data,
+	}
+
+	c.JSON(200, chartData)
 }
