@@ -33,11 +33,6 @@ type DiskStatic struct {
 	Name string `bson:"n" json:"n"`
 }
 
-type DiskIoDiskChart struct {
-	Path string       `json:"path"`
-	Data []*ChartUint `json:"data"`
-}
-
 func ParseDisk(i *DiskIoDisk) *DiskStatic {
 	return &DiskStatic{
 		Name: i.Name,
@@ -81,16 +76,12 @@ func (d *DiskIo) StaticData() *bson.M {
 	}
 }
 
-type DiskIoChart struct {
-	Disks []*DiskIoDiskChart `json:"disks"`
-}
-
 func GetDiskIoChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
-	chart map[string][]*ChartUint, err error) {
+	chartData ChartData, err error) {
 
 	coll := db.EndpointsDiskIo()
-	chart = map[string][]*ChartUint{}
+	chart := NewChart(start, end, time.Minute)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -126,66 +117,15 @@ func GetDiskIoChartSingle(c context.Context, db *database.Database,
 		}
 
 		for _, dsk := range doc.Disks {
-			timestamp := doc.Timestamp.Unix() * 1000
+			timestamp := doc.Timestamp.UnixMilli()
 
-			dskChart := chart[dsk.Name+"-br"]
-			if dskChart == nil {
-				dskChart = []*ChartUint{}
-			}
-			chart[dsk.Name+"-br"] = append(dskChart, &ChartUint{
-				X: timestamp,
-				Y: dsk.BytesRead,
-			})
-			dskChart = chart[dsk.Name+"-bw"]
-			if dskChart == nil {
-				dskChart = []*ChartUint{}
-			}
-			chart[dsk.Name+"-bw"] = append(dskChart, &ChartUint{
-				X: timestamp,
-				Y: dsk.BytesWrite,
-			})
-
-			//dskChart = chart[dsk.Name+"-cr"]
-			//if dskChart == nil {
-			//	dskChart = []*ChartUint{}
-			//}
-			//chart[dsk.Name+"-cr"] = append(dskChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: dsk.CountRead,
-			//})
-			//dskChart = chart[dsk.Name+"-cw"]
-			//if dskChart == nil {
-			//	dskChart = []*ChartUint{}
-			//}
-			//chart[dsk.Name+"-cw"] = append(dskChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: dsk.CountWrite,
-			//})
-
-			dskChart = chart[dsk.Name+"-tr"]
-			if dskChart == nil {
-				dskChart = []*ChartUint{}
-			}
-			chart[dsk.Name+"-tr"] = append(dskChart, &ChartUint{
-				X: timestamp,
-				Y: dsk.TimeRead,
-			})
-			dskChart = chart[dsk.Name+"-tw"]
-			if dskChart == nil {
-				dskChart = []*ChartUint{}
-			}
-			chart[dsk.Name+"-tw"] = append(dskChart, &ChartUint{
-				X: timestamp,
-				Y: dsk.TimeWrite,
-			})
-			dskChart = chart[dsk.Name+"-ti"]
-			if dskChart == nil {
-				dskChart = []*ChartUint{}
-			}
-			chart[dsk.Name+"-ti"] = append(dskChart, &ChartUint{
-				X: timestamp,
-				Y: dsk.TimeIo,
-			})
+			chart.Add(dsk.Name+"-br", timestamp, dsk.BytesRead)
+			chart.Add(dsk.Name+"-bw", timestamp, dsk.BytesWrite)
+			//chart.Add(dsk.Name+"-cr", timestamp, dsk.CountRead)
+			//chart.Add(dsk.Name+"-cw", timestamp, dsk.CountWrite)
+			chart.Add(dsk.Name+"-tr", timestamp, dsk.TimeRead)
+			chart.Add(dsk.Name+"-tw", timestamp, dsk.TimeWrite)
+			chart.Add(dsk.Name+"-ti", timestamp, dsk.TimeIo)
 		}
 	}
 
@@ -195,20 +135,22 @@ func GetDiskIoChartSingle(c context.Context, db *database.Database,
 		return
 	}
 
+	chartData = chart.Export()
+
 	return
 }
 
 func GetDiskIoChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time,
-	interval time.Duration) (chart map[string][]*ChartUint, err error) {
+	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {
-		chart, err = GetDiskIoChartSingle(c, db, endpoint, start, end)
+		chartData, err = GetDiskIoChartSingle(c, db, endpoint, start, end)
 		return
 	}
 
 	coll := db.EndpointsDiskIo()
-	chart = map[string][]*ChartUint{}
+	chart := NewChart(start, end, interval)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -293,64 +235,13 @@ func GetDiskIoChart(c context.Context, db *database.Database,
 			return
 		}
 
-		dskChart := chart[doc.Id.Disk+"-br"]
-		if dskChart == nil {
-			dskChart = []*ChartUint{}
-		}
-		chart[doc.Id.Disk+"-br"] = append(dskChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.BytesRead,
-		})
-		dskChart = chart[doc.Id.Disk+"-bw"]
-		if dskChart == nil {
-			dskChart = []*ChartUint{}
-		}
-		chart[doc.Id.Disk+"-bw"] = append(dskChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.BytesWrite,
-		})
-
-		//dskChart = chart[doc.Id.Disk+"-cr"]
-		//if dskChart == nil {
-		//	dskChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Disk+"-cr"] = append(dskChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.CountRead,
-		//})
-		//dskChart = chart[doc.Id.Disk+"-cw"]
-		//if dskChart == nil {
-		//	dskChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Disk+"-cw"] = append(dskChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.CountWrite,
-		//})
-
-		dskChart = chart[doc.Id.Disk+"-tr"]
-		if dskChart == nil {
-			dskChart = []*ChartUint{}
-		}
-		chart[doc.Id.Disk+"-tr"] = append(dskChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.TimeRead,
-		})
-		dskChart = chart[doc.Id.Disk+"-tw"]
-		if dskChart == nil {
-			dskChart = []*ChartUint{}
-		}
-		chart[doc.Id.Disk+"-tw"] = append(dskChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.TimeWrite,
-		})
-		dskChart = chart[doc.Id.Disk+"-ti"]
-		if dskChart == nil {
-			dskChart = []*ChartUint{}
-		}
-		chart[doc.Id.Disk+"-ti"] = append(dskChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.TimeIo,
-		})
+		chart.Add(doc.Id.Disk+"-br", doc.Id.Timestamp, doc.BytesRead)
+		chart.Add(doc.Id.Disk+"-bw", doc.Id.Timestamp, doc.BytesWrite)
+		//chart.Add(doc.Id.Disk+"-cr", doc.Id.Timestamp, doc.CountRead)
+		//chart.Add(doc.Id.Disk+"-cw", doc.Id.Timestamp, doc.CountWrite)
+		chart.Add(doc.Id.Disk+"-tr", doc.Id.Timestamp, doc.TimeRead)
+		chart.Add(doc.Id.Disk+"-tw", doc.Id.Timestamp, doc.TimeWrite)
+		chart.Add(doc.Id.Disk+"-ti", doc.Id.Timestamp, doc.TimeIo)
 	}
 
 	err = cursor.Err()
@@ -358,6 +249,8 @@ func GetDiskIoChart(c context.Context, db *database.Database,
 		err = database.ParseError(err)
 		return
 	}
+
+	chartData = chart.Export()
 
 	return
 }
