@@ -31,11 +31,6 @@ type MountStatic struct {
 	Size   uint64 `bson:"s" json:"s"`
 }
 
-type MountChart struct {
-	Path string        `json:"path"`
-	Data []*ChartFloat `json:"data"`
-}
-
 func ParseMount(mn *Mount) *MountStatic {
 	return &MountStatic{
 		Path:   mn.Path,
@@ -75,16 +70,12 @@ func (d *Disk) StaticData() *bson.M {
 	}
 }
 
-type DiskChart struct {
-	Mounts []*MountChart `json:"mounts"`
-}
-
 func GetDiskChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
-	chart map[string][]*ChartFloat, err error) {
+	chartData ChartData, err error) {
 
 	coll := db.EndpointsDisk()
-	chart = map[string][]*ChartFloat{}
+	chart := NewChart(start, end, time.Minute)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -119,15 +110,9 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 			return
 		}
 
+		timestamp := doc.Timestamp.UnixMilli()
 		for _, mount := range doc.Mounts {
-			pathMounts := chart[mount.Path]
-			if pathMounts == nil {
-				pathMounts = []*ChartFloat{}
-			}
-			chart[mount.Path] = append(pathMounts, &ChartFloat{
-				X: doc.Timestamp.Unix() * 1000,
-				Y: mount.Used,
-			})
+			chart.Add(mount.Path, timestamp, mount.Used)
 		}
 	}
 
@@ -137,20 +122,22 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 		return
 	}
 
+	chartData = chart.Export()
+
 	return
 }
 
 func GetDiskChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time,
-	interval time.Duration) (chart map[string][]*ChartFloat, err error) {
+	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {
-		chart, err = GetDiskChartSingle(c, db, endpoint, start, end)
+		chartData, err = GetDiskChartSingle(c, db, endpoint, start, end)
 		return
 	}
 
 	coll := db.EndpointsDisk()
-	chart = map[string][]*ChartFloat{}
+	chart := NewChart(start, end, interval)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -217,14 +204,7 @@ func GetDiskChart(c context.Context, db *database.Database,
 			return
 		}
 
-		pathMounts := chart[doc.Id.Path]
-		if pathMounts == nil {
-			pathMounts = []*ChartFloat{}
-		}
-		chart[doc.Id.Path] = append(pathMounts, &ChartFloat{
-			X: doc.Id.Timestamp,
-			Y: doc.Used,
-		})
+		chart.Add(doc.Id.Path, doc.Id.Timestamp, doc.Used)
 	}
 
 	err = cursor.Err()
@@ -232,6 +212,8 @@ func GetDiskChart(c context.Context, db *database.Database,
 		err = database.ParseError(err)
 		return
 	}
+
+	chartData = chart.Export()
 
 	return
 }
