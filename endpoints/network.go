@@ -36,11 +36,6 @@ type InterfaceStatic struct {
 	Name string `bson:"n" json:"n"`
 }
 
-type InterfaceChart struct {
-	Path string       `json:"path"`
-	Data []*ChartUint `json:"data"`
-}
-
 func ParseInterface(i *Interface) *InterfaceStatic {
 	return &InterfaceStatic{
 		Name: i.Name,
@@ -87,16 +82,12 @@ func (d *Network) StaticData() *bson.M {
 	}
 }
 
-type NetworkChart struct {
-	Interfaces []*InterfaceChart `json:"interfaces"`
-}
-
 func GetNetworkChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
-	chart map[string][]*ChartUint, err error) {
+	chartData ChartData, err error) {
 
 	coll := db.EndpointsNetwork()
-	chart = map[string][]*ChartUint{}
+	chart := NewChart(start, end, time.Minute)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -132,75 +123,16 @@ func GetNetworkChartSingle(c context.Context, db *database.Database,
 		}
 
 		for _, iface := range doc.Interfaces {
-			timestamp := doc.Timestamp.Unix() * 1000
+			timestamp := doc.Timestamp.UnixMilli()
 
-			ifaceChart := chart[iface.Name+"-bs"]
-			if ifaceChart == nil {
-				ifaceChart = []*ChartUint{}
-			}
-			chart[iface.Name+"-bs"] = append(ifaceChart, &ChartUint{
-				X: timestamp,
-				Y: iface.BytesSent,
-			})
-			ifaceChart = chart[iface.Name+"-br"]
-			if ifaceChart == nil {
-				ifaceChart = []*ChartUint{}
-			}
-			chart[iface.Name+"-br"] = append(ifaceChart, &ChartUint{
-				X: timestamp,
-				Y: iface.BytesSent,
-			})
-
-			//ifaceChart = chart[iface.Name+"-ps"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-ps"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.PacketsSent,
-			//})
-			//ifaceChart = chart[iface.Name+"-pr"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-pr"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.PacketsSent,
-			//})
-			//
-			//ifaceChart = chart[iface.Name+"-es"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-es"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.ErrorsSent,
-			//})
-			//ifaceChart = chart[iface.Name+"-er"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-er"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.ErrorsSent,
-			//})
-			//
-			//ifaceChart = chart[iface.Name+"-ds"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-ds"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.DropsSent,
-			//})
-			//ifaceChart = chart[iface.Name+"-dr"]
-			//if ifaceChart == nil {
-			//	ifaceChart = []*ChartUint{}
-			//}
-			//chart[iface.Name+"-dr"] = append(ifaceChart, &ChartUint{
-			//	X: timestamp,
-			//	Y: iface.DropsSent,
-			//})
+			chart.Add(iface.Name+"-bs", timestamp, iface.BytesSent)
+			chart.Add(iface.Name+"-br", timestamp, iface.BytesRecv)
+			//chart.Add(iface.Name+"-ps", timestamp, iface.PacketsSent)
+			//chart.Add(iface.Name+"-pr", timestamp, iface.PacketsRecv)
+			//chart.Add(iface.Name+"-es", timestamp, iface.ErrorsSent)
+			//chart.Add(iface.Name+"-er", timestamp, iface.ErrorsRecv)
+			//chart.Add(iface.Name+"-ds", timestamp, iface.DropsSent)
+			//chart.Add(iface.Name+"-dr", timestamp, iface.DropsRecv)
 		}
 	}
 
@@ -210,20 +142,22 @@ func GetNetworkChartSingle(c context.Context, db *database.Database,
 		return
 	}
 
+	chartData = chart.Export()
+
 	return
 }
 
 func GetNetworkChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time,
-	interval time.Duration) (chart map[string][]*ChartUint, err error) {
+	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {
-		chart, err = GetNetworkChartSingle(c, db, endpoint, start, end)
+		chartData, err = GetNetworkChartSingle(c, db, endpoint, start, end)
 		return
 	}
 
 	coll := db.EndpointsNetwork()
-	chart = map[string][]*ChartUint{}
+	chart := NewChart(start, end, interval)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -311,73 +245,14 @@ func GetNetworkChart(c context.Context, db *database.Database,
 			return
 		}
 
-		ifaceChart := chart[doc.Id.Interface+"-bs"]
-		if ifaceChart == nil {
-			ifaceChart = []*ChartUint{}
-		}
-		chart[doc.Id.Interface+"-bs"] = append(ifaceChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.BytesSent,
-		})
-		ifaceChart = chart[doc.Id.Interface+"-br"]
-		if ifaceChart == nil {
-			ifaceChart = []*ChartUint{}
-		}
-		chart[doc.Id.Interface+"-br"] = append(ifaceChart, &ChartUint{
-			X: doc.Id.Timestamp,
-			Y: doc.BytesSent,
-		})
-
-		//ifaceChart = chart[doc.Id.Interface+"-ps"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-ps"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.PacketsSent,
-		//})
-		//ifaceChart = chart[doc.Id.Interface+"-pr"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-pr"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.PacketsSent,
-		//})
-		//
-		//ifaceChart = chart[doc.Id.Interface+"-es"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-es"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.ErrorsSent,
-		//})
-		//ifaceChart = chart[doc.Id.Interface+"-er"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-er"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.ErrorsSent,
-		//})
-		//
-		//ifaceChart = chart[doc.Id.Interface+"-ds"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-ds"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.DropsSent,
-		//})
-		//ifaceChart = chart[doc.Id.Interface+"-dr"]
-		//if ifaceChart == nil {
-		//	ifaceChart = []*ChartUint{}
-		//}
-		//chart[doc.Id.Interface+"-dr"] = append(ifaceChart, &ChartUint{
-		//	X: doc.Id.Timestamp,
-		//	Y: doc.DropsSent,
-		//})
+		chart.Add(doc.Id.Interface+"-bs", doc.Id.Timestamp, doc.BytesSent)
+		chart.Add(doc.Id.Interface+"-br", doc.Id.Timestamp, doc.BytesRecv)
+		//chart.Add(doc.Id.Interface+"-ps", doc.Id.Timestamp, doc.PacketsSent)
+		//chart.Add(doc.Id.Interface+"-pr", doc.Id.Timestamp, doc.PacketsRecv)
+		//chart.Add(doc.Id.Interface+"-es", doc.Id.Timestamp, doc.ErrorsSent)
+		//chart.Add(doc.Id.Interface+"-er", doc.Id.Timestamp, doc.ErrorsRecv)
+		//chart.Add(doc.Id.Interface+"-ds", doc.Id.Timestamp, doc.DropsSent)
+		//chart.Add(doc.Id.Interface+"-dr", doc.Id.Timestamp, doc.DropsRecv)
 	}
 
 	err = cursor.Err()
@@ -385,6 +260,8 @@ func GetNetworkChart(c context.Context, db *database.Database,
 		err = database.ParseError(err)
 		return
 	}
+
+	chartData = chart.Export()
 
 	return
 }
