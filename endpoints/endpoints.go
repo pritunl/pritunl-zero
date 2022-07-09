@@ -64,6 +64,11 @@ func GetChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, typ string, start, end time.Time,
 	interval time.Duration) (interface{}, error) {
 
+	start = start.Add(time.Duration(start.UnixMilli()%
+		interval.Milliseconds()) * -time.Millisecond)
+	end = end.Add(time.Duration(end.UnixMilli()%
+		interval.Milliseconds()) * -time.Millisecond)
+
 	switch typ {
 	case "system":
 		return GetSystemChart(c, db, endpoint, start, end, interval)
