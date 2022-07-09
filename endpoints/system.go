@@ -62,23 +62,12 @@ func (d *System) StaticData() *bson.M {
 	}
 }
 
-type SystemChart struct {
-	HasData   bool          `json:"has_data"`
-	CpuUsage  []*ChartFloat `json:"cpu_usage"`
-	MemUsage  []*ChartFloat `json:"mem_usage"`
-	SwapUsage []*ChartFloat `json:"swap_usage"`
-	HugeUsage []*ChartFloat `json:"huge_usage"`
-}
-
 func GetSystemChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
-	chart *SystemChart, err error) {
+	chartData ChartData, err error) {
 
 	coll := db.EndpointsSystem()
-	cpuUsage := []*ChartFloat{}
-	memUsage := []*ChartFloat{}
-	swapUsage := []*ChartFloat{}
-	hugeUsage := []*ChartFloat{}
+	chart := NewChart(start, end, time.Minute)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -113,22 +102,12 @@ func GetSystemChartSingle(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &ChartFloat{
-			X: doc.Timestamp.Unix() * 1000,
-			Y: doc.CpuUsage,
-		})
-		memUsage = append(memUsage, &ChartFloat{
-			X: doc.Timestamp.Unix() * 1000,
-			Y: doc.MemUsage,
-		})
-		swapUsage = append(swapUsage, &ChartFloat{
-			X: doc.Timestamp.Unix() * 1000,
-			Y: doc.SwapUsage,
-		})
-		hugeUsage = append(hugeUsage, &ChartFloat{
-			X: doc.Timestamp.Unix() * 1000,
-			Y: doc.HugeUsage,
-		})
+		timestamp := doc.Timestamp.UnixMilli()
+
+		chart.Add("cpu_usage", timestamp, doc.CpuUsage)
+		chart.Add("mem_usage", timestamp, doc.MemUsage)
+		chart.Add("swap_usage", timestamp, doc.SwapUsage)
+		chart.Add("huge_usage", timestamp, doc.HugeUsage)
 	}
 
 	err = cursor.Err()
@@ -137,30 +116,22 @@ func GetSystemChartSingle(c context.Context, db *database.Database,
 		return
 	}
 
-	chart = &SystemChart{
-		CpuUsage:  cpuUsage,
-		MemUsage:  memUsage,
-		SwapUsage: swapUsage,
-		HugeUsage: hugeUsage,
-	}
+	chartData = chart.Export()
 
 	return
 }
 
 func GetSystemChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time,
-	interval time.Duration) (chart *SystemChart, err error) {
+	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {
-		chart, err = GetSystemChartSingle(c, db, endpoint, start, end)
+		chartData, err = GetSystemChartSingle(c, db, endpoint, start, end)
 		return
 	}
 
 	coll := db.EndpointsSystem()
-	cpuUsage := []*ChartFloat{}
-	memUsage := []*ChartFloat{}
-	swapUsage := []*ChartFloat{}
-	hugeUsage := []*ChartFloat{}
+	chart := NewChart(start, end, interval)
 
 	timeQuery := bson.D{
 		{"$gte", start},
@@ -230,22 +201,10 @@ func GetSystemChart(c context.Context, db *database.Database,
 			return
 		}
 
-		cpuUsage = append(cpuUsage, &ChartFloat{
-			X: doc.Id,
-			Y: doc.CpuUsage,
-		})
-		memUsage = append(memUsage, &ChartFloat{
-			X: doc.Id,
-			Y: doc.MemUsage,
-		})
-		swapUsage = append(swapUsage, &ChartFloat{
-			X: doc.Id,
-			Y: doc.SwapUsage,
-		})
-		hugeUsage = append(hugeUsage, &ChartFloat{
-			X: doc.Id,
-			Y: doc.HugeUsage,
-		})
+		chart.Add("cpu_usage", doc.Id, doc.CpuUsage)
+		chart.Add("mem_usage", doc.Id, doc.MemUsage)
+		chart.Add("swap_usage", doc.Id, doc.SwapUsage)
+		chart.Add("huge_usage", doc.Id, doc.HugeUsage)
 	}
 
 	err = cursor.Err()
@@ -254,12 +213,7 @@ func GetSystemChart(c context.Context, db *database.Database,
 		return
 	}
 
-	chart = &SystemChart{
-		CpuUsage:  cpuUsage,
-		MemUsage:  memUsage,
-		SwapUsage: swapUsage,
-		HugeUsage: hugeUsage,
-	}
+	chartData = chart.Export()
 
 	return
 }
