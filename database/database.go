@@ -108,6 +108,11 @@ func (d *Database) Devices() (coll *Collection) {
 	return
 }
 
+func (d *Database) Alerts() (coll *Collection) {
+	coll = d.getCollection("alerts")
+	return
+}
+
 func (d *Database) Endpoints() (coll *Collection) {
 	coll = d.getCollection("endpoints")
 	return
