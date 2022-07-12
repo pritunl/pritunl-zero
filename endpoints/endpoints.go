@@ -9,6 +9,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
@@ -21,11 +22,19 @@ type Doc interface {
 	GetCollection(*database.Database) *database.Collection
 	Format(primitive.ObjectID) time.Time
 	StaticData() *bson.M
+	CheckAlerts(resources []*alert.Resource) []*Alert
 }
 
 type Point struct {
 	X int64       `json:"x"`
 	Y interface{} `json:"y"`
+}
+
+type Alert struct {
+	Resource  string
+	Message   string
+	Level     int
+	Frequency time.Duration
 }
 
 type ChartData = map[string][]*Point
@@ -62,7 +71,7 @@ func GetObj(typ string) Doc {
 
 func GetChart(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, typ string, start, end time.Time,
-	interval time.Duration) (interface{}, error) {
+	interval time.Duration) (ChartData, error) {
 
 	start = start.Add(time.Duration(start.UnixMilli()%
 		interval.Milliseconds()) * -time.Millisecond)

@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
@@ -74,6 +75,10 @@ func (d *DiskIo) StaticData() *bson.M {
 	return &bson.M{
 		"data.disks": disks,
 	}
+}
+
+func (d *DiskIo) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+	return
 }
 
 func GetDiskIoChartSingle(c context.Context, db *database.Database,

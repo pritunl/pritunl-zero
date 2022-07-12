@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
@@ -40,6 +41,10 @@ func (d *Load) Format(id primitive.ObjectID) time.Time {
 
 func (d *Load) StaticData() *bson.M {
 	return nil
+}
+
+func (d *Load) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+	return
 }
 
 func GetLoadChartSingle(c context.Context, db *database.Database,

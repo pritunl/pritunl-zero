@@ -2,11 +2,13 @@ package endpoints
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
@@ -60,6 +62,25 @@ func (d *System) StaticData() *bson.M {
 		"data.swap_total":     d.SwapTotal,
 		"data.huge_total":     d.HugeTotal,
 	}
+}
+
+func (d *System) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+	if d.MemUsage > 0.1 {
+		alerts = []*Alert{
+			&Alert{
+				Resource: "system_low_memory",
+				Message: fmt.Sprintf(
+					"System low on memory (%.2f%%)",
+					d.MemUsage,
+				),
+				Level:     alert.High,
+				Frequency: 5 * time.Minute,
+			},
+		}
+		return
+	}
+
+	return
 }
 
 func GetSystemChartSingle(c context.Context, db *database.Database,
