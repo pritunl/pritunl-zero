@@ -15,7 +15,41 @@ func (s *Resource) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	switch s.Resource {
-	case "system_low_memory":
+	case SystemHighMemory:
+		if s.Value < 1 || s.Value > 100 {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_resource_value_invalid",
+				Message: "Alert resource value is invalid",
+			}
+			return
+		}
+		break
+	case SystemHighSwap:
+		if s.Value < 1 || s.Value > 100 {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_resource_value_invalid",
+				Message: "Alert resource value is invalid",
+			}
+			return
+		}
+		break
+	case SystemHighHugePages:
+		if s.Value < 1 || s.Value > 100 {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_resource_value_invalid",
+				Message: "Alert resource value is invalid",
+			}
+			return
+		}
+		break
+	case DiskHighUsage:
+		if s.Value < 1 || s.Value > 100 {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_resource_value_invalid",
+				Message: "Alert resource value is invalid",
+			}
+			return
+		}
 		break
 	default:
 		errData = &errortypes.ErrorData{
