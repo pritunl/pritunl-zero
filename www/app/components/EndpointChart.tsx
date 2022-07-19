@@ -125,6 +125,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 	interval: number;
 	chart: ChartJs.Chart;
 	chartRef: React.RefObject<HTMLCanvasElement>;
+	labels: ChartTypes.Labels;
 
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -137,15 +138,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 	ticks = (axis: ChartJs.Scale) => {
 		let ticks = axis.ticks;
 		let newTicks: ChartJs.Tick[] = [];
+		let dataset = Object.values(this.data)[0];
 		let tickMod = 3600000; // 1 hour
-
-		let dataset: ChartTypes.Points;
-		let datasetKeys = Object.keys(this.data);
-		if (datasetKeys[0] === 'has_data') {
-			dataset = this.data[datasetKeys[datasetKeys.length-1]];
-		} else {
-			dataset = this.data[datasetKeys[0]];
-		}
 		let len = dataset.length;
 
 		if (len) {
@@ -180,7 +174,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 	}
 
 	config = (): ChartJs.ChartConfiguration => {
-		let labels = ChartTypes.getChartLabels(this.props.resource, this.data);
+		this.labels = ChartTypes.getChartLabels(this.props.resource, this.data);
+		let self = this;
 
 		let config = {
 			type: 'line',
@@ -216,13 +211,13 @@ export default class EndpointChart extends React.Component<Props, State> {
 						beforeTickToLabelConversion: this.ticks,
 					},
 					y: {
-						min: labels.resource_min,
-						max: labels.resource_max,
+						min: this.labels.resource_min,
+						max: this.labels.resource_max,
 						offset: false,
 						beginAtZero: true,
 						title: {
 							display: true,
-							text: labels.resource_label,
+							text: this.labels.resource_label,
 							color: 'rgba(255, 255, 255, 1)',
 							padding: 0,
 							font: {
@@ -231,8 +226,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 						},
 						ticks: {
 							color: 'rgba(255, 255, 255, 1)',
-							callback: function(val: number): number | string {
-								switch (labels.resource_type) {
+							callback: (val: number): number | string => {
+								switch (this.labels.resource_type) {
 									case 'bytes':
 										return MiscUtils.formatBytes(val, 0);
 									case 'milliseconds':
@@ -250,7 +245,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 				plugins: {
 					title: {
 						display: true,
-						text: labels.title,
+						text: this.labels.title,
 						color: 'rgba(255, 255, 255, 1)',
 						padding: 3,
 						font: {
@@ -266,26 +261,30 @@ export default class EndpointChart extends React.Component<Props, State> {
 								let raw = item.raw as any;
 
 								let val = '';
-								switch (labels.resource_type) {
-									case 'bytes':
-										val = MiscUtils.formatBytes(raw.y, labels.resource_fixed);
-										break;
-									case 'milliseconds':
-										val = MiscUtils.formatMs(raw.y);
-										break;
-									case 'float':
-										val = raw.y.toFixed(labels.resource_fixed);
-										break;
-									default:
-										val = raw.y;
+								if (raw) {
+									switch (self.labels.resource_type) {
+										case 'bytes':
+											val = MiscUtils.formatBytes(raw.y,
+												self.labels.resource_fixed);
+											break;
+										case 'milliseconds':
+											val = MiscUtils.formatMs(raw.y);
+											break;
+										case 'float':
+											val = raw.y.toFixed(self.labels.resource_fixed);
+											break;
+										default:
+											val = raw.y;
+									}
 								}
 
-								if (labels.resource_fixed) {
-									return item.dataset.label + ' ' +
-										val + labels.resource_suffix;
+								let dataset = item.dataset as any;
+								if (self.labels.resource_fixed) {
+									return dataset.label + ' ' +
+										val + self.labels.resource_suffix;
 								}
-								return item.dataset.label + ' ' + val +
-									labels.resource_suffix;
+								return dataset.label + ' ' + val +
+									self.labels.resource_suffix;
 							},
 						},
 					},
@@ -297,8 +296,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 		} as ChartJs.ChartConfiguration;
 
 		let data = ChartTypes.getChartData(this.props.resource, this.data);
-		for (let i = 0; i < labels.datasets.length; i++) {
-			let datasetLabels = labels.datasets[i];
+		for (let i = 0; i < this.labels.datasets.length; i++) {
+			let datasetLabels = this.labels.datasets[i];
 
 			config.data.datasets.push({
 				label: datasetLabels.label,
@@ -327,15 +326,36 @@ export default class EndpointChart extends React.Component<Props, State> {
 			this.props.resource,
 			this.period,
 			this.interval,
-		).then((data: ChartTypes.ChartData): void => {
+		).then((data: ChartTypes.EndpointData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
 			}
 
-			if (data) {
-				this.data = data;
-				this.updateChart();
+			if (data && data.has_data && data.data) {
+				if (this.state.hidden) {
+					this.setState({
+						...this.state,
+						hidden: false,
+					});
+				}
+
+				this.data = data.data;
+				if (this.chart) {
+					this.updateChart();
+				} else {
+					this.chart = new ChartJs.Chart(
+						this.chartRef.current,
+						this.config(),
+					);
+				}
+			} else {
+				if (!this.state.hidden) {
+					this.setState({
+						...this.state,
+						hidden: true,
+					});
+				}
 			}
 		}).catch((): void => {
 			if (loading) {
@@ -346,13 +366,40 @@ export default class EndpointChart extends React.Component<Props, State> {
 	}
 
 	updateChart(): void {
-		let data = ChartTypes.getChartData(this.props.resource, this.data);
+		try {
+			this.labels = ChartTypes.getChartLabels(this.props.resource, this.data);
+			let data = ChartTypes.getChartData(this.props.resource, this.data);
 
-		for (let i = 0; i < data.length; i++) {
-			this.chart.data.datasets[i].data = data[i];
+			let dataLen = data.length;
+			let datasetsLen = this.chart.data.datasets.length;
+
+			for (let i = 0; i < Math.min(dataLen, datasetsLen); i++) {
+				this.chart.data.datasets[i].label = this.labels.datasets[i].label;
+				this.chart.data.datasets[i].data = data[i] as any;
+			}
+
+			if (dataLen > datasetsLen) {
+				for (let i = datasetsLen; i < dataLen; i++) {
+					this.chart.data.datasets.push({
+						label: this.labels.datasets[i].label,
+						data: data[i],
+						fill: 'origin',
+						pointRadius: 0,
+						backgroundColor: colors[i] + '15',
+						borderColor: colors[i],
+						borderWidth: 2,
+					} as ChartJs.ChartDataset);
+				}
+			} else if (datasetsLen > dataLen) {
+				for (let i = 0; i < datasetsLen - dataLen; i++) {
+					this.chart.data.datasets.pop();
+				}
+			}
+
+			this.chart.update();
+		} catch(error) {
+			console.error(error);
 		}
-
-		this.chart.update();
 	}
 
 	componentDidMount(): void {
