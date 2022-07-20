@@ -3,11 +3,14 @@ package alert
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 )
@@ -23,6 +26,22 @@ type AlertParams struct {
 	Number  string `json:"number"`
 	Type    string `json:"type"`
 	Message string `json:"message"`
+}
+
+func SendTest(db *database.Database, devc *device.Device) (
+	errData *errortypes.ErrorData, err error) {
+
+	err = devc.SetActive(db)
+	if err != nil {
+		return
+	}
+
+	errData, err = Send(devc.Number, "Test alert message", devc.Type)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func Send(number, message, alertType string) (
