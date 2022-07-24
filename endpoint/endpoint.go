@@ -18,6 +18,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
@@ -34,6 +35,7 @@ type Endpoint struct {
 	User          primitive.ObjectID `bson:"user,omitempty" json:"user"`
 	Name          string             `bson:"name" json:"name"`
 	Roles         []string           `bson:"roles" json:"roles"`
+	Alerts        []*alert.Resource  `bson:"alerts" json:"alerts"`
 	ClientKey     *ClientKey         `bson:"client_key" json:"client_key"`
 	ServerKey     *ServerKey         `bson:"server_key" json:"-"`
 	HasClientKey  bool               `bson:"-" json:"has_client_key"`
@@ -155,6 +157,16 @@ func (e *Endpoint) Validate(db *database.Database) (
 
 	if e.Data == nil {
 		e.Data = &Data{}
+	}
+
+	if e.Alerts == nil {
+		e.Alerts = []*alert.Resource{}
+	}
+	for _, alrt := range e.Alerts {
+		errData, err = alrt.Validate(db)
+		if err != nil || errData != nil {
+			return
+		}
 	}
 
 	e.Format()
