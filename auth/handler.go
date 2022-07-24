@@ -26,6 +26,14 @@ func Local(db *database.Database, username, password string) (
 
 	username = strings.ToLower(username)
 
+	if username == "" {
+		errData = &errortypes.ErrorData{
+			Error:   "auth_invalid",
+			Message: "Authentication credentials are invalid",
+		}
+		return
+	}
+
 	usr, err = user.GetUsername(db, user.Local, username)
 	if err != nil {
 		switch err.(type) {
