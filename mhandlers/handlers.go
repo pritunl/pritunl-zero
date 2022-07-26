@@ -22,6 +22,7 @@ func Register(engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)
+	engine.Use(middlewear.Headers)
 
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)
