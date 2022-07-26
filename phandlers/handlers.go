@@ -23,6 +23,7 @@ func Register(prxy *proxy.Proxy, engine *gin.Engine) {
 	engine.Use(middlewear.Limiter)
 	engine.Use(middlewear.Counter)
 	engine.Use(middlewear.Recovery)
+	engine.Use(middlewear.Headers)
 
 	engine.Use(func(c *gin.Context) {
 		var srvc *service.Service
