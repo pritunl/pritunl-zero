@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -72,6 +73,29 @@ func (d *Disk) StaticData() *bson.M {
 }
 
 func (d *Disk) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+	alerts = []*Alert{}
+
+	for _, resource := range resources {
+		if resource.Resource == alert.DiskHighUsage {
+			for _, mount := range d.Mounts {
+				if mount.Used > float64(resource.Value) {
+					alerts = []*Alert{
+						&Alert{
+							Resource: alert.DiskHighUsage,
+							Message: fmt.Sprintf(
+								"Disk low on space %s (%.2f%%)",
+								mount.Path,
+								mount.Used,
+							),
+							Level:     resource.Level,
+							Frequency: 5 * time.Minute,
+						},
+					}
+				}
+			}
+		}
+	}
+
 	return
 }
 
