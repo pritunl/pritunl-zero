@@ -65,19 +65,56 @@ func (d *System) StaticData() *bson.M {
 }
 
 func (d *System) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
-	if d.MemUsage > 0.1 {
-		alerts = []*Alert{
-			&Alert{
-				Resource: "system_low_memory",
-				Message: fmt.Sprintf(
-					"System low on memory (%.2f%%)",
-					d.MemUsage,
-				),
-				Level:     alert.High,
-				Frequency: 5 * time.Minute,
-			},
+	alerts = []*Alert{}
+
+	for _, resource := range resources {
+		switch resource.Resource {
+		case alert.SystemHighMemory:
+			if d.MemUsage > float64(resource.Value) {
+				alerts = []*Alert{
+					&Alert{
+						Resource: alert.SystemHighMemory,
+						Message: fmt.Sprintf(
+							"System low on memory (%.2f%%)",
+							d.MemUsage,
+						),
+						Level:     resource.Level,
+						Frequency: 5 * time.Minute,
+					},
+				}
+			}
+			break
+		case alert.SystemHighSwap:
+			if d.SwapUsage > float64(resource.Value) {
+				alerts = []*Alert{
+					&Alert{
+						Resource: alert.SystemHighSwap,
+						Message: fmt.Sprintf(
+							"System low on swap (%.2f%%)",
+							d.SwapUsage,
+						),
+						Level:     resource.Level,
+						Frequency: 5 * time.Minute,
+					},
+				}
+			}
+			break
+		case alert.SystemHighHugePages:
+			if d.SwapUsage > float64(resource.Value) {
+				alerts = []*Alert{
+					&Alert{
+						Resource: alert.SystemHighHugePages,
+						Message: fmt.Sprintf(
+							"System low on hugepages (%.2f%%)",
+							d.SwapUsage,
+						),
+						Level:     resource.Level,
+						Frequency: 5 * time.Minute,
+					},
+				}
+			}
+			break
 		}
-		return
 	}
 
 	return
