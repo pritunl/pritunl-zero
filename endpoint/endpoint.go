@@ -505,7 +505,7 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 
 func (e *Endpoint) GetData(c context.Context, db *database.Database,
 	resource string, start, end time.Time, interval time.Duration) (
-	data interface{}, err error) {
+	data endpoints.ChartData, err error) {
 
 	data, err = endpoints.GetChart(c, db, e.Id, resource,
 		start, end, interval)
