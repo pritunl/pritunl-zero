@@ -16,6 +16,7 @@ interface Props {
 }
 
 interface State {
+	hidden: boolean;
 	disabled: boolean;
 }
 
@@ -130,6 +131,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.state = {
+			hidden: false,
 			disabled: false,
 		};
 		this.chartRef = React.createRef();
@@ -415,18 +417,32 @@ export default class EndpointChart extends React.Component<Props, State> {
 			this.props.resource,
 			this.period,
 			this.interval,
-		).then((data: ChartTypes.ChartData): void => {
+		).then((data: ChartTypes.EndpointData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
 			}
 
-			if (data) {
-				this.data = data;
+			if (data && data.has_data && data.data) {
+				if (this.state.hidden) {
+					this.setState({
+						...this.state,
+						hidden: false,
+					});
+				}
+
+				this.data = data.data;
 				this.chart = new ChartJs.Chart(
 					this.chartRef.current,
 					this.config(),
 				);
+			} else {
+				if (!this.state.hidden) {
+					this.setState({
+						...this.state,
+						hidden: true,
+					});
+				}
 			}
 		}).catch((): void => {
 			if (loading) {
@@ -452,6 +468,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 		}
 
 		return <canvas
+			hidden={this.state.hidden}
 			ref={this.chartRef}
 		/>;
 	}
