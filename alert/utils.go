@@ -104,8 +104,7 @@ func Send(number, message, alertType string) (
 		err = &errortypes.RequestError{
 			errors.Newf(
 				"alert: Alert server error %d - %s",
-				resp.StatusCode,
-				body),
+				resp.StatusCode, body),
 		}
 
 		return
