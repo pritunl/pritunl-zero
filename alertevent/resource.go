@@ -1,4 +1,4 @@
-package alert
+package alertevent
 
 import (
 	"github.com/pritunl/pritunl-zero/database"

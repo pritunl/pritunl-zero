@@ -1,11 +1,9 @@
-package alert
+package alertevent
 
 const (
-	Call    = "call"
-	Message = "message"
-	Low     = 1
-	Medium  = 5
-	High    = 10
+	Low    = 1
+	Medium = 5
+	High   = 10
 )
 
 const (

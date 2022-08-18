@@ -1,4 +1,4 @@
-package alert
+package alertevent
 
 import (
 	"fmt"
@@ -52,7 +52,7 @@ func (a *Alert) Key(devc *device.Device) string {
 func (a *Alert) Lock(db *database.Database, devc *device.Device) (
 	success bool, err error) {
 
-	coll := db.AlertsLock()
+	coll := db.AlertsEventLock()
 
 	_, err = coll.InsertOne(db, &bson.M{
 		"_id":       a.Key(devc),
@@ -76,7 +76,7 @@ func (a *Alert) FormattedMessage() string {
 }
 
 func (a *Alert) Send(db *database.Database, roles []string) (err error) {
-	coll := db.Alerts()
+	coll := db.AlertsEvent()
 	alrt := &Alert{}
 
 	err = coll.FindOneId(a.Id, alrt)
