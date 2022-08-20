@@ -1088,8 +1088,8 @@ func (a *Authority) createClientCertificateLocal() (
 	serial := &big.Int{}
 	serial.SetUint64(serialHash.Sum64())
 
-	notBefore := time.Now().Add(-30 * time.Second)
-	notAfter := time.Now().Add(30 * time.Second)
+	notBefore := time.Now().Add(-120 * time.Second)
+	notAfter := time.Now().Add(120 * time.Second)
 
 	template := &x509.Certificate{
 		SerialNumber: serial,
@@ -1154,14 +1154,25 @@ func (a *Authority) createClientCertificateLocal() (
 func (a *Authority) CreateClientCertificate(db *database.Database) (
 	cert *tls.Certificate, err error) {
 
+	cert = clientCertCacheGet(a)
+	if cert != nil {
+		return
+	}
+
 	if a.Type == PritunlHsm {
 		err = &errortypes.UnknownError{
 			errors.Wrap(err,
 				"authority: Client certificate not available on HSM"),
 		}
+		return
 	} else {
 		cert, err = a.createClientCertificateLocal()
+		if err != nil {
+			return
+		}
 	}
+
+	clientCertCacheSet(a, cert)
 
 	return
 }
