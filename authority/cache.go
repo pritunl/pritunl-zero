@@ -72,3 +72,21 @@ func clientCertCacheSet(authr *Authority, cert *tls.Certificate) {
 
 	return
 }
+
+func clientCertCacheWatch() {
+	go func() {
+		for {
+			time.Sleep(300)
+
+			clientCertCacheLock.Lock()
+			for key, authr := range clientCertCache {
+				if time.Since(authr.Timestamp) > time.Duration(
+					settings.System.ClientCertCacheTtl)*time.Second {
+
+					delete(clientCertCache, key)
+				}
+			}
+			clientCertCacheLock.Unlock()
+		}
+	}()
+}

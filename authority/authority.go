@@ -1701,6 +1701,8 @@ func init() {
 		db := database.GetDatabase()
 		defer db.Close()
 
+		clientCertCacheWatch()
+
 		authrs, err := GetAll(db)
 		if err != nil {
 			return
