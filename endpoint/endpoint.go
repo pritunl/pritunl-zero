@@ -38,11 +38,16 @@ type Endpoint struct {
 	Roles         []string           `bson:"roles" json:"roles"`
 	ClientKey     *ClientKey         `bson:"client_key" json:"client_key"`
 	ServerKey     *ServerKey         `bson:"server_key" json:"-"`
+	Info          *EndpointInfo      `bson:"-" json:"info"`
 	HasClientKey  bool               `bson:"-" json:"has_client_key"`
 	Data          *Data              `bson:"data" json:"data"`
 	keyLoaded     bool               `bson:"-" json:"-"`
 	clientPubKey  [32]byte           `bson:"-" json:"-"`
 	serverPrivKey [32]byte           `bson:"-" json:"-"`
+}
+
+type EndpointInfo struct {
+	Alerts map[string]string `json:"alerts"`
 }
 
 type Data struct {
@@ -168,10 +173,27 @@ func (e *Endpoint) Format() {
 	sort.Strings(e.Roles)
 }
 
-func (e *Endpoint) Json() {
+func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert) {
 	if e.ClientKey != nil && e.ClientKey.PublicKey != "" {
 		e.ClientKey = nil
 		e.HasClientKey = true
+	}
+
+	if alertsMap != nil {
+		alerts := map[string]string{}
+
+		for _, role := range e.Roles {
+			roleAlrts := alertsMap[role]
+			if roleAlrts != nil {
+				for _, alrt := range roleAlrts {
+					alerts[alrt.Id.Hex()] = alrt.Name
+				}
+			}
+		}
+
+		e.Info = &EndpointInfo{
+			Alerts: alerts,
+		}
 	}
 }
 
@@ -457,10 +479,15 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 		}
 	}
 
-	alerts := doc.CheckAlerts(e.Alerts)
-	if alerts != nil && len(alerts) > 0 {
-		for _, alrt := range alerts {
-			go alert.New(e.Roles, e.Id, e.Name, alrt.Resource,
+	alerts, err := e.GetAlerts(db)
+	if err != nil {
+		return
+	}
+
+	actAlrts := doc.CheckAlerts(alerts)
+	if actAlrts != nil && len(actAlrts) > 0 {
+		for _, alrt := range actAlrts {
+			go alertevent.New(e.Roles, e.Id, alrt.Name, e.Name, alrt.Resource,
 				alrt.Message, alrt.Level, alrt.Frequency)
 		}
 	}
