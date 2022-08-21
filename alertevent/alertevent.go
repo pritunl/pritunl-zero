@@ -72,8 +72,12 @@ func (a *Alert) Lock(db *database.Database, devc *device.Device) (
 	return
 }
 
-func (a *Alert) FormattedMessage() string {
-	return fmt.Sprintf("[%s] %s", a.SourceName, a.Message)
+func (a *Alert) FormattedTextMessage() string {
+	return fmt.Sprintf("[%s][%s] %s", a.Name, a.SourceName, a.Message)
+}
+
+func (a *Alert) FormattedCallMessage() string {
+	return fmt.Sprintf("%s. %s", a.SourceName, a.Message)
 }
 
 func (a *Alert) Send(db *database.Database, roles []string) (err error) {
@@ -110,7 +114,7 @@ func (a *Alert) Send(db *database.Database, roles []string) (err error) {
 			return
 		}
 		for _, devc := range devices {
-			if devc.Mode != device.Phone {
+			if devc.Mode != device.Phone || !devc.CheckLevel(a.Level) {
 				continue
 			}
 
@@ -124,7 +128,14 @@ func (a *Alert) Send(db *database.Database, roles []string) (err error) {
 				continue
 			}
 
-			errData, e := Send(devc.Number, a.FormattedMessage(), devc.Type)
+			msg := ""
+			if devc.Type == device.Call {
+				msg = a.FormattedCallMessage()
+			} else {
+				msg = a.FormattedTextMessage()
+			}
+
+			errData, e := Send(devc.Number, msg, devc.Type)
 			if e != nil {
 				if errData != nil {
 					logrus.WithFields(logrus.Fields{
