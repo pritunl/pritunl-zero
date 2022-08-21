@@ -14,6 +14,7 @@ import (
 
 type Alert struct {
 	Id         string             `bson:"_id" json:"_id"`
+	Name       string             `bson:"name" json:"name"`
 	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
 	Roles      []string           `bson:"roles" json:"roles"`
 	Source     primitive.ObjectID `bson:"source" json:"source"`
@@ -153,13 +154,14 @@ func (a *Alert) Send(db *database.Database, roles []string) (err error) {
 }
 
 func New(roles []string, source primitive.ObjectID,
-	sourceName, resource, message string, level int,
+	name, sourceName, resource, message string, level int,
 	frequency time.Duration) {
 
 	db := database.GetDatabase()
 	defer db.Close()
 
 	alrt := &Alert{
+		Name:       name,
 		Timestamp:  time.Now(),
 		Roles:      roles,
 		Source:     source,
