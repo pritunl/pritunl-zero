@@ -601,7 +601,7 @@ func addIndexes() (err error) {
 		Keys: &bson.D{
 			{"timestamp", 1},
 		},
-		Expire: 48 * time.Hour,
+		Expire: 72 * time.Hour,
 	}
 	err = index.Create()
 	if err != nil {
