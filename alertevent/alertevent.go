@@ -73,7 +73,7 @@ func (a *Alert) Lock(db *database.Database, devc *device.Device) (
 }
 
 func (a *Alert) FormattedTextMessage() string {
-	return fmt.Sprintf("[%s][%s] %s", a.Name, a.SourceName, a.Message)
+	return fmt.Sprintf("%s:%s == %s", a.Name, a.SourceName, a.Message)
 }
 
 func (a *Alert) FormattedCallMessage() string {
