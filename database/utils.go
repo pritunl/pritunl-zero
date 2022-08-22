@@ -7,47 +7,52 @@ import (
 	"github.com/pritunl/mongo-go-driver/mongo"
 )
 
-func GetErrorCode(err error) (errCode int) {
+func GetErrorCodes(err error) (errCodes []int) {
 	switch err := err.(type) {
 	case mongo.WriteError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case mongo.BulkWriteError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case mongo.WriteConcernError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case mongo.WriteException:
+		errCodes = []int{}
 		if err.WriteConcernError != nil {
-			errCode = err.WriteConcernError.Code
-		} else if err.WriteErrors != nil {
+			errCodes = append(errCodes, err.WriteConcernError.Code)
+		}
+		if err.WriteErrors != nil {
 			for _, e := range err.WriteErrors {
-				if e.Code != 0 {
-					errCode = e.Code
-					break
-				}
+				errCodes = append(errCodes, e.Code)
 			}
 		}
 		break
+	case mongo.WriteErrors:
+		errCodes = []int{}
+		for _, e := range err {
+			eCodes := GetErrorCodes(e)
+			errCodes = append(errCodes, eCodes...)
+		}
+		break
 	case *mongo.WriteError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case *mongo.BulkWriteError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case *mongo.WriteConcernError:
-		errCode = err.Code
+		errCodes = []int{err.Code}
 		break
 	case *mongo.WriteException:
+		errCodes = []int{}
 		if err.WriteConcernError != nil {
-			errCode = err.WriteConcernError.Code
-		} else if err.WriteErrors != nil {
+			errCodes = append(errCodes, err.WriteConcernError.Code)
+		}
+		if err.WriteErrors != nil {
 			for _, e := range err.WriteErrors {
-				if e.Code != 0 {
-					errCode = e.Code
-					break
-				}
+				errCodes = append(errCodes, e.Code)
 			}
 		}
 		break
@@ -64,40 +69,21 @@ func ParseError(err error) (newErr error) {
 		return
 	}
 
-	if errs, ok := err.(mongo.WriteErrors); ok {
-		errCode := 0
-		for _, e := range errs {
-			errCode = GetErrorCode(&e)
-			if errCode == 11000 || errCode == 11001 || errCode == 12582 ||
-				errCode == 16460 {
-
-				newErr = &DuplicateKeyError{
-					errors.New("database: Duplicate key"),
-				}
-				return
+	errCodes := GetErrorCodes(err)
+	for _, errCode := range errCodes {
+		switch errCode {
+		case 11000, 11001, 12582, 16460:
+			newErr = &DuplicateKeyError{
+				errors.New("database: Duplicate key"),
 			}
-		}
-		newErr = &UnknownError{
-			errors.Wrap(err, fmt.Sprintf(
-				"database: Unknown error %d", errCode)),
-		}
-		return
-	}
-
-	errCode := GetErrorCode(err)
-	switch errCode {
-	case 11000, 11001, 12582, 16460:
-		newErr = &DuplicateKeyError{
-			errors.New("database: Duplicate key"),
-		}
-		break
-	default:
-		newErr = &UnknownError{
-			errors.Wrap(err, fmt.Sprintf(
-				"database: Unknown error %d", errCode)),
+			return
 		}
 	}
 
+	newErr = &UnknownError{
+		errors.Wrap(err, fmt.Sprintf(
+			"database: Unknown error %v", errCodes)),
+	}
 	return
 }
 
