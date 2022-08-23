@@ -14,7 +14,8 @@ type Alert struct {
 	Roles    []string           `bson:"roles" json:"roles"`
 	Resource string             `bson:"resource" json:"resource"`
 	Level    int                `bson:"level" json:"level"`
-	Value    int                `bson:"value" json:"value"`
+	ValueInt int                `bson:"value_int" json:"value_int"`
+	ValueStr string             `bson:"value_str" json:"value_str"`
 }
 
 func (a *Alert) Validate(db *database.Database) (
@@ -33,40 +34,54 @@ func (a *Alert) Validate(db *database.Database) (
 
 	switch a.Resource {
 	case SystemHighMemory:
-		if a.Value < 1 || a.Value > 100 {
+		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
-				Error:   "alert_resource_value_invalid",
-				Message: "Alert resource value is invalid",
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
 			}
 			return
 		}
+		a.ValueStr = ""
 		break
 	case SystemHighSwap:
-		if a.Value < 1 || a.Value > 100 {
+		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
-				Error:   "alert_resource_value_invalid",
-				Message: "Alert resource value is invalid",
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
 			}
 			return
 		}
+		a.ValueStr = ""
 		break
 	case SystemHighHugePages:
-		if a.Value < 1 || a.Value > 100 {
+		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
-				Error:   "alert_resource_value_invalid",
-				Message: "Alert resource value is invalid",
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
 			}
 			return
 		}
+		a.ValueStr = ""
 		break
 	case DiskHighUsage:
-		if a.Value < 1 || a.Value > 100 {
+		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
-				Error:   "alert_resource_value_invalid",
-				Message: "Alert resource value is invalid",
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
 			}
 			return
 		}
+		a.ValueStr = ""
+		break
+	case KmsgKeyword:
+		if a.ValueStr == "" {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
+			}
+			return
+		}
+		a.ValueInt = 0
 		break
 	default:
 		errData = &errortypes.ErrorData{
