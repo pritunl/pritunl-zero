@@ -67,6 +67,8 @@ func GetObj(typ string) Doc {
 		return &DiskIo{}
 	case "network":
 		return &Network{}
+	case "kmsg":
+		return &Kmsg{}
 	default:
 		return nil
 	}
