@@ -467,6 +467,7 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 		})
 	}
 
+	checkAlerts := true
 	coll := doc.GetCollection(db)
 
 	_, err = coll.InsertOne(db, doc)
@@ -474,21 +475,25 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 		err = database.ParseError(err)
 		if _, ok := err.(*database.DuplicateKeyError); ok {
 			err = nil
+			checkAlerts = false
 		} else {
 			return
 		}
 	}
 
-	alerts, err := e.GetAlerts(db)
-	if err != nil {
-		return
-	}
+	if checkAlerts {
+		alerts, er := e.GetAlerts(db)
+		if er != nil {
+			err = er
+			return
+		}
 
-	actAlrts := doc.CheckAlerts(alerts)
-	if actAlrts != nil && len(actAlrts) > 0 {
-		for _, alrt := range actAlrts {
-			go alertevent.New(e.Roles, e.Id, alrt.Name, e.Name, alrt.Resource,
-				alrt.Message, alrt.Level, alrt.Frequency)
+		actAlrts := doc.CheckAlerts(alerts)
+		if actAlrts != nil && len(actAlrts) > 0 {
+			for _, alrt := range actAlrts {
+				go alertevent.New(e.Roles, e.Id, alrt.Name, e.Name, alrt.Resource,
+					alrt.Message, alrt.Level, alrt.Frequency)
+			}
 		}
 	}
 
