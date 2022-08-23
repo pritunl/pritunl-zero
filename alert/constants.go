@@ -11,4 +11,5 @@ const (
 	SystemHighSwap      = "system_high_swap"
 	SystemHighHugePages = "system_high_hugepages"
 	DiskHighUsage       = "disk_high_usage"
+	KmsgKeyword         = "kmsg_keyword"
 )
