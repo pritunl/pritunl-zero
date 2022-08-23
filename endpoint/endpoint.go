@@ -536,12 +536,23 @@ func (e *Endpoint) Insert(db *database.Database) (err error) {
 	return
 }
 
-func (e *Endpoint) GetData(c context.Context, db *database.Database,
+func (e *Endpoint) GetChart(c context.Context, db *database.Database,
 	resource string, start, end time.Time, interval time.Duration) (
 	data endpoints.ChartData, err error) {
 
 	data, err = endpoints.GetChart(c, db, e.Id, resource,
 		start, end, interval)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (e *Endpoint) GetLog(c context.Context, db *database.Database,
+	resource string) (data endpoints.LogData, err error) {
+
+	data, err = endpoints.GetLog(c, db, e.Id, resource)
 	if err != nil {
 		return
 	}
