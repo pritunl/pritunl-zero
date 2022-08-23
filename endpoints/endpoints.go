@@ -40,6 +40,8 @@ type Alert struct {
 
 type ChartData = map[string][]*Point
 
+type LogData = []string
+
 func GenerateId(endpointId primitive.ObjectID,
 	timestamp time.Time) primitive.Binary {
 
@@ -90,6 +92,19 @@ func GetChart(c context.Context, db *database.Database,
 		return GetDiskIoChart(c, db, endpoint, start, end, interval)
 	case "network":
 		return GetNetworkChart(c, db, endpoint, start, end, interval)
+	default:
+		return nil, &errortypes.UnknownError{
+			errors.New("endpoints: Unknown resource type"),
+		}
+	}
+}
+
+func GetLog(c context.Context, db *database.Database,
+	endpoint primitive.ObjectID, typ string) (LogData, error) {
+
+	switch typ {
+	case "kmsg":
+		return GetKmsgLog(c, db, endpoint)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
