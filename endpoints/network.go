@@ -83,7 +83,7 @@ func (d *Network) StaticData() *bson.M {
 	}
 }
 
-func (d *Network) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+func (d *Network) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 

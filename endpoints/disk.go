@@ -72,15 +72,16 @@ func (d *Disk) StaticData() *bson.M {
 	}
 }
 
-func (d *Disk) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+func (d *Disk) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	alerts = []*Alert{}
 
 	for _, resource := range resources {
 		if resource.Resource == alert.DiskHighUsage {
 			for _, mount := range d.Mounts {
-				if mount.Used > float64(resource.Value) {
+				if mount.Used > float64(resource.ValueInt) {
 					alerts = []*Alert{
 						&Alert{
+							Name:     resource.Name,
 							Resource: alert.DiskHighUsage,
 							Message: fmt.Sprintf(
 								"Disk low on space %s (%.2f%%)",

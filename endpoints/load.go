@@ -43,7 +43,7 @@ func (d *Load) StaticData() *bson.M {
 	return nil
 }
 
-func (d *Load) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+func (d *Load) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 

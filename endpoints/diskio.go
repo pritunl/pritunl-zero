@@ -77,7 +77,7 @@ func (d *DiskIo) StaticData() *bson.M {
 	}
 }
 
-func (d *DiskIo) CheckAlerts(resources []*alert.Resource) (alerts []*Alert) {
+func (d *DiskIo) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 

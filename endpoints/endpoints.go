@@ -22,7 +22,7 @@ type Doc interface {
 	GetCollection(*database.Database) *database.Collection
 	Format(primitive.ObjectID) time.Time
 	StaticData() *bson.M
-	CheckAlerts(resources []*alert.Resource) []*Alert
+	CheckAlerts(resources []*alert.Alert) []*Alert
 }
 
 type Point struct {
@@ -31,6 +31,7 @@ type Point struct {
 }
 
 type Alert struct {
+	Name      string
 	Resource  string
 	Message   string
 	Level     int
