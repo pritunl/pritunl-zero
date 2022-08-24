@@ -26,6 +26,7 @@ type system struct {
 	HsmResponseTimeout             int    `bson:"hsm_response_timeout" default:"10"`
 	DisableBastionHostCertificates bool   `bson:"disable_bastion_host_certificates"`
 	BastionDockerImage             string `bson:"bastion_docker_image" default:"docker.io/pritunl/pritunl-bastion"`
+	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
 }
 
 func newSystem() interface{} {
