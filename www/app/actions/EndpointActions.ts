@@ -10,7 +10,7 @@ import * as EndpointTypes from '../types/EndpointTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
-let chartSyncReqs: {[key: string]: SuperAgent.Request} = {};
+let dataSyncReqs: {[key: string]: SuperAgent.Request} = {};
 
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
@@ -194,14 +194,14 @@ export function removeMulti(endpointIds: string[]): Promise<void> {
 
 export function chart(endpointId: string, resource: string,
 		period: number, interval: number): Promise<any> {
-	let curChartSyncId = MiscUtils.uuid();
+	let curDataSyncId = MiscUtils.uuid();
 
 	let loader = new Loader().loading();
 
 	resource = resource.replace(/[0-9]/g, '');
 
 	return new Promise<any>((resolve, reject): void => {
-		let req = SuperAgent.get('/endpoint/' + endpointId + '/data')
+		let req = SuperAgent.get('/endpoint/' + endpointId + '/chart')
 			.query({
 				resource: resource,
 				period: period.toString(),
@@ -213,10 +213,10 @@ export function chart(endpointId: string, resource: string,
 				loader.done();
 				resolve(null);
 			});
-		chartSyncReqs[curChartSyncId] = req;
+		dataSyncReqs[curDataSyncId] = req;
 
 		req.end((err: any, res: SuperAgent.Response): void => {
-			delete chartSyncReqs[curChartSyncId];
+			delete dataSyncReqs[curDataSyncId];
 			loader.done();
 
 			if (res && res.status === 401) {
@@ -236,8 +236,47 @@ export function chart(endpointId: string, resource: string,
 	});
 }
 
-export function chartCancel(): void {
-	for (let [key, val] of Object.entries(chartSyncReqs)) {
+export function log(endpointId: string, resource: string): Promise<any> {
+	let curDataSyncId = MiscUtils.uuid();
+
+	let loader = new Loader().loading();
+
+	return new Promise<any>((resolve, reject): void => {
+		let req = SuperAgent.get('/endpoint/' + endpointId + '/log')
+			.query({
+				resource: resource,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.on('abort', () => {
+				loader.done();
+				resolve(null);
+			});
+		dataSyncReqs[curDataSyncId] = req;
+
+		req.end((err: any, res: SuperAgent.Response): void => {
+			delete dataSyncReqs[curDataSyncId];
+			loader.done();
+
+			if (res && res.status === 401) {
+				window.location.href = '/login';
+				resolve(null);
+				return;
+			}
+
+			if (err) {
+				Alert.errorRes(res, 'Failed to load endpoint log');
+				reject(err);
+				return;
+			}
+
+			resolve(res.body);
+		});
+	});
+}
+
+export function dataCancel(): void {
+	for (let [key, val] of Object.entries(dataSyncReqs)) {
 		val.abort();
 	}
 }
