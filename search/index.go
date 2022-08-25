@@ -16,6 +16,7 @@ import (
 
 const (
 	Keyword = "keyword"
+	Integer = "integer"
 	Ip      = "ip"
 	Date    = "date"
 	Text    = "text"
