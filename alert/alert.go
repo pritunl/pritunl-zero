@@ -59,7 +59,7 @@ func (a *Alert) Validate(db *database.Database) (
 	}
 
 	switch a.Resource {
-	case SystemHighMemory:
+	case SystemMemoryLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
 				Error:   "alert_value_invalid",
@@ -69,7 +69,7 @@ func (a *Alert) Validate(db *database.Database) (
 		}
 		a.ValueStr = ""
 		break
-	case SystemHighSwap:
+	case SystemSwapLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
 				Error:   "alert_value_invalid",
@@ -79,7 +79,7 @@ func (a *Alert) Validate(db *database.Database) (
 		}
 		a.ValueStr = ""
 		break
-	case SystemHighHugePages:
+	case SystemHugePagesLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
 				Error:   "alert_value_invalid",
@@ -89,7 +89,7 @@ func (a *Alert) Validate(db *database.Database) (
 		}
 		a.ValueStr = ""
 		break
-	case DiskHighUsage:
+	case DiskUsageLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
 				Error:   "alert_value_invalid",

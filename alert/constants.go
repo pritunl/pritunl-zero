@@ -7,9 +7,11 @@ const (
 )
 
 const (
-	SystemHighMemory    = "system_high_memory"
-	SystemHighSwap      = "system_high_swap"
-	SystemHighHugePages = "system_high_hugepages"
-	DiskHighUsage       = "disk_high_usage"
-	KmsgKeyword         = "kmsg_keyword"
+	SystemOffline        = "system_offline"
+	SystemCpuLevel       = "system_cpu_level"
+	SystemMemoryLevel    = "system_memory_level"
+	SystemSwapLevel      = "system_swap_level"
+	SystemHugePagesLevel = "system_hugepages_level"
+	DiskUsageLevel       = "disk_usage_level"
+	KmsgKeyword          = "kmsg_keyword"
 )
