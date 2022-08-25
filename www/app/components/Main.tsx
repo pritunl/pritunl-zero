@@ -13,12 +13,14 @@ import Policies from './Policies';
 import Authorities from './Authorities';
 import Certificates from './Certificates';
 import Endpoints from './Endpoints';
+import Alerts from './Alerts';
 import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
 import * as UserActions from '../actions/UserActions';
 import * as SessionActions from '../actions/SessionActions';
 import * as DeviceActions from '../actions/DeviceActions';
+import * as AlertActions from '../actions/AlertActions';
 import * as AuditActions from '../actions/AuditActions';
 import * as SshcertificateActions from '../actions/SshcertificateActions';
 import * as NodeActions from '../actions/NodeActions';
@@ -148,6 +150,13 @@ export default class Main extends React.Component<{}, State> {
 							to="/certificates"
 						>
 							Certificates
+						</ReactRouter.Link>
+						<ReactRouter.Link
+							className="bp3-button bp3-minimal bp3-icon-notifications"
+							style={css.link}
+							to="/alerts"
+						>
+							Alerts
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							className="bp3-button bp3-minimal bp3-icon-shield"
@@ -314,6 +323,18 @@ export default class Main extends React.Component<{}, State> {
 												disabled: false,
 											});
 										});
+									} else if (pathname === '/alerts') {
+										AlertActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/endpoints') {
 										AuthorityActions.sync();
 										EndpointActions.sync().then((): void => {
@@ -424,6 +445,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
+				)}/>
+				<ReactRouter.Route path="/alerts" render={() => (
+					<Alerts/>
 				)}/>
 				<ReactRouter.Route path="/endpoints" render={() => (
 					<Endpoints/>
