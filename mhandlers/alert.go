@@ -235,9 +235,9 @@ func alertsGet(c *gin.Context) {
 		}
 	}
 
-	typ := strings.TrimSpace(c.Query("type"))
-	if typ != "" {
-		query["type"] = typ
+	role := strings.TrimSpace(c.Query("role"))
+	if role != "" {
+		query["roles"] = role
 	}
 
 	alerts, count, err := alert.GetAllPaged(
