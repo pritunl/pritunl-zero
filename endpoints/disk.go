@@ -76,21 +76,15 @@ func (d *Disk) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	alerts = []*Alert{}
 
 	for _, resource := range resources {
-		if resource.Resource == alert.DiskHighUsage {
+		if resource.Resource == alert.DiskUsageLevel {
 			for _, mount := range d.Mounts {
 				if mount.Used > float64(resource.ValueInt) {
 					alerts = []*Alert{
-						&Alert{
-							Name:     resource.Name,
-							Resource: alert.DiskHighUsage,
-							Message: fmt.Sprintf(
-								"Disk low on space %s (%.2f%%)",
-								mount.Path,
-								mount.Used,
-							),
-							Level:     resource.Level,
-							Frequency: 5 * time.Minute,
-						},
+						NewAlert(resource, fmt.Sprintf(
+							"Disk low on space %s (%.2f%%)",
+							mount.Path,
+							mount.Used,
+						)),
 					}
 				}
 			}

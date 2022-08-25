@@ -30,14 +30,6 @@ type Point struct {
 	Y interface{} `json:"y"`
 }
 
-type Alert struct {
-	Name      string
-	Resource  string
-	Message   string
-	Level     int
-	Frequency time.Duration
-}
-
 type ChartData = map[string][]*Point
 
 type LogData = []string
@@ -167,6 +159,26 @@ func NewChart(start, end time.Time, interval time.Duration) (chrt *Chart) {
 
 	if interval == time.Minute {
 		chrt.end -= time.Minute.Milliseconds()
+	}
+
+	return
+}
+
+type Alert struct {
+	Name      string
+	Resource  string
+	Message   string
+	Level     int
+	Frequency time.Duration
+}
+
+func NewAlert(resource *alert.Alert, message string) (alrt *Alert) {
+	alrt = &Alert{
+		Name:      resource.Name,
+		Resource:  resource.Resource,
+		Message:   message,
+		Level:     resource.Level,
+		Frequency: time.Duration(resource.Frequency) * time.Second,
 	}
 
 	return

@@ -64,17 +64,11 @@ func (d *Kmsg) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 				strings.ToLower(resource.ValueStr)) {
 
 				alerts = []*Alert{
-					&Alert{
-						Name:     resource.Name,
-						Resource: alert.KmsgKeyword,
-						Message: fmt.Sprintf(
-							"Kmsg keyword match (%s): %s",
-							resource.ValueStr,
-							strings.Split(d.Message, "\n")[0],
-						),
-						Level:     resource.Level,
-						Frequency: 5 * time.Minute,
-					},
+					NewAlert(resource, fmt.Sprintf(
+						"Kmsg keyword match (%s): %s",
+						resource.ValueStr,
+						strings.Split(d.Message, "\n")[0],
+					)),
 				}
 			}
 			break

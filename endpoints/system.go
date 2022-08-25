@@ -69,51 +69,43 @@ func (d *System) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 
 	for _, resource := range resources {
 		switch resource.Resource {
-		case alert.SystemHighMemory:
+		case alert.SystemCpuLevel:
+			if d.CpuUsage > float64(resource.ValueInt) {
+				alerts = []*Alert{
+					NewAlert(resource, fmt.Sprintf(
+						"System cpu high usage (%.2f%%)",
+						d.MemUsage,
+					)),
+				}
+			}
+			break
+		case alert.SystemMemoryLevel:
 			if d.MemUsage > float64(resource.ValueInt) {
 				alerts = []*Alert{
-					&Alert{
-						Name:     resource.Name,
-						Resource: alert.SystemHighMemory,
-						Message: fmt.Sprintf(
-							"System low on memory (%.2f%%)",
-							d.MemUsage,
-						),
-						Level:     resource.Level,
-						Frequency: 5 * time.Minute,
-					},
+					NewAlert(resource, fmt.Sprintf(
+						"System low on memory (%.2f%%)",
+						d.MemUsage,
+					)),
 				}
 			}
 			break
-		case alert.SystemHighSwap:
+		case alert.SystemSwapLevel:
 			if d.SwapUsage > float64(resource.ValueInt) {
 				alerts = []*Alert{
-					&Alert{
-						Name:     resource.Name,
-						Resource: alert.SystemHighSwap,
-						Message: fmt.Sprintf(
-							"System low on swap (%.2f%%)",
-							d.SwapUsage,
-						),
-						Level:     resource.Level,
-						Frequency: 5 * time.Minute,
-					},
+					NewAlert(resource, fmt.Sprintf(
+						"System low on swap (%.2f%%)",
+						d.SwapUsage,
+					)),
 				}
 			}
 			break
-		case alert.SystemHighHugePages:
+		case alert.SystemHugePagesLevel:
 			if d.SwapUsage > float64(resource.ValueInt) {
 				alerts = []*Alert{
-					&Alert{
-						Name:     resource.Name,
-						Resource: alert.SystemHighHugePages,
-						Message: fmt.Sprintf(
-							"System low on hugepages (%.2f%%)",
-							d.SwapUsage,
-						),
-						Level:     resource.Level,
-						Frequency: 5 * time.Minute,
-					},
+					NewAlert(resource, fmt.Sprintf(
+						"System low on hugepages (%.2f%%)",
+						d.SwapUsage,
+					)),
 				}
 			}
 			break
