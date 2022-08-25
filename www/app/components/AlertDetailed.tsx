@@ -26,6 +26,7 @@ interface State {
 	changed: boolean;
 	message: string;
 	addRole: string;
+	addIgnore: string;
 	alert: AlertTypes.Alert;
 }
 
@@ -123,6 +124,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 			changed: false,
 			message: '',
 			addRole: '',
+			addIgnore: '',
 			alert: null,
 		};
 	}
@@ -280,6 +282,79 @@ export default class AlertDetailed extends React.Component<Props, State> {
 		});
 	}
 
+	onAddIgnore = (): void => {
+		let alert: AlertTypes.Alert;
+
+		if (this.state.changed) {
+			alert = {
+				...this.state.alert,
+			};
+		} else {
+			alert = {
+				...this.props.alert,
+			};
+		}
+
+		let ignores = [
+			...(alert.ignores || []),
+		];
+
+		if (!this.state.addIgnore) {
+			return;
+		}
+
+		if (ignores.indexOf(this.state.addIgnore) === -1) {
+			ignores.push(this.state.addIgnore);
+		}
+
+		ignores.sort();
+
+		alert.ignores = ignores;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addIgnore: '',
+			alert: alert,
+		});
+	}
+
+	onRemoveIgnore(ignore: string): void {
+		let alert: AlertTypes.Alert;
+
+		if (this.state.changed) {
+			alert = {
+				...this.state.alert,
+			};
+		} else {
+			alert = {
+				...this.props.alert,
+			};
+		}
+
+		let ignores = [
+			...(alert.ignores || []),
+		];
+
+		let i = ignores.indexOf(ignore);
+		if (i === -1) {
+			return;
+		}
+
+		ignores.splice(i, 1);
+
+		alert.ignores = ignores;
+
+		this.setState({
+			...this.state,
+			changed: true,
+			message: '',
+			addIgnore: '',
+			alert: alert,
+		});
+	}
+
 	render(): JSX.Element {
 		let alert: AlertTypes.Alert = this.state.alert ||
 			this.props.alert;
@@ -310,10 +385,33 @@ export default class AlertDetailed extends React.Component<Props, State> {
 			);
 		}
 
+		let ignores: JSX.Element[] = [];
+		for (let ignore of (alert.ignores || [])) {
+			ignores.push(
+				<div
+					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					style={css.item}
+					key={ignore}
+				>
+					{ignore}
+					<button
+						className="bp3-tag-remove"
+						onMouseUp={(): void => {
+							this.onRemoveRole(ignore);
+						}}
+					/>
+				</div>,
+			);
+		}
+
 		let valueInt = false;
 		let valueStr = false;
 		let valueLabel = '';
 		let valueHelp = '';
+		let ignoreShow = false;
+		let ignoreLabel = '';
+		let ignoreTitle = '';
+		let ignoreHelp = '';
 		switch (alert.resource) {
 			case "system_high_memory":
 				valueInt = true;
@@ -333,7 +431,11 @@ export default class AlertDetailed extends React.Component<Props, State> {
 				valueHelp = 'Maximum percent hugepages usage as integer ' +
 					'before alert is triggered.';
 				break;
-			case "disk_high_usage":
+			case "disk_usage_level":
+				ignoreShow = true;
+				ignoreLabel = 'Ignore Disk Paths';
+				ignoreTitle = 'Ignore Disk Paths';
+				ignoreHelp = 'Path of disk devices to ignore.';
 				valueInt = true;
 				valueLabel = 'Usage Threshold';
 				valueHelp = 'Maximum percent disk space usage as integer ' +
@@ -364,23 +466,23 @@ export default class AlertDetailed extends React.Component<Props, State> {
 							}
 						}}
 					>
-            <div>
-              <label
-                className="bp3-control bp3-checkbox"
-                style={css.select}
-              >
-                <input
-                  type="checkbox"
-                  checked={this.props.selected}
+						<div>
+							<label
+								className="bp3-control bp3-checkbox"
+								style={css.select}
+							>
+								<input
+									type="checkbox"
+									checked={this.props.selected}
 									onChange={(evt): void => {
 									}}
-                  onClick={(evt): void => {
+									onClick={(evt): void => {
 										this.props.onSelect(evt.shiftKey);
 									}}
-                />
-                <span className="bp3-control-indicator"/>
-              </label>
-            </div>
+								/>
+								<span className="bp3-control-indicator"/>
+							</label>
+						</div>
 						<div className="flex tab-close"/>
 						<ConfirmButton
 							safe={true}
@@ -396,6 +498,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						/>
 					</div>
 					<PageInput
+						disabled={this.state.disabled}
 						label="Name"
 						help="Name of alert"
 						type="text"
@@ -416,6 +519,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
+						disabled={this.state.disabled}
 						buttonClass="bp3-intent-success bp3-icon-add"
 						label="Add"
 						type="text"
@@ -430,6 +534,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<PageSelect
+						disabled={this.state.disabled}
 						label="Alert Type"
 						help="Type of alert"
 						value={alert.resource}
@@ -438,54 +543,84 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						}}
 					>
 						<option
-							value="system_high_memory"
+							value="instance_offline"
+						>Instance Offline</option>
+						<option
+							value="system_cpu_level"
+						>CPU Usage Threshold</option>
+						<option
+							value="system_memory_level"
 						>Memory Usage Threshold</option>
 						<option
-							value="system_high_swap"
+							value="system_swap_level"
 						>Swap Usage Threshold</option>
 						<option
-							value="system_high_hugepages"
+							value="system_hugepages_level"
 						>HugePages Usage Threshold</option>
 						<option
-							value="disk_high_usage"
+							value="disk_usage_level"
 						>Disk Usage Threshold</option>
-						<option
-							value="disk_smart_error"
-						>Disk SMART Fault</option>
 						<option
 							value="kmsg_keyword"
 						>Dmesg Keyword Match</option>
 					</PageSelect>
+					<label className="bp3-label" hidden={!ignoreShow}>
+						{ignoreLabel}
+						<Help
+							title={ignoreTitle}
+							content={ignoreHelp}
+						/>
+						<div>
+							{ignores}
+						</div>
+					</label>
+					<PageInputButton
+						disabled={this.state.disabled}
+						buttonClass="bp3-intent-success bp3-icon-add"
+						label="Add"
+						type="text"
+						placeholder="Add ignore"
+						value={this.state.addIgnore}
+						hidden={!ignoreShow}
+						onChange={(val): void => {
+							this.setState({
+								...this.state,
+								addIgnore: val,
+							});
+						}}
+						onSubmit={this.onAddIgnore}
+					/>
 				</div>
 				<div style={css.group}>
 					<PageInfo
 						fields={fields}
 					/>
 					<PageInput
+						disabled={this.state.disabled}
 						label={valueLabel}
 						help={valueHelp}
 						type="text"
 						placeholder="Default"
 						value={alert.value_int}
-						narrow={true}
 						hidden={!valueInt}
 						onChange={(val): void => {
 							this.set('value_int', parseInt(val, 10));
 						}}
 					/>
 					<PageInput
+						disabled={this.state.disabled}
 						label={valueLabel}
 						help={valueHelp}
 						type="text"
 						placeholder="Default"
 						value={alert.value_str}
-						narrow={true}
 						hidden={!valueStr}
 						onChange={(val): void => {
 							this.set('value_str', val);
 						}}
 					/>
 					<PageSelect
+						disabled={this.state.disabled}
 						label="Alert Level"
 						help="Level of alert, used for matching device notifications. An endpoint role must also match a user role for ntofications."
 						value={(alert.level || 0).toString()}
