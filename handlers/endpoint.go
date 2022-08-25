@@ -83,6 +83,7 @@ func EndpointCommGet(c *gin.Context) {
 	timestamp := c.Request.Header.Get("Pritunl-Endpoint-Timestamp")
 	nonce := c.Request.Header.Get("Pritunl-Endpoint-Nonce")
 	sig := c.Request.Header.Get("Pritunl-Endpoint-Signature")
+	endptUpdate := time.Now()
 
 	endpt, err := endpoint.Get(db, endpointId)
 	if err != nil {
@@ -193,7 +194,23 @@ func EndpointCommGet(c *gin.Context) {
 					errors.Wrap(err,
 						"mhandlers: Failed to set write control"),
 				}
+				_ = conn.Close()
 				return
+			}
+
+			if time.Since(endptUpdate) > 1*time.Minute {
+				newEndpt, e := endpoint.Get(db, endpointId)
+				if e != nil {
+					logrus.WithFields(logrus.Fields{
+						"error": e,
+					}).Error("mhandlers: Failed to update endpoint")
+
+					_ = conn.Close()
+					return
+				}
+
+				endpt = newEndpt
+				endptUpdate = time.Now()
 			}
 		}
 	}
