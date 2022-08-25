@@ -15,6 +15,11 @@ export interface Endpoint {
 	has_client_key?: boolean;
 	reset_client_key?: boolean;
 	data?: EndpointData;
+	info?: EndpointInfo;
+}
+
+export interface EndpointInfo {
+	alerts?: {[key: string]: string};
 }
 
 export interface EndpointData {
