@@ -20,13 +20,15 @@ import (
 )
 
 type alertData struct {
-	Id       primitive.ObjectID `json:"id"`
-	Name     string             `json:"name"`
-	Roles    []string           `json:"roles"`
-	Resource string             `json:"resource"`
-	Level    int                `json:"level"`
-	ValueInt int                `json:"value_int"`
-	ValueStr string             `json:"value_str"`
+	Id        primitive.ObjectID `json:"id"`
+	Name      string             `json:"name"`
+	Roles     []string           `json:"roles"`
+	Resource  string             `json:"resource"`
+	Level     int                `json:"level"`
+	Frequency int                `bson:"frequency" json:"frequency"`
+	Ignores   []string           `bson:"ignores" json:"ignores"`
+	ValueInt  int                `json:"value_int"`
+	ValueStr  string             `json:"value_str"`
 }
 
 type alertsData struct {
@@ -67,6 +69,8 @@ func alertPut(c *gin.Context) {
 	alrt.Roles = data.Roles
 	alrt.Resource = data.Resource
 	alrt.Level = data.Level
+	alrt.Frequency = data.Frequency
+	alrt.Ignores = data.Ignores
 	alrt.ValueInt = data.ValueInt
 	alrt.ValueStr = data.ValueStr
 
@@ -75,6 +79,8 @@ func alertPut(c *gin.Context) {
 		"roles",
 		"resource",
 		"level",
+		"frequency",
+		"ignores",
 		"value_int",
 		"value_str",
 	)
@@ -109,7 +115,7 @@ func alertPost(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	data := &alertData{
 		Name:     "New Alert",
-		Resource: alert.SystemHighMemory,
+		Resource: alert.SystemMemoryLevel,
 		ValueInt: 90,
 		Level:    alert.Medium,
 	}
@@ -124,12 +130,14 @@ func alertPost(c *gin.Context) {
 	}
 
 	alrt := &alert.Alert{
-		Name:     data.Name,
-		Roles:    data.Roles,
-		Resource: data.Resource,
-		Level:    data.Level,
-		ValueInt: data.ValueInt,
-		ValueStr: data.ValueStr,
+		Name:      data.Name,
+		Roles:     data.Roles,
+		Resource:  data.Resource,
+		Level:     data.Level,
+		Frequency: data.Frequency,
+		Ignores:   data.Ignores,
+		ValueInt:  data.ValueInt,
+		ValueStr:  data.ValueStr,
 	}
 
 	errData, err := alrt.Validate(db)
