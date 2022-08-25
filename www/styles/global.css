@@ -145,6 +145,41 @@ body.bp3-dark {
   position: fixed !important;
 }
 
+.ace_editor * {
+  font-family: "Lucida Console", Monaco, monospace !important;
+}
+
+.ace-eclipse ::-webkit-scrollbar {
+  width: 15px;
+  background: #f5f8fa;
+}
+.ace-eclipse ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #ffffff;
+  border: 1px solid rgb(16 22 26 / 20%);
+}
+.ace-eclipse ::-webkit-scrollbar-corner {
+  background: #f5f8fa;
+}
+
+.ace-dracula ::-webkit-scrollbar {
+  width: 15px;
+  background: #293742 !important;
+}
+.ace-dracula ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #30404d !important;
+  border: 1px solid rgb(16 22 26 / 70%);
+}
+.ace-dracula ::-webkit-scrollbar-corner {
+  background: #293742 !important;
+}
+
+.ace-dracula .ace_gutter {
+  background-color: #23242e !important;
+  border-right: 1px solid rgb(255 255 255 / 15%) !important;
+}
+
 /*******************************
           Flex Layout
 *******************************/
