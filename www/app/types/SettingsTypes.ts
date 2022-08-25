@@ -33,6 +33,7 @@ export interface JumpCloudProvider extends Provider {
 	issuer_url?: string;
 	saml_url?: string;
 	saml_cert?: string;
+	jumpcloud_app_id?: string;
 	jumpcloud_secret?: string;
 }
 
