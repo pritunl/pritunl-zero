@@ -255,6 +255,20 @@ func (d *Device) UnmarshalRegistration() (
 	return
 }
 
+func (d *Device) CheckLevel(level int) bool {
+	if d.AlertLevels == nil {
+		return false
+	}
+
+	for _, lvl := range d.AlertLevels {
+		if level == lvl {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (d *Device) Commit(db *database.Database) (err error) {
 	coll := db.Devices()
 
