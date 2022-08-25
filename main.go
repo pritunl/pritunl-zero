@@ -38,7 +38,7 @@ func main() {
 	defer time.Sleep(1 * time.Second)
 
 	flag.Usage = func() {
-		fmt.Println(help)
+		fmt.Printf(help)
 	}
 
 	flag.Parse()
@@ -50,7 +50,7 @@ func main() {
 		}
 
 		Init()
-		err := cmd.Node()
+		err := cmd.Node(false)
 		if err != nil {
 			panic(err)
 		}
@@ -123,5 +123,5 @@ func main() {
 		return
 	}
 
-	fmt.Println(help)
+	fmt.Printf(help)
 }
