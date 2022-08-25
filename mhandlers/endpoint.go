@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/endpoint"
@@ -246,8 +247,22 @@ func endpointsGet(c *gin.Context) {
 		return
 	}
 
+	rolesSet := set.NewSet()
 	for _, endpt := range endpoints {
-		endpt.Json()
+		if endpt.Roles != nil {
+			for _, role := range endpt.Roles {
+				rolesSet.Add(role)
+			}
+		}
+	}
+
+	alertsMap, err := alert.GetRolesMapped(db, rolesSet)
+	if err != nil {
+		return
+	}
+
+	for _, endpt := range endpoints {
+		endpt.Json(alertsMap)
 	}
 
 	dta := &endpointsData{
