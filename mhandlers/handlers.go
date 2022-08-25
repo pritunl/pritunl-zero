@@ -91,7 +91,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/endpoint", endpointPost)
 	csrfGroup.DELETE("/endpoint", endpointsDelete)
 	csrfGroup.DELETE("/endpoint/:endpoint_id", endpointDelete)
-	csrfGroup.GET("/endpoint/:endpoint_id/data", endpointDataGet)
+	csrfGroup.GET("/endpoint/:endpoint_id/chart", endpointChartGet)
+	csrfGroup.GET("/endpoint/:endpoint_id/log", endpointLogGet)
 
 	dbGroup.PUT("/endpoint/:endpoint_id/register",
 		handlers.EndpointRegisterPut)
