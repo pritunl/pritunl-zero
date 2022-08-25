@@ -13,6 +13,7 @@ export interface Device {
 	active_until?: string;
 	number?: string;
 	last_active?: string;
+	wan_rp_id?: string;
 	ssh_public_key?: string;
 }
 
