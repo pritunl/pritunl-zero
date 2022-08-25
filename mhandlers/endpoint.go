@@ -103,7 +103,7 @@ func endpointPut(c *gin.Context) {
 
 	_ = event.PublishDispatch(db, "endpoint.change")
 
-	endpt.Json()
+	endpt.Json(nil)
 
 	c.JSON(200, endpt)
 }
@@ -151,7 +151,7 @@ func endpointPost(c *gin.Context) {
 
 	_ = event.PublishDispatch(db, "endpoint.change")
 
-	endpt.Json()
+	endpt.Json(nil)
 
 	c.JSON(200, endpt)
 }
@@ -222,12 +222,6 @@ func endpointsGet(c *gin.Context) {
 		query["$or"] = []*bson.M{
 			&bson.M{
 				"name": &bson.M{
-					"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
-					"$options": "i",
-				},
-			},
-			&bson.M{
-				"key": &bson.M{
 					"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
 					"$options": "i",
 				},
