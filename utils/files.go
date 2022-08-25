@@ -6,9 +6,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
+
+var invalidPaths = set.NewSet("/", "", ".", "./")
 
 func Exists(pth string) (exists bool, err error) {
 	_, err = os.Stat(pth)
@@ -103,6 +106,13 @@ func ExistsRemove(pth string) (err error) {
 }
 
 func Remove(path string) (err error) {
+	if invalidPaths.Contains(path) {
+		err = &errortypes.WriteError{
+			errors.Wrapf(err, "utils: Invalid remove path '%s'", path),
+		}
+		return
+	}
+
 	err = os.Remove(path)
 	if err != nil {
 		err = &errortypes.WriteError{
@@ -115,6 +125,13 @@ func Remove(path string) (err error) {
 }
 
 func RemoveAll(path string) (err error) {
+	if invalidPaths.Contains(path) {
+		err = &errortypes.WriteError{
+			errors.Wrapf(err, "utils: Invalid remove path '%s'", path),
+		}
+		return
+	}
+
 	err = os.RemoveAll(path)
 	if err != nil {
 		err = &errortypes.WriteError{
