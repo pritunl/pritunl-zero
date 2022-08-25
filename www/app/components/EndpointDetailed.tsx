@@ -395,6 +395,16 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			);
 		}
 
+		let alerts: string[] = [];
+		for (let alert of Object.values(endpoint.info.alerts)) {
+			alerts.push(alert);
+		}
+
+		fields.push({
+			label: 'Alerts',
+			value: alerts.length ? alerts : '-',
+		});
+
 		let secretKey = '';
 		let secretUri = '';
 		if (!endpoint.has_client_key) {
