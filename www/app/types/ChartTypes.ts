@@ -15,6 +15,11 @@ export type Datasets = Dataset[];
 
 export type ChartData = {[key: string]: Points};
 
+export interface EndpointData {
+	has_data: boolean;
+	data: ChartData;
+}
+
 export interface Labels {
 	title: string;
 	resource_label: string;
