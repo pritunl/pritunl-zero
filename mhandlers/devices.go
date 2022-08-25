@@ -5,6 +5,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/alertevent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
@@ -23,6 +24,7 @@ type deviceData struct {
 	Type         string             `json:"type"`
 	Mode         string             `json:"mode"`
 	Number       string             `json:"number"`
+	AlertLevels  []int              `json:"alert_levels"`
 	SshPublicKey string             `json:"ssh_public_key"`
 }
 
@@ -56,9 +58,11 @@ func devicePut(c *gin.Context) {
 	}
 
 	devc.Name = data.Name
+	devc.AlertLevels = data.AlertLevels
 
 	fields := set.NewSet(
 		"name",
+		"alert_levels",
 	)
 
 	errData, err := devc.Validate(db)
@@ -104,6 +108,7 @@ func devicePost(c *gin.Context) {
 
 	devc.Name = data.Name
 	devc.Number = data.Number
+	devc.AlertLevels = data.AlertLevels
 	devc.SshPublicKey = data.SshPublicKey
 
 	errData, err := devc.Validate(db)
@@ -199,7 +204,7 @@ func deviceAlertPost(c *gin.Context) {
 		return
 	}
 
-	errData, err := devc.TestAlert(db)
+	errData, err := alertevent.SendTest(db, devc)
 	if errData != nil {
 		c.JSON(400, errData)
 		return
