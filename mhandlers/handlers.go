@@ -40,6 +40,12 @@ func Register(engine *gin.Engine) {
 
 	csrfGroup.GET("/audit/:user_id", auditsGet)
 
+	csrfGroup.GET("/alert", alertsGet)
+	csrfGroup.PUT("/alert/:alert_id", alertPut)
+	csrfGroup.POST("/alert", alertPost)
+	csrfGroup.DELETE("/alert", alertsDelete)
+	csrfGroup.DELETE("/alert/:alert_id", alertDelete)
+
 	engine.GET("/auth/state", authStateGet)
 	dbGroup.POST("/auth/session", authSessionPost)
 	dbGroup.POST("/auth/secondary", authSecondaryPost)
