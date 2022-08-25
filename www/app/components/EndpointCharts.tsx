@@ -202,7 +202,7 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						type="button"
 						onClick={(): void => {
 							if (Object.entries(this.state.cancelable).length) {
-								EndpointActions.chartCancel();
+								EndpointActions.dataCancel();
 							} else {
 								this.setState({
 									...this.state,
@@ -314,19 +314,6 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							this.setLoaded('system');
 						}}
 					/>
-					<EndpointChart
-						endpoint={this.props.endpoint}
-						resource={'disk'}
-						sync={this.state.sync}
-						period={this.state.period}
-						interval={this.state.interval}
-						onLoading={(): void => {
-							this.setLoading('disk');
-						}}
-						onLoaded={(): void => {
-							this.setLoaded('disk');
-						}}
-					/>
 				</div>
 				<div style={css.chartGroup}>
 					<EndpointChart
@@ -342,6 +329,25 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							this.setLoaded('load');
 						}}
 					/>
+				</div>
+			</div>
+			<div className="layout horizontal wrap">
+				<div style={css.chartGroup}>
+					<EndpointChart
+						endpoint={this.props.endpoint}
+						resource={'disk'}
+						sync={this.state.sync}
+						period={this.state.period}
+						interval={this.state.interval}
+						onLoading={(): void => {
+							this.setLoading('disk');
+						}}
+						onLoaded={(): void => {
+							this.setLoaded('disk');
+						}}
+					/>
+				</div>
+				<div style={css.chartGroup}>
 					<EndpointChart
 						endpoint={this.props.endpoint}
 						resource={'network'}
