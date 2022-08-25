@@ -264,7 +264,7 @@ func endpointsGet(c *gin.Context) {
 	c.JSON(200, dta)
 }
 
-func endpointDataGet(c *gin.Context) {
+func endpointChartGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
 	endpointId, ok := utils.ParseObjectId(c.Param("endpoint_id"))
@@ -294,7 +294,7 @@ func endpointDataGet(c *gin.Context) {
 	startTime := time.Now().UTC().Add(time.Duration(-period) * time.Minute)
 	endTime := time.Now().UTC()
 
-	data, err := endpt.GetData(c, db, resource, startTime,
+	data, err := endpt.GetChart(c, db, resource, startTime,
 		endTime, time.Duration(interval)*time.Minute)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
@@ -307,4 +307,30 @@ func endpointDataGet(c *gin.Context) {
 	}
 
 	c.JSON(200, chartData)
+}
+
+func endpointLogGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	endpointId, ok := utils.ParseObjectId(c.Param("endpoint_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	resource := c.Query("resource")
+
+	endpt, err := endpoint.Get(db, endpointId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	data, err := endpt.GetLog(c, db, resource)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.JSON(200, data)
 }
