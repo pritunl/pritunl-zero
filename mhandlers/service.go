@@ -258,13 +258,6 @@ func servicesGet(c *gin.Context) {
 						"$options": "i",
 					},
 				},
-				&bson.M{
-					"key": &bson.M{
-						"$regex": fmt.Sprintf(".*%s.*",
-							regexp.QuoteMeta(name)),
-						"$options": "i",
-					},
-				},
 			}
 		}
 
