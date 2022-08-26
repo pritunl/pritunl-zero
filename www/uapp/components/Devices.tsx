@@ -511,7 +511,7 @@ export default class Devices extends React.Component<Props, State> {
 
 	secondary(): JSX.Element {
 		return <div>
-			<div className="bp3-non-ideal-state" style={css.body}>
+			<div style={css.body}>
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-key"/>
 				</div>
