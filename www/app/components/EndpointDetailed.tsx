@@ -11,6 +11,7 @@ import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import PageInputButton from './PageInputButton';
 import EndpointCharts from './EndpointCharts';
+import EndpointKmsg from './EndpointKmsg';
 import Help from './Help';
 import PageSwitch from "./PageSwitch";
 
@@ -511,8 +512,8 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<PageSwitch
-						label="Show charts"
-						help="Show endpoint charts."
+						label="Show charts and dmesg"
+						help="Show endpoint charts and dmesg."
 						checked={this.state.showCharts}
 						hidden={!endpointData.hostname}
 						onToggle={(): void => {
@@ -541,6 +542,10 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 				</div>
 			</div>
 			<EndpointCharts
+				endpoint={endpoint.id}
+				disabled={!endpointData.hostname || !this.state.showCharts}
+			/>
+			<EndpointKmsg
 				endpoint={endpoint.id}
 				disabled={!endpointData.hostname || !this.state.showCharts}
 			/>
