@@ -638,6 +638,17 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						<option value="5">Medium</option>
 						<option value="10">High</option>
 					</PageSelect>
+					<PageInput
+						disabled={this.state.disabled}
+						label="Alert Frequency"
+						help="Minimum duration in seconds between repeat alerts."
+						type="text"
+						placeholder="Enter frequency"
+						value={alert.frequency}
+						onChange={(val): void => {
+							this.set('frequency', val);
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
