@@ -361,7 +361,9 @@ export default class Validate extends React.Component<Props, State> {
 				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
 					<span className="bp3-icon bp3-icon-endorsed"/>
 				</div>
-				<h4 className="bp3-non-ideal-state-title">Validate SSH Key</h4>
+				<h4 style={css.title}>
+					Validate SSH Key
+				</h4>
 				<span style={css.description}>
 					If you did not initiate this validation deny the request and
 					report the incident to an administrator
