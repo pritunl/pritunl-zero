@@ -413,19 +413,25 @@ export default class AlertDetailed extends React.Component<Props, State> {
 		let ignoreTitle = '';
 		let ignoreHelp = '';
 		switch (alert.resource) {
-			case "system_high_memory":
+			case "system_cpu_level":
+				valueInt = true;
+				valueLabel = 'Usage Threshold';
+				valueHelp = 'Maximum percent CPU usage as integer ' +
+					'before alert is triggered.';
+				break;
+			case "system_memory_level":
 				valueInt = true;
 				valueLabel = 'Usage Threshold';
 				valueHelp = 'Maximum percent memory usage as integer ' +
 					'before alert is triggered.';
 				break;
-			case "system_high_swap":
+			case "system_swap_level":
 				valueInt = true;
 				valueLabel = 'Usage Threshold';
 				valueHelp = 'Maximum percent swap usage as integer ' +
 					'before alert is triggered.';
 				break;
-			case "system_high_hugepages":
+			case "system_hugepages_level":
 				valueInt = true;
 				valueLabel = 'Usage Threshold';
 				valueHelp = 'Maximum percent hugepages usage as integer ' +
