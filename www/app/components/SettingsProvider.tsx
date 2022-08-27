@@ -303,6 +303,18 @@ export default class SettingsProvider extends React.Component<Props, State> {
 				}}
 			/>
 			<PageInput
+				label="JumpCloud App ID"
+				help="Optional, ID of JumpCloud Pritunl app. This can be found in the URL of the app settings page. Required to verify user is attached to JumpCloud application"
+				type="text"
+				placeholder="JumpCloud app ID"
+				value={provider.jumpcloud_app_id}
+				onChange={(val: string): void => {
+					let state = this.clone();
+					state.jumpcloud_app_id = val;
+					this.props.onChange(state);
+				}}
+			/>
+			<PageInput
 				label="JumpCloud API Key"
 				help="JumpCloud API key for user account status verfication"
 				type="text"
