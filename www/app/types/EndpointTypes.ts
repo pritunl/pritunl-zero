@@ -30,6 +30,7 @@ export interface EndpointData {
 	cpu_cores?: number;
 	mem_total?: number;
 	swap_total?: number;
+	huge_total?: number;
 }
 
 export interface ClientKey {
@@ -64,6 +65,7 @@ export interface SystemChart {
 	cpu_usage?: ChartTypes.Points;
 	mem_usage?: ChartTypes.Points;
 	swap_usage?: ChartTypes.Points;
+	huge_usage?: ChartTypes.Points;
 }
 
 export interface LoadChart {
