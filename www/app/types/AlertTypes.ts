@@ -11,6 +11,8 @@ export interface Alert {
 	roles?: string[];
 	resource?: string;
 	level?: number;
+	frequency?: number;
+	ignores?: string[];
 	value_int?: number;
 	value_str?: string;
 }
