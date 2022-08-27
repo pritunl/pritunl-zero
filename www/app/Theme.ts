@@ -69,6 +69,22 @@ export function editorTheme(): string {
 	}
 }
 
+export function chartColor1(): string {
+	if (theme === "light") {
+		return 'rgba(0, 0, 0, 0.9)';
+	} else {
+		return 'rgba(255, 255, 255, 1)';
+	}
+}
+
+export function chartColor2(): string {
+	if (theme === "light") {
+		return 'rgba(0, 0, 0, 0.2)';
+	} else {
+		return 'rgba(255, 255, 255, 0.2)';
+	}
+}
+
 export function addChangeListener(callback: Callback): void {
 	callbacks.add(callback);
 }
