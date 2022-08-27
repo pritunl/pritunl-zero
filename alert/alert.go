@@ -59,6 +59,16 @@ func (a *Alert) Validate(db *database.Database) (
 	}
 
 	switch a.Resource {
+	case SystemCpuLevel:
+		if a.ValueInt < 1 || a.ValueInt > 100 {
+			errData = &errortypes.ErrorData{
+				Error:   "alert_value_invalid",
+				Message: "Alert value is invalid",
+			}
+			return
+		}
+		a.ValueStr = ""
+		break
 	case SystemMemoryLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
