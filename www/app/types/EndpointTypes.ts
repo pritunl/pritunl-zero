@@ -33,6 +33,8 @@ export interface EndpointData {
 	huge_total?: number;
 }
 
+export type LogData = string[];
+
 export interface ClientKey {
 	secret?: string;
 }
