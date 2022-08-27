@@ -4,6 +4,7 @@ import * as ChartJs from 'chart.js';
 import * as EndpointActions from '../actions/EndpointActions';
 import * as ChartTypes from '../types/ChartTypes';
 import * as MiscUtils from '../utils/MiscUtils';
+import * as Theme from '../Theme';
 
 interface Props {
 	endpoint: string;
@@ -188,7 +189,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 						title: {
 							display: true,
 							text: 'Time',
-							color: 'rgba(255, 255, 255, 1)',
+							color: Theme.chartColor1(),
 							padding: 0,
 							font: {
 								weight: 'bold',
@@ -204,11 +205,11 @@ export default class EndpointChart extends React.Component<Props, State> {
 							stepSize: 1,
 							count: 100,
 							maxTicksLimit: 100,
-							color: 'rgba(255, 255, 255, 1)',
+							color: Theme.chartColor1(),
 							source: 'data',
 						},
 						grid: {
-							color: 'rgba(255, 255, 255, 0.2)',
+							color: Theme.chartColor2(),
 						},
 						beforeTickToLabelConversion: this.ticks,
 					},
@@ -220,14 +221,14 @@ export default class EndpointChart extends React.Component<Props, State> {
 						title: {
 							display: true,
 							text: this.labels.resource_label,
-							color: 'rgba(255, 255, 255, 1)',
+							color: Theme.chartColor1(),
 							padding: 0,
 							font: {
 								weight: 'bold',
 							},
 						},
 						ticks: {
-							color: 'rgba(255, 255, 255, 1)',
+							color: Theme.chartColor1(),
 							callback: (val: number): number | string => {
 								switch (this.labels.resource_type) {
 									case 'bytes':
@@ -240,7 +241,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 							}
 						},
 						grid: {
-							color: 'rgba(255, 255, 255, 0.2)',
+							color: Theme.chartColor2(),
 						},
 					},
 				},
@@ -248,7 +249,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 					title: {
 						display: true,
 						text: this.labels.title,
-						color: 'rgba(255, 255, 255, 1)',
+						color: Theme.chartColor1(),
 						padding: 3,
 						font: {
 							size: 13,
