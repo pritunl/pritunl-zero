@@ -8,6 +8,7 @@ export interface Device {
 	name?: string;
 	type?: string;
 	mode?: string;
+	alert_levels?: number[];
 	timestamp?: string;
 	disabled?: boolean;
 	active_until?: string;
