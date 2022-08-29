@@ -113,12 +113,6 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	coll := db.Users()
 	users = []*User{}
 
-	count, err = coll.CountDocuments(db, query)
-	if err != nil {
-		err = database.ParseError(err)
-		return
-	}
-
 	opts := options.FindOptions{
 		Sort: &bson.D{
 			{"username", 1},
@@ -126,6 +120,20 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	}
 
 	if pageCount != 0 {
+		if len(*query) == 0 {
+			count, err = coll.EstimatedDocumentCount(db)
+			if err != nil {
+				err = database.ParseError(err)
+				return
+			}
+		} else {
+			count, err = coll.CountDocuments(db, query)
+			if err != nil {
+				err = database.ParseError(err)
+				return
+			}
+		}
+
 		maxPage := count / pageCount
 		if count == pageCount {
 			maxPage = 0
