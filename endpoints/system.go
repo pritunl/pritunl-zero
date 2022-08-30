@@ -17,19 +17,29 @@ type System struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
-	Hostname       string  `bson:"-" json:"h"`
-	Uptime         uint64  `bson:"-" json:"u"`
-	Virtualization string  `bson:"-" json:"v"`
-	Platform       string  `bson:"-" json:"p"`
-	Processes      uint64  `bson:"pc" json:"pc"`
-	CpuCores       int     `bson:"-" json:"cc"`
-	CpuUsage       float64 `bson:"cu" json:"cu"`
-	MemTotal       int     `bson:"-" json:"mt"`
-	MemUsage       float64 `bson:"mu" json:"mu"`
-	HugeTotal      int     `bson:"-" json:"ht"`
-	HugeUsage      float64 `bson:"hu" json:"hu"`
-	SwapTotal      int     `bson:"-" json:"st"`
-	SwapUsage      float64 `bson:"su" json:"su"`
+	Hostname       string           `bson:"-" json:"h"`
+	Uptime         uint64           `bson:"-" json:"u"`
+	Virtualization string           `bson:"-" json:"v"`
+	Platform       string           `bson:"-" json:"p"`
+	Processes      uint64           `bson:"pc" json:"pc"`
+	CpuCores       int              `bson:"-" json:"cc"`
+	CpuUsage       float64          `bson:"cu" json:"cu"`
+	MemTotal       int              `bson:"-" json:"mt"`
+	MemUsage       float64          `bson:"mu" json:"mu"`
+	HugeTotal      int              `bson:"-" json:"ht"`
+	HugeUsage      float64          `bson:"hu" json:"hu"`
+	SwapTotal      int              `bson:"-" json:"st"`
+	SwapUsage      float64          `bson:"su" json:"su"`
+	MdStat         []*SystemMdState `bson:"-" json:"ra"`
+}
+
+type SystemMdState struct {
+	Name   string `bson:"name" json:"n"`
+	State  string `bson:"state" json:"s"`
+	Level  string `bson:"level" json:"l"`
+	Failed int    `bson:"failed" json:"f"`
+	Spare  int    `bson:"spare" json:"x"`
+	Total  int    `bson:"total" json:"t"`
 }
 
 type SystemAgg struct {
@@ -61,6 +71,7 @@ func (d *System) StaticData() *bson.M {
 		"data.mem_total":      d.MemTotal,
 		"data.swap_total":     d.SwapTotal,
 		"data.huge_total":     d.HugeTotal,
+		"data.md_stat":        d.MdStat,
 	}
 }
 
