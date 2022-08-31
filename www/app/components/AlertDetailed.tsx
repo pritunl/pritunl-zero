@@ -437,6 +437,10 @@ export default class AlertDetailed extends React.Component<Props, State> {
 				valueHelp = 'Maximum percent hugepages usage as integer ' +
 					'before alert is triggered.';
 				break;
+			case "system_md_failed":
+				valueInt = false;
+				valueStr = false;
+				break;
 			case "disk_usage_level":
 				ignoreShow = true;
 				ignoreLabel = 'Ignore Disk Paths';
@@ -563,6 +567,9 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						<option
 							value="system_hugepages_level"
 						>HugePages Usage Threshold</option>
+						<option
+							value="system_md_failed"
+						>MD RAID Device Failed</option>
 						<option
 							value="disk_usage_level"
 						>Disk Usage Threshold</option>
