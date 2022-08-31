@@ -12,6 +12,7 @@ const (
 	SystemMemoryLevel    = "system_memory_level"
 	SystemSwapLevel      = "system_swap_level"
 	SystemHugePagesLevel = "system_hugepages_level"
+	SystemMdFailed       = "system_md_failed"
 	DiskUsageLevel       = "disk_usage_level"
 	KmsgKeyword          = "kmsg_keyword"
 )
