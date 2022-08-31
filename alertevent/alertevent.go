@@ -25,9 +25,17 @@ type Alert struct {
 	Frequency  time.Duration      `bson:"frequency" json:"frequency"`
 }
 
+func (a *Alert) GetFrequency() (frequency time.Duration) {
+	frequency = a.Frequency
+	if frequency == 0 {
+		frequency = 5 * time.Minute
+	}
+	return
+}
+
 func (a *Alert) DocId() string {
 	timestamp := a.Timestamp.Unix()
-	timekey := timestamp - (timestamp % int64(a.Frequency.Seconds()))
+	timekey := timestamp - (timestamp % int64(a.GetFrequency().Seconds()))
 
 	return fmt.Sprintf(
 		"%s-%s-%d",
@@ -39,7 +47,7 @@ func (a *Alert) DocId() string {
 
 func (a *Alert) Key(devc *device.Device) string {
 	timestamp := a.Timestamp.Unix()
-	timekey := timestamp - (timestamp % int64(a.Frequency.Seconds()))
+	timekey := timestamp - (timestamp % int64(a.GetFrequency().Seconds()))
 
 	return fmt.Sprintf(
 		"%s-%s-%s-%d",
@@ -94,7 +102,7 @@ func (a *Alert) Send(db *database.Database, roles []string) (err error) {
 		}
 	}
 
-	if alrt != nil && time.Since(alrt.Timestamp) < alrt.Frequency {
+	if alrt != nil && time.Since(alrt.Timestamp) < alrt.GetFrequency() {
 		return
 	}
 
