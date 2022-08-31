@@ -51,14 +51,24 @@ type EndpointInfo struct {
 }
 
 type Data struct {
-	Hostname       string `bson:"hostname" json:"hostname"`
-	Uptime         uint64 `bson:"uptime" json:"uptime"`
-	Platform       string `bson:"platform" json:"platform"`
-	Virtualization string `bson:"virtualization" json:"virtualization"`
-	CpuCores       int    `bson:"cpu_cores" json:"cpu_cores"`
-	MemTotal       int    `bson:"mem_total" json:"mem_total"`
-	SwapTotal      int    `bson:"swap_total" json:"swap_total"`
-	HugeTotal      int    `bson:"huge_total" json:"huge_total"`
+	Hostname       string     `bson:"hostname" json:"hostname"`
+	Uptime         uint64     `bson:"uptime" json:"uptime"`
+	Platform       string     `bson:"platform" json:"platform"`
+	Virtualization string     `bson:"virtualization" json:"virtualization"`
+	CpuCores       int        `bson:"cpu_cores" json:"cpu_cores"`
+	MemTotal       int        `bson:"mem_total" json:"mem_total"`
+	SwapTotal      int        `bson:"swap_total" json:"swap_total"`
+	HugeTotal      int        `bson:"huge_total" json:"huge_total"`
+	Mdadm          []*MdState `bson:"md_stat" json:"md_stat"`
+}
+
+type MdState struct {
+	Name   string `bson:"name" json:"name"`
+	State  string `bson:"state" json:"state"`
+	Level  string `bson:"level" json:"level"`
+	Failed int    `bson:"failed" json:"failed"`
+	Spare  int    `bson:"spare" json:"spare"`
+	Total  int    `bson:"total" json:"total"`
 }
 
 type ClientKey struct {
