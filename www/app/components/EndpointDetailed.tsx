@@ -377,6 +377,21 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			}
 		}
 
+		if (endpoint.data.md_stat && endpoint.data.md_stat.length) {
+			let failed = 0;
+			let total = 0;
+
+			for (let md of endpoint.data.md_stat) {
+				failed += md.failed;
+				total += md.total;
+			}
+
+			fields.push({
+				label: 'Raid Devices',
+				value: 'Failed: ' + failed + ' Total: ' + total,
+			});
+		}
+
 		let roles: JSX.Element[] = [];
 		for (let role of endpoint.roles) {
 			roles.push(
