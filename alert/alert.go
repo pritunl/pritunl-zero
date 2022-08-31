@@ -99,6 +99,10 @@ func (a *Alert) Validate(db *database.Database) (
 		}
 		a.ValueStr = ""
 		break
+	case SystemMdFailed:
+		a.ValueInt = 0
+		a.ValueStr = ""
+		break
 	case DiskUsageLevel:
 		if a.ValueInt < 1 || a.ValueInt > 100 {
 			errData = &errortypes.ErrorData{
