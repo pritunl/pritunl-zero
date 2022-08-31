@@ -120,6 +120,21 @@ func (d *System) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 				}
 			}
 			break
+		case alert.SystemMdFailed:
+			if d.MdStat != nil {
+				for _, md := range d.MdStat {
+					if md.Failed > 0 {
+						alerts = []*Alert{
+							NewAlert(resource, fmt.Sprintf(
+								"System MD RAID device failed (%s %s)",
+								md.Name,
+								md.Level,
+							)),
+						}
+					}
+				}
+			}
+			break
 		}
 	}
 
