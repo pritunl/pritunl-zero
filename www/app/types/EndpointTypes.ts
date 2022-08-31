@@ -31,6 +31,16 @@ export interface EndpointData {
 	mem_total?: number;
 	swap_total?: number;
 	huge_total?: number;
+	md_stat?: MdState[];
+}
+
+export interface MdState {
+	name?: string;
+	state?: string;
+	level?: string;
+	failed?: number;
+	spare?: number;
+	total?: number;
 }
 
 export type LogData = string[];
