@@ -20,6 +20,7 @@ export interface Endpoint {
 
 export interface EndpointInfo {
 	alerts?: {[key: string]: string};
+	checks?: {[key: string]: string};
 }
 
 export interface EndpointData {
