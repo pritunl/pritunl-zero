@@ -2,9 +2,9 @@ package endpoints
 
 import (
 	"context"
-	"crypto/md5"
+	"encoding/binary"
 	"fmt"
-	"strconv"
+	"hash/fnv"
 	"strings"
 	"time"
 
@@ -17,7 +17,7 @@ import (
 )
 
 type Kmsg struct {
-	Id        primitive.Binary   `bson:"_id" json:"id"`
+	Id        primitive.ObjectID `bson:"_id" json:"id"`
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
@@ -27,17 +27,18 @@ type Kmsg struct {
 	Message  string `bson:"m" json:"m"`
 }
 
-func (d *Kmsg) generateId() primitive.Binary {
-	hash := md5.New()
-	hash.Write([]byte(d.Endpoint.Hex()))
-	hash.Write([]byte(strconv.FormatInt(d.Boot, 10)))
-	hash.Write([]byte("-"))
-	hash.Write([]byte(strconv.FormatInt(d.Sequence, 10)))
+func (d *Kmsg) generateId() primitive.ObjectID {
+	var b [12]byte
 
-	return primitive.Binary{
-		Subtype: BinaryMD5,
-		Data:    hash.Sum(nil),
-	}
+	hash := fnv.New64a()
+	hash.Write(d.Endpoint[:])
+	binary.Write(hash, binary.BigEndian, d.Sequence)
+	sum := hash.Sum(nil)
+
+	binary.BigEndian.PutUint32(b[0:4], uint32(d.Boot))
+	copy(b[4:12], sum[:])
+
+	return b
 }
 
 func (d *Kmsg) GetCollection(db *database.Database) *database.Collection {

@@ -13,7 +13,7 @@ import (
 )
 
 type Disk struct {
-	Id        primitive.Binary   `bson:"_id" json:"id"`
+	Id        primitive.ObjectID `bson:"_id" json:"id"`
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 

@@ -2,8 +2,8 @@ package endpoints
 
 import (
 	"context"
-	"crypto/md5"
-	"fmt"
+	"encoding/binary"
+	"hash/fnv"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -36,16 +36,18 @@ type ChartData = map[string][]*Point
 type LogData = []string
 
 func GenerateId(endpointId primitive.ObjectID,
-	timestamp time.Time) primitive.Binary {
+	timestamp time.Time) primitive.ObjectID {
 
-	hash := md5.New()
-	hash.Write([]byte(endpointId.Hex()))
-	hash.Write([]byte(fmt.Sprintf("%d", timestamp.Unix())))
+	var b [12]byte
 
-	return primitive.Binary{
-		Subtype: BinaryMD5,
-		Data:    hash.Sum(nil),
-	}
+	hash := fnv.New64a()
+	hash.Write(endpointId[:])
+	sum := hash.Sum(nil)
+
+	binary.BigEndian.PutUint32(b[0:4], uint32(timestamp.Unix()))
+	copy(b[4:12], sum[:])
+
+	return b
 }
 
 func GetObj(typ string) Doc {
