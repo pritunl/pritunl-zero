@@ -15,11 +15,20 @@ export interface Check {
 	timeout?: number;
 	status_code?: number;
 	headers?: Header[];
+	states?: State[];
 }
 
 export interface Header {
 	key?: string;
 	value?: string;
+}
+
+export interface State {
+	e?: string;
+	t?: string;
+	x?: string[];
+	l?: string[];
+	r?: string[];
 }
 
 export interface Filter {
