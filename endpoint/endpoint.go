@@ -509,17 +509,24 @@ func (e *Endpoint) InsertDoc(db *database.Database,
 		})
 	}
 
-	checkAlerts := true
-	coll := doc.GetCollection(db)
-
-	_, err = coll.InsertOne(db, doc)
+	handled, checkAlerts, err := doc.Handle(db)
 	if err != nil {
-		err = database.ParseError(err)
-		if _, ok := err.(*database.DuplicateKeyError); ok {
-			err = nil
-			checkAlerts = false
-		} else {
-			return
+		return
+	}
+
+	if !handled {
+		checkAlerts = true
+		coll := doc.GetCollection(db)
+
+		_, err = coll.InsertOne(db, doc)
+		if err != nil {
+			err = database.ParseError(err)
+			if _, ok := err.(*database.DuplicateKeyError); ok {
+				err = nil
+				checkAlerts = false
+			} else {
+				return
+			}
 		}
 	}
 
