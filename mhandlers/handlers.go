@@ -75,6 +75,12 @@ func Register(engine *gin.Engine) {
 
 	engine.GET("/check", checkGet)
 
+	csrfGroup.GET("/checks", checksGet)
+	csrfGroup.PUT("/checks/:check_id", checkPut)
+	csrfGroup.POST("/checks", checkPost)
+	csrfGroup.DELETE("/checks", checksDelete)
+	csrfGroup.DELETE("/checks/:check_id", checkDelete)
+
 	authGroup.GET("/csrf", csrfGet)
 
 	csrfGroup.GET("/device/:user_id", devicesGet)
