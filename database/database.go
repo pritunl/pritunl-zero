@@ -123,6 +123,11 @@ func (d *Database) AlertsEventLock() (coll *Collection) {
 	return
 }
 
+func (d *Database) Checks() (coll *Collection) {
+	coll = d.getCollection("checks")
+	return
+}
+
 func (d *Database) Endpoints() (coll *Collection) {
 	coll = d.getCollection("endpoints")
 	return
@@ -602,6 +607,28 @@ func addIndexes() (err error) {
 			{"timestamp", 1},
 		},
 		Expire: 72 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Checks(),
+		Keys: &bson.D{
+			{"name", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.Checks(),
+		Keys: &bson.D{
+			{"roles", 1},
+		},
 	}
 	err = index.Create()
 	if err != nil {
