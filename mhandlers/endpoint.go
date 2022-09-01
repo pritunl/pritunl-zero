@@ -13,6 +13,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/alert"
+	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/endpoint"
@@ -104,7 +105,7 @@ func endpointPut(c *gin.Context) {
 
 	_ = event.PublishDispatch(db, "endpoint.change")
 
-	endpt.Json(nil)
+	endpt.Json(nil, nil)
 
 	c.JSON(200, endpt)
 }
@@ -152,7 +153,7 @@ func endpointPost(c *gin.Context) {
 
 	_ = event.PublishDispatch(db, "endpoint.change")
 
-	endpt.Json(nil)
+	endpt.Json(nil, nil)
 
 	c.JSON(200, endpt)
 }
@@ -261,8 +262,13 @@ func endpointsGet(c *gin.Context) {
 		return
 	}
 
+	checksMap, err := check.GetRolesMapped(db, rolesSet)
+	if err != nil {
+		return
+	}
+
 	for _, endpt := range endpoints {
-		endpt.Json(alertsMap)
+		endpt.Json(alertsMap, checksMap)
 	}
 
 	dta := &endpointsData{
