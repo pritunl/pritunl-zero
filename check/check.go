@@ -2,8 +2,10 @@ package check
 
 import (
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -21,6 +23,15 @@ type Check struct {
 	Method     string             `bson:"method" json:"method"`
 	StatusCode int                `bson:"status_code" json:"status_code"`
 	Headers    []*Header          `bson:"headers" json:"headers"`
+	States     []*State           `bson:"states" json:"states"`
+}
+
+type State struct {
+	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time          `bson:"t" json:"t"`
+	Targets   []string           `bson:"x" json:"x"`
+	Latency   []int64            `bson:"l" json:"l"`
+	Errors    []string           `bson:"r" json:"r"`
 }
 
 type Header struct {
@@ -28,25 +39,25 @@ type Header struct {
 	Value string `bson:"value" json:"value"`
 }
 
-func (a *Check) Validate(db *database.Database) (
+func (c *Check) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
-	if a.Id.IsZero() {
-		a.Id, err = utils.RandObjectId()
+	if c.Id.IsZero() {
+		c.Id, err = utils.RandObjectId()
 		if err != nil {
 			return
 		}
 	}
 
-	if a.Roles == nil {
-		a.Roles = []string{}
+	if c.Roles == nil {
+		c.Roles = []string{}
 	}
 
-	if a.Frequency == 0 {
-		a.Frequency = 30
+	if c.Frequency == 0 {
+		c.Frequency = 30
 	}
 
-	if a.Frequency < 10 {
+	if c.Frequency < 10 {
 		errData = &errortypes.ErrorData{
 			Error:   "check_frequency_invalid",
 			Message: "Check frequency cannot be less then 10 seconds",
@@ -54,7 +65,7 @@ func (a *Check) Validate(db *database.Database) (
 		return
 	}
 
-	if a.Frequency > 3600 {
+	if c.Frequency > 3600 {
 		errData = &errortypes.ErrorData{
 			Error:   "check_frequency_invalid",
 			Message: "Check frequency too large",
@@ -62,16 +73,16 @@ func (a *Check) Validate(db *database.Database) (
 		return
 	}
 
-	if a.Targets == nil {
-		a.Targets = []string{}
+	if c.Targets == nil {
+		c.Targets = []string{}
 	}
 
-	switch a.Type {
+	switch c.Type {
 	case Http:
 		break
 	case Ping:
-		a.Method = ""
-		a.Headers = []*Header{}
+		c.Method = ""
+		c.Headers = []*Header{}
 		break
 	default:
 		errData = &errortypes.ErrorData{
@@ -81,59 +92,105 @@ func (a *Check) Validate(db *database.Database) (
 		return
 	}
 
-	switch strings.ToUpper(a.Method) {
-	case "":
-		a.Method = ""
-		break
-	case "GET":
-		a.Method = "GET"
-		break
-	case "HEAD":
-		a.Method = "HEAD"
-		break
-	case "POST":
-		a.Method = "POST"
-		break
-	case "PUT":
-		a.Method = "PUT"
-		break
-	case "DELETE":
-		a.Method = "DELETE"
-		break
-	default:
-		errData = &errortypes.ErrorData{
-			Error:   "check_method_invalid",
-			Message: "Check method is invalid",
+	if c.Type == Http {
+		switch strings.ToUpper(c.Method) {
+		case "":
+			c.Method = "GET"
+			break
+		case "GET":
+			c.Method = "GET"
+			break
+		case "HEAD":
+			c.Method = "HEAD"
+			break
+		default:
+			errData = &errortypes.ErrorData{
+				Error:   "check_method_invalid",
+				Message: "Check method is invalid",
+			}
+			return
 		}
-		return
 	}
 
-	if a.Headers == nil {
-		a.Headers = []*Header{}
+	if c.Headers == nil {
+		c.Headers = []*Header{}
 	}
 
-	if a.StatusCode <= 0 || a.StatusCode > 900 {
-		a.StatusCode = 200
+	if c.StatusCode <= 0 || c.StatusCode > 900 {
+		c.StatusCode = 200
 	}
 
-	for _, header := range a.Headers {
+	for _, header := range c.Headers {
 		header.Key = utils.FilterStr(header.Key, 256)
 		header.Value = utils.FilterStr(header.Value, 2048)
 	}
 
-	if a.Timeout < 1 {
-		a.Timeout = 5
-	} else if a.Timeout > 30 {
-		a.Timeout = 30
+	if c.Timeout < 1 {
+		c.Timeout = 5
+	} else if c.Timeout > 30 {
+		c.Timeout = 30
+	}
+
+	if c.States == nil {
+		c.States = []*State{}
 	}
 
 	return
 }
 
-func (a *Check) Commit(db *database.Database) (err error) {
+func (c *Check) UpdateState(db *database.Database, state *State) (
+	updated bool, err error) {
+
 	coll := db.Checks()
 
-	err = coll.Commit(a.Id, a)
+	insert := true
+	updated = true
+
+	for _, stat := range c.States {
+		if stat.Endpoint == state.Endpoint {
+			insert = false
+			if stat.Timestamp == state.Timestamp {
+				updated = false
+			}
+		}
+	}
+
+	_, err = coll.UpdateOne(db, &bson.M{
+		"_id": c.Id,
+		"states.e": &bson.M{
+			"$ne": state.Endpoint,
+		},
+	}, &bson.M{
+		"$push": &bson.M{
+			"states": state,
+		},
+	})
+
+	if insert {
+		_, err = coll.UpdateOne(db, &bson.M{
+			"_id": c.Id,
+			"states.e": &bson.M{
+				"$ne": state.Endpoint,
+			},
+		}, &bson.M{
+			"$push": &bson.M{
+				"states": state,
+			},
+		})
+	} else {
+	}
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
+func (c *Check) Commit(db *database.Database) (err error) {
+	coll := db.Checks()
+
+	err = coll.Commit(c.Id, c)
 	if err != nil {
 		return
 	}
@@ -141,12 +198,12 @@ func (a *Check) Commit(db *database.Database) (err error) {
 	return
 }
 
-func (a *Check) CommitFields(db *database.Database, fields set.Set) (
+func (c *Check) CommitFields(db *database.Database, fields set.Set) (
 	err error) {
 
 	coll := db.Checks()
 
-	err = coll.CommitFields(a.Id, a, fields)
+	err = coll.CommitFields(c.Id, c, fields)
 	if err != nil {
 		return
 	}
@@ -154,10 +211,10 @@ func (a *Check) CommitFields(db *database.Database, fields set.Set) (
 	return
 }
 
-func (a *Check) Insert(db *database.Database) (err error) {
+func (c *Check) Insert(db *database.Database) (err error) {
 	coll := db.Checks()
 
-	_, err = coll.InsertOne(db, a)
+	_, err = coll.InsertOne(db, c)
 	if err != nil {
 		err = database.ParseError(err)
 		return
