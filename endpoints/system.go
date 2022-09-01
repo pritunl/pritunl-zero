@@ -141,6 +141,12 @@ func (d *System) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 
+func (d *System) Handle(db *database.Database) (handled, checkAlerts bool,
+	err error) {
+
+	return
+}
+
 func GetSystemChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {

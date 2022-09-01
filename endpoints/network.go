@@ -87,6 +87,12 @@ func (d *Network) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 
+func (d *Network) Handle(db *database.Database) (handled, checkAlerts bool,
+	err error) {
+
+	return
+}
+
 func GetNetworkChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {

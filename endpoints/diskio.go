@@ -81,6 +81,12 @@ func (d *DiskIo) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 
+func (d *DiskIo) Handle(db *database.Database) (handled, checkAlerts bool,
+	err error) {
+
+	return
+}
+
 func GetDiskIoChartSingle(c context.Context, db *database.Database,
 	endpoint primitive.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {

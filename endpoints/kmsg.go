@@ -78,6 +78,10 @@ func (d *Kmsg) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 
+func (d *Kmsg) Handle(db *database.Database) (handled bool, checkAlerts bool, err error) {
+	return
+}
+
 func (d *Kmsg) FormattedLog() string {
 	return fmt.Sprintf(
 		"[%s] %s",

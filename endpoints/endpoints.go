@@ -23,6 +23,7 @@ type Doc interface {
 	Format(primitive.ObjectID) time.Time
 	StaticData() *bson.M
 	CheckAlerts(resources []*alert.Alert) []*Alert
+	Handle(*database.Database) (bool, bool, error)
 }
 
 type Point struct {
