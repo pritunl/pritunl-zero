@@ -397,7 +397,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 					<button
 						className="bp3-tag-remove"
 						onMouseUp={(): void => {
-							this.onRemoveRole(ignore);
+							this.onRemoveIgnore(ignore);
 						}}
 					/>
 				</div>,
@@ -455,6 +455,10 @@ export default class AlertDetailed extends React.Component<Props, State> {
 				valueStr = true;
 				valueLabel = 'Dmesg Keyword Match';
 				valueHelp = 'Case insensitive dmesg match string to trigger alert.';
+				break;
+			case "check_http_failed":
+				valueInt = false;
+				valueStr = false;
 				break;
 		}
 
@@ -553,9 +557,6 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						}}
 					>
 						<option
-							value="instance_offline"
-						>Instance Offline</option>
-						<option
 							value="system_cpu_level"
 						>CPU Usage Threshold</option>
 						<option
@@ -576,6 +577,9 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						<option
 							value="kmsg_keyword"
 						>Dmesg Keyword Match</option>
+						<option
+							value="check_http_failed"
+						>HTTP Health Check Failed</option>
 					</PageSelect>
 					<label className="bp3-label" hidden={!ignoreShow}>
 						{ignoreLabel}
@@ -653,7 +657,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 						placeholder="Enter frequency"
 						value={alert.frequency}
 						onChange={(val): void => {
-							this.set('frequency', val);
+							this.set('frequency', parseInt(val, 10));
 						}}
 					/>
 				</div>
