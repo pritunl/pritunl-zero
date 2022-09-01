@@ -416,9 +416,19 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			alerts.push(alert);
 		}
 
+		let checks: string[] = [];
+		for (let check of Object.values(endpoint.info.checks)) {
+			checks.push(check);
+		}
+
 		fields.push({
 			label: 'Alerts',
 			value: alerts.length ? alerts : '-',
+		});
+
+		fields.push({
+			label: 'Health Checks',
+			value: checks.length ? checks : '-',
 		});
 
 		let secretKey = '';
