@@ -222,6 +222,13 @@ func EndpointCommGet(c *gin.Context) {
 					return
 				}
 
+				err = conn.SetWriteDeadline(
+					time.Now().Add(endpointWriteTimeout))
+				if err != nil {
+					_ = conn.Close()
+					return
+				}
+
 				err = conn.WriteJSON(conf)
 				if err != nil {
 					err = &errortypes.RequestError{
