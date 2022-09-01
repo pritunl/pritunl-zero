@@ -15,4 +15,5 @@ const (
 	SystemMdFailed       = "system_md_failed"
 	DiskUsageLevel       = "disk_usage_level"
 	KmsgKeyword          = "kmsg_keyword"
+	CheckHttpFailed      = "check_http_failed"
 )

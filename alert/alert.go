@@ -123,6 +123,10 @@ func (a *Alert) Validate(db *database.Database) (
 		}
 		a.ValueInt = 0
 		break
+	case CheckHttpFailed:
+		a.ValueInt = 0
+		a.ValueStr = ""
+		break
 	default:
 		errData = &errortypes.ErrorData{
 			Error:   "alert_resource_invalid",
