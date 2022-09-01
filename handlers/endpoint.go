@@ -83,7 +83,7 @@ func EndpointCommGet(c *gin.Context) {
 	timestamp := c.Request.Header.Get("Pritunl-Endpoint-Timestamp")
 	nonce := c.Request.Header.Get("Pritunl-Endpoint-Nonce")
 	sig := c.Request.Header.Get("Pritunl-Endpoint-Signature")
-	endptUpdate := time.Now()
+	endptUpdate := time.Time{}
 
 	endpt, err := endpoint.Get(db, endpointId)
 	if err != nil {
@@ -211,6 +211,26 @@ func EndpointCommGet(c *gin.Context) {
 
 				endpt = newEndpt
 				endptUpdate = time.Now()
+
+				conf, e := endpt.GetConf(db)
+				if e != nil {
+					logrus.WithFields(logrus.Fields{
+						"error": e,
+					}).Error("mhandlers: Failed to update endpoint conf")
+
+					_ = conn.Close()
+					return
+				}
+
+				err = conn.WriteJSON(conf)
+				if err != nil {
+					err = &errortypes.RequestError{
+						errors.Wrap(err,
+							"mhandlers: Failed to write endpoint conf"),
+					}
+					_ = conn.Close()
+					return
+				}
 			}
 		}
 	}
