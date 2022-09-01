@@ -125,8 +125,8 @@ func (a *Alert) Validate(db *database.Database) (
 		break
 	default:
 		errData = &errortypes.ErrorData{
-			Error:   "alert_resource_name_invalid",
-			Message: "Alert resource name is invalid",
+			Error:   "alert_resource_invalid",
+			Message: "Alert resource is invalid",
 		}
 		return
 	}
