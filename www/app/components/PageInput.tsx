@@ -7,6 +7,7 @@ interface Props {
 	disabled?: boolean;
 	readOnly?: boolean;
 	autoSelect?: boolean;
+	narrow?: boolean;
 	label: string;
 	help: string;
 	type: string;
@@ -19,6 +20,10 @@ const css = {
 	label: {
 		width: '100%',
 		maxWidth: '280px',
+	} as React.CSSProperties,
+	labelNarrow: {
+		width: '100%',
+		maxWidth: '220px',
 	} as React.CSSProperties,
 	input: {
 		width: '100%',
@@ -36,7 +41,7 @@ export default class PageInput extends React.Component<Props, {}> {
 
 		return <label
 			className="bp3-label"
-			style={css.label}
+			style={this.props.narrow ? css.labelNarrow : css.label}
 			hidden={this.props.hidden}
 		>
 			{this.props.label}
