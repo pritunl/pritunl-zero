@@ -774,8 +774,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsSystem(),
 		Keys: &bson.D{
-			{"e", 1},
 			{"t", 1},
+			{"e", 1},
 		},
 	}
 	err = index.Create()
@@ -786,8 +786,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsLoad(),
 		Keys: &bson.D{
-			{"e", 1},
 			{"t", 1},
+			{"e", 1},
 		},
 	}
 	err = index.Create()
@@ -798,8 +798,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsDisk(),
 		Keys: &bson.D{
-			{"e", 1},
 			{"t", 1},
+			{"e", 1},
 		},
 	}
 	err = index.Create()
@@ -810,8 +810,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsDiskIo(),
 		Keys: &bson.D{
-			{"e", 1},
 			{"t", 1},
+			{"e", 1},
 		},
 	}
 	err = index.Create()
@@ -822,8 +822,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsNetwork(),
 		Keys: &bson.D{
-			{"e", 1},
 			{"t", 1},
+			{"e", 1},
 		},
 	}
 	err = index.Create()
