@@ -20,6 +20,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/alertevent"
+	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
@@ -48,6 +49,11 @@ type Endpoint struct {
 
 type EndpointInfo struct {
 	Alerts map[string]string `json:"alerts"`
+	Checks map[string]string `json:"checks"`
+}
+
+type EndpointConf struct {
+	Checks []*check.Check `json:"checks"`
 }
 
 type Data struct {
@@ -183,7 +189,9 @@ func (e *Endpoint) Format() {
 	sort.Strings(e.Roles)
 }
 
-func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert) {
+func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert,
+	checksMap map[string][]*check.Check) {
+
 	if e.ClientKey != nil && e.ClientKey.PublicKey != "" {
 		e.ClientKey = nil
 		e.HasClientKey = true
@@ -191,6 +199,7 @@ func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert) {
 
 	if alertsMap != nil {
 		alerts := map[string]string{}
+		checks := map[string]string{}
 
 		for _, role := range e.Roles {
 			roleAlrts := alertsMap[role]
@@ -199,12 +208,35 @@ func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert) {
 					alerts[alrt.Id.Hex()] = alrt.Name
 				}
 			}
+
+			roleChcks := checksMap[role]
+			if roleChcks != nil {
+				for _, chck := range roleChcks {
+					checks[chck.Id.Hex()] = chck.Name
+				}
+			}
 		}
 
 		e.Info = &EndpointInfo{
 			Alerts: alerts,
+			Checks: checks,
 		}
 	}
+}
+
+func (e Endpoint) GetConf(db *database.Database) (
+	conf *EndpointConf, err error) {
+
+	checks, err := check.GetRoles(db, e.Roles)
+	if err != nil {
+		return
+	}
+
+	conf = &EndpointConf{
+		Checks: checks,
+	}
+
+	return
 }
 
 func (e *Endpoint) ValidateSignature(db *database.Database,
