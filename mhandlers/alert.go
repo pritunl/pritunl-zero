@@ -25,8 +25,8 @@ type alertData struct {
 	Roles     []string           `json:"roles"`
 	Resource  string             `json:"resource"`
 	Level     int                `json:"level"`
-	Frequency int                `bson:"frequency" json:"frequency"`
-	Ignores   []string           `bson:"ignores" json:"ignores"`
+	Frequency int                `json:"frequency"`
+	Ignores   []string           `json:"ignores"`
 	ValueInt  int                `json:"value_int"`
 	ValueStr  string             `json:"value_str"`
 }
