@@ -31,7 +31,8 @@ type Challenge struct {
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	r *http.Request, deviceSec, secondary bool) (deviceAuth bool,
-	secProvider primitive.ObjectID, err error, errData *errortypes.ErrorData) {
+	secProvider primitive.ObjectID, err error,
+	errData *errortypes.ErrorData) {
 
 	allAuthrs, err := authority.GetAll(db)
 	if err != nil {
