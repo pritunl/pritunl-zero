@@ -103,7 +103,7 @@ func (e *Endpoint) GetKeys() (clientPubKey, serverPrivKey *[32]byte,
 		if er != nil {
 			err = &errortypes.ParseError{
 				errors.Wrap(er,
-					"stream: Failed to decode client private key"),
+					"endpoint: Failed to decode client private key"),
 			}
 			return
 		}
@@ -114,7 +114,7 @@ func (e *Endpoint) GetKeys() (clientPubKey, serverPrivKey *[32]byte,
 		if er != nil {
 			err = &errortypes.ParseError{
 				errors.Wrap(er,
-					"stream: Failed to decode server public key"),
+					"endpoint: Failed to decode server public key"),
 			}
 			return
 		}
