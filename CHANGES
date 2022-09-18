@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Add endpoint alerts
 Refactor endpoints database
 Support Azure users with more then 50 groups
 
