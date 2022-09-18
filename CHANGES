@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Refactor endpoints database
 Support Azure users with more then 50 groups
 
 Version 1.0.2341.81 2022-04-22
