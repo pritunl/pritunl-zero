@@ -12,8 +12,10 @@ interface Props {
 	sync: number;
 	period: number;
 	interval: number;
+	left: boolean;
 	onLoading: () => void;
 	onLoaded: () => void;
+	getBoxRect: () => DOMRect;
 }
 
 interface State {
@@ -267,7 +269,9 @@ export default class EndpointChart extends React.Component<Props, State> {
 								toolElm = document.createElement('div');
 								toolElm.id = 'chartjs-tooltip';
 								toolElm.className = 'bp3-card';
-								toolElm.innerHTML = '<table class="bp3-html-table bp3-html-table-bordered bp3-html-table-striped bp3-small"></table>';
+								toolElm.innerHTML = '<table class="bp3-html-table ' +
+									'bp3-html-table-bordered bp3-html-table-striped ' +
+									'bp3-small"></table>';
 								document.body.appendChild(toolElm);
 							}
 
@@ -281,7 +285,12 @@ export default class EndpointChart extends React.Component<Props, State> {
 								return bodyItem.lines;
 							}
 
+							let boxRect = this.props.getBoxRect()
+							let boxBottom = boxRect.bottom + window.pageYOffset
+							let boxTop = boxRect.top + window.pageYOffset + 130
+
 							let rowCount = 0;
+							let height = 0;
 							if (model.body) {
 								const titleLines = model.title || [];
 								const bodyLines = model.body.map(getBody);
@@ -292,6 +301,8 @@ export default class EndpointChart extends React.Component<Props, State> {
 									innerHtml += '<tr><th colspan="2">' + title + '</th></tr>';
 								});
 								innerHtml += '</thead><tbody>';
+
+								let tableRows: string[] = [];
 
 								bodyLines.forEach(function(body, i) {
 									if (!body || !body.length) {
@@ -307,11 +318,35 @@ export default class EndpointChart extends React.Component<Props, State> {
 									let style = 'background:' + colors.backgroundColor;
 									style += '; border-color:' + colors.borderColor;
 									const span = '<span style="' + style + '"></span>';
-									innerHtml += '<tr><td>' + span + items[0] + '</td><td>'
-										+ items[1] + '</td></tr>';
+									tableRows.push('<td class="line-box">' + span + items[0] +
+										'</td><td>' + items[1] + '</td>')
 
 									rowCount += 1
 								});
+
+								height = 26.33 + (rowCount * 17.33);
+
+								let double = height > (boxRect.height - 130);
+								let curRow = '';
+
+								rowCount = 0
+								tableRows.forEach(function(columns, i) {
+									if (double && !curRow) {
+										curRow = columns
+									} else {
+										innerHtml += '<tr>' + curRow + columns + '</tr>';
+										curRow = '';
+										rowCount += 1
+									}
+								})
+
+								if (curRow) {
+									innerHtml += '<tr>' + curRow + '</tr>';
+									curRow = '';
+									rowCount += 1
+								}
+
+								height = 26.33 + (rowCount * 17.33);
 
 								innerHtml += '</tbody>';
 
@@ -322,22 +357,18 @@ export default class EndpointChart extends React.Component<Props, State> {
 							toolElm = document.getElementById('chartjs-tooltip');
 							const position = context.chart.canvas.getBoundingClientRect();
 
-							let height = Math.round(26.33 + (rowCount * 17.33));
-
 							toolElm.style.opacity = '1';
 							toolElm.style.position = 'absolute';
 
 							if (this.props.left) {
 								toolElm.style.right = ""
-								toolElm.style.left = (document.body.offsetWidth - position.right + window.pageXOffset - 18) + 'px';
+								toolElm.style.left = (document.body.offsetWidth -
+									position.right + window.pageXOffset - 18) + 'px';
 							} else {
 								toolElm.style.left = ""
-								toolElm.style.right = (document.body.offsetWidth - position.left + window.pageXOffset + 3) + 'px';
+								toolElm.style.right = (document.body.offsetWidth -
+									position.left + window.pageXOffset + 3) + 'px';
 							}
-
-							let boxRect = this.props.getBoxRect()
-							let boxBottom = boxRect.bottom + window.pageYOffset
-							let boxTop = boxRect.top + window.pageYOffset + 130
 
 							let toolTop = Math.round(position.top + (position.height / 2) -
 								(height / 2) + window.pageYOffset);
