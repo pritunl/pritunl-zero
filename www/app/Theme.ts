@@ -85,6 +85,14 @@ export function chartColor2(): string {
 	}
 }
 
+export function chartColor3(): string {
+	if (theme === "light") {
+		return '#6f6f6f';
+	} else {
+		return '#e5e5e5';
+	}
+}
+
 export function addChangeListener(callback: Callback): void {
 	callbacks.add(callback);
 }
