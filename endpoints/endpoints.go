@@ -64,6 +64,8 @@ func GetObj(typ string) Doc {
 		return &Network{}
 	case "kmsg":
 		return &Kmsg{}
+	case "check":
+		return &Check{}
 	default:
 		return nil
 	}
