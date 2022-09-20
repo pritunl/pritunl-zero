@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
@@ -14,6 +15,7 @@ import (
 	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
+	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -255,4 +257,48 @@ func checksGet(c *gin.Context) {
 	}
 
 	c.JSON(200, dta)
+}
+
+func checkChartGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	checkId, ok := utils.ParseObjectId(c.Param("check_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	resource := c.Query("resource")
+
+	period, _ := strconv.ParseInt(c.Query("period"), 10, 0)
+	if period == 0 {
+		period = 1440
+	}
+
+	interval, _ := strconv.ParseInt(c.Query("interval"), 10, 0)
+	if interval == 0 {
+		interval = 24
+	}
+
+	chck, err := check.Get(db, checkId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	startTime := time.Now().UTC().Add(time.Duration(-period) * time.Minute)
+	endTime := time.Now().UTC()
+
+	data, err := endpoints.GetChart(c, db, chck.Id, resource,
+		startTime, endTime, time.Duration(interval)*time.Minute)
+	if err != nil {
+		return
+	}
+
+	chartData := &endpointChartData{
+		HasData: len(data) > 0,
+		Data:    data,
+	}
+
+	c.JSON(200, chartData)
 }
