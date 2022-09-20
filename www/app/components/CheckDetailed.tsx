@@ -9,6 +9,7 @@ import PageSave from './PageSave';
 import PageInfo from './PageInfo';
 import ConfirmButton from './ConfirmButton';
 import PageInputButton from './PageInputButton';
+import CheckCharts from './CheckCharts';
 import Help from './Help';
 import PageSwitch from "./PageSwitch";
 import PageSelect from "./PageSelect";
@@ -703,6 +704,10 @@ export default class CheckDetailed extends React.Component<Props, State> {
 					</button>
 				</div>
 			</div>
+			<CheckCharts
+				check={check.id}
+				disabled={false}
+			/>
 			<PageSave
 				style={css.save}
 				hidden={!this.state.check && !this.state.message}
