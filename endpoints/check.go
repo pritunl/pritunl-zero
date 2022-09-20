@@ -1,12 +1,14 @@
 package endpoints
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"time"
 
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
@@ -27,6 +29,16 @@ type Check struct {
 	ErrorsIn  []string `bson:"-" json:"r"`
 
 	checkName string `bson:"-" json:"-"`
+}
+
+type CheckAgg struct {
+	Id struct {
+		Endpoint  primitive.ObjectID `bson:"e"`
+		Timestamp int64              `bson:"t"`
+	} `bson:"_id"`
+	TargetsUp   int `bson:"u"`
+	TargetsDown int `bson:"d"`
+	LatencyAvg  int `bson:"p"`
 }
 
 func (d *Check) GetCollection(db *database.Database) *database.Collection {
@@ -110,6 +122,12 @@ func (d *Check) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 func (d *Check) Handle(db *database.Database) (handled, checkAlerts bool,
 	err error) {
 
+	return
+}
+
+func (d *Check) HandleOld(db *database.Database) (handled, checkAlerts bool,
+	err error) {
+
 	handled = true
 
 	chck, err := check.Get(db, d.Check)
@@ -134,6 +152,192 @@ func (d *Check) Handle(db *database.Database) (handled, checkAlerts bool,
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func GetCheckChartSingle(c context.Context, db *database.Database,
+	checkId primitive.ObjectID, start, end time.Time) (
+	chartData ChartData, err error) {
+
+	coll := db.EndpointsCheck()
+	chart := NewChart(start, end, time.Minute)
+
+	chck, err := check.Get(db, checkId)
+	if err != nil {
+		return
+	}
+
+	names, err := getRolesNameMapped(db, chck.Roles)
+	if err != nil {
+		return
+	}
+
+	timeQuery := bson.D{
+		{"$gte", start},
+	}
+	if !end.IsZero() {
+		timeQuery = append(timeQuery, bson.E{"$lte", end})
+	}
+
+	cursor, err := coll.Find(
+		c,
+		&bson.M{
+			"c": checkId,
+			"t": timeQuery,
+		},
+		&options.FindOptions{
+			Sort: &bson.D{
+				{"t", 1},
+			},
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(c)
+
+	for cursor.Next(c) {
+		doc := &Check{}
+		err = cursor.Decode(doc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		timestamp := doc.Timestamp.UnixMilli()
+
+		name := names[doc.Endpoint]
+		if name == "" {
+			println("skip1")
+			continue
+		}
+
+		chart.Add(name+"-u", timestamp, doc.TargetsUp)
+		chart.Add(name+"-d", timestamp, doc.TargetsDown)
+		chart.Add(name+"-p", timestamp, doc.LatencyAvg)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	chartData = chart.Export()
+
+	return
+}
+
+func GetCheckChart(c context.Context, db *database.Database,
+	checkId primitive.ObjectID, start, end time.Time,
+	interval time.Duration) (chartData ChartData, err error) {
+
+	if interval == 1*time.Minute {
+		chartData, err = GetCheckChartSingle(c, db, checkId, start, end)
+		return
+	}
+
+	coll := db.EndpointsCheck()
+	chart := NewChart(start, end, interval)
+
+	chck, err := check.Get(db, checkId)
+	if err != nil {
+		return
+	}
+
+	names, err := getRolesNameMapped(db, chck.Roles)
+	if err != nil {
+		return
+	}
+
+	timeQuery := bson.D{
+		{"$gte", start},
+	}
+	if !end.IsZero() {
+		timeQuery = append(timeQuery, bson.E{"$lte", end})
+	}
+
+	cursor, err := coll.Aggregate(c, []*bson.M{
+		&bson.M{
+			"$match": &bson.M{
+				"c": checkId,
+				"t": timeQuery,
+			},
+		},
+		&bson.M{
+			"$group": &bson.M{
+				"_id": &bson.D{
+					{"t", &bson.M{
+						"$let": &bson.M{
+							"vars": &bson.M{
+								"t": &bson.D{{"$toLong", "$t"}},
+							},
+							"in": &bson.M{
+								"$subtract": &bson.A{
+									"$$t",
+									&bson.M{
+										"$mod": &bson.A{
+											"$$t",
+											interval.Milliseconds(),
+										},
+									},
+								},
+							},
+						},
+					}},
+					{"e", "$e"},
+				},
+				"u": &bson.D{
+					{"$min", "$u"},
+				},
+				"d": &bson.D{
+					{"$max", "$d"},
+				},
+				"p": &bson.D{
+					{"$avg", "$p"},
+				},
+			},
+		},
+		&bson.M{
+			"$sort": &bson.M{
+				"_id": 1,
+			},
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(c)
+
+	for cursor.Next(c) {
+		doc := &CheckAgg{}
+		err = cursor.Decode(doc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		name := names[doc.Id.Endpoint]
+		if name == "" {
+			println("skip2")
+			continue
+		}
+
+		chart.Add(name+"-u", doc.Id.Timestamp, doc.TargetsUp)
+		chart.Add(name+"-d", doc.Id.Timestamp, doc.TargetsDown)
+		chart.Add(name+"-p", doc.Id.Timestamp, doc.LatencyAvg)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	chartData = chart.Export()
 
 	return
 }
