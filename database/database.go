@@ -158,6 +158,11 @@ func (d *Database) EndpointsNetwork() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsCheck() (coll *Collection) {
+	coll = d.getCollection("endpoints_check")
+	return
+}
+
 func (d *Database) EndpointsKmsg() (coll *Collection) {
 	coll = d.getCollection("endpoints_kmsg")
 	return
@@ -824,6 +829,18 @@ func addIndexes() (err error) {
 		Keys: &bson.D{
 			{"t", 1},
 			{"e", 1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsCheck(),
+		Keys: &bson.D{
+			{"t", 1},
+			{"c", 1},
 		},
 	}
 	err = index.Create()
