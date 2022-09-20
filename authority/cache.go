@@ -76,7 +76,7 @@ func clientCertCacheSet(authr *Authority, cert *tls.Certificate) {
 func clientCertCacheWatch() {
 	go func() {
 		for {
-			time.Sleep(300)
+			time.Sleep(300 * time.Second)
 
 			clientCertCacheLock.Lock()
 			for key, authr := range clientCertCache {
