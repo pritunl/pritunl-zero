@@ -197,6 +197,81 @@ export function getChartLabels(resource: string, data: any): Labels {
 				resource_min: 0,
 				datasets: netDatasets,
 			};
+		case 'check0':
+		case 'check1':
+		case 'check2':
+			let checkData = data as EndpointTypes.CheckChart;
+			let checkDatasets: Datasets = [];
+
+			for (let key of Object.keys(checkData).sort()) {
+				let keys = key.split('-');
+				let diskDevice = keys.slice(0, keys.length-1).join('-');
+				let dataType = keys[keys.length-1];
+
+				let label = '';
+
+				if (resource === 'check0') {
+					switch (dataType) {
+						case 'u':
+							label = 'Up';
+							break;
+						default:
+							continue;
+					}
+				} else if (resource === 'check1') {
+					switch (dataType) {
+						case 'd':
+							label = 'Down';
+							break;
+						default:
+							continue;
+					}
+				} else if (resource === 'check2') {
+					switch (dataType) {
+						case 'p':
+							label = 'Latency';
+							break;
+						default:
+							continue;
+					}
+				}
+
+				checkDatasets.push({
+					label: diskDevice + ' ' + label,
+				} as Dataset);
+			}
+
+			if (resource === 'check0') {
+				return {
+					title: 'Targets Up',
+					resource_label: 'Up',
+					resource_type: '',
+					resource_suffix: '',
+					resource_fixed: 0,
+					resource_min: 0,
+					datasets: checkDatasets,
+				};
+			} else if (resource === 'check1') {
+				return {
+					title: 'Targets Down',
+					resource_label: 'Down',
+					resource_type: '',
+					resource_suffix: '',
+					resource_fixed: 0,
+					resource_min: 0,
+					datasets: checkDatasets,
+				};
+			} else if (resource === 'check2') {
+				return {
+					title: 'Average Latency',
+					resource_label: 'Latency',
+					resource_type: 'milliseconds',
+					resource_suffix: '',
+					resource_fixed: 0,
+					resource_min: 0,
+					datasets: checkDatasets,
+				};
+			}
 	}
 	return undefined;
 }
@@ -255,6 +330,32 @@ export function getChartData(resource: string, data: any): Chart {
 			}
 
 			return netChart;
+		case 'check0':
+		case 'check1':
+		case 'check2':
+			let checkData = data as EndpointTypes.CheckChart;
+			let checkChart: Chart = [];
+
+			for (let key of Object.keys(checkData).sort()) {
+				let keys = key.split('-');
+				let dataType = keys[keys.length-1];
+
+				if (resource === 'check0') {
+					if (dataType === 'u') {
+						checkChart.push(checkData[key]);
+					}
+				} else if (resource === 'check1') {
+					if (dataType === 'd') {
+						checkChart.push(checkData[key]);
+					}
+				} else if (resource === 'check2') {
+					if (dataType === 'p') {
+						checkChart.push(checkData[key]);
+					}
+				}
+			}
+
+			return checkChart;
 	}
 
 	return undefined;
