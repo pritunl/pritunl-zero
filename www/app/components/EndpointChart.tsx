@@ -1,13 +1,15 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as ChartJs from 'chart.js';
+import * as CheckActions from '../actions/CheckActions';
 import * as EndpointActions from '../actions/EndpointActions';
 import * as ChartTypes from '../types/ChartTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as Theme from '../Theme';
 
 interface Props {
-	endpoint: string;
+	endpoint?: string;
+	check?: string;
 	resource: string;
 	sync: number;
 	period: number;
@@ -454,12 +456,24 @@ export default class EndpointChart extends React.Component<Props, State> {
 		let loading = true;
 		this.props.onLoading();
 
-		EndpointActions.chart(
-			this.props.endpoint,
-			this.props.resource,
-			this.period,
-			this.interval,
-		).then((data: ChartTypes.EndpointData): void => {
+		let chartResp: Promise<any>
+		if (this.props.check) {
+			chartResp = CheckActions.chart(
+				this.props.check,
+				this.props.resource,
+				this.period,
+				this.interval,
+			)
+		} else {
+			chartResp = EndpointActions.chart(
+				this.props.endpoint,
+				this.props.resource,
+				this.period,
+				this.interval,
+			)
+		}
+
+		chartResp.then((data: ChartTypes.EndpointData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
@@ -543,12 +557,24 @@ export default class EndpointChart extends React.Component<Props, State> {
 		let loading = true;
 		this.props.onLoading();
 
-		EndpointActions.chart(
-			this.props.endpoint,
-			this.props.resource,
-			this.period,
-			this.interval,
-		).then((data: ChartTypes.EndpointData): void => {
+		let chartResp: Promise<any>
+		if (this.props.check) {
+			chartResp = CheckActions.chart(
+				this.props.check,
+				this.props.resource,
+				this.period,
+				this.interval,
+			)
+		} else {
+			chartResp = EndpointActions.chart(
+				this.props.endpoint,
+				this.props.resource,
+				this.period,
+				this.interval,
+			)
+		}
+
+		chartResp.then((data: ChartTypes.EndpointData): void => {
 			if (loading) {
 				loading = false;
 				this.props.onLoaded();
