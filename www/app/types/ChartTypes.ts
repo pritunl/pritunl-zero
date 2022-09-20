@@ -28,6 +28,7 @@ export interface Labels {
 	resource_fixed: number;
 	resource_min: number;
 	resource_max?: number;
+	hide_zero?: boolean;
 	datasets: Datasets;
 }
 
@@ -95,6 +96,7 @@ export function getChartLabels(resource: string, data: any): Labels {
 				resource_fixed: 3,
 				resource_min: 0,
 				resource_max: 100,
+				hide_zero: true,
 				datasets: diskDatasets,
 			};
 		case 'diskio0':
@@ -149,6 +151,7 @@ export function getChartLabels(resource: string, data: any): Labels {
 					resource_suffix: '',
 					resource_fixed: 2,
 					resource_min: 0,
+					hide_zero: true,
 					datasets: diskioDatasets,
 				};
 			} else {
@@ -159,6 +162,7 @@ export function getChartLabels(resource: string, data: any): Labels {
 					resource_suffix: '',
 					resource_fixed: 2,
 					resource_min: 0,
+					hide_zero: true,
 					datasets: diskioDatasets,
 				};
 			}
@@ -195,6 +199,7 @@ export function getChartLabels(resource: string, data: any): Labels {
 				resource_suffix: '',
 				resource_fixed: 2,
 				resource_min: 0,
+				hide_zero: true,
 				datasets: netDatasets,
 			};
 		case 'check0':
