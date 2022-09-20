@@ -1,6 +1,5 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import PageNumInput from './PageNumInput';
 import PageSelect from './PageSelect';
 import EndpointChart from './EndpointChart';
 import * as EndpointActions from '../actions/EndpointActions';
@@ -50,6 +49,7 @@ const css = {
 
 export default class EndpointCharts extends React.Component<Props, State> {
 	loading: {[key: string]: boolean};
+	chartBoxRef: React.RefObject<HTMLDivElement>;
 
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -62,6 +62,7 @@ export default class EndpointCharts extends React.Component<Props, State> {
 		};
 
 		this.loading = {};
+		this.chartBoxRef = React.createRef();
 	}
 
 	getDefaultInterval(period: number): number {
@@ -190,7 +191,7 @@ export default class EndpointCharts extends React.Component<Props, State> {
 			refreshClass += ' bp3-intent-success bp3-icon-refresh'
 		}
 
-		return <div>
+		return <div ref={this.chartBoxRef}>
 			<div className="layout horizontal wrap bp3-border" style={css.header}>
 				<h3 style={css.heading}>Charts</h3>
 				<div className="flex"/>
@@ -307,11 +308,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={true}
 						onLoading={(): void => {
 							this.setLoading('system');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('system');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
@@ -322,11 +327,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={false}
 						onLoading={(): void => {
 							this.setLoading('load');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('load');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
@@ -339,11 +348,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={true}
 						onLoading={(): void => {
 							this.setLoading('disk');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('disk');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
@@ -354,11 +367,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={false}
 						onLoading={(): void => {
 							this.setLoading('network');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('network');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
@@ -371,11 +388,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={true}
 						onLoading={(): void => {
 							this.setLoading('diskio0');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('diskio0');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
@@ -386,11 +407,15 @@ export default class EndpointCharts extends React.Component<Props, State> {
 						sync={this.state.sync}
 						period={this.state.period}
 						interval={this.state.interval}
+						left={false}
 						onLoading={(): void => {
 							this.setLoading('diskio1');
 						}}
 						onLoaded={(): void => {
 							this.setLoaded('diskio1');
+						}}
+						getBoxRect={(): DOMRect => {
+							return this.chartBoxRef.current.getBoundingClientRect();
 						}}
 					/>
 				</div>
