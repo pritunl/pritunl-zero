@@ -36,9 +36,9 @@ type CheckAgg struct {
 		Endpoint  primitive.ObjectID `bson:"e"`
 		Timestamp int64              `bson:"t"`
 	} `bson:"_id"`
-	TargetsUp   int `bson:"u"`
-	TargetsDown int `bson:"d"`
-	LatencyAvg  int `bson:"p"`
+	TargetsUp   int     `bson:"u"`
+	TargetsDown int     `bson:"d"`
+	LatencyAvg  float64 `bson:"p"`
 }
 
 func (d *Check) GetCollection(db *database.Database) *database.Collection {
@@ -328,7 +328,8 @@ func GetCheckChart(c context.Context, db *database.Database,
 
 		chart.Add(name+"-u", doc.Id.Timestamp, doc.TargetsUp)
 		chart.Add(name+"-d", doc.Id.Timestamp, doc.TargetsDown)
-		chart.Add(name+"-p", doc.Id.Timestamp, doc.LatencyAvg)
+		chart.Add(name+"-p", doc.Id.Timestamp,
+			int(math.Round(doc.LatencyAvg)))
 	}
 
 	err = cursor.Err()
