@@ -7,6 +7,7 @@ import * as Blueprint from '@blueprintjs/core';
 import Main from './components/Main';
 import * as Alert from './Alert';
 import * as Event from './Event';
+import * as Theme from './Theme';
 import * as Csrf from './Csrf';
 
 ChartJs.Chart.register(ChartJs.LineController);
@@ -34,8 +35,8 @@ class LineTracerController extends ChartJs.LineController {
 			ctx.beginPath();
 			ctx.moveTo(x, topY);
 			ctx.lineTo(x, bottomY);
-			ctx.lineWidth = 1;
-			ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+			ctx.lineWidth = 0.7;
+			ctx.strokeStyle = Theme.chartColor3();
 			ctx.stroke();
 			ctx.restore();
 		}
