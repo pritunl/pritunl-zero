@@ -10,6 +10,7 @@ import * as CheckTypes from '../types/CheckTypes';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
+let dataSyncReqs: {[key: string]: SuperAgent.Request} = {};
 
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
@@ -188,6 +189,50 @@ export function removeMulti(checkIds: string[]): Promise<void> {
 
 				resolve();
 			});
+	});
+}
+
+export function chart(checkId: string, resource: string,
+	period: number, interval: number): Promise<any> {
+	let curDataSyncId = MiscUtils.uuid();
+
+	let loader = new Loader().loading();
+
+	resource = resource.replace(/[0-9]/g, '');
+
+	return new Promise<any>((resolve, reject): void => {
+		let req = SuperAgent.get('/checks/' + checkId + '/chart')
+			.query({
+				resource: resource,
+				period: period.toString(),
+				interval: interval.toString(),
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.on('abort', () => {
+				loader.done();
+				resolve(null);
+			});
+		dataSyncReqs[curDataSyncId] = req;
+
+		req.end((err: any, res: SuperAgent.Response): void => {
+			delete dataSyncReqs[curDataSyncId];
+			loader.done();
+
+			if (res && res.status === 401) {
+				window.location.href = '/login';
+				resolve(null);
+				return;
+			}
+
+			if (err) {
+				Alert.errorRes(res, 'Failed to load check chart');
+				reject(err);
+				return;
+			}
+
+			resolve(res.body);
+		});
 	});
 }
 
