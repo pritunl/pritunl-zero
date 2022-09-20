@@ -30,7 +30,7 @@ type State struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 	Targets   []string           `bson:"x" json:"x"`
-	Latency   []int64            `bson:"l" json:"l"`
+	Latency   []int              `bson:"l" json:"l"`
 	Errors    []string           `bson:"r" json:"r"`
 }
 
@@ -155,17 +155,6 @@ func (c *Check) UpdateState(db *database.Database, state *State) (
 		}
 	}
 
-	_, err = coll.UpdateOne(db, &bson.M{
-		"_id": c.Id,
-		"states.e": &bson.M{
-			"$ne": state.Endpoint,
-		},
-	}, &bson.M{
-		"$push": &bson.M{
-			"states": state,
-		},
-	})
-
 	if insert {
 		_, err = coll.UpdateOne(db, &bson.M{
 			"_id": c.Id,
@@ -178,6 +167,14 @@ func (c *Check) UpdateState(db *database.Database, state *State) (
 			},
 		})
 	} else {
+		_, err = coll.UpdateOne(db, &bson.M{
+			"_id":      c.Id,
+			"states.e": state.Endpoint,
+		}, &bson.M{
+			"$set": &bson.M{
+				"states.$": state,
+			},
+		})
 	}
 	if err != nil {
 		err = database.ParseError(err)
