@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -16,6 +15,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func Commit(db *database.Database, group interface{}, fields set.Set) (
@@ -164,7 +164,9 @@ func setDefaults(obj interface{}) {
 				panic(err)
 			}
 			fld.SetBool(parVal)
-		case reflect.Int:
+
+			break
+		case reflect.Int, reflect.Int64:
 			if fld.Int() != 0 {
 				break
 			}
@@ -174,12 +176,16 @@ func setDefaults(obj interface{}) {
 				panic(err)
 			}
 			fld.SetInt(int64(parVal))
+
+			break
 		case reflect.String:
 			if fld.String() != "" {
 				break
 			}
 
 			fld.SetString(tag)
+
+			break
 		case reflect.Slice:
 			if fld.Len() != 0 {
 				break
@@ -214,6 +220,8 @@ func setDefaults(obj interface{}) {
 			}
 
 			fld.Set(slice)
+
+			break
 		}
 	}
 
