@@ -79,7 +79,9 @@ func (d *Kmsg) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 	return
 }
 
-func (d *Kmsg) Handle(db *database.Database) (handled bool, checkAlerts bool, err error) {
+func (d *Kmsg) Handle(db *database.Database) (handled bool, checkAlerts bool,
+	err error) {
+
 	return
 }
 
@@ -98,16 +100,18 @@ func GetKmsgLog(c context.Context, db *database.Database,
 
 	coll := db.EndpointsKmsg()
 
+	limit := int64(settings.Endpoint.KmsgDisplayLimit)
+
 	cursor, err := coll.Find(
 		c,
 		&bson.M{
 			"e": endpoint,
 		},
 		&options.FindOptions{
-			Limit: &settings.Endpoint.KmsgDisplayLimit,
+			Limit: &limit,
 			Sort: &bson.D{
-				{"b", 1},
-				{"s", 1},
+				{"b", -1},
+				{"s", -1},
 			},
 		},
 	)
@@ -125,7 +129,7 @@ func GetKmsgLog(c context.Context, db *database.Database,
 			return
 		}
 
-		logData = append(logData, doc.FormattedLog())
+		logData = append(LogData{doc.FormattedLog()}, logData...)
 	}
 
 	err = cursor.Err()
