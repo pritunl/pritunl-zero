@@ -854,11 +854,23 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsCheckLog(),
+		Keys: &bson.D{
+			{"t", -1},
+			{"c", -1},
+		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsKmsg(),
 		Keys: &bson.D{
-			{"e", 1},
-			{"b", 1},
-			{"s", 1},
+			{"e", -1},
+			{"b", -1},
+			{"s", -1},
 		},
 	}
 	err = index.Create()
