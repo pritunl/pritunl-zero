@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as Theme from '../Theme';
 import * as EndpointTypes from '../types/EndpointTypes';
 import * as EndpointActions from '../actions/EndpointActions';
+import * as CheckActions from '../actions/CheckActions';
 import {Ace} from "ace-builds";
 import AceEditor from "react-ace";
 
@@ -11,7 +12,8 @@ import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/theme-eclipse";
 
 interface Props {
-	endpoint: string;
+	endpoint?: string;
+	check?: string;
 	disabled: boolean;
 }
 
@@ -95,10 +97,21 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 		let loading = true;
 		this.setLoading();
 
-		EndpointActions.log(
-			this.props.endpoint,
-			'kmsg',
-		).then((data: EndpointTypes.LogData): void => {
+		let logResp: Promise<any>
+
+		if (this.props.endpoint) {
+			logResp = EndpointActions.log(
+				this.props.endpoint,
+				'kmsg',
+			)
+		} else {
+			logResp = CheckActions.log(
+				this.props.check,
+				'check',
+			)
+		}
+
+		logResp.then((data: EndpointTypes.LogData): void => {
 			if (loading) {
 				loading = false;
 				this.setLoaded();
@@ -153,6 +166,13 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 			});
 		}
 
+		let title = ""
+		if (this.props.endpoint) {
+			title = "Dmesg"
+		} else {
+			title = "Error Log"
+		}
+
 		let refreshDisabled = false;
 		let refreshLabel = '';
 		let refreshClass = 'bp3-button';
@@ -169,7 +189,7 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 
 		return <div>
 			<div className="layout horizontal wrap bp3-border" style={css.header}>
-				<h3 style={css.heading}>Dmesg</h3>
+				<h3 style={css.heading}>{title}</h3>
 				<div className="flex"/>
 				<div style={css.buttons}>
 					<button
@@ -179,7 +199,11 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 						type="button"
 						onClick={(): void => {
 							if (Object.entries(this.state.cancelable).length) {
-								EndpointActions.dataCancel();
+								if (this.props.endpoint) {
+									EndpointActions.dataCancel();
+								} else {
+									CheckActions.dataCancel();
+								}
 							} else {
 								this.update();
 							}
