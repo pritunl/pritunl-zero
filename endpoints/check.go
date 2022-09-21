@@ -12,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/settings"
 )
 
 type Check struct {
@@ -20,15 +21,23 @@ type Check struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
-	TargetsUp   int `bson:"u" json:"u"`
-	TargetsDown int `bson:"d" json:"d"`
-	LatencyAvg  int `bson:"p" json:"p"`
+	TargetsUp   int `bson:"u" json:"-"`
+	TargetsDown int `bson:"d" json:"-"`
+	LatencyAvg  int `bson:"p" json:"-"`
 
 	TargetsIn []string `bson:"-" json:"x"`
 	LatencyIn []int    `bson:"-" json:"l"`
 	ErrorsIn  []string `bson:"-" json:"r"`
 
 	checkName string `bson:"-" json:"-"`
+}
+
+type CheckLog struct {
+	Id        primitive.ObjectID `bson:"_id" json:"id"`
+	Check     primitive.ObjectID `bson:"c" json:"c"`
+	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time          `bson:"t" json:"t"`
+	Log       []string           `bson:"l" json:"l"`
 }
 
 type CheckAgg struct {
@@ -43,6 +52,10 @@ type CheckAgg struct {
 
 func (d *Check) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsCheck()
+}
+
+func (d *Check) GetLogCollection(db *database.Database) *database.Collection {
+	return db.EndpointsCheckLog()
 }
 
 func (d *Check) Format(id primitive.ObjectID) time.Time {
@@ -122,6 +135,41 @@ func (d *Check) CheckAlerts(resources []*alert.Alert) (alerts []*Alert) {
 func (d *Check) Handle(db *database.Database) (handled, checkAlerts bool,
 	err error) {
 
+	if d.TargetsDown == 0 {
+		return
+	}
+
+	log := []string{}
+	for i, e := range d.ErrorsIn {
+		if e != "" && len(d.TargetsIn) > i {
+			log = append(log, fmt.Sprintf("[%s] %s", d.TargetsIn[i], e))
+		}
+	}
+
+	if len(log) == 0 {
+		return
+	}
+
+	doc := &CheckLog{
+		Id:        d.Id,
+		Check:     d.Check,
+		Endpoint:  d.Endpoint,
+		Timestamp: d.Timestamp,
+		Log:       log,
+	}
+
+	coll := d.GetLogCollection(db)
+
+	_, err = coll.InsertOne(db, doc)
+	if err != nil {
+		err = database.ParseError(err)
+		if _, ok := err.(*database.DuplicateKeyError); ok {
+			err = nil
+		} else {
+			return
+		}
+	}
+
 	return
 }
 
@@ -151,6 +199,31 @@ func (d *Check) HandleOld(db *database.Database) (handled, checkAlerts bool,
 	checkAlerts, err = chck.UpdateState(db, state)
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+func (d *CheckLog) FormattedLog(names map[primitive.ObjectID]string) (
+	log LogData) {
+
+	log = LogData{}
+
+	if d.Log != nil {
+		for _, e := range d.Log {
+			name := names[d.Endpoint]
+			if name == "" {
+				name = "unknown-endpoint-" + d.Endpoint.Hex()
+				continue
+			}
+
+			log = append(log, fmt.Sprintf(
+				"[%s][%s]%s\n",
+				d.Timestamp.Format("Mon Jan _2 15:04:05 2006"),
+				name,
+				e,
+			))
+		}
 	}
 
 	return
@@ -210,7 +283,6 @@ func GetCheckChartSingle(c context.Context, db *database.Database,
 
 		name := names[doc.Endpoint]
 		if name == "" {
-			println("skip1")
 			continue
 		}
 
@@ -322,7 +394,6 @@ func GetCheckChart(c context.Context, db *database.Database,
 
 		name := names[doc.Id.Endpoint]
 		if name == "" {
-			println("skip2")
 			continue
 		}
 
@@ -339,6 +410,63 @@ func GetCheckChart(c context.Context, db *database.Database,
 	}
 
 	chartData = chart.Export()
+
+	return
+}
+
+func GetCheckLog(c context.Context, db *database.Database,
+	checkId primitive.ObjectID) (logData LogData, err error) {
+
+	logData = []string{}
+
+	chck, err := check.Get(db, checkId)
+	if err != nil {
+		return
+	}
+
+	names, err := getRolesNameMapped(db, chck.Roles)
+	if err != nil {
+		return
+	}
+
+	coll := db.EndpointsCheckLog()
+
+	limit := int64(settings.Endpoint.CheckDisplayLimit)
+
+	cursor, err := coll.Find(
+		c,
+		&bson.M{
+			"c": checkId,
+		},
+		&options.FindOptions{
+			Limit: &limit,
+			Sort: &bson.D{
+				{"t", -1},
+			},
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(c)
+
+	for cursor.Next(c) {
+		doc := &CheckLog{}
+		err = cursor.Decode(doc)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		logData = append(doc.FormattedLog(names), logData...)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
 
 	return
 }
