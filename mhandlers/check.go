@@ -302,3 +302,28 @@ func checkChartGet(c *gin.Context) {
 
 	c.JSON(200, chartData)
 }
+
+func checkLogGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	checkId, ok := utils.ParseObjectId(c.Param("check_id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	resource := c.Query("resource")
+
+	chck, err := check.Get(db, checkId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	data, err := endpoints.GetLog(c, db, chck.Id, resource)
+	if err != nil {
+		return
+	}
+
+	c.JSON(200, data)
+}
