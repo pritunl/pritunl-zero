@@ -81,6 +81,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.DELETE("/checks", checksDelete)
 	csrfGroup.DELETE("/checks/:check_id", checkDelete)
 	csrfGroup.GET("/checks/:check_id/chart", checkChartGet)
+	csrfGroup.GET("/checks/:check_id/log", checkLogGet)
 
 	authGroup.GET("/csrf", csrfGet)
 
