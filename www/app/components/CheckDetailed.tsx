@@ -14,6 +14,7 @@ import Help from './Help';
 import PageSwitch from "./PageSwitch";
 import PageSelect from "./PageSelect";
 import CheckHeader from "./CheckHeader";
+import EndpointKmsg from "./EndpointKmsg";
 
 interface Props {
 	check: CheckTypes.CheckRo;
@@ -704,10 +705,6 @@ export default class CheckDetailed extends React.Component<Props, State> {
 					</button>
 				</div>
 			</div>
-			<CheckCharts
-				check={check.id}
-				disabled={false}
-			/>
 			<PageSave
 				style={css.save}
 				hidden={!this.state.check && !this.state.message}
@@ -723,6 +720,14 @@ export default class CheckDetailed extends React.Component<Props, State> {
 					});
 				}}
 				onSave={this.onSave}
+			/>
+			<CheckCharts
+				check={check.id}
+				disabled={false}
+			/>
+			<EndpointKmsg
+				check={check.id}
+				disabled={false}
 			/>
 		</td>;
 	}
