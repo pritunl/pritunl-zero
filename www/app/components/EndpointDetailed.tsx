@@ -421,16 +421,6 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			checks.push(check);
 		}
 
-		fields.push({
-			label: 'Alerts',
-			value: alerts.length ? alerts : '-',
-		});
-
-		fields.push({
-			label: 'Health Checks',
-			value: checks.length ? checks : '-',
-		});
-
 		let secretKey = '';
 		let secretUri = '';
 		if (!endpoint.has_client_key) {
@@ -547,6 +537,18 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 								showCharts: !this.state.showCharts,
 							});
 						}}
+					/>
+					<PageInfo
+						fields={[
+							{
+								label: 'Alerts',
+								value: alerts.length ? alerts : '-',
+							},
+							{
+								label: 'Health Checks',
+								value: checks.length ? checks : '-',
+							},
+						]}
 					/>
 				</div>
 				<div style={css.group}>
