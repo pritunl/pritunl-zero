@@ -70,23 +70,23 @@ export default class EndpointCharts extends React.Component<Props, State> {
 			case 60:
 				return 1;
 			case 180:
-				return 1;
+				return 5;
 			case 360:
 				return 5;
 			case 720:
-				return 5;
+				return 30;
 			case 1440:
 				return 30;
 			case 4320:
-				return 30;
-			case 10080:
-				return 30;
-			case 20160:
 				return 60;
-			case 43200:
+			case 10080:
 				return 120;
-			case 86400:
+			case 20160:
 				return 360;
+			case 43200:
+				return 720;
+			case 86400:
+				return 1440;
 			case 129600:
 				return 1440;
 			case 172800:
