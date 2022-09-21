@@ -236,6 +236,51 @@ export function chart(checkId: string, resource: string,
 	});
 }
 
+export function log(checkId: string, resource: string): Promise<any> {
+	let curDataSyncId = MiscUtils.uuid();
+
+	let loader = new Loader().loading();
+
+	return new Promise<any>((resolve, reject): void => {
+		let req = SuperAgent.get('/checks/' + checkId + '/log')
+			.query({
+				resource: resource,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.on('abort', () => {
+				loader.done();
+				resolve(null);
+			});
+		dataSyncReqs[curDataSyncId] = req;
+
+		req.end((err: any, res: SuperAgent.Response): void => {
+			delete dataSyncReqs[curDataSyncId];
+			loader.done();
+
+			if (res && res.status === 401) {
+				window.location.href = '/login';
+				resolve(null);
+				return;
+			}
+
+			if (err) {
+				Alert.errorRes(res, 'Failed to load check log');
+				reject(err);
+				return;
+			}
+
+			resolve(res.body);
+		});
+	});
+}
+
+export function dataCancel(): void {
+	for (let [key, val] of Object.entries(dataSyncReqs)) {
+		val.abort();
+	}
+}
+
 EventDispatcher.register((action: CheckTypes.CheckDispatch) => {
 	switch (action.type) {
 		case CheckTypes.CHANGE:
