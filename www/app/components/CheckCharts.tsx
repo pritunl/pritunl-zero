@@ -2,7 +2,7 @@
 import * as React from 'react';
 import PageSelect from './PageSelect';
 import EndpointChart from './EndpointChart';
-import * as EndpointActions from '../actions/EndpointActions';
+import * as CheckActions from '../actions/CheckActions';
 
 interface Props {
 	check: string;
@@ -203,7 +203,7 @@ export default class CheckCharts extends React.Component<Props, State> {
 						type="button"
 						onClick={(): void => {
 							if (Object.entries(this.state.cancelable).length) {
-								EndpointActions.dataCancel();
+								CheckActions.dataCancel();
 							} else {
 								this.setState({
 									...this.state,
