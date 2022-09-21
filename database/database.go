@@ -163,6 +163,11 @@ func (d *Database) EndpointsCheck() (coll *Collection) {
 	return
 }
 
+func (d *Database) EndpointsCheckLog() (coll *Collection) {
+	coll = d.getCollection("endpoints_check_log")
+	return
+}
+
 func (d *Database) EndpointsKmsg() (coll *Collection) {
 	coll = d.getCollection("endpoints_kmsg")
 	return
