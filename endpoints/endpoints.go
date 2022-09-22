@@ -106,6 +106,8 @@ func GetLog(c context.Context, db *database.Database,
 	switch typ {
 	case "kmsg":
 		return GetKmsgLog(c, db, endpoint)
+	case "check":
+		return GetCheckLog(c, db, endpoint)
 	default:
 		return nil, &errortypes.UnknownError{
 			errors.New("endpoints: Unknown resource type"),
