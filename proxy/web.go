@@ -120,6 +120,8 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 		settings.Router.HandshakeTimeout) * time.Second
 	continueTimeout := time.Duration(
 		settings.Router.ContinueTimeout) * time.Second
+	headerTimeout := time.Duration(
+		settings.Router.HeaderTimeout) * time.Second
 
 	tlsConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
@@ -166,8 +168,11 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 					KeepAlive: dialKeepAlive,
 					DualStack: true,
 				}).DialContext,
+				MaxResponseHeaderBytes: int64(
+					settings.Router.MaxResponseHeaderBytes),
 				MaxIdleConns:          maxIdleConns,
 				MaxIdleConnsPerHost:   maxIdleConnsPerHost,
+				ResponseHeaderTimeout: headerTimeout,
 				IdleConnTimeout:       idleConnTimeout,
 				TLSHandshakeTimeout:   handshakeTimeout,
 				ExpectContinueTimeout: continueTimeout,
