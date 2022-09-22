@@ -92,3 +92,5 @@ export type DiskChart = {[key: string]: ChartTypes.Points};
 export type DiskIoChart = {[key: string]: ChartTypes.Points};
 
 export type NetworkChart = {[key: string]: ChartTypes.Points};
+
+export type CheckChart = {[key: string]: ChartTypes.Points};
