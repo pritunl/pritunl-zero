@@ -225,17 +225,44 @@ func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert,
 	}
 }
 
-func (e Endpoint) GetConf(db *database.Database) (
-	conf *EndpointConf, err error) {
+func (e *Endpoint) GetConf(db *database.Database) (
+	encData []byte, err error) {
+
+	clientPubKey, serverPrivKey, err := e.GetKeys()
+	if err != nil {
+		return
+	}
+
+	if clientPubKey == nil || serverPrivKey == nil {
+		return
+	}
 
 	checks, err := check.GetRoles(db, e.Roles)
 	if err != nil {
 		return
 	}
 
-	conf = &EndpointConf{
+	conf := &EndpointConf{
 		Checks: checks,
 	}
+
+	confData, err := json.Marshal(conf)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.New("endpoint: Failed to marshal endpoint conf"),
+		}
+		return
+	}
+
+	encData, err = utils.RandBytes(24)
+	if err != nil {
+		return
+	}
+	var nonceAr [24]byte
+	copy(nonceAr[:], encData)
+
+	encData = box.Seal(encData, confData, &nonceAr,
+		clientPubKey, serverPrivKey)
 
 	return
 }
