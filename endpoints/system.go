@@ -21,6 +21,7 @@ type System struct {
 	Uptime         uint64           `bson:"-" json:"u"`
 	Virtualization string           `bson:"-" json:"v"`
 	Platform       string           `bson:"-" json:"p"`
+	PackageUpdates int              `bson:"-" json:"pu"`
 	Processes      uint64           `bson:"pc" json:"pc"`
 	CpuCores       int              `bson:"-" json:"cc"`
 	CpuUsage       float64          `bson:"cu" json:"cu"`
@@ -63,15 +64,16 @@ func (d *System) Format(id primitive.ObjectID) time.Time {
 
 func (d *System) StaticData() *bson.M {
 	return &bson.M{
-		"data.hostname":       d.Hostname,
-		"data.uptime":         d.Uptime,
-		"data.virtualization": d.Virtualization,
-		"data.platform":       d.Platform,
-		"data.cpu_cores":      d.CpuCores,
-		"data.mem_total":      d.MemTotal,
-		"data.swap_total":     d.SwapTotal,
-		"data.huge_total":     d.HugeTotal,
-		"data.md_stat":        d.MdStat,
+		"data.hostname":        d.Hostname,
+		"data.uptime":          d.Uptime,
+		"data.virtualization":  d.Virtualization,
+		"data.platform":        d.Platform,
+		"data.package_updates": d.PackageUpdates,
+		"data.cpu_cores":       d.CpuCores,
+		"data.mem_total":       d.MemTotal,
+		"data.swap_total":      d.SwapTotal,
+		"data.huge_total":      d.HugeTotal,
+		"data.md_stat":         d.MdStat,
 	}
 }
 
