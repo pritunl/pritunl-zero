@@ -60,6 +60,7 @@ type Data struct {
 	Hostname       string     `bson:"hostname" json:"hostname"`
 	Uptime         uint64     `bson:"uptime" json:"uptime"`
 	Platform       string     `bson:"platform" json:"platform"`
+	PackageUpdates int        `bson:"package_updates" json:"package_updates"`
 	Virtualization string     `bson:"virtualization" json:"virtualization"`
 	CpuCores       int        `bson:"cpu_cores" json:"cpu_cores"`
 	MemTotal       int        `bson:"mem_total" json:"mem_total"`
