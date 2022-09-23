@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -157,7 +158,12 @@ func EndpointCommGet(c *gin.Context) {
 
 	go func() {
 		defer func() {
-			recover()
+			r := recover()
+			if r != nil && !socket.Closed {
+				logrus.WithFields(logrus.Fields{
+					"error": errors.New(fmt.Sprintf("%s", r)),
+				}).Error("mhandlers: Endpoint comm panic")
+			}
 		}()
 		for {
 			msgType, msgByte, err := conn.ReadMessage()
@@ -212,7 +218,7 @@ func EndpointCommGet(c *gin.Context) {
 				endpt = newEndpt
 				endptUpdate = time.Now()
 
-				conf, e := endpt.GetConf(db)
+				encConf, e := endpt.GetConf(db)
 				if e != nil {
 					logrus.WithFields(logrus.Fields{
 						"error": e,
@@ -229,14 +235,16 @@ func EndpointCommGet(c *gin.Context) {
 					return
 				}
 
-				err = conn.WriteJSON(conf)
-				if err != nil {
-					err = &errortypes.RequestError{
-						errors.Wrap(err,
-							"mhandlers: Failed to write endpoint conf"),
+				if encConf != nil {
+					err = conn.WriteMessage(websocket.TextMessage, encConf)
+					if err != nil {
+						err = &errortypes.RequestError{
+							errors.Wrap(err,
+								"mhandlers: Failed to write endpoint conf"),
+						}
+						_ = conn.Close()
+						return
 					}
-					_ = conn.Close()
-					return
 				}
 			}
 		}
