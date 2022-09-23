@@ -239,8 +239,8 @@ func (r *Router) initWeb() (err error) {
 	}
 
 	readTimeout := time.Duration(settings.Router.ReadTimeout) * time.Second
-	readHeaderTimeout := time.Duration(
-		settings.Router.ReadHeaderTimeout) * time.Second
+	headerTimeout := time.Duration(
+		settings.Router.HeaderTimeout) * time.Second
 	writeTimeout := time.Duration(settings.Router.WriteTimeout) * time.Second
 	idleTimeout := time.Duration(settings.Router.IdleTimeout) * time.Second
 
@@ -248,7 +248,7 @@ func (r *Router) initWeb() (err error) {
 		Addr:              fmt.Sprintf(":%d", r.port),
 		Handler:           r,
 		ReadTimeout:       readTimeout,
-		ReadHeaderTimeout: readHeaderTimeout,
+		ReadHeaderTimeout: headerTimeout,
 		WriteTimeout:      writeTimeout,
 		IdleTimeout:       idleTimeout,
 		MaxHeaderBytes:    settings.Router.MaxHeaderBytes,
@@ -267,7 +267,7 @@ func (r *Router) startWeb() {
 		"read_timeout":        settings.Router.ReadTimeout,
 		"write_timeout":       settings.Router.WriteTimeout,
 		"idle_timeout":        settings.Router.IdleTimeout,
-		"read_header_timeout": settings.Router.ReadHeaderTimeout,
+		"read_header_timeout": settings.Router.HeaderTimeout,
 	}).Info("router: Starting web server")
 
 	if r.protocol == "http" {
@@ -440,8 +440,7 @@ func (r *Router) hashNode() []byte {
 	_, _ = io.WriteString(hash, node.Self.Protocol)
 
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.ReadTimeout))
-	_, _ = io.WriteString(hash,
-		strconv.Itoa(settings.Router.ReadHeaderTimeout))
+	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.HeaderTimeout))
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.WriteTimeout))
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.IdleTimeout))
 
