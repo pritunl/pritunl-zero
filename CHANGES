@@ -5,6 +5,7 @@ pritunl-zero changelog
 
 Add endpoint alerts
 Add endpoint kmsg
+Add health checks
 Refactor endpoints database
 Support Azure users with more then 50 groups
 
