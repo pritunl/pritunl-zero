@@ -2,6 +2,7 @@ package mhandlers
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -11,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -82,7 +84,12 @@ func eventGet(c *gin.Context) {
 
 	go func() {
 		defer func() {
-			recover()
+			r := recover()
+			if r != nil && !socket.Closed {
+				logrus.WithFields(logrus.Fields{
+					"error": errors.New(fmt.Sprintf("%s", r)),
+				}).Error("mhandlers: Event panic")
+			}
 		}()
 		for {
 			_, _, err := conn.NextReader()
