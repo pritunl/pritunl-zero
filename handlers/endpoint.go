@@ -84,7 +84,7 @@ func EndpointCommGet(c *gin.Context) {
 	timestamp := c.Request.Header.Get("Pritunl-Endpoint-Timestamp")
 	nonce := c.Request.Header.Get("Pritunl-Endpoint-Nonce")
 	sig := c.Request.Header.Get("Pritunl-Endpoint-Signature")
-	endptUpdate := time.Time{}
+	endptUpdate := time.Now()
 
 	endpt, err := endpoint.Get(db, endpointId)
 	if err != nil {
