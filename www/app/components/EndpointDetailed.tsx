@@ -434,7 +434,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 
 		return <td
 			className="bp3-cell"
-			colSpan={2}
+			colSpan={3}
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
@@ -599,6 +599,7 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 					style={css.controlButton}
 					hidden={!endpoint.has_client_key}
 					disabled={this.state.disabled}
+					safe={true}
 					onConfirm={(): void => {
 						this.onResetClientKey();
 					}}
