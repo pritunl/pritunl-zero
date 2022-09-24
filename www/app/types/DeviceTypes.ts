@@ -3,7 +3,7 @@ export const SYNC = 'device.sync';
 export const CHANGE = 'device.change';
 
 export interface Device {
-	id: string;
+	id?: string;
 	user?: string;
 	name?: string;
 	type?: string;
