@@ -27,6 +27,7 @@ export interface EndpointData {
 	hostname?: string;
 	uptime?: number;
 	platform?: string;
+	package_updates?: number;
 	virtualization?: string;
 	cpu_cores?: number;
 	mem_total?: number;
