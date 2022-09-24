@@ -24,6 +24,7 @@ export interface EndpointInfo {
 }
 
 export interface EndpointData {
+	version?: string;
 	hostname?: string;
 	uptime?: number;
 	platform?: string;
