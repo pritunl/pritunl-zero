@@ -239,7 +239,7 @@ export default class Endpoints extends React.Component<{}, State> {
 			}
 		}
 
-		return <Page>
+		return <Page wide={true}>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
 					<h2 style={css.heading}>Endpoints</h2>
