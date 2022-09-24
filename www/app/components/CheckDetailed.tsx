@@ -499,7 +499,8 @@ export default class CheckDetailed extends React.Component<Props, State> {
 
 		targetLabel = 'Targets';
 		targetTitle = 'Targets';
-		targetHelp = 'Targets for health check.';
+		targetHelp = 'Targets for health check. For most configurations each ' +
+			'target should be placed in a separate check.';
 
 		let headers: JSX.Element[] = [];
 		if (check.type === "http") {
