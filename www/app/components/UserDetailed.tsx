@@ -333,6 +333,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						<option value="google">Google</option>
 						<option value="onelogin">OneLogin</option>
 						<option value="okta">Okta</option>
+						<option value="jumpcloud">JumpCloud</option>
 						<option value="api">API</option>
 					</PageSelect>
 					<label className="bp3-label">
