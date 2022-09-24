@@ -96,6 +96,9 @@ export default class User extends React.Component<Props, {}> {
 			case 'azure':
 				userType = 'Azure';
 				break;
+			case 'jumpcloud':
+				userType = 'JumpCloud';
+				break;
 			case 'api':
 				userType = 'API';
 				break;
