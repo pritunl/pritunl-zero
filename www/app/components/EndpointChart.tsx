@@ -655,7 +655,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 							label(item): string {
 								let raw = item.raw as any;
 
-								if (!raw.y) {
+								if (self.labels.hide_zero && !raw.y) {
 									return ''
 								}
 
