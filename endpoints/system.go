@@ -17,6 +17,7 @@ type System struct {
 	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
 	Timestamp time.Time          `bson:"t" json:"t"`
 
+	Version        string           `bson:"-" json:"ev"`
 	Hostname       string           `bson:"-" json:"h"`
 	Uptime         uint64           `bson:"-" json:"u"`
 	Virtualization string           `bson:"-" json:"v"`
@@ -64,6 +65,7 @@ func (d *System) Format(id primitive.ObjectID) time.Time {
 
 func (d *System) StaticData() *bson.M {
 	return &bson.M{
+		"data.version":         d.Version,
 		"data.hostname":        d.Hostname,
 		"data.uptime":          d.Uptime,
 		"data.virtualization":  d.Virtualization,
