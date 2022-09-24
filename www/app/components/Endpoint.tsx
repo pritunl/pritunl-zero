@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as Blueprint from '@blueprintjs/core';
 import * as EndpointTypes from '../types/EndpointTypes';
 import * as AuthorityTypes from '../types/AuthorityTypes';
 import EndpointDetailed from './EndpointDetailed';
@@ -53,6 +54,7 @@ const css = {
 		padding: '0 8px 8px 8px',
 	} as React.CSSProperties,
 	icon: {
+		marginTop: '1px',
 		marginRight: '3px',
 	} as React.CSSProperties,
 	tag: {
@@ -113,6 +115,18 @@ export default class Endpoint extends React.Component<Props, {}> {
 			);
 		}
 
+		let updates: JSX.Element;
+		if (endpoint.data.package_updates) {
+			updates = <Blueprint.Tooltip
+				content="System package updates available"
+				position={Blueprint.Position.RIGHT}
+				openOnTargetFocus={false}
+			><span
+				style={css.icon}
+				className="bp3-icon-standard bp3-text-muted bp3-intent-danger bp3-icon-updated"
+			/></Blueprint.Tooltip>;
+		}
+
 		return <div
 			className="bp3-card bp3-row"
 			style={cardStyle}
@@ -148,6 +162,9 @@ export default class Endpoint extends React.Component<Props, {}> {
 						{endpoint.name}
 					</div>
 				</div>
+			</div>
+			<div className="bp3-cell" style={css.item}>
+				{updates}
 			</div>
 			<div className="flex bp3-cell" style={css.roles}>
 				{roles}
