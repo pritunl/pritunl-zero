@@ -25,28 +25,292 @@ interface State {
 	disabled: boolean;
 }
 
-// const colors = [
-// 	'#d50000', // red
-// 	'#c51162', // pink
-// 	'#aa00ff', // purple
-// 	'#6200ea', // deep purple
-// 	'#304ffe', // indigo
-// 	'#2962ff', // blue
-// 	'#0091ea', // light blue
-// 	'#00b8d4', // cyan
-// 	'#00bfa5', // teal
-// 	'#00c853', // green
-// 	'#64dd17', // light green
-// 	'#aeea00', // lime
-// 	'#ffd600', // yellow
-// 	'#ffab00', // amber
-// 	'#ff6d00', // orange
-// 	'#dd2c00', // deep orange
-// 	'#5d4037', // brown
-// 	'#455a64', // blue grey
-// ];
-
 const colors = [
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
+	'#0091ea', // light blue
+	'#d50000', // red
+	'#00c853', // green
+	'#aa00ff', // purple
+	'#ffab00', // amber
+	'#c51162', // pink
+	'#2962ff', // blue
+	'#ff6d00', // orange
+	'#00bfa5', // teal
+	'#304ffe', // indigo
+	'#00b8d4', // cyan
+	'#6200ea', // deep purple
+	'#ffd600', // yellow
+	'#dd2c00', // deep orange
+	'#5d4037', // brown
+	'#455a64', // blue grey
+	'#64dd17', // light green
+	'#aeea00', // lime
+
 	'#0091ea', // light blue
 	'#d50000', // red
 	'#00c853', // green
