@@ -396,6 +396,7 @@ export default class EndpointChart extends React.Component<Props, State> {
 	chart: ChartJs.Chart;
 	chartRef: React.RefObject<HTMLCanvasElement>;
 	labels: ChartTypes.Labels;
+	lastDouble: number;
 
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -592,8 +593,19 @@ export default class EndpointChart extends React.Component<Props, State> {
 
 								height = 26.33 + (rowCount * 17.33);
 
-								let double = height > (boxRect.height - 130);
+								let double = false;
 								let curRow = '';
+								let curTime = Math.round(Date.now() / 1000);
+
+								if (curTime - this.lastDouble < 60 &&
+									height > (boxRect.height - 280)) {
+
+									double = true;
+									this.lastDouble = curTime;
+								} else if (height > (boxRect.height - 130)) {
+									double = true;
+									this.lastDouble = curTime;
+								}
 
 								rowCount = 0
 								tableRows.forEach(function(columns, i) {
