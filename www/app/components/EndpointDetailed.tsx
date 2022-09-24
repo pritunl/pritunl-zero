@@ -345,6 +345,13 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 					value: endpointData.platform,
 				});
 			}
+			if (endpointData.package_updates) {
+				fields.push({
+					label: 'System Package Updates',
+					value: endpointData.package_updates,
+					valueClass: 'bp3-text-intent-danger',
+				});
+			}
 			if (endpointData.virtualization) {
 				fields.push({
 					label: 'Virtualization',
