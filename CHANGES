@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve endpoint charts
+
 Version 1.0.2495.67 2022-09-23
 ------------------------------
 
