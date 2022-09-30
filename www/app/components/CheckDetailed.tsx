@@ -619,9 +619,6 @@ export default class CheckDetailed extends React.Component<Props, State> {
 						<option
 							value="http"
 						>HTTP Request</option>
-						<option
-							value="ping"
-						>Ping</option>
 					</PageSelect>
 					<label className="bp3-label">
 						{targetLabel}
