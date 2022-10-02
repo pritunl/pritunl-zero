@@ -327,6 +327,12 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 
 		let endpointData = endpoint.data || {};
 		if (endpointData) {
+			if (endpointData.version) {
+				fields.push({
+					label: 'Endpoint Version',
+					value: endpointData.version,
+				});
+			}
 			if (endpointData.hostname) {
 				fields.push({
 					label: 'Hostname',
