@@ -57,6 +57,7 @@ type EndpointConf struct {
 }
 
 type Data struct {
+	Version        string     `bson:"version" json:"version"`
 	Hostname       string     `bson:"hostname" json:"hostname"`
 	Uptime         uint64     `bson:"uptime" json:"uptime"`
 	Platform       string     `bson:"platform" json:"platform"`
