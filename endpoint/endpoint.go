@@ -25,6 +25,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/endpoints"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/nonce"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -48,6 +49,7 @@ type Endpoint struct {
 }
 
 type EndpointInfo struct {
+	Domain string            `json:"domain"`
 	Alerts map[string]string `json:"alerts"`
 	Checks map[string]string `json:"checks"`
 }
@@ -220,6 +222,7 @@ func (e *Endpoint) Json(alertsMap map[string][]*alert.Alert,
 		}
 
 		e.Info = &EndpointInfo{
+			Domain: node.Self.EndpointDomain,
 			Alerts: alerts,
 			Checks: checks,
 		}
