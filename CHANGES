@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve endpoints
+
 Version 1.0.2499.91 2022-09-27
 ------------------------------
 
