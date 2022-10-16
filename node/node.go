@@ -167,12 +167,14 @@ func (n *Node) Validate(db *database.Database) (
 	if n.Type == Management {
 		n.ManagementDomain = ""
 		n.UserDomain = ""
+		n.EndpointDomain = ""
 	} else {
 		if !strings.Contains(n.Type, Management) {
 			n.ManagementDomain = ""
 		}
 		if !strings.Contains(n.Type, User) {
 			n.UserDomain = ""
+			n.EndpointDomain = ""
 		}
 	}
 
