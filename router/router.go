@@ -44,6 +44,7 @@ type Router struct {
 	certificates     *Certificates
 	managementDomain string
 	userDomain       string
+	endpointDomain   string
 	stateLock        sync.Mutex
 	mRouter          *gin.Engine
 	uRouter          *gin.Engine
@@ -87,7 +88,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 		if r.managementType && hst == r.managementDomain {
 			r.mRouter.ServeHTTP(w, re)
 			return
-		} else if r.userType && hst == r.userDomain {
+		} else if r.userType && (hst == r.userDomain ||
+			(r.endpointDomain != "" && hst == r.endpointDomain)) {
+
 			r.uRouter.ServeHTTP(w, re)
 			return
 		} else if r.proxyType {
@@ -186,6 +189,7 @@ func (r *Router) initWeb() (err error) {
 	r.proxyType = node.Self.IsProxy()
 	r.managementDomain = node.Self.ManagementDomain
 	r.userDomain = node.Self.UserDomain
+	r.endpointDomain = node.Self.EndpointDomain
 	r.noRedirectServer = node.Self.NoRedirectServer
 
 	if r.managementType && !r.userType && !r.proxyType {
@@ -435,6 +439,7 @@ func (r *Router) hashNode() []byte {
 	_, _ = io.WriteString(hash, node.Self.Type)
 	_, _ = io.WriteString(hash, node.Self.ManagementDomain)
 	_, _ = io.WriteString(hash, node.Self.UserDomain)
+	_, _ = io.WriteString(hash, node.Self.EndpointDomain)
 	_, _ = io.WriteString(hash, strconv.Itoa(node.Self.Port))
 	_, _ = io.WriteString(hash, fmt.Sprintf("%t", node.Self.NoRedirectServer))
 	_, _ = io.WriteString(hash, node.Self.Protocol)
