@@ -43,6 +43,7 @@ type Node struct {
 	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
 	WebauthnDomain       string                     `bson:"webauthn_domain" json:"webauthn_domain"`
+	EndpointDomain       string                     `bson:"endpoint_domain" json:"endpoint_domain"`
 	Services             []primitive.ObjectID       `bson:"services" json:"services"`
 	Authorities          []primitive.ObjectID       `bson:"authorities" json:"authorities"`
 	RequestsMin          int64                      `bson:"requests_min" json:"requests_min"`
@@ -303,6 +304,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.SelfCertificateKey = nde.SelfCertificateKey
 	n.ManagementDomain = nde.ManagementDomain
 	n.UserDomain = nde.UserDomain
+	n.EndpointDomain = nde.EndpointDomain
 	n.WebauthnDomain = nde.WebauthnDomain
 	n.Services = nde.Services
 	n.Authorities = nde.Authorities
