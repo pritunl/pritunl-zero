@@ -23,6 +23,7 @@ type nodeData struct {
 	Certificates         []primitive.ObjectID `json:"certificates"`
 	ManagementDomain     string               `json:"management_domain"`
 	UserDomain           string               `json:"user_domain"`
+	EndpointDomain       string               `json:"endpoint_domain"`
 	WebauthnDomain       string               `json:"webauthn_domain"`
 	Services             []primitive.ObjectID `json:"services"`
 	Authorities          []primitive.ObjectID `json:"authorities"`
@@ -67,6 +68,7 @@ func nodePut(c *gin.Context) {
 	nde.Certificates = data.Certificates
 	nde.ManagementDomain = data.ManagementDomain
 	nde.UserDomain = data.UserDomain
+	nde.EndpointDomain = data.EndpointDomain
 	nde.WebauthnDomain = data.WebauthnDomain
 	nde.Services = data.Services
 	nde.Authorities = data.Authorities
@@ -82,6 +84,7 @@ func nodePut(c *gin.Context) {
 		"certificates",
 		"management_domain",
 		"user_domain",
+		"endpoint_domain",
 		"webauthn_domain",
 		"services",
 		"authorities",
