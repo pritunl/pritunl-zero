@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve demo
+
 Version 1.0.2518.49 2022-10-16
 ------------------------------
 
