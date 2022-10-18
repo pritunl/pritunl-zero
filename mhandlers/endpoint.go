@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/endpoint"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -307,6 +308,10 @@ func endpointChartGet(c *gin.Context) {
 	}
 
 	startTime := time.Now().UTC().Add(time.Duration(-period) * time.Minute)
+	if settings.System.Demo {
+		startTime = time.Unix(1666116143, 0).Add(
+			time.Duration(-period) * time.Minute)
+	}
 	endTime := time.Now().UTC()
 
 	data, err := endpt.GetChart(c, db, resource, startTime,
