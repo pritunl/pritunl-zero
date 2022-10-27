@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
@@ -15,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/mikesmitty/edkey"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
@@ -203,6 +205,38 @@ func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
 	block := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	}
+
+	encodedPriv = pem.EncodeToMemory(block)
+
+	encodedPub, err = MarshalPublicKey(pubKey)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GenerateEdKey() (encodedPriv, encodedPub []byte, err error) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "authority: Failed to generate ed key"),
+		}
+		return
+	}
+
+	pubKey, err := ssh.NewPublicKey(publicKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "authority: Failed to parse ed key"),
+		}
+		return
+	}
+
+	block := &pem.Block{
+		Type:  "OPENSSH PRIVATE KEY",
+		Bytes: edkey.MarshalED25519PrivateKey(privateKey),
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
