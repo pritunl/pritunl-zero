@@ -95,14 +95,14 @@ func (a *Authority) GetDomain(hostname string) string {
 	return hostname + "." + a.HostDomain
 }
 
-func (a *Authority) GenerateRsaProxyPrivateKey() (err error) {
-	privKeyBytes, pubKeyBytes, err := GenerateRsaKey()
+func (a *Authority) GenerateEdProxyPrivateKey() (err error) {
+	privKeyBytes, pubKeyBytes, err := GenerateEdKey()
 	if err != nil {
 		return
 	}
 
 	a.Info = &Info{
-		KeyAlg: "RSA 4096",
+		KeyAlg: "Ed25519",
 	}
 	a.ProxyPrivateKey = strings.TrimSpace(string(privKeyBytes))
 	a.ProxyPublicKey = strings.TrimSpace(string(pubKeyBytes))

@@ -96,7 +96,7 @@ func (b *Bastion) renewHost(db *database.Database) (err error) {
 		return
 	}
 
-	hostCertPath := filepath.Join(b.path, "ssh_host_rsa_key-cert.pub")
+	hostCertPath := filepath.Join(b.path, "ssh_host_key-cert.pub")
 
 	if len(cert.Certificates) == 0 || len(cert.CertificatesInfo) == 0 {
 		err = &errortypes.UnknownError{
@@ -133,7 +133,7 @@ func (b *Bastion) Start(db *database.Database,
 	b.path = utils.GetTempPath()
 
 	if authr.ProxyPublicKey == "" || authr.ProxyPrivateKey == "" {
-		err = authr.GenerateRsaProxyPrivateKey()
+		err = authr.GenerateEdProxyPrivateKey()
 		if err != nil {
 			return
 		}

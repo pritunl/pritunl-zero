@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Use Ed25519 algorithm instead of RSA for bastion host key
+
 Version 1.0.2520.78 2022-10-18
 ------------------------------
 
