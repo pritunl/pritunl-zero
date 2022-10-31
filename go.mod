@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.5.0
-	github.com/mikesmitty/edkey v0.0.0-20170222072505-3356ea4e686a
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pritunl/mongo-go-driver v0.0.0-20210816062132-f388bdb66274
 	github.com/pritunl/webauthn v1.0.2
