@@ -16,11 +16,11 @@ import (
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/mikesmitty/edkey"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -236,7 +236,7 @@ func GenerateEdKey() (encodedPriv, encodedPub []byte, err error) {
 
 	block := &pem.Block{
 		Type:  "OPENSSH PRIVATE KEY",
-		Bytes: edkey.MarshalED25519PrivateKey(privateKey),
+		Bytes: utils.MarshalED25519PrivateKey(privateKey),
 	}
 
 	encodedPriv = pem.EncodeToMemory(block)
