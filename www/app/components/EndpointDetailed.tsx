@@ -442,7 +442,15 @@ export default class EndpointDetailed extends React.Component<Props, State> {
 			} else {
 				secretKey = 'unknown';
 			}
-			secretUri = 'pritunl://' + window.location.host + '/' + secretKey;
+
+			let secretDomain = '';
+			if (this.props.endpoint.info.domain) {
+				secretDomain = this.props.endpoint.info.domain;
+			} else {
+				secretDomain = window.location.host;
+			}
+
+			secretUri = 'pritunl://' + secretDomain + '/' + secretKey;
 		}
 
 		return <td
