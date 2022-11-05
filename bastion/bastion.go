@@ -97,6 +97,7 @@ func (b *Bastion) renewHost(db *database.Database) (err error) {
 	}
 
 	hostCertPath := filepath.Join(b.path, "ssh_host_key-cert.pub")
+	hostCertPath2 := filepath.Join(b.path, "ssh_host_rsa_key-cert.pub")
 
 	if len(cert.Certificates) == 0 || len(cert.CertificatesInfo) == 0 {
 		err = &errortypes.UnknownError{
@@ -106,6 +107,11 @@ func (b *Bastion) renewHost(db *database.Database) (err error) {
 	}
 
 	err = utils.CreateWrite(hostCertPath, cert.Certificates[0], 0644)
+	if err != nil {
+		return
+	}
+
+	err = utils.CreateWrite(hostCertPath2, cert.Certificates[0], 0644)
 	if err != nil {
 		return
 	}
