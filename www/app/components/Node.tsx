@@ -650,6 +650,19 @@ export default class Node extends React.Component<Props, State> {
 						}}
 					/>
 					<PageInput
+						hidden={node.type.indexOf('_') === -1 ||
+							node.type.indexOf('user') === -1}
+						label="Endpoint Domain"
+						help="Domain that endpoints will use for connectivity."
+						type="text"
+						placeholder="Enter endpoint domain"
+						value={node.endpoint_domain}
+						disabled={this.state.disabled}
+						onChange={(val): void => {
+							this.set('endpoint_domain', val);
+						}}
+					/>
+					<PageInput
 						disabled={this.state.disabled}
 						hidden={node.type.indexOf('admin') === -1 &&
 							node.type.indexOf('user') === -1}
