@@ -19,6 +19,7 @@ export interface Endpoint {
 }
 
 export interface EndpointInfo {
+	domain?: string;
 	alerts?: {[key: string]: string};
 	checks?: {[key: string]: string};
 }
