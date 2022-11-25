@@ -12,6 +12,7 @@ export interface Node {
 	timestamp?: string;
 	management_domain?: string;
 	user_domain?: string;
+	endpoint_domain?: string;
 	webauthn_domain?: string;
 	certificates?: string[];
 	requests_min?: number;
