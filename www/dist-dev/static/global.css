@@ -25,6 +25,18 @@ body.bp3-dark {
   background-color: #293742;
 }
 
+.logo-dark {
+  display: none;
+}
+
+.bp3-dark .logo-light {
+  display: none;
+}
+
+.bp3-dark .logo-dark {
+  display: block;
+}
+
 .bp3-button:disabled, .bp3-button.bp3-disabled {
   cursor: default !important;
 }
