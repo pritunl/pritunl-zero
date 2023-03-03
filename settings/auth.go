@@ -46,21 +46,25 @@ type SecondaryProvider struct {
 }
 
 type auth struct {
-	Id                 string               `bson:"_id"`
-	Server             string               `bson:"server" default:"https://auth.pritunl.com"`
-	Sync               int                  `bson:"sync" json:"sync" default:"1800"`
-	Providers          []*Provider          `bson:"providers"`
-	SecondaryProviders []*SecondaryProvider `bson:"secondary_providers"`
-	Window             int                  `bson:"window" json:"window" default:"60"`
-	WindowLong         int                  `bson:"window_long" json:"window_long" default:"300"`
-	SecondaryExpire    int                  `bson:"secondary_expire" json:"secondary_expire" default:"90"`
-	AdminExpire        int                  `bson:"admin_expire" json:"admin_expire" default:"1440"`
-	AdminMaxDuration   int                  `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
-	ProxyExpire        int                  `bson:"proxy_expire" json:"proxy_expire" default:"1440"`
-	ProxyMaxDuration   int                  `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
-	UserExpire         int                  `bson:"user_expire" json:"user_expire" default:"1440"`
-	UserMaxDuration    int                  `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
-	DisaleGeo          bool                 `bson:"disable_geo" json:"disable_geo"`
+	Id                    string               `bson:"_id"`
+	Server                string               `bson:"server" default:"https://auth.pritunl.com"`
+	Sync                  int                  `bson:"sync" json:"sync" default:"10"`
+	Providers             []*Provider          `bson:"providers"`
+	SecondaryProviders    []*SecondaryProvider `bson:"secondary_providers"`
+	FastLogin             bool                 `bson:"fast_login" json:"fast_login" default:"false"`
+	ForceFastUserLogin    bool                 `bson:"force_fast_user_login" json:"force_fast_user_login" default:"false"`
+	ForceFastServiceLogin bool                 `bson:"force_fast_service_login" json:"force_fast_service_login" default:"false"`
+	Window                int                  `bson:"window" json:"window" default:"60"`
+	WindowLong            int                  `bson:"window_long" json:"window_long" default:"300"`
+	SecondaryExpire       int                  `bson:"secondary_expire" json:"secondary_expire" default:"90"`
+	AdminExpire           int                  `bson:"admin_expire" json:"admin_expire" default:"1440"`
+	AdminMaxDuration      int                  `bson:"admin_max_duration" json:"admin_max_duration" default:"4320"`
+	ProxyExpire           int                  `bson:"proxy_expire" json:"proxy_expire" default:"1440"`
+	ProxyMaxDuration      int                  `bson:"proxy_max_duration" json:"proxy_max_duration" default:"4320"`
+	UserExpire            int                  `bson:"user_expire" json:"user_expire" default:"1440"`
+	UserMaxDuration       int                  `bson:"user_max_duration" json:"user_max_duration" default:"4320"`
+	DisaleGeo             bool                 `bson:"disable_geo" json:"disable_geo"`
+	LimiterExpire         int                  `bson:"limiter_expire" json:"limiter_expire" default:"600"`
 }
 
 func (a *auth) GetProvider(id primitive.ObjectID) *Provider {
