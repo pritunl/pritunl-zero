@@ -4,9 +4,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/auth"
 )
 
 func staticIndexGet(c *gin.Context) {
+	fastPth := auth.GetFastServicePath()
+	if fastPth != "" {
+		c.Redirect(302, fastPth)
+		return
+	}
+
 	c.Writer.Header().Add("Cache-Control",
 		"no-cache, no-store, must-revalidate")
 	c.Writer.Header().Add("Pragma", "no-cache")
