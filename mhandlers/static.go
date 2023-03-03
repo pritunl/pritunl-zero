@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func staticPath(c *gin.Context, pth string, cache bool) {
@@ -43,6 +44,12 @@ func staticPath(c *gin.Context, pth string, cache bool) {
 func staticIndexGet(c *gin.Context) {
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 	if !authr.IsValid() {
+		fastPth := auth.GetFastAdminPath()
+		if fastPth != "" {
+			c.Redirect(302, fastPth)
+			return
+		}
+
 		c.Redirect(302, "/login")
 		return
 	}
@@ -51,6 +58,12 @@ func staticIndexGet(c *gin.Context) {
 }
 
 func staticLoginGet(c *gin.Context) {
+	fastPth := auth.GetFastAdminPath()
+	if fastPth != "" {
+		c.Redirect(302, fastPth)
+		return
+	}
+
 	staticPath(c, "/login.html", false)
 }
 
@@ -72,11 +85,23 @@ func staticTestingGet(c *gin.Context) {
 		} else if c.Request.URL.Path == "/build.js" {
 			pth = "build.js"
 		} else if c.Request.URL.Path == "/login" {
+			fastPth := auth.GetFastAdminPath()
+			if fastPth != "" {
+				c.Redirect(302, fastPth)
+				return
+			}
+
 			c.Request.URL.Path = "/login.html"
 			pth = "login.html"
 		} else {
 			authr := c.MustGet("authorizer").(*authorizer.Authorizer)
 			if !authr.IsValid() {
+				fastPth := auth.GetFastAdminPath()
+				if fastPth != "" {
+					c.Redirect(302, fastPth)
+					return
+				}
+
 				c.Redirect(302, "/login")
 				return
 			}
