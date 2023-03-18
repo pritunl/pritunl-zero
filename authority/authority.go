@@ -67,6 +67,7 @@ type Authority struct {
 	Expire             int                `bson:"expire" json:"expire"`
 	HostExpire         int                `bson:"host_expire" json:"host_expire"`
 	Algorithm          string             `bson:"algorithm" json:"algorithm"`
+	KeyIdFormat        string             `bson:"key_id_format" json:"key_id_format"`
 	PrivateKey         string             `bson:"private_key" json:"-"`
 	PublicKey          string             `bson:"public_key" json:"public_key"`
 	PublicKeyPem       string             `bson:"public_key_pem" json:"public_key_pem"`
@@ -1518,6 +1519,23 @@ func (a *Authority) Validate(db *database.Database) (
 		errData = &errortypes.ErrorData{
 			Error:   "invalid_type",
 			Message: "Authority type is invalid",
+		}
+		return
+	}
+
+	switch a.KeyIdFormat {
+	case UserId:
+		break
+	case Username:
+		break
+	case UsernameId:
+		break
+	case "":
+		a.KeyIdFormat = UserId
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "invalid_key_id_format",
+			Message: "Key ID format is invalid",
 		}
 		return
 	}
