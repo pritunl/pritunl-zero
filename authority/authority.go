@@ -339,7 +339,7 @@ func (a *Authority) HostnameValidate(hostname string, port int,
 }
 
 func (a *Authority) createCertificateLocal(
-	usr *user.User, sshPubKey string) (
+	usr *user.User, keyId, sshPubKey string) (
 	cert *ssh.Certificate, certMarshaled string, err error) {
 
 	privateKey, err := ParsePemKey(a.PrivateKey)
@@ -394,7 +394,7 @@ func (a *Authority) createCertificateLocal(
 		Key:             pubKey,
 		Serial:          serial,
 		CertType:        ssh.UserCert,
-		KeyId:           usr.Id.Hex(),
+		KeyId:           keyId,
 		ValidPrincipals: roles,
 		ValidAfter:      uint64(validAfter),
 		ValidBefore:     uint64(validBefore),
@@ -430,7 +430,7 @@ func (a *Authority) createCertificateLocal(
 }
 
 func (a *Authority) createCertificateHsm(db *database.Database,
-	usr *user.User, sshPubKey string) (cert *ssh.Certificate,
+	usr *user.User, keyId, sshPubKey string) (cert *ssh.Certificate,
 	certMarshaled string, err error) {
 
 	pubKey, comment, _, _, err := ssh.ParseAuthorizedKey([]byte(sshPubKey))
@@ -475,7 +475,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 	cert = &ssh.Certificate{
 		Key:             pubKey,
 		CertType:        ssh.UserCert,
-		KeyId:           usr.Id.Hex(),
+		KeyId:           keyId,
 		ValidPrincipals: roles,
 		ValidAfter:      uint64(validAfter),
 		ValidBefore:     uint64(validBefore),
@@ -672,10 +672,24 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 	sshPubKey string) (cert *ssh.Certificate, certMarshaled string,
 	err error) {
 
+	keyId := ""
+	switch a.KeyIdFormat {
+	case Username:
+		keyId = usr.Username
+		break
+	case UsernameId:
+		keyId = fmt.Sprintf("%s:%s", usr.Username, usr.Id.Hex())
+		break
+	default:
+		keyId = usr.Id.Hex()
+	}
+
 	if a.Type == PritunlHsm {
-		cert, certMarshaled, err = a.createCertificateHsm(db, usr, sshPubKey)
+		cert, certMarshaled, err = a.createCertificateHsm(
+			db, usr, keyId, sshPubKey)
 	} else {
-		cert, certMarshaled, err = a.createCertificateLocal(usr, sshPubKey)
+		cert, certMarshaled, err = a.createCertificateLocal(
+			usr, keyId, sshPubKey)
 	}
 
 	return
