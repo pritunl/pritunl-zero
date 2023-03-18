@@ -37,11 +37,17 @@ export default class PageNumInput extends React.Component<Props, {}> {
 					allowNumericCharactersOnly={true}
 					min={this.props.min}
 					minorStepSize={this.props.minorStepSize}
+					max={this.props.max}
 					stepSize={this.props.stepSize}
 					majorStepSize={this.props.majorStepSize}
 					disabled={this.props.disabled}
 					selectAllOnFocus={this.props.selectAllOnFocus}
-					onValueChange={this.props.onChange}
+					onValueChange={(val: number): void => {
+						if (this.props.max && val > this.props.max) {
+							val = this.props.max;
+						}
+						this.props.onChange(val);
+					}}
 					value={this.props.value}
 				/>
 			</label>
