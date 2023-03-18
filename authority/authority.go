@@ -678,7 +678,7 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 		keyId = usr.Username
 		break
 	case UsernameId:
-		keyId = fmt.Sprintf("%s:%s", usr.Username, usr.Id.Hex())
+		keyId = fmt.Sprintf("%s:%s", usr.Id.Hex(), usr.Username)
 		break
 	default:
 		keyId = usr.Id.Hex()
