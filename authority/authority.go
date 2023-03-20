@@ -684,6 +684,8 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 		keyId = usr.Id.Hex()
 	}
 
+	keyId = utils.FilterUnixStr(keyId, 32)
+
 	if a.Type == PritunlHsm {
 		cert, certMarshaled, err = a.createCertificateHsm(
 			db, usr, keyId, sshPubKey)
