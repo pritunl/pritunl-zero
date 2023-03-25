@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add SSH key ID format
+
 Version 1.0.2538.43 2022-11-05
 ------------------------------
 
