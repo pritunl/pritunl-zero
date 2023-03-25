@@ -678,7 +678,10 @@ func (a *Authority) CreateCertificate(db *database.Database, usr *user.User,
 		keyId = usr.Username
 		break
 	case UsernameId:
-		keyId = fmt.Sprintf("%s:%s", usr.Id.Hex(), usr.Username)
+		keyId = fmt.Sprintf("%s-%s", usr.Id.Hex(), usr.Username)
+		break
+	case UsernameStripDomain:
+		keyId = strings.Split(usr.Username, "@")[0]
 		break
 	default:
 		keyId = usr.Id.Hex()
@@ -1545,6 +1548,8 @@ func (a *Authority) Validate(db *database.Database) (
 	case Username:
 		break
 	case UsernameId:
+		break
+	case UsernameStripDomain:
 		break
 	case "":
 		a.KeyIdFormat = UserId
