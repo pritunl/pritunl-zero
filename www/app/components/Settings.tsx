@@ -298,6 +298,33 @@ export default class Settings extends React.Component<{}, State> {
 							this.set('auth_user_max_duration', parseInt(val, 10));
 						}}
 					/>
+					<PageSwitch
+						label="Fast single sign-on login"
+						help="When only one single sign-on provider is configured and no local user accounts exists the login page will immediately redirect to the single sign-on provider."
+						checked={this.state.settings.auth_fast_login}
+						onToggle={(): void => {
+							this.set('auth_fast_login',
+								!this.state.settings.auth_fast_login);
+						}}
+					/>
+					<PageSwitch
+						label="Force fast user single sign-on login"
+						help="When only one single sign-on provider is configured the user login page will immediately redirect to the single sign-on provider. This will occur even if local user accounts exists."
+						checked={this.state.settings.auth_force_fast_user_login}
+						onToggle={(): void => {
+							this.set('auth_force_fast_user_login',
+								!this.state.settings.auth_force_fast_user_login);
+						}}
+					/>
+					<PageSwitch
+						label="Force fast service single sign-on login"
+						help="When only one single sign-on provider is configured the user login page will immediately redirect to the single sign-on provider. This will occur even if local user accounts exists."
+						checked={this.state.settings.auth_force_fast_service_login}
+						onToggle={(): void => {
+							this.set('auth_force_fast_service_login',
+								!this.state.settings.auth_force_fast_service_login);
+						}}
+					/>
 					<PageInput
 						label="ElasticSearch Address"
 						help="Address of ElasticSearch server, use comma separated list for multiple addresses."
