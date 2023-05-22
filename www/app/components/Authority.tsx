@@ -799,6 +799,21 @@ export default class Authority extends React.Component<Props, State> {
 							this.set('host_expire', parseInt(val, 10));
 						}}
 					/>
+					<PageSelect
+						label="SSH Key ID Format"
+						help="Format of the key ID field in the users SSH certificate. The user ID will include the users database ID. The username option will include the users name. The username ID option will include the user ID and username in the format userid-username. The username strip domain option will remove all characters after @ in the username."
+						value={authority.key_id_format}
+						onChange={(val): void => {
+							this.set('key_id_format', val);
+						}}
+					>
+						<option value="user_id">User ID</option>
+						<option value="username">Username</option>
+						<option value="username_id">Username ID</option>
+						<option
+							value="username_strip_domain"
+						>Username Strip Domain</option>
+					</PageSelect>
 					<PageSwitch
 						label="Match roles"
 						help="Require a matching role with the user before giving a certificate. If disabled all users will be given a certificate from this authority. The certificate principles will only contain the users roles."
