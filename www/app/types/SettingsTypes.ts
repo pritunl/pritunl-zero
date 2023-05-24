@@ -86,6 +86,9 @@ export interface Settings {
 	auth_proxy_max_duration: number;
 	auth_user_expire: number;
 	auth_user_max_duration: number;
+	auth_fast_login: boolean;
+	auth_force_fast_user_login: boolean;
+	auth_force_fast_service_login: boolean;
 	elastic_address: string;
 	elastic_username: string;
 	elastic_password: string;
