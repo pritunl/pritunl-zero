@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix issue with settings interface
+
 Version 1.0.2678.71 2023-03-25
 ------------------------------
 
