@@ -24,7 +24,7 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 	coll := db.Settings()
 
 	selector := database.SelectFields(group, set.NewSet("_id"))
-	update := database.SelectFields(group, fields)
+	updated := database.SelectFields(group, fields)
 	opts := &options.UpdateOptions{}
 	opts.SetUpsert(true)
 
@@ -32,7 +32,7 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 		db,
 		selector,
 		&bson.M{
-			"$set": update,
+			"$set": updated,
 		},
 		opts,
 	)
