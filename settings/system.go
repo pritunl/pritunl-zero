@@ -27,6 +27,9 @@ type system struct {
 	DisableBastionHostCertificates bool   `bson:"disable_bastion_host_certificates"`
 	BastionDockerImage             string `bson:"bastion_docker_image" default:"docker.io/pritunl/pritunl-bastion"`
 	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
+	TwilioAccount                  string `bson:"twilio_account"`
+	TwilioSecret                   string `bson:"twilio_secret"`
+	TwilioNumber                   string `bson:"twilio_number"`
 }
 
 func newSystem() interface{} {
