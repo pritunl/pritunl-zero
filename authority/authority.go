@@ -111,6 +111,21 @@ func (a *Authority) GenerateEdProxyPrivateKey() (err error) {
 	return
 }
 
+func (a *Authority) GenerateEcProxyPrivateKey() (err error) {
+	privKeyBytes, pubKeyBytes, err := GenerateEcKey()
+	if err != nil {
+		return
+	}
+
+	a.Info = &Info{
+		KeyAlg: "EC P384",
+	}
+	a.ProxyPrivateKey = strings.TrimSpace(string(privKeyBytes))
+	a.ProxyPublicKey = strings.TrimSpace(string(pubKeyBytes))
+
+	return
+}
+
 func (a *Authority) GenerateRsaPrivateKey() (err error) {
 	privKeyBytes, pubKeyBytes, err := GenerateRsaKey()
 	if err != nil {
