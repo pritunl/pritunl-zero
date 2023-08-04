@@ -61,7 +61,7 @@ func (b *Bastion) wait() {
 		delete(state, b.Authority)
 	}()
 
-	output, err := utils.ExecOutput("", "docker", "wait", b.Container)
+	output, err := utils.ExecOutput("", GetRuntime(), "wait", b.Container)
 	if b.state && err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrapf(err, "bastion: Failed to exec docker"),
@@ -179,7 +179,7 @@ func (b *Bastion) Start(db *database.Database,
 	}
 
 	output, err := utils.ExecOutput("",
-		"docker",
+		GetRuntime(),
 		"run",
 		"--rm",
 		"-d",
@@ -224,7 +224,7 @@ func (b *Bastion) Stop() (err error) {
 	}).Info("bastion: Stopping bastion server")
 
 	_, err = utils.ExecOutputLogged(nil,
-		"docker", "stop", "-t", "3", b.Container)
+		GetRuntime(), "stop", "-t", "3", b.Container)
 	if err != nil {
 		return
 	}
@@ -233,7 +233,8 @@ func (b *Bastion) Stop() (err error) {
 		time.Sleep(15 * time.Second)
 
 		if b.state {
-			_, _ = utils.ExecOutputLogged(nil, "docker", "kill", b.Container)
+			_, _ = utils.ExecOutputLogged(
+				nil, GetRuntime(), "kill", b.Container)
 		}
 	}()
 

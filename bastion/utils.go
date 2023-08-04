@@ -5,11 +5,18 @@ import (
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
-
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 )
+
+func GetRuntime() string {
+	exists, _ := utils.Exists("/usr/bin/podman")
+	if exists {
+		return "/usr/bin/podman"
+	}
+	return "docker"
+}
 
 func DockerMatchContainer(a, b string) bool {
 	if len(b) > len(a) {
@@ -26,7 +33,7 @@ func DockerGetRunning() (running map[string]primitive.ObjectID, err error) {
 	running = map[string]primitive.ObjectID{}
 
 	output, err := utils.ExecOutput("",
-		"docker", "ps", "-a", "--format", "{{.Names}}:{{.ID}}")
+		GetRuntime(), "ps", "-a", "--format", "{{.Names}}:{{.ID}}")
 	if err != nil {
 		return
 	}
@@ -59,7 +66,7 @@ func DockerGetRunning() (running map[string]primitive.ObjectID, err error) {
 }
 
 func DockerRemove(containerId string) (err error) {
-	_, err = utils.ExecOutputLogged(nil, "docker", "rm", "-f", containerId)
+	_, err = utils.ExecOutputLogged(nil, GetRuntime(), "rm", "-f", containerId)
 	if err != nil {
 		return
 	}
