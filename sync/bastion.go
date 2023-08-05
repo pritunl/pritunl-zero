@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/bastion"
@@ -12,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func bastionEnabled() bool {
@@ -25,7 +25,7 @@ func bastionInit() (err error) {
 		"docker_image": settings.System.BastionDockerImage,
 	}).Info("sync: Pulling bastion server docker image")
 
-	_, err = utils.ExecCombinedOutputLogged(nil, "docker",
+	_, err = utils.ExecCombinedOutputLogged(nil, bastion.GetRuntime(),
 		"pull", settings.System.BastionDockerImage)
 	if err != nil {
 		return
