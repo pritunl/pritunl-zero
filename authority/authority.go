@@ -96,7 +96,27 @@ func (a *Authority) GetDomain(hostname string) string {
 	return hostname + "." + a.HostDomain
 }
 
-func (a *Authority) GenerateEdProxyPrivateKey() (err error) {
+func (a *Authority) GenerateProxyKey() (err error) {
+	logrus.WithFields(logrus.Fields{
+		"authority_id": a.Id.Hex(),
+	}).Info("authority: Generating bastion host key")
+
+	if a.Algorithm == ECP384 {
+		err = a.generateEcProxyPrivateKey()
+		if err != nil {
+			return
+		}
+	} else {
+		err = a.generateEdProxyPrivateKey()
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (a *Authority) generateEdProxyPrivateKey() (err error) {
 	privKeyBytes, pubKeyBytes, err := GenerateEdKey()
 	if err != nil {
 		return
@@ -111,7 +131,7 @@ func (a *Authority) GenerateEdProxyPrivateKey() (err error) {
 	return
 }
 
-func (a *Authority) GenerateEcProxyPrivateKey() (err error) {
+func (a *Authority) generateEcProxyPrivateKey() (err error) {
 	privKeyBytes, pubKeyBytes, err := GenerateEcKey()
 	if err != nil {
 		return
