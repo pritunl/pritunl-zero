@@ -139,16 +139,9 @@ func (b *Bastion) Start(db *database.Database,
 	b.path = utils.GetTempPath()
 
 	if authr.ProxyPublicKey == "" || authr.ProxyPrivateKey == "" {
-		if authr.Algorithm == authority.ECP384 {
-			err = authr.GenerateEcProxyPrivateKey()
-			if err != nil {
-				return
-			}
-		} else {
-			err = authr.GenerateEdProxyPrivateKey()
-			if err != nil {
-				return
-			}
+		err = authr.GenerateProxyKey()
+		if err != nil {
+			return
 		}
 
 		err = authr.CommitFields(
