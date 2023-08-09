@@ -38,6 +38,7 @@ type authorityData struct {
 	HsmSecret          string             `json:"hsm_secret"`
 	HsmSerial          string             `json:"hsm_serial"`
 	HsmGenerateSecret  bool               `json:"hsm_generate_secret"`
+	ResetProxyHostKey  bool               `json:"reset_proxy_host_key"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -143,6 +144,17 @@ func authorityPut(c *gin.Context) {
 		"hsm_secret",
 		"hsm_serial",
 	)
+
+	if data.ResetProxyHostKey {
+		err = authr.GenerateProxyKey()
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		fields.Add("proxy_private_key")
+		fields.Add("proxy_public_key")
+	}
 
 	errData, err := authr.Validate(db)
 	if err != nil {
