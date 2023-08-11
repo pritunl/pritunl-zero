@@ -73,7 +73,7 @@ class UsersStore extends EventEmitter {
 
 	_filterCallback(filter: UserTypes.Filter): void {
 		if ((this._filter !== null && filter === null) ||
-				(this._filter === {} && filter !== null) || (
+				(!Object.keys(this._filter || {}).length && filter !== null) || (
 				filter && this._filter && (
 					filter.type !== this._filter.type ||
 					filter.administrator !== this._filter.administrator ||
