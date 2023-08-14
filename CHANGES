@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add option to reset bastion host key
+
 Version 1.0.2753.0 2023-06-08
 -----------------------------
 
