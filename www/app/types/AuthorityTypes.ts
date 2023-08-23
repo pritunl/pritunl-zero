@@ -38,6 +38,7 @@ export interface Authority {
 	hsm_secret?: string;
 	hsm_serial?: string;
 	hsm_generate_secret?: boolean;
+	reset_proxy_host_key?: boolean;
 }
 
 export type Authorities = Authority[];
