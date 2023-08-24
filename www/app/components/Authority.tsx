@@ -75,6 +75,9 @@ const css = {
 		width: '60px',
 		flex: '0 1 auto',
 	} as React.CSSProperties,
+	controlButton: {
+		marginRight: '10px',
+	} as React.CSSProperties,
 };
 
 export default class Authority extends React.Component<Props, State> {
@@ -415,6 +418,52 @@ export default class Authority extends React.Component<Props, State> {
 			message: '',
 			addSubnet: '',
 			authority: authority,
+		});
+	}
+
+	onResetProxyHostKey = (): void => {
+		this.setState({
+			...this.state,
+			disabled: true,
+		});
+
+		let authority = {
+			...this.props.authority,
+			reset_proxy_host_key: true,
+		};
+
+		AuthorityActions.commit(authority).then((): void => {
+			this.setState({
+				...this.state,
+				message: 'Bastion host key reset',
+				changed: false,
+				disabled: false,
+			});
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						authority: null,
+						changed: false,
+					});
+				}
+			}, 1000);
+
+			setTimeout((): void => {
+				if (!this.state.changed) {
+					this.setState({
+						...this.state,
+						message: '',
+					});
+				}
+			}, 3000);
+		}).catch((): void => {
+			this.setState({
+				...this.state,
+				message: '',
+				disabled: false,
+			});
 		});
 	}
 
@@ -945,7 +994,20 @@ export default class Authority extends React.Component<Props, State> {
 					});
 				}}
 				onSave={this.onSave}
-			/>
+			>
+				<ConfirmButton
+					label="Reset Bastion Host Key"
+					className="bp3-intent-danger bp3-icon-key"
+					progressClassName="bp3-intent-danger"
+					style={css.controlButton}
+					hidden={!this.props.authority.proxy_hosting}
+					disabled={this.state.disabled}
+					safe={true}
+					onConfirm={(): void => {
+						this.onResetProxyHostKey();
+					}}
+				/>
+			</PageSave>
 		</div>;
 	}
 }
