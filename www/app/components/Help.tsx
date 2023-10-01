@@ -4,7 +4,8 @@ import * as Blueprint from '@blueprintjs/core';
 
 interface Props {
 	title: string;
-	content: string | string[];
+	content?: string;
+	contents?: string[];
 }
 
 interface State {
@@ -53,13 +54,14 @@ export default class Help extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let helpElm: JSX.Element;
 
-		let contentElms: JSX.Element[] = [];
-		if (Array.isArray(this.props.content)) {
-			for (let content of this.props.content) {
-				contentElms.push(<div>{content}</div>);
+		let helpContent: string | JSX.Element[];
+		if (this.props.contents) {
+			helpContent = [];
+			for (let content of this.props.contents) {
+				helpContent.push(<div>{content}</div>);
 			}
 		} else {
-			contentElms.push(<div>{this.props.content}</div>);
+			helpContent = this.props.content;
 		}
 
 		if (this.state.popover) {
@@ -78,7 +80,7 @@ export default class Help extends React.Component<Props, State> {
 					}}
 				>
 					<div className="bp3-dialog-body">
-						{contentElms}
+						{helpContent}
 					</div>
 					<div className="bp3-dialog-footer">
 						<div className="bp3-dialog-footer-actions">
@@ -134,7 +136,7 @@ export default class Help extends React.Component<Props, State> {
 									style={css.content}
 								>
 									<h5>{this.props.title}</h5>
-									<div>{contentElms}</div>
+									<div>{helpContent}</div>
 								</div>
 							</div>
 						</div>
