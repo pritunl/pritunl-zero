@@ -45,6 +45,7 @@ type Service struct {
 	Servers            []*Server          `bson:"servers" json:"servers"`
 	WhitelistNetworks  []string           `bson:"whitelist_networks" json:"whitelist_networks"`
 	WhitelistPaths     []*WhitelistPath   `bson:"whitelist_paths" json:"whitelist_paths"`
+	WhitelistOptions   bool               `bson:"whitelist_options" json:"whitelist_options"`
 	logoutPathExtMatch int
 }
 
