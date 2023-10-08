@@ -127,6 +127,85 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	_, _ = io.Copy(rw, resp.Body)
 }
 
+func (w *webIsolated) ServeOptionsHTTP(rw http.ResponseWriter,
+	r *http.Request, authr *authorizer.Authorizer) {
+
+	reqUrl, err := utils.ProxyUrlLimited(r.URL, w.serverProto, w.serverHost)
+	if err != nil {
+		WriteError(rw, r, 500, err)
+		return
+	}
+
+	req, err := http.NewRequest("OPTIONS", reqUrl.String(), nil)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Create request failed"),
+		}
+		WriteError(rw, r, 500, err)
+		return
+	}
+
+	utils.CopyHeaders(req.Header, r.Header)
+	req.Header.Set("X-Forwarded-For",
+		node.Self.GetRemoteAddr(r))
+	req.Header.Set("X-Forwarded-Host", req.Host)
+	req.Header.Set("X-Forwarded-Proto", w.proxyProto)
+	req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+
+	if authr != nil {
+		usr, _ := authr.GetUser(nil)
+		if usr != nil {
+			req.Header.Set("X-Forwarded-User", usr.Username)
+		}
+	}
+
+	if w.reqHost != "" {
+		req.Host = w.reqHost
+	}
+
+	stripCookieHeaders(req)
+
+	if settings.Elastic.ProxyRequests {
+		index := searches.Request{
+			Address:   node.Self.GetRemoteAddr(r),
+			Timestamp: time.Now(),
+			Scheme:    reqUrl.Scheme,
+			Host:      reqUrl.Host,
+			Path:      reqUrl.Path,
+			Query:     reqUrl.Query(),
+			Header:    r.Header.Clone(),
+		}
+
+		if authr.IsValid() {
+			usr, _ := authr.GetUser(nil)
+
+			if usr != nil {
+				index.User = usr.Id.Hex()
+				index.Username = usr.Username
+				index.Session = authr.SessionId()
+			}
+		}
+
+		index.Index()
+	}
+
+	resp, err := w.Client.Do(req)
+	if err != nil {
+		err = errortypes.RequestError{
+			errors.Wrap(err, "request: Request failed"),
+		}
+		WriteError(rw, r, 500, err)
+		return
+	}
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	utils.CopyHeaders(rw.Header(), resp.Header)
+	rw.WriteHeader(resp.StatusCode)
+	_, _ = io.Copy(rw, resp.Body)
+}
+
 func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 	server *service.Server) (w *webIsolated) {
 
