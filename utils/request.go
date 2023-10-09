@@ -208,25 +208,30 @@ func GetLocation(r *http.Request) string {
 }
 
 func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
-	dstUrl *url.URL) {
+	dstUrl *url.URL, err error) {
+
+	dstUrl, err = url.Parse(srcUrl.String())
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.New("utils: Invalid URL"),
+		}
+		return
+	}
+
+	dstUrl.Scheme = dstScheme
+	dstUrl.Host = dstHost
+
+	return
+}
+
+func ProxyUrlLimited(srcUrl *url.URL, dstScheme, dstHost string) (
+	dstUrl *url.URL, err error) {
 
 	dstUrl = &url.URL{
-		Scheme:   dstScheme,
-		Host:     dstHost,
-		Path:     srcUrl.Path,
-		Fragment: srcUrl.Fragment,
+		Scheme: dstScheme,
+		Host:   dstHost,
+		Path:   srcUrl.Path,
 	}
-
-	srcQuery := srcUrl.Query()
-	dstQuery := url.Values{}
-
-	for key, vals := range srcQuery {
-		for _, val := range vals {
-			dstQuery.Add(key, val)
-		}
-	}
-
-	dstUrl.RawQuery = dstQuery.Encode()
 
 	return
 }
