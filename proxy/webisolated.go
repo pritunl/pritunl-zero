@@ -38,7 +38,11 @@ type webIsolated struct {
 func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	authr *authorizer.Authorizer) {
 
-	reqUrl := utils.ProxyUrl(r.URL, w.serverProto, w.serverHost)
+	reqUrl, err := utils.ProxyUrl(r.URL, w.serverProto, w.serverHost)
+	if err != nil {
+		WriteError(rw, r, 500, err)
+		return
+	}
 
 	srcBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
