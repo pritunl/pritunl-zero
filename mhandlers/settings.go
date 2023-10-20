@@ -26,6 +26,9 @@ type settingsData struct {
 	AuthFastLogin             bool                          `json:"auth_fast_login"`
 	AuthForceFastUserLogin    bool                          `json:"auth_force_fast_user_login"`
 	AuthForceFastServiceLogin bool                          `json:"auth_force_fast_service_login"`
+	TwilioAccount             string                        `json:"twilio_account"`
+	TwilioSecret              string                        `json:"twilio_secret"`
+	TwilioNumber              string                        `json:"twilio_number"`
 	ElasticAddress            string                        `json:"elastic_address"`
 	ElasticUsername           string                        `json:"elastic_username"`
 	ElasticPassword           string                        `json:"elastic_password"`
@@ -48,6 +51,9 @@ func getSettingsData() *settingsData {
 		ElasticUsername:           settings.Elastic.Username,
 		ElasticPassword:           settings.Elastic.Password,
 		ElasticProxyRequests:      settings.Elastic.ProxyRequests,
+		TwilioAccount:             settings.System.TwilioAccount,
+		TwilioSecret:              settings.System.TwilioSecret,
+		TwilioNumber:              settings.System.TwilioNumber,
 	}
 
 	if len(settings.Elastic.Addresses) != 0 {
@@ -114,6 +120,31 @@ func settingsPut(c *gin.Context) {
 
 	if fields.Len() != 0 {
 		err = settings.Commit(db, settings.Elastic, fields)
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+	}
+
+	fields = set.NewSet()
+
+	if settings.System.TwilioAccount != data.TwilioAccount {
+		settings.System.TwilioAccount = data.TwilioAccount
+		fields.Add("twilio_account")
+	}
+
+	if settings.System.TwilioSecret != data.TwilioSecret {
+		settings.System.TwilioSecret = data.TwilioSecret
+		fields.Add("twilio_secret")
+	}
+
+	if settings.System.TwilioNumber != data.TwilioNumber {
+		settings.System.TwilioNumber = data.TwilioNumber
+		fields.Add("twilio_number")
+	}
+
+	if fields.Len() != 0 {
+		err = settings.Commit(db, settings.System, fields)
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
