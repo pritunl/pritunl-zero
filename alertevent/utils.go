@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
@@ -72,23 +73,23 @@ func Send(number, message, alertType string) (
 			Message: message,
 		}
 
-		alertBody, err := json.Marshal(params)
-		if err != nil {
+		alertBody, e := json.Marshal(params)
+		if e != nil {
 			err = &errortypes.ParseError{
 				errors.Wrap(
-					err, "alert: Failed to parse alert params"),
+					e, "alert: Failed to parse alert params"),
 			}
 			return
 		}
 
-		req, err := http.NewRequest(
+		req, e := http.NewRequest(
 			"POST",
 			"https://app.pritunl.com/alert",
 			bytes.NewBuffer(alertBody),
 		)
-		if err != nil {
+		if e != nil {
 			err = &errortypes.RequestError{
-				errors.Wrap(err, "alert: Failed to create alert request"),
+				errors.Wrap(e, "alert: Failed to create alert request"),
 			}
 			return
 		}
@@ -97,10 +98,10 @@ func Send(number, message, alertType string) (
 		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Content-Type", "application/json")
 
-		resp, err := client.Do(req)
-		if err != nil {
+		resp, e := client.Do(req)
+		if e != nil {
 			err = &errortypes.RequestError{
-				errors.Wrap(err, "alert: Alert request failed"),
+				errors.Wrap(e, "alert: Alert request failed"),
 			}
 			return
 		}
