@@ -210,6 +210,8 @@ func GetLocation(r *http.Request) string {
 func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
 	dstUrl *url.URL, err error) {
 
+	srcPath := srcUrl.Path
+
 	dstUrl, err = url.Parse(srcUrl.String())
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -220,6 +222,13 @@ func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
 
 	dstUrl.Scheme = dstScheme
 	dstUrl.Host = dstHost
+
+	if srcPath != dstUrl.Path {
+		err = &errortypes.ParseError{
+			errors.New("utils: Path parse error"),
+		}
+		return
+	}
 
 	return
 }
