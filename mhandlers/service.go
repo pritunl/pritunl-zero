@@ -33,6 +33,7 @@ type serviceData struct {
 	Servers           []*service.Server        `json:"servers"`
 	WhitelistNetworks []string                 `json:"whitelist_networks"`
 	WhitelistPaths    []*service.WhitelistPath `json:"whitelist_paths"`
+	WhitelistOptions  bool                     `json:"whitelist_options"`
 }
 
 type servicesData struct {
@@ -81,6 +82,7 @@ func servicePut(c *gin.Context) {
 	srvce.Servers = data.Servers
 	srvce.WhitelistNetworks = data.WhitelistNetworks
 	srvce.WhitelistPaths = data.WhitelistPaths
+	srvce.WhitelistOptions = data.WhitelistOptions
 
 	fields := set.NewSet(
 		"name",
@@ -95,6 +97,7 @@ func servicePut(c *gin.Context) {
 		"servers",
 		"whitelist_networks",
 		"whitelist_paths",
+		"whitelist_options",
 	)
 
 	errData, err := srvce.Validate(db)
@@ -152,6 +155,7 @@ func servicePost(c *gin.Context) {
 		Servers:           data.Servers,
 		WhitelistNetworks: data.WhitelistNetworks,
 		WhitelistPaths:    data.WhitelistPaths,
+		WhitelistOptions:  data.WhitelistOptions,
 	}
 
 	errData, err := srvce.Validate(db)
