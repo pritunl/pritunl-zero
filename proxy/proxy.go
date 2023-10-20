@@ -163,6 +163,14 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
+	if r.Method == "OPTIONS" && wiProxies != nil && wiLen > 0 &&
+		host.Service.WhitelistOptions {
+
+		wiProxies[rand.Intn(wLen)].ServeOptionsHTTP(
+			w, r, authorizer.NewProxy(nil))
+		return true
+	}
+
 	authr, err := authorizer.AuthorizeProxy(db, host.Service, w, r)
 	if err != nil {
 		WriteError(w, r, 500, err)
