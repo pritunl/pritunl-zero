@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Add option for Twilio API
+Add service options request whitelist
 
 Version 1.0.2824.86 2023-08-18
 ------------------------------
