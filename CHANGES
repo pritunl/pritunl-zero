@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve single sign-on fast login
+
 Version 1.0.2887.68 2023-10-20
 ------------------------------
 
