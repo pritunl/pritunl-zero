@@ -89,6 +89,9 @@ export interface Settings {
 	auth_fast_login: boolean;
 	auth_force_fast_user_login: boolean;
 	auth_force_fast_service_login: boolean;
+	twilio_account: string;
+	twilio_secret: string;
+	twilio_number: string;
 	elastic_address: string;
 	elastic_username: string;
 	elastic_password: string;
