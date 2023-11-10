@@ -930,6 +930,14 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 							this.set('disable_csrf_check', !service.disable_csrf_check);
 						}}
 					/>
+					<PageSwitch
+						label="Permit unauthenticated options requests"
+						help="Permit HTTP OPTIONS requests to be proxied to the internal server without authentication."
+						checked={service.whitelist_options}
+						onToggle={(): void => {
+							this.set('whitelist_options', !service.whitelist_options);
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
