@@ -34,6 +34,7 @@ export interface Service {
 	servers?: Server[];
 	whitelist_networks?: string[];
 	whitelist_paths?: Path[];
+	whitelist_options?: boolean;
 }
 
 export interface Filter {
