@@ -72,8 +72,12 @@ func GetState() (state *State) {
 
 func GetFastAdminPath() (path string) {
 	if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
-		len(settings.Auth.Providers) != 1 {
+		len(settings.Auth.Providers) == 0 {
 
+		return
+	}
+
+	if len(settings.Auth.Providers) > 1 {
 		googleOnly := true
 		for _, provider := range settings.Auth.Providers {
 			if provider.Type != Google {
@@ -100,36 +104,25 @@ func GetFastAdminPath() (path string) {
 }
 
 func GetFastUserPath() (path string) {
-	if settings.Auth.ForceFastUserLogin {
-		if len(settings.Auth.Providers) != 1 {
+	if settings.Auth.FastLogin && settings.Auth.ForceFastUserLogin &&
+		len(settings.Auth.Providers) != 0 {
+	} else if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
+		len(settings.Auth.Providers) == 0 {
 
-			googleOnly := true
-			for _, provider := range settings.Auth.Providers {
-				if provider.Type != Google {
-					googleOnly = false
-					break
-				}
-			}
+		return
+	}
 
-			if !googleOnly {
-				return
+	if len(settings.Auth.Providers) > 1 {
+		googleOnly := true
+		for _, provider := range settings.Auth.Providers {
+			if provider.Type != Google {
+				googleOnly = false
+				break
 			}
 		}
-	} else {
-		if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
-			len(settings.Auth.Providers) != 1 {
 
-			googleOnly := true
-			for _, provider := range settings.Auth.Providers {
-				if provider.Type != Google {
-					googleOnly = false
-					break
-				}
-			}
-
-			if !googleOnly {
-				return
-			}
+		if !googleOnly {
+			return
 		}
 	}
 
@@ -146,36 +139,25 @@ func GetFastUserPath() (path string) {
 }
 
 func GetFastServicePath() (path string) {
-	if settings.Auth.ForceFastServiceLogin {
-		if len(settings.Auth.Providers) != 1 {
+	if settings.Auth.FastLogin && settings.Auth.ForceFastServiceLogin &&
+		len(settings.Auth.Providers) != 0 {
+	} else if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
+		len(settings.Auth.Providers) == 0 {
 
-			googleOnly := true
-			for _, provider := range settings.Auth.Providers {
-				if provider.Type != Google {
-					googleOnly = false
-					break
-				}
-			}
+		return
+	}
 
-			if !googleOnly {
-				return
+	if len(settings.Auth.Providers) > 1 {
+		googleOnly := true
+		for _, provider := range settings.Auth.Providers {
+			if provider.Type != Google {
+				googleOnly = false
+				break
 			}
 		}
-	} else {
-		if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
-			len(settings.Auth.Providers) != 1 {
 
-			googleOnly := true
-			for _, provider := range settings.Auth.Providers {
-				if provider.Type != Google {
-					googleOnly = false
-					break
-				}
-			}
-
-			if !googleOnly {
-				return
-			}
+		if !googleOnly {
+			return
 		}
 	}
 
