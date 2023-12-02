@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix fast login issues
+
 Version 1.0.2893.53 2023-10-26
 ------------------------------
 
