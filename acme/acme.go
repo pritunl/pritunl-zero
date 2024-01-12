@@ -80,7 +80,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		Key:          acctKey,
 	}
 
-	_, err = client.Register(context.Background(), acct, prompt)
+	_, err = client.Register(context.Background(), acct, acme.AcceptTOS)
 	if err != nil {
 		if err == acme.ErrAccountAlreadyExists {
 			err = nil
