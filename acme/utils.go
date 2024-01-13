@@ -17,10 +17,6 @@ import (
 	"golang.org/x/crypto/acme"
 )
 
-func prompt(_ string) bool {
-	return true
-}
-
 func revoke(client *acme.Client, authzUrls []string) {
 	if authzUrls == nil {
 		return
