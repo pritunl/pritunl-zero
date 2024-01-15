@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"strings"
 	"time"
 
@@ -14,6 +15,8 @@ import (
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/event"
+	"github.com/pritunl/pritunl-zero/secret"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme"
@@ -22,9 +25,18 @@ import (
 func Generate(db *database.Database, cert *certificate.Certificate) (
 	err error) {
 
+	acmeType := cert.AcmeType
+	if acmeType == "" {
+		acmeType = certificate.AcmeHTTP
+	}
+
+	acmeAuth := cert.AcmeAuth
+
 	logrus.WithFields(logrus.Fields{
 		"certificate": cert.Name,
 		"domains":     cert.AcmeDomains,
+		"acme_type":   acmeType,
+		"acme_auth":   acmeAuth,
 	}).Info("acme: Generating acme certificate")
 
 	if cert.AcmeDomains == nil || len(cert.AcmeDomains) == 0 {
@@ -32,6 +44,30 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			errors.Wrap(err, "acme: No acme domains"),
 		}
 		return
+	}
+
+	var awsSvc *Aws
+	if acmeType == certificate.AcmeDNS &&
+		acmeAuth == certificate.AcmeAWS {
+
+		secr, e := secret.Get(db, cert.AcmeSecret)
+		if e != nil {
+			err = e
+			return
+		}
+
+		if secr == nil {
+			err = &errortypes.UnknownError{
+				errors.Wrap(err, "acme: ACME secret not found"),
+			}
+			return
+		}
+
+		awsSvc = &Aws{}
+		err = awsSvc.Connect(secr)
+		if err != nil {
+			return
+		}
 	}
 
 	var acctKey *rsa.PrivateKey
@@ -136,9 +172,16 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 
 		var authzChal *acme.Challenge
 		for _, c := range authz.Challenges {
-			if c.Type == "http-01" {
-				authzChal = c
-				break
+			if acmeType == certificate.AcmeDNS {
+				if c.Type == "dns-01" {
+					authzChal = c
+					break
+				}
+			} else {
+				if c.Type == "http-01" {
+					authzChal = c
+					break
+				}
 			}
 		}
 
@@ -147,30 +190,81 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 
 			err = &errortypes.RequestError{
 				errors.New(
-					"acme: Authorization HTTP challenge not available"),
+					"acme: Authorization challenge not available"),
 			}
 			return
 		}
 
-		resp, e := client.HTTP01ChallengeResponse(authzChal.Token)
-		if e != nil {
-			revoke(client, authzUrls)
-
-			err = &errortypes.RequestError{
-				errors.Wrap(e, "acme: Challenge response failed"),
+		var chal *Challenge
+		var chalToken string
+		var chalDomain string
+		if acmeType == certificate.AcmeDNS {
+			chalToken, err = client.DNS01ChallengeRecord(authzChal.Token)
+			if err != nil {
+				err = &errortypes.RequestError{
+					errors.Wrap(err, "acme: Challenge record error"),
+				}
+				return
 			}
-			return
-		}
 
-		chal := &Challenge{
-			Id:        authzChal.Token,
-			Resource:  resp,
-			Timestamp: time.Now(),
-		}
+			chalDomain = fmt.Sprintf(
+				"_acme-challenge.%s.", authz.Identifier.Value)
 
-		err = chal.Insert(db)
-		if err != nil {
-			return
+			err = awsSvc.DnsTxtUpsert(chalDomain, chalToken)
+			if err != nil {
+				return
+			}
+
+			defer func() {
+				e := awsSvc.DnsTxtDelete(chalDomain, chalToken)
+				if e != nil {
+					logrus.WithFields(logrus.Fields{
+						"certificate": cert.Name,
+						"domain":      chalDomain,
+						"acme_type":   acmeType,
+						"acme_auth":   acmeAuth,
+						"error":       e,
+					}).Error("acme: Failed to remove DNS TXT record")
+				}
+			}()
+
+			matched, e := DnsTxtWait(chalDomain, chalToken)
+			if e != nil {
+				err = e
+				return
+			}
+
+			if !matched {
+				logrus.WithFields(logrus.Fields{
+					"certificate": cert.Name,
+					"domain":      chalDomain,
+					"acme_type":   acmeType,
+					"acme_auth":   acmeAuth,
+				}).Warning("acme: Local DNS TXT test lookup failed")
+			}
+
+			time.Sleep(time.Duration(settings.Acme.DnsDelay) * time.Second)
+		} else {
+			resp, e := client.HTTP01ChallengeResponse(authzChal.Token)
+			if e != nil {
+				revoke(client, authzUrls)
+
+				err = &errortypes.RequestError{
+					errors.Wrap(e, "acme: Challenge response failed"),
+				}
+				return
+			}
+
+			chal = &Challenge{
+				Id:        authzChal.Token,
+				Resource:  resp,
+				Timestamp: time.Now(),
+			}
+
+			err = chal.Insert(db)
+			if err != nil {
+				return
+			}
 		}
 
 		_, err = client.Accept(context.Background(), authzChal)
@@ -194,11 +288,13 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			return
 		}
 
-		err = chal.Remove(db)
-		if err != nil {
-			revoke(client, authzUrls)
+		if chal != nil {
+			err = chal.Remove(db)
+			if err != nil {
+				revoke(client, authzUrls)
 
-			return
+				return
+			}
 		}
 	}
 
@@ -290,20 +386,7 @@ func create(db *database.Database, cert *certificate.Certificate,
 		return
 	}
 
-	return
-}
-
-func Update(db *database.Database, cert *certificate.Certificate) (err error) {
-	if cert.Type != certificate.LetsEncrypt {
-		return
-	}
-
-	if cert.AcmeHash != cert.Hash() {
-		err = Generate(db, cert)
-		if err != nil {
-			return
-		}
-	}
+	event.PublishDispatch(db, "certificate.change")
 
 	return
 }
@@ -315,8 +398,9 @@ func Renew(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	if cert.Info != nil && !cert.Info.ExpiresOn.IsZero() &&
-		time.Until(cert.Info.ExpiresOn) < 168*time.Hour {
+	if cert.AcmeHash != cert.Hash() || (cert.Info != nil &&
+		!cert.Info.ExpiresOn.IsZero() &&
+		time.Until(cert.Info.ExpiresOn) < 168*time.Hour) {
 
 		err = Generate(db, cert)
 		if err != nil {
