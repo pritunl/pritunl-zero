@@ -3,6 +3,7 @@ module github.com/pritunl/pritunl-zero
 go 1.18
 
 require (
+	github.com/aws/aws-sdk-go v1.49.21
 	github.com/dropbox/godropbox v0.0.0-20230623171840-436d2007a9fd
 	github.com/duosecurity/duo_api_golang v0.0.0-20230418202038-096d3306c029
 	github.com/gin-gonic/gin v1.9.1
@@ -48,6 +49,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
