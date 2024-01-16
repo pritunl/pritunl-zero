@@ -7,5 +7,6 @@ const (
 	AcmeHTTP = "acme_http"
 	AcmeDNS  = "acme_dns"
 
-	AcmeAWS = "acme_aws"
+	AcmeAWS        = "acme_aws"
+	AcmeCloudflare = "acme_cloudflare"
 )
