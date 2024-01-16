@@ -9,11 +9,14 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"net"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/settings"
 	"golang.org/x/crypto/acme"
 )
 
@@ -43,6 +46,34 @@ func ParsePath(path string) string {
 		return split[1]
 	}
 	return ""
+}
+
+func DnsTxtWait(domain, val string) (found bool, err error) {
+	start := time.Now()
+	iterDelay := time.Duration(settings.Acme.DnsRetryRate) * time.Second
+	timeout := time.Duration(settings.Acme.DnsTimeout) * time.Second
+
+	for i := 0; i < 60; i++ {
+		if time.Since(start) > timeout {
+			return
+		}
+
+		time.Sleep(iterDelay)
+
+		records, e := net.LookupTXT(domain)
+		if e != nil {
+			continue
+		}
+
+		for _, record := range records {
+			if record == val {
+				found = true
+				return
+			}
+		}
+	}
+
+	return
 }
 
 func GetChallenge(token string) (challenge *Challenge, err error) {
