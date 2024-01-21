@@ -4,16 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/secret"
-	"github.com/pritunl/pritunl-zero/settings"
-	"github.com/pritunl/pritunl-zero/utils"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/secret"
+	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 var (
@@ -52,7 +54,9 @@ type CloudflareRecord struct {
 	Ttl     int    `json:"ttl"`
 }
 
-func (c *Cloudflare) Connect(secr *secret.Secret) (err error) {
+func (c *Cloudflare) Connect(db *database.Database,
+	secr *secret.Secret) (err error) {
+
 	if secr.Type != secret.Cloudflare {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: Secret type not Cloudflare"),
@@ -232,7 +236,9 @@ func (c *Cloudflare) DnsRecordFind(domain string) (recordId string,
 	return
 }
 
-func (c *Cloudflare) DnsTxtUpsert(domain, val string) (err error) {
+func (c *Cloudflare) DnsTxtUpsert(db *database.Database,
+	domain, val string) (err error) {
+
 	domain = cleanDomain(domain)
 
 	zoneId, err := c.DnsZoneFind(domain)
@@ -299,7 +305,9 @@ func (c *Cloudflare) DnsTxtUpsert(domain, val string) (err error) {
 	return
 }
 
-func (c *Cloudflare) DnsTxtDelete(domain, val string) (err error) {
+func (c *Cloudflare) DnsTxtDelete(db *database.Database,
+	domain, val string) (err error) {
+
 	domain = cleanDomain(domain)
 
 	zoneId, err := c.DnsZoneFind(domain)
