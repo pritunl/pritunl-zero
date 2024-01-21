@@ -123,6 +123,12 @@ func Register(engine *gin.Engine) {
 	csrfGroup.POST("/policy", policyPost)
 	csrfGroup.DELETE("/policy/:policy_id", policyDelete)
 
+	csrfGroup.GET("/secret", secretsGet)
+	csrfGroup.GET("/secret/:secr_id", secretGet)
+	csrfGroup.PUT("/secret/:secr_id", secretPut)
+	csrfGroup.POST("/secret", secretPost)
+	csrfGroup.DELETE("/secret/:secr_id", secretDelete)
+
 	csrfGroup.GET("/service", servicesGet)
 	csrfGroup.PUT("/service/:service_id", servicePut)
 	csrfGroup.POST("/service", servicePost)
