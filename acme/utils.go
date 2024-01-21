@@ -186,3 +186,7 @@ func extractDomain(domain string) string {
 	}
 	return domain
 }
+
+func cleanDomain(domain string) string {
+	return strings.Trim(domain, ".")
+}
