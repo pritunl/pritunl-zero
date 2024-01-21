@@ -46,10 +46,8 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	var awsSvc *Aws
-	if acmeType == certificate.AcmeDNS &&
-		acmeAuth == certificate.AcmeAWS {
-
+	var dnsSvc DnsService
+	if acmeType == certificate.AcmeDNS {
 		secr, e := secret.Get(db, cert.AcmeSecret)
 		if e != nil {
 			err = e
@@ -63,8 +61,21 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			return
 		}
 
-		awsSvc = &Aws{}
-		err = awsSvc.Connect(secr)
+		if acmeAuth == certificate.AcmeAWS {
+			dnsSvc = &Aws{}
+		} else if acmeAuth == certificate.AcmeCloudflare {
+			dnsSvc = &Cloudflare{}
+		} else if acmeAuth == certificate.AcmeOracleCloud {
+			dnsSvc = &Oracle{}
+		} else {
+			err = &errortypes.UnknownError{
+				errors.Wrapf(err,
+					"acme: Unknown acme auth type %s", acmeAuth),
+			}
+			return
+		}
+
+		err = dnsSvc.Connect(db, secr)
 		if err != nil {
 			return
 		}
@@ -210,13 +221,13 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			chalDomain = fmt.Sprintf(
 				"_acme-challenge.%s.", authz.Identifier.Value)
 
-			err = awsSvc.DnsTxtUpsert(chalDomain, chalToken)
+			err = dnsSvc.DnsTxtUpsert(db, chalDomain, chalToken)
 			if err != nil {
 				return
 			}
 
 			defer func() {
-				e := awsSvc.DnsTxtDelete(chalDomain, chalToken)
+				e := dnsSvc.DnsTxtDelete(db, chalDomain, chalToken)
 				if e != nil {
 					logrus.WithFields(logrus.Fields{
 						"certificate": cert.Name,
