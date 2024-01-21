@@ -1,5 +1,7 @@
 package secret
 
 const (
-	AWS = "aws"
+	AWS         = "aws"
+	Cloudflare  = "cloudflare"
+	OracleCloud = "oracle_cloud"
 )
