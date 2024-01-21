@@ -421,3 +421,19 @@ func Renew(db *database.Database, cert *certificate.Certificate) (
 
 	return
 }
+
+func RenewBackground(cert *certificate.Certificate) {
+	go func() {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		err := Renew(db, cert)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"certificate_id":   cert.Id.Hex(),
+				"certificate_name": cert.Name,
+				"error":            err,
+			}).Error("task: Failed to renew certificate")
+		}
+	}()
+}
