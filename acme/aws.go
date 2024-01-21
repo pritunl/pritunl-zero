@@ -6,8 +6,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/secret"
+	"github.com/pritunl/pritunl-zero/settings"
 	"strings"
 )
 
@@ -17,7 +19,9 @@ type Aws struct {
 	cacheZoneId map[string]string
 }
 
-func (a *Aws) Connect(secr *secret.Secret) (err error) {
+func (a *Aws) Connect(db *database.Database,
+	secr *secret.Secret) (err error) {
+
 	if secr.Type != secret.AWS {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: Secret type not AWS"),
@@ -65,6 +69,7 @@ func (a *Aws) DnsZoneFind(domain string) (zoneId string, err error) {
 	for _, zone := range result.HostedZones {
 		if strings.Trim(*zone.Name, ".") == strings.Trim(domain, ".") {
 			zoneId = *zone.Id
+			break
 		}
 	}
 
@@ -80,7 +85,9 @@ func (a *Aws) DnsZoneFind(domain string) (zoneId string, err error) {
 	return
 }
 
-func (a *Aws) DnsTxtUpsert(domain, val string) (err error) {
+func (a *Aws) DnsTxtUpsert(db *database.Database,
+	domain, val string) (err error) {
+
 	zoneId, err := a.DnsZoneFind(domain)
 	if err != nil {
 		return
@@ -94,7 +101,7 @@ func (a *Aws) DnsTxtUpsert(domain, val string) (err error) {
 					ResourceRecordSet: &route53.ResourceRecordSet{
 						Name: aws.String(domain),
 						Type: aws.String("TXT"),
-						TTL:  aws.Int64(30),
+						TTL:  aws.Int64(int64(settings.Acme.DnsAwsTtl)),
 						ResourceRecords: []*route53.ResourceRecord{
 							{
 								Value: aws.String("\"" + val + "\""),
@@ -119,7 +126,9 @@ func (a *Aws) DnsTxtUpsert(domain, val string) (err error) {
 	return
 }
 
-func (a *Aws) DnsTxtDelete(domain, val string) (err error) {
+func (a *Aws) DnsTxtDelete(db *database.Database,
+	domain, val string) (err error) {
+
 	zoneId, err := a.DnsZoneFind(domain)
 	if err != nil {
 		return
@@ -133,7 +142,7 @@ func (a *Aws) DnsTxtDelete(domain, val string) (err error) {
 					ResourceRecordSet: &route53.ResourceRecordSet{
 						Name: aws.String(domain),
 						Type: aws.String("TXT"),
-						TTL:  aws.Int64(30),
+						TTL:  aws.Int64(int64(settings.Acme.DnsAwsTtl)),
 						ResourceRecords: []*route53.ResourceRecord{
 							{
 								Value: aws.String("\"" + val + "\""),
