@@ -228,6 +228,11 @@ func (d *Database) Certificates() (coll *Collection) {
 	return
 }
 
+func (d *Database) Secrets() (coll *Collection) {
+	coll = d.getCollection("secrets")
+	return
+}
+
 func (d *Database) Authorities() (coll *Collection) {
 	coll = d.getCollection("authorities")
 	return
