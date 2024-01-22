@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+All nodes must be updated before using ACME DNS certificates
+
 Version 1.0.2930.75 2023-12-02
 ------------------------------
 
