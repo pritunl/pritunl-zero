@@ -78,6 +78,8 @@ func (c *Certificate) Validate(db *database.Database) (
 			break
 		case AcmeCloudflare:
 			break
+		case AcmeOracleCloud:
+			break
 		default:
 			errData = &errortypes.ErrorData{
 				Error:   "acme_auth_invalid",
