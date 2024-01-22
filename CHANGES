@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Add secrets storage
+Add DNS TXT verification for Lets Encrypt
 All nodes must be updated before using ACME DNS certificates
 
 Version 1.0.2930.75 2023-12-02
