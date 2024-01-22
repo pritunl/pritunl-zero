@@ -2,7 +2,10 @@ package utils
 
 import (
 	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/base64"
+	"encoding/pem"
 	"math"
 	"math/big"
 	mathrand "math/rand"
@@ -66,6 +69,38 @@ func RandObjectId() (oid primitive.ObjectID, err error) {
 	}
 
 	copy(oid[:], rid)
+	return
+}
+
+func GenerateRsaKey() (encodedPriv, encodedPub []byte, err error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrap(err, "utils: Failed to generate rsa key"),
+		}
+		return
+	}
+
+	blockPriv := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	}
+	encodedPriv = pem.EncodeToMemory(blockPriv)
+
+	bytesPub, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "utils: Failed to marshal rsa public key"),
+		}
+		return
+	}
+
+	blockPub := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: bytesPub,
+	}
+	encodedPub = pem.EncodeToMemory(blockPub)
+
 	return
 }
 
