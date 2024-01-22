@@ -191,6 +191,18 @@ func FilterUnixStr(s string, n int) string {
 	return ns
 }
 
+func PointerBool(x bool) *bool {
+	return &x
+}
+
+func PointerInt(x int) *int {
+	return &x
+}
+
+func PointerString(x string) *string {
+	return &x
+}
+
 func SinceAbs(t time.Time) (s time.Duration) {
 	s = time.Since(t)
 	if s < 0 {
