@@ -233,7 +233,7 @@ func (n *Node) CommitFields(db *database.Database, fields set.Set) (
 func (n *Node) GetRemoteAddr(r *http.Request) (addr string) {
 	if n.ForwardedForHeader != "" {
 		addr = strings.TrimSpace(
-			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 1)[0])
+			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 2)[0])
 		if addr != "" {
 			return
 		}
@@ -252,7 +252,7 @@ func (n *Node) SafeGetRemoteAddr(r *http.Request) (addr string,
 
 	if n.ForwardedForHeader != "" {
 		addr = strings.TrimSpace(
-			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 1)[0])
+			strings.SplitN(r.Header.Get(n.ForwardedForHeader), ",", 2)[0])
 		if addr != "" {
 			header = true
 			valid = true
