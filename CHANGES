@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3019.96 2024-02-29
+------------------------------
 
 Fix issue with remote IP proxy header
 
