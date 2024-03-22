@@ -27,6 +27,8 @@ const (
 	MacOs12      = "macos_12"      // macOS 12 = Mac OS X (12)
 	MacOs13      = "macos_13"      // macOS 13 = Mac OS X (13)
 	MacOs14      = "macos_14"      // macOS 14 = Mac OS X (14)
+	MacOs15      = "macos_15"      // macOS 15 = Mac OS X (15)
+	MacOs16      = "macos_16"      // macOS 16 = Mac OS X (16)
 	WindowsXp    = "windows_xp"    // Windows XP = Windows XP
 	Windows7     = "windows_7"     // Windows 7 = Windows 7
 	WindowsVista = "windows_vista" // Windows Vista = Windows Vista
@@ -45,6 +47,8 @@ const (
 	Ios16        = "ios_16"        // iOS 16 = iOS (16/x)
 	Ios17        = "ios_17"        // iOS 17 = iOS (17/x)
 	Ios18        = "ios_18"        // iOS 18 = iOS (18/x)
+	Ios19        = "ios_19"        // iOS 19 = iOS (19/x)
+	Ios20        = "ios_20"        // iOS 20 = iOS (20/x)
 	Android4     = "android_4"     // Android KitKat 4.4 = Android (4/4)
 	Android5     = "android_5"     // Android Lollipop 5.0 = Android (5/x)
 	Android6     = "android_6"     // Android Marshmallow 6.0 = Android (6/x)
@@ -56,6 +60,8 @@ const (
 	Android12    = "android_12"    // Android 12.0 = Android (12/x)
 	Android13    = "android_13"    // Android 13.0 = Android (13/x)
 	Android14    = "android_14"    // Android 14.0 = Android (14/x)
+	Android15    = "android_15"    // Android 15.0 = Android (15/x)
+	Android16    = "android_16"    // Android 16.0 = Android (16/x)
 	Blackberry10 = "blackberry_10" // Blackerry 10 = BlackBerry OS (10/x)
 	WindowsPhone = "windows_phone" // Windows Phone = Windows Phone
 	FirefoxOs    = "firefox_os"    // Firefox OS = Firefox OS
@@ -163,6 +169,12 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "14":
 			agnt.OperatingSystem = Android14
 			break
+		case "15":
+			agnt.OperatingSystem = Android15
+			break
+		case "16":
+			agnt.OperatingSystem = Android16
+			break
 		}
 		break
 	case "BlackBerry OS":
@@ -209,6 +221,12 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 		case "18":
 			agnt.OperatingSystem = Ios18
 			break
+		case "19":
+			agnt.OperatingSystem = Ios19
+			break
+		case "20":
+			agnt.OperatingSystem = Ios20
+			break
 		}
 		break
 	case "Kindle":
@@ -249,6 +267,12 @@ func Parse(db *database.Database, r *http.Request) (agnt *Agent, err error) {
 			break
 		case "14":
 			agnt.OperatingSystem = MacOs14
+			break
+		case "15":
+			agnt.OperatingSystem = MacOs15
+			break
+		case "16":
+			agnt.OperatingSystem = MacOs16
 			break
 		}
 		break
