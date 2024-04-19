@@ -431,6 +431,8 @@ export default class Certificate extends React.Component<Props, State> {
 						}}
 					>
 						<option value="acme_aws">AWS</option>
+						<option value="acme_cloudflare">Cloudflare</option>
+						<option value="acme_oracle_cloud">Oracle Cloud</option>
 					</PageSelect>
 					<PageSelect
 						disabled={this.state.disabled}
