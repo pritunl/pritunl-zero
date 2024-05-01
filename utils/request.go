@@ -113,9 +113,15 @@ func StripPort(hostport string) string {
 	if colon == -1 {
 		return hostport
 	}
-	if i := strings.IndexByte(hostport, ']'); i != -1 {
-		return strings.TrimPrefix(hostport[:i], "[")
+
+	n := strings.Count(hostport, ":")
+	if n > 1 {
+		if i := strings.IndexByte(hostport, ']'); i != -1 {
+			return strings.TrimPrefix(hostport[:i], "[")
+		}
+		return hostport
 	}
+
 	return hostport[:colon]
 }
 
