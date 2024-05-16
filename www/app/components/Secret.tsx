@@ -148,6 +148,65 @@ export default class Secret extends React.Component<Props, State> {
 		let secr: SecretTypes.Secret = this.state.secret ||
 			this.props.secret;
 
+		let keyLabel = "";
+		let keyHelp = "";
+		let keyPlaceholder = "";
+		let valLabel = "";
+		let valHelp = "";
+		let valPlaceholder = "";
+		let regionLabel = "";
+		let regionHelp = "";
+		let regionPlaceholder = "";
+		let publicKeyLabel = "";
+		let publicKeyHelp = "";
+		let publicKeyPlaceholder = "";
+
+		switch (secr.type) {
+			case "aws":
+			case "":
+				keyLabel = "AWS Key ID";
+				keyHelp = "Key for AWS API authentication.";
+				keyPlaceholder = "Key ID";
+				valLabel = "AWS Secret ID";
+				valHelp = "Key secret for AWS API authentication.";
+				valPlaceholder = "Key ID";
+				regionLabel = "AWS Region";
+				regionHelp = "Region for AWS API.";
+				regionPlaceholder = "Region";
+				publicKeyLabel = "";
+				publicKeyHelp = "";
+				publicKeyPlaceholder = "";
+				break;
+			case "cloudflare":
+				keyLabel = "Cloudflare Token";
+				keyHelp = "Cloudflare API token.";
+				keyPlaceholder = "Token";
+				valLabel = "";
+				valHelp = "";
+				valPlaceholder = "";
+				regionLabel = "";
+				regionHelp = "";
+				regionPlaceholder = "";
+				publicKeyLabel = "";
+				publicKeyHelp = "";
+				publicKeyPlaceholder = "";
+				break;
+			case "oracle_cloud":
+				keyLabel = "Oracle Cloud Tenancy OCID";
+				keyHelp = "Tenancy OCID for Oracle Cloud API authentication.";
+				keyPlaceholder = "Tenancy OCID";
+				valLabel = "Oracle Cloud User OCID";
+				valHelp = "User OCID for Oracle Cloud API authentication.";
+				valPlaceholder = "User OCID";
+				regionLabel = "Oracle Cloud Region";
+				regionHelp = "Region for Oracle Cloud API.";
+				regionPlaceholder = "Region";
+				publicKeyLabel = "Oracle Cloud Public Key";
+				publicKeyHelp = "Public key for Oracle Cloud API authentication.";
+				publicKeyPlaceholder = "Oracle Cloud Public Key";
+				break;
+		}
+
 		return <div
 			className="bp3-card"
 			style={css.card}
@@ -189,23 +248,36 @@ export default class Secret extends React.Component<Props, State> {
 						}}
 					/>
 					<PageInput
-						label="AWS Key ID"
-						help="AWS key ID."
+						label={keyLabel}
+						help={keyHelp}
+						hidden={keyLabel === ""}
 						type="text"
-						placeholder="Key ID"
+						placeholder={keyPlaceholder}
 						value={secr.key}
 						onChange={(val: string): void => {
 							this.set('key', val);
 						}}
 					/>
 					<PageInput
-						label="AWS Key Secret"
-						help="AWS key secret."
+						label={valLabel}
+						help={valHelp}
+						hidden={valLabel === ""}
 						type="text"
-						placeholder="Key secret"
+						placeholder={valPlaceholder}
 						value={secr.value}
 						onChange={(val: string): void => {
 							this.set('value', val);
+						}}
+					/>
+					<PageInput
+						label={regionLabel}
+						help={regionHelp}
+						hidden={regionLabel === ""}
+						type="text"
+						placeholder={regionPlaceholder}
+						value={secr.region}
+						onChange={(val: string): void => {
+							this.set('region', val);
 						}}
 					/>
 				</div>
