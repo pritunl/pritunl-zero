@@ -1,8 +1,11 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import * as CertificateTypes from '../types/CertificateTypes';
+import * as SecretTypes from '../types/SecretTypes';
 import CertificatesStore from '../stores/CertificatesStore';
+import SecretsStore from '../stores/SecretsStore';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as SecretActions from '../actions/SecretActions';
 import NonState from './NonState';
 import Certificate from './Certificate';
 import Page from './Page';
@@ -10,6 +13,7 @@ import PageHeader from './PageHeader';
 
 interface State {
 	certificates: CertificateTypes.CertificatesRo;
+	secrets: SecretTypes.SecretsRo;
 	disabled: boolean;
 }
 
@@ -36,23 +40,28 @@ export default class Certificates extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			certificates: CertificatesStore.certificates,
+			secrets: SecretsStore.secrets,
 			disabled: false,
 		};
 	}
 
 	componentDidMount(): void {
 		CertificatesStore.addChangeListener(this.onChange);
+		SecretsStore.addChangeListener(this.onChange);
 		CertificateActions.sync();
+		SecretActions.sync();
 	}
 
 	componentWillUnmount(): void {
 		CertificatesStore.removeChangeListener(this.onChange);
+		SecretsStore.removeChangeListener(this.onChange);
 	}
 
 	onChange = (): void => {
 		this.setState({
 			...this.state,
 			certificates: CertificatesStore.certificates,
+			secrets: SecretsStore.secrets,
 		});
 	}
 
@@ -64,6 +73,7 @@ export default class Certificates extends React.Component<{}, State> {
 			certsDom.push(<Certificate
 				key={cert.id}
 				certificate={cert}
+				secrets={this.state.secrets}
 			/>);
 		});
 
