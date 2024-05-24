@@ -12,6 +12,7 @@ import Nodes from './Nodes';
 import Policies from './Policies';
 import Authorities from './Authorities';
 import Certificates from './Certificates';
+import Secrets from './Secrets';
 import Endpoints from './Endpoints';
 import Alerts from './Alerts';
 import Checks from './Checks';
@@ -29,6 +30,7 @@ import * as NodeActions from '../actions/NodeActions';
 import * as PolicyActions from '../actions/PolicyActions';
 import * as AuthorityActions from '../actions/AuthorityActions';
 import * as CertificateActions from '../actions/CertificateActions';
+import * as SecretActions from '../actions/SecretActions';
 import * as EndpointActions from '../actions/EndpointActions';
 import * as LogActions from '../actions/LogActions';
 import * as ServiceActions from '../actions/ServiceActions';
@@ -152,6 +154,13 @@ export default class Main extends React.Component<{}, State> {
 							to="/certificates"
 						>
 							Certificates
+						</ReactRouter.Link>
+						<ReactRouter.Link
+							className="bp3-button bp3-minimal bp3-icon-key"
+							style={css.link}
+							to="/secrets"
+						>
+							Secrets
 						</ReactRouter.Link>
 						<ReactRouter.Link
 							className="bp3-button bp3-minimal bp3-icon-shield"
@@ -332,6 +341,18 @@ export default class Main extends React.Component<{}, State> {
 												disabled: false,
 											});
 										});
+									} else if (pathname === '/secrets') {
+										SecretActions.sync().then((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										}).catch((): void => {
+											this.setState({
+												...this.state,
+												disabled: false,
+											});
+										});
 									} else if (pathname === '/alerts') {
 										AlertActions.sync().then((): void => {
 											this.setState({
@@ -466,6 +487,9 @@ export default class Main extends React.Component<{}, State> {
 				)}/>
 				<ReactRouter.Route path="/certificates" render={() => (
 					<Certificates/>
+				)}/>
+				<ReactRouter.Route path="/secrets" render={() => (
+					<Secrets/>
 				)}/>
 				<ReactRouter.Route path="/alerts" render={() => (
 					<Alerts/>
