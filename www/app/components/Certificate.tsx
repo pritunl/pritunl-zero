@@ -318,6 +318,16 @@ export default class Certificate extends React.Component<Props, State> {
 						}}
 					/>
 					<PageTextArea
+						label="Comment"
+						help="Certificate comment."
+						placeholder="Certificate comment"
+						rows={3}
+						value={cert.comment}
+						onChange={(val: string): void => {
+							this.set('comment', val);
+						}}
+					/>
+					<PageTextArea
 						readOnly={cert.type !== 'text'}
 						label="Private Key"
 						help="Certificate private key in PEM format"
