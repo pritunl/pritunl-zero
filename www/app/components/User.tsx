@@ -136,13 +136,13 @@ export default class User extends React.Component<Props, {}> {
 				{MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'}
 			</div>
 			<div className="flex bp3-cell" style={css.roles}>
-				<span
+				<div
 					className="bp3-tag bp3-intent-danger"
 					style={css.tag}
 					hidden={!user.administrator}
 				>
 					admin
-				</span>
+				</div>
 				{roles}
 			</div>
 		</div>;
