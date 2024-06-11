@@ -2,7 +2,6 @@
 
 ```
 npm install
-rm ./node_modules/react-stripe-checkout/index.d.ts
 cd ./node_modules/@github/webauthn-json/dist/
 ln -sf ./esm/* ./
 cd ../../../../
