@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[56874],{31729:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var r={lastWeek:"eeee 'trecută la' p",yesterday:"'ieri la' p",today:"'astăzi la' p",tomorrow:"'mâine la' p",nextWeek:"eeee 'viitoare la' p",other:"P"},a=function(e,t,a,l){return r[e]};t.default=a,e.exports=t.default}}]);
+//# sourceMappingURL=date-fns-locale-ro-_lib-formatRelative-index-js.js.map

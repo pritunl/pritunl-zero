@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[82545],{11830:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var a={lastWeek:"eeee 'diwethaf am' p",yesterday:"'ddoe am' p",today:"'heddiw am' p",tomorrow:"'yfory am' p",nextWeek:"eeee 'am' p",other:"P"},r=function(e,t,r,o){return a[e]};t.default=r,e.exports=t.default}}]);
+//# sourceMappingURL=date-fns-locale-cy-_lib-formatRelative-index-js.js.map

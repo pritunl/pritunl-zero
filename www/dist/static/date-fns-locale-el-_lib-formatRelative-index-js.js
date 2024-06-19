@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[38768],{91639:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var r={lastWeek:function(e){return 6===e.getUTCDay()?"'το προηγούμενο' eeee 'στις' p":"'την προηγούμενη' eeee 'στις' p"},yesterday:"'χθες στις' p",today:"'σήμερα στις' p",tomorrow:"'αύριο στις' p",nextWeek:"eeee 'στις' p",other:"P"},u=function(e,t){var u=r[e];return"function"==typeof u?u(t):u};t.default=u,e.exports=t.default}}]);
+//# sourceMappingURL=date-fns-locale-el-_lib-formatRelative-index-js.js.map

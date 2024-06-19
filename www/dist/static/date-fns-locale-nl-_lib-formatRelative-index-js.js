@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[7879],{95876:(e,o)=>{Object.defineProperty(o,"__esModule",{value:!0}),o.default=void 0;var t={lastWeek:"'afgelopen' eeee 'om' p",yesterday:"'gisteren om' p",today:"'vandaag om' p",tomorrow:"'morgen om' p",nextWeek:"eeee 'om' p",other:"P"},r=function(e,o,r,a){return t[e]};o.default=r,e.exports=o.default}}]);
+//# sourceMappingURL=date-fns-locale-nl-_lib-formatRelative-index-js.js.map
