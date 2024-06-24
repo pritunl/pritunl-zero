@@ -16,6 +16,7 @@
     "@types/superagent": "8.1.7",
     "ace-builds": "1.33.2",
     "chart.js": "4.4.3",
+    "chartjs-adapter-moment": "1.0.1",
     "events": "3.3.0",
     "highlight.js": "11.9.0",
     "history": "5.3.0",
