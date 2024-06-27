@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Version         = "1.0.3019.96"
+	Version         = "1.0.3138.90"
 	DatabaseVersion = 1
 	ConfPath        = "/etc/pritunl-zero.json"
 	LogPath         = "/var/log/pritunl-zero.log"
@@ -19,6 +19,8 @@ const (
 
 var (
 	Production = true
+	DebugWeb   = false
+	FastExit   = false
 	Interrupt  = false
 	StaticRoot = []string{
 		"www/dist",

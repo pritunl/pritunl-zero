@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3138.90 2024-06-27
+------------------------------
 
 Reduce single sign-on sync rate to fix rate limiting
 
