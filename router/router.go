@@ -215,7 +215,7 @@ func (r *Router) initWeb() (err error) {
 	if r.managementType {
 		r.mRouter = gin.New()
 
-		if !constants.Production {
+		if constants.DebugWeb {
 			r.mRouter.Use(gin.Logger())
 		}
 
@@ -225,7 +225,7 @@ func (r *Router) initWeb() (err error) {
 	if r.userType {
 		r.uRouter = gin.New()
 
-		if !constants.Production {
+		if constants.DebugWeb {
 			r.uRouter.Use(gin.Logger())
 		}
 
@@ -235,7 +235,7 @@ func (r *Router) initWeb() (err error) {
 	if r.proxyType {
 		r.pRouter = gin.New()
 
-		if !constants.Production {
+		if constants.DebugWeb {
 			r.pRouter.Use(gin.Logger())
 		}
 
@@ -530,10 +530,10 @@ func (r *Router) Run() (err error) {
 }
 
 func (r *Router) Init() {
-	if constants.Production {
-		gin.SetMode(gin.ReleaseMode)
-	} else {
+	if constants.DebugWeb {
 		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
 	r.certificates = &Certificates{}
