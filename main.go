@@ -45,8 +45,18 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "start":
-		if flag.Arg(1) == "--debug" {
-			constants.Production = false
+		for _, arg := range flag.Args() {
+			switch arg {
+			case "--debug":
+				constants.Production = false
+				break
+			case "--debug-web":
+				constants.DebugWeb = true
+				break
+			case "--fast-exit":
+				constants.FastExit = false
+				break
+			}
 		}
 
 		Init()
