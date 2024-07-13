@@ -47,7 +47,7 @@ export function light(): void {
 
 export function dark(): void {
 	theme = 'dark';
-	document.body.className = 'bp3-dark';
+	document.body.className = 'bp5-dark';
 	callbacks.forEach((callback: Callback): void => {
 		callback();
 	});
