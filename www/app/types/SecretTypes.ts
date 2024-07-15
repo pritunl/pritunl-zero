@@ -9,6 +9,8 @@ export interface Secret {
 	type?: string;
 	key?: string;
 	value?: string;
+	region?: string;
+	public_key?: string;
 }
 
 export type Secrets = Secret[];
