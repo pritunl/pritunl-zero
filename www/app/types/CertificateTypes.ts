@@ -14,6 +14,7 @@ export interface Info {
 export interface Certificate {
 	id: string;
 	name?: string;
+	comment?: string;
 	type?: string;
 	key?: string;
 	certificate?: string;
