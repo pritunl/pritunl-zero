@@ -49,6 +49,7 @@ type auth struct {
 	Id                    string               `bson:"_id"`
 	Server                string               `bson:"server" default:"https://auth.pritunl.com"`
 	Sync                  int                  `bson:"sync" json:"sync" default:"1800"`
+	CookieAge             int                  `bson:"cookie_age" json:"cookie_age" default:"63072000"`
 	Providers             []*Provider          `bson:"providers"`
 	SecondaryProviders    []*SecondaryProvider `bson:"secondary_providers"`
 	FastLogin             bool                 `bson:"fast_login" json:"fast_login"`
