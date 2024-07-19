@@ -59,10 +59,10 @@ func Node(testing bool) (err error) {
 
 	logrus.Info("cmd.node: Shutting down")
 	go routr.Shutdown()
-	if constants.Production {
+	if !constants.Production || constants.FastExit {
 		time.Sleep(300 * time.Millisecond)
 	} else {
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(3 * time.Second)
 	}
 
 	return
