@@ -54,7 +54,7 @@ func main() {
 				constants.DebugWeb = true
 				break
 			case "--fast-exit":
-				constants.FastExit = false
+				constants.FastExit = true
 				break
 			}
 		}
