@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Refactor web code
+
 Version 1.0.3138.90 2024-06-27
 ------------------------------
 
