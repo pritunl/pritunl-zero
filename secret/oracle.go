@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/oracle/oci-go-sdk/v55/common"
-	"github.com/oracle/oci-go-sdk/v55/core"
-	"github.com/oracle/oci-go-sdk/v55/dns"
+	"github.com/oracle/oci-go-sdk/v65/common"
+	"github.com/oracle/oci-go-sdk/v65/core"
+	"github.com/oracle/oci-go-sdk/v65/dns"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
