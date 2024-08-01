@@ -1,6 +1,8 @@
 module github.com/pritunl/pritunl-zero
 
-go 1.18
+go 1.21.0
+
+toolchain go1.22.5
 
 require (
 	github.com/aws/aws-sdk-go v1.49.21
@@ -11,7 +13,7 @@ require (
 	github.com/gorilla/sessions v1.2.2
 	github.com/gorilla/websocket v1.5.1
 	github.com/opensearch-project/opensearch-go v1.1.0
-	github.com/oracle/oci-go-sdk/v55 v55.1.0
+	github.com/oracle/oci-go-sdk/v65 v65.69.3
 	github.com/pritunl/mongo-go-driver v1.11.3
 	github.com/pritunl/webauthn v1.0.2
 	github.com/sirupsen/logrus v1.9.3
@@ -39,6 +41,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.16.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -62,7 +65,7 @@ require (
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sony/gobreaker v0.4.2-0.20210216022020-dd874f9dd33b // indirect
+	github.com/sony/gobreaker v0.5.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
