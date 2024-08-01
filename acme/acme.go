@@ -14,6 +14,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/dns"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secret"
@@ -46,7 +47,7 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		return
 	}
 
-	var dnsSvc DnsService
+	var dnsSvc dns.Service
 	if acmeType == certificate.AcmeDNS {
 		secr, e := secret.Get(db, cert.AcmeSecret)
 		if e != nil {
@@ -62,11 +63,11 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 		}
 
 		if acmeAuth == certificate.AcmeAWS {
-			dnsSvc = &Aws{}
+			dnsSvc = &dns.Aws{}
 		} else if acmeAuth == certificate.AcmeCloudflare {
-			dnsSvc = &Cloudflare{}
+			dnsSvc = &dns.Cloudflare{}
 		} else if acmeAuth == certificate.AcmeOracleCloud {
-			dnsSvc = &Oracle{}
+			dnsSvc = &dns.Oracle{}
 		} else {
 			err = &errortypes.UnknownError{
 				errors.Wrapf(err,
@@ -221,13 +222,27 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 			chalDomain = fmt.Sprintf(
 				"_acme-challenge.%s.", authz.Identifier.Value)
 
-			err = dnsSvc.DnsTxtUpsert(db, chalDomain, chalToken)
+			ops := []*dns.Operation{
+				&dns.Operation{
+					Operation: dns.UPSERT,
+					Value:     "\"" + chalToken + "\"",
+				},
+			}
+
+			err = dnsSvc.DnsCommit(db, chalDomain, "TXT", ops)
 			if err != nil {
 				return
 			}
 
 			defer func() {
-				e := dnsSvc.DnsTxtDelete(db, chalDomain, chalToken)
+				delOps := []*dns.Operation{
+					&dns.Operation{
+						Operation: dns.DELETE,
+						Value:     "\"" + chalToken + "\"",
+					},
+				}
+
+				e := dnsSvc.DnsCommit(db, chalDomain, "TXT", delOps)
 				if e != nil {
 					logrus.WithFields(logrus.Fields{
 						"certificate": cert.Name,
