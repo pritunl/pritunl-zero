@@ -206,6 +206,14 @@ body.bp5-dark {
   }
 }
 
+.bp5-card-header {
+  background-color: rgba(0, 0, 0, 0.06)
+}
+
+.bp5-dark .bp5-card-header {
+  background-color: rgba(0, 0, 0, 0.13)
+}
+
 .bp5-toast-container.bp5-toast-container-bottom {
   position: fixed !important;
 }
