@@ -44,7 +44,7 @@ type Device struct {
 func (d *Device) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
-	d.Name = utils.FilterStr(d.Name, 32)
+	d.Name = utils.FilterName(d.Name)
 
 	if len(d.Name) == 0 {
 		errData = &errortypes.ErrorData{

@@ -1504,6 +1504,8 @@ func (a *Authority) SetPublicKeyPem() (err error) {
 func (a *Authority) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	a.Name = utils.FilterName(a.Name)
+
 	if a.Type == "" {
 		a.Type = Local
 	}

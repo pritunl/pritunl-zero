@@ -26,6 +26,8 @@ type Secret struct {
 func (c *Secret) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	c.Name = utils.FilterName(c.Name)
+
 	switch c.Type {
 	case AWS, "":
 		c.Type = AWS

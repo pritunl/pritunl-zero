@@ -14,6 +14,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -45,6 +46,8 @@ type Certificate struct {
 
 func (c *Certificate) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
+
+	c.Name = utils.FilterName(c.Name)
 
 	if c.Type == "" {
 		c.Type = Text

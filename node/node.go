@@ -118,6 +118,8 @@ func (n *Node) GetWebauthn(origin string, strict bool) (
 func (n *Node) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	n.Name = utils.FilterName(n.Name)
+
 	if n.Services == nil {
 		n.Services = []primitive.ObjectID{}
 	}

@@ -162,6 +162,8 @@ func (e *Endpoint) GenerateKey() (err error) {
 func (e *Endpoint) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	e.Name = utils.FilterName(e.Name)
+
 	if e.Id.IsZero() {
 		e.Id, err = utils.RandObjectId()
 		if err != nil {

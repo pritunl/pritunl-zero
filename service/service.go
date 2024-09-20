@@ -121,6 +121,8 @@ func (s *Service) RemoveWhitelistNetworks() (err error) {
 func (s *Service) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	s.Name = utils.FilterName(s.Name)
+
 	if s.Type == "" {
 		s.Type = Http
 	}

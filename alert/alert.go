@@ -23,6 +23,8 @@ type Alert struct {
 func (a *Alert) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	a.Name = utils.FilterName(a.Name)
+
 	if a.Id.IsZero() {
 		a.Id, err = utils.RandObjectId()
 		if err != nil {

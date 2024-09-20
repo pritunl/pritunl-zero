@@ -42,6 +42,8 @@ type Header struct {
 func (c *Check) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
+	c.Name = utils.FilterName(c.Name)
+
 	if c.Id.IsZero() {
 		c.Id, err = utils.RandObjectId()
 		if err != nil {
