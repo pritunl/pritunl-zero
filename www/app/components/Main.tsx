@@ -1,6 +1,5 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as ReactRouter from 'react-router-dom';
 import * as Theme from '../Theme';
 import * as SubscriptionTypes from '../types/SubscriptionTypes';
 import SubscriptionStore from '../stores/SubscriptionStore';
@@ -19,6 +18,9 @@ import Checks from './Checks';
 import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
+import RouterRoute from './RouterRoute';
+import RouterRoutes from './RouterRoutes';
+import RouterLink from './RouterLink';
 import * as UserActions from '../actions/UserActions';
 import * as SessionActions from '../actions/SessionActions';
 import * as DeviceActions from '../actions/DeviceActions';

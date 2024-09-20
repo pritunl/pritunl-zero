@@ -20,13 +20,13 @@ export default class SwitchNull extends React.Component<Props, {}> {
 			style.opacity = 0.5;
 		}
 
-		return <label className="bp3-control bp3-switch" style={style}>
+		return <label className="bp5-control bp5-switch" style={style}>
 			<input
 				type="checkbox"
 				checked={!!this.props.checked}
 				onChange={this.props.onToggle}
 			/>
-			<span className="bp3-control-indicator"/>
+			<span className="bp5-control-indicator"/>
 			{this.props.label}
 		</label>;
 	}

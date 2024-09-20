@@ -179,20 +179,20 @@ export default class EndpointCharts extends React.Component<Props, State> {
 
 		let refreshDisabled = false;
 		let refreshLabel = '';
-		let refreshClass = 'bp3-button';
+		let refreshClass = 'bp5-button';
 		if (Object.entries(this.state.cancelable).length) {
 			refreshLabel = 'Cancel';
-			refreshClass += ' bp3-intent-warning bp3-icon-delete'
+			refreshClass += ' bp5-intent-warning bp5-icon-delete'
 		} else {
 			if (Object.entries(this.state.loading).length) {
 				refreshDisabled = true;
 			}
 			refreshLabel = 'Refresh';
-			refreshClass += ' bp3-intent-success bp3-icon-refresh'
+			refreshClass += ' bp5-intent-success bp5-icon-refresh'
 		}
 
 		return <div ref={this.chartBoxRef}>
-			<div className="layout horizontal wrap bp3-border" style={css.header}>
+			<div className="layout horizontal wrap bp5-border" style={css.header}>
 				<h3 style={css.heading}>Charts</h3>
 				<div className="flex"/>
 				<div style={css.buttons}>

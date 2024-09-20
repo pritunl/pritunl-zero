@@ -79,7 +79,7 @@ export default class UsersFilter extends React.Component<Props, {}> {
 					this.props.onFilter(filter);
 				}}
 			/>
-			<div className="bp3-select" style={css.type}>
+			<div className="bp5-select" style={css.type}>
 				<select
 					value={this.props.filter.type || 'any'}
 					onChange={(evt): void => {

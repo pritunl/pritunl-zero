@@ -165,17 +165,17 @@ export default class Device extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="bp3-card"
+			className="bp5-card"
 			style={css.card}
 		>
 			<div className="layout horizontal">
 				{deviceIcon}
 				<div
-					className="bp3-input-group flex"
+					className="bp5-input-group flex"
 					style={css.group}
 				>
 					<input
-						className="bp3-input"
+						className="bp5-input"
 						type="text"
 						placeholder="Device name"
 						value={device.name}
@@ -189,7 +189,7 @@ export default class Device extends React.Component<Props, State> {
 						}}
 					/>
 					<button
-						className="bp3-button bp3-minimal bp3-intent-primary bp3-icon-tick"
+						className="bp5-button bp5-minimal bp5-intent-primary bp5-icon-tick"
 						hidden={!this.state.device}
 						disabled={this.state.disabled}
 						onClick={this.onSave}
@@ -197,8 +197,8 @@ export default class Device extends React.Component<Props, State> {
 				</div>
 				<div>
 					<ConfirmButton
-						className="bp3-minimal bp3-intent-danger bp3-icon-trash"
-						progressClassName="bp3-intent-danger"
+						className="bp5-minimal bp5-intent-danger bp5-icon-trash"
+						progressClassName="bp5-intent-danger"
 						confirmMsg="Confirm device remove"
 						disabled={this.state.disabled}
 						onConfirm={this.onDelete}
@@ -207,32 +207,32 @@ export default class Device extends React.Component<Props, State> {
 			</div>
 			<div className="layout vertical" style={css.info}>
 				<div style={css.item}>
-					ID: <span className="bp3-text-muted">
+					ID: <span className="bp5-text-muted">
 						{device.id}
 					</span>
 				</div>
 				<div style={css.item}>
-					Type: <span className="bp3-text-muted">
+					Type: <span className="bp5-text-muted">
 						{deviceType}
 					</span>
 				</div>
 				<div style={css.item}>
-					Mode: <span className="bp3-text-muted">
+					Mode: <span className="bp5-text-muted">
 						{deviceMode}
 					</span>
 				</div>
 				<div style={css.item} hidden={!device.wan_rp_id}>
-					Domain: <span className="bp3-text-muted">
+					Domain: <span className="bp5-text-muted">
 						{device.wan_rp_id}
 					</span>
 				</div>
 				<div style={css.item}>
-					Registered: <span className="bp3-text-muted">
+					Registered: <span className="bp5-text-muted">
 						{MiscUtils.formatDateMid(device.timestamp)}
 					</span>
 				</div>
 				<div style={css.item}>
-					Last Active: <span className="bp3-text-muted">
+					Last Active: <span className="bp5-text-muted">
 						{MiscUtils.formatDateMid(device.last_active)}
 					</span>
 				</div>

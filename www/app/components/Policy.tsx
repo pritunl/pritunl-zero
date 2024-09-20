@@ -434,13 +434,13 @@ export default class Policy extends React.Component<Props, State> {
 
 			services.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={service.id}
 				>
 					{service.name}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveService(service.id);
 						}}
@@ -472,13 +472,13 @@ export default class Policy extends React.Component<Props, State> {
 
 			authorities.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={authority.id}
 				>
 					{authority.name}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveAuthority(authority.id);
 						}}
@@ -505,13 +505,13 @@ export default class Policy extends React.Component<Props, State> {
 		for (let role of policy.roles) {
 			roles.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -589,7 +589,7 @@ export default class Policy extends React.Component<Props, State> {
 			providerIds.indexOf(policy.authority_secondary) !== -1;
 
 		return <div
-			className="bp3-card"
+			className="bp5-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
@@ -597,9 +597,9 @@ export default class Policy extends React.Component<Props, State> {
 					<div style={css.remove}>
 						<ConfirmButton
 							safe={true}
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
-							progressClassName="bp3-intent-danger"
-							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
+							progressClassName="bp5-intent-danger"
+							dialogClassName="bp5-intent-danger bp5-icon-delete"
 							dialogLabel="Delete Policy"
 							confirmMsg="Permanently delete this policy"
 							confirmInput={true}
@@ -618,7 +618,7 @@ export default class Policy extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<label className="bp3-label">
+					<label className="bp5-label">
 						Roles
 						<Help
 							title="Roles"
@@ -629,7 +629,7 @@ export default class Policy extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -643,7 +643,7 @@ export default class Policy extends React.Component<Props, State> {
 						onSubmit={this.onAddRole}
 					/>
 					<label
-						className="bp3-label"
+						className="bp5-label"
 						style={css.label}
 					>
 						Services
@@ -659,7 +659,7 @@ export default class Policy extends React.Component<Props, State> {
 						label="Add Service"
 						value={this.state.addService}
 						disabled={!this.props.services.length}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -671,7 +671,7 @@ export default class Policy extends React.Component<Props, State> {
 						{servicesSelect}
 					</PageSelectButton>
 					<label
-						className="bp3-label"
+						className="bp5-label"
 						style={css.label}
 					>
 						Authorities
@@ -687,7 +687,7 @@ export default class Policy extends React.Component<Props, State> {
 						label="Add Authority"
 						value={this.state.addAuthority}
 						disabled={!this.props.authorities.length}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,

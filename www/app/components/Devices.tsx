@@ -237,10 +237,10 @@ export default class Devices extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div style={css.groupBox} className="layout horizontal">
 						<div
-							className="bp3-control-group"
+							className="bp5-control-group"
 							style={css.group}
 						>
-							<div className="bp3-select">
+							<div className="bp5-select">
 								<select
 									value={this.state.deviceType}
 									onChange={(evt): void => {
@@ -259,7 +259,7 @@ export default class Devices extends React.Component<Props, State> {
 							</div>
 							<div className="layout horizontal" style={css.inputBox}>
 								<input
-									className="bp3-input"
+									className="bp5-input"
 									type="text"
 									placeholder="Device name"
 									value={this.state.deviceName}
@@ -277,7 +277,7 @@ export default class Devices extends React.Component<Props, State> {
 									}}
 								/>
 								<input
-									className="bp3-input"
+									className="bp5-input"
 									hidden={this.state.deviceType !== 'smart_card'}
 									type="text"
 									placeholder="Device SSH public key"
@@ -295,7 +295,7 @@ export default class Devices extends React.Component<Props, State> {
 									}}
 								/>
 								<input
-									className="bp3-input"
+									className="bp5-input"
 									hidden={this.state.deviceType !== 'phone_call' &&
 										this.state.deviceType !== 'phone_message'}
 									type="text"
@@ -316,7 +316,7 @@ export default class Devices extends React.Component<Props, State> {
 							</div>
 							<div>
 								<button
-									className="bp3-button bp3-intent-success bp3-icon-add"
+									className="bp5-button bp5-intent-success bp5-icon-add"
 									disabled={this.state.disabled}
 									onClick={this.addDevice}
 								>Add Device</button>
@@ -330,7 +330,7 @@ export default class Devices extends React.Component<Props, State> {
 			</div>
 			<NonState
 				hidden={!!devices.length}
-				iconClass="bp3-icon-id-number"
+				iconClass="bp5-icon-id-number"
 				title="No devices"
 			/>
 		</div>;

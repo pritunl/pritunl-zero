@@ -84,7 +84,7 @@ export default class Certificates extends React.Component<{}, State> {
 					<div className="flex"/>
 					<div style={css.buttons}>
 						<button
-							className="bp3-button bp3-intent-success bp3-icon-add"
+							className="bp5-button bp5-intent-success bp5-icon-add"
 							style={css.button}
 							disabled={this.state.disabled}
 							type="button"
@@ -114,7 +114,7 @@ export default class Certificates extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!certsDom.length}
-				iconClass="bp3-icon-endorsed"
+				iconClass="bp5-icon-endorsed"
 				title="No certificates"
 				description="Add a new certificate to get started."
 			/>

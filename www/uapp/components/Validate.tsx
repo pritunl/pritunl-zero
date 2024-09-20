@@ -166,8 +166,8 @@ export default class Validate extends React.Component<Props, State> {
 	device(): JSX.Element {
 		return <div>
 			<div style={css.body}>
-				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
-					<span className="bp3-icon bp3-icon-key"/>
+				<div className="bp5-non-ideal-state-visual bp5-non-ideal-state-icon">
+					<span className="bp5-icon bp5-icon-key"/>
 				</div>
 				<h4 style={css.title}>
 					{this.state.secondary.label}
@@ -228,8 +228,8 @@ export default class Validate extends React.Component<Props, State> {
 	secondary(): JSX.Element {
 		return <div>
 			<div style={css.body}>
-				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
-					<span className="bp3-icon bp3-icon-key"/>
+				<div className="bp5-non-ideal-state-visual bp5-non-ideal-state-icon">
+					<span className="bp5-icon bp5-icon-key"/>
 				</div>
 				<h4 style={css.title}>
 					{this.state.secondary.label}
@@ -240,7 +240,7 @@ export default class Validate extends React.Component<Props, State> {
 			</div>
 			<div className="layout vertical center-justified" style={css.buttons}>
 				<button
-					className="bp3-button"
+					className="bp5-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.push}
@@ -259,7 +259,7 @@ export default class Validate extends React.Component<Props, State> {
 					Push
 				</button>
 				<button
-					className="bp3-button"
+					className="bp5-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.phone}
@@ -278,7 +278,7 @@ export default class Validate extends React.Component<Props, State> {
 					Call Me
 				</button>
 				<button
-					className="bp3-button"
+					className="bp5-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.sms}
@@ -297,7 +297,7 @@ export default class Validate extends React.Component<Props, State> {
 					Text Me
 				</button>
 				<input
-					className="bp3-input"
+					className="bp5-input"
 					style={css.secondaryInput}
 					hidden={!this.state.secondary.passcode}
 					disabled={!this.state.secondaryState.passcode}
@@ -326,7 +326,7 @@ export default class Validate extends React.Component<Props, State> {
 					}}
 				/>
 				<button
-					className="bp3-button"
+					className="bp5-button"
 					style={css.secondaryButton}
 					type="button"
 					hidden={!this.state.secondary.passcode}
@@ -358,8 +358,8 @@ export default class Validate extends React.Component<Props, State> {
 
 		return <div>
 			<div style={css.body}>
-				<div className="bp3-non-ideal-state-visual bp3-non-ideal-state-icon">
-					<span className="bp3-icon bp3-icon-endorsed"/>
+				<div className="bp5-non-ideal-state-visual bp5-non-ideal-state-icon">
+					<span className="bp5-icon bp5-icon-endorsed"/>
 				</div>
 				<h4 style={css.title}>
 					Validate SSH Key
@@ -371,7 +371,7 @@ export default class Validate extends React.Component<Props, State> {
 			</div>
 			<div className="layout horizontal center-justified" style={css.buttons}>
 				<button
-					className="bp3-button bp3-large bp3-intent-danger bp3-icon-delete"
+					className="bp5-button bp5-large bp5-intent-danger bp5-icon-delete"
 					style={css.button}
 					type="button"
 					disabled={this.state.disabled}
@@ -408,7 +408,7 @@ export default class Validate extends React.Component<Props, State> {
 					Deny
 				</button>
 				<button
-					className="bp3-button bp3-large bp3-intent-success bp3-icon-add"
+					className="bp5-button bp5-large bp5-intent-success bp5-icon-add"
 					style={css.button}
 					type="button"
 					disabled={this.state.disabled}

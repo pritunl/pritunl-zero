@@ -77,25 +77,25 @@ export default class Log extends React.Component<Props, State> {
 	render(): JSX.Element {
 		let log = this.props.log;
 
-		let className = 'bp3-cell ';
+		let className = 'bp5-cell ';
 		switch (log.level) {
 			case 'debug':
-				className += 'bp3-text-intent-success';
+				className += 'bp5-text-intent-success';
 				break;
 			case 'info':
-				className += 'bp3-text-intent-primary';
+				className += 'bp5-text-intent-primary';
 				break;
 			case 'warning':
-				className += 'bp3-text-intent-warning';
+				className += 'bp5-text-intent-warning';
 				break;
 			case 'error':
-				className += 'bp3-text-intent-danger';
+				className += 'bp5-text-intent-danger';
 				break;
 			case 'fatal':
-				className += 'bp3-text-intent-danger';
+				className += 'bp5-text-intent-danger';
 				break;
 			case 'panic':
-				className += 'bp3-text-intent-danger';
+				className += 'bp5-text-intent-danger';
 				break;
 		}
 
@@ -118,7 +118,7 @@ export default class Log extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="bp3-card bp3-row"
+			className="bp5-card bp5-row"
 			style={css.card}
 		>
 			<div className={className} style={css.timestamp}>
@@ -130,12 +130,12 @@ export default class Log extends React.Component<Props, State> {
 			<div className={className} style={css.message}>
 				{log.message}
 			</div>
-			<div className="bp3-cell" style={css.fields}>
+			<div className="bp5-cell" style={css.fields}>
 				{fields}
 			</div>
-			<div className="bp3-cell" style={css.buttons}>
+			<div className="bp5-cell" style={css.buttons}>
 				<button
-					className="bp3-button bp3-minimal bp3-icon-document-open"
+					className="bp5-button bp5-minimal bp5-icon-document-open"
 					hidden={!log.stack}
 					onClick={(): void => {
 						this.setState({
@@ -159,7 +159,7 @@ export default class Log extends React.Component<Props, State> {
 				}}
 			>
 				<textarea
-					className="bp3-dialog-body bp3-input"
+					className="bp5-dialog-body bp5-input"
 					style={css.textarea}
 					autoCapitalize="off"
 					spellCheck={false}

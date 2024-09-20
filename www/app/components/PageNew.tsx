@@ -33,7 +33,7 @@ export default class PageNew extends React.Component<Props, {}> {
 				</span>
 				<div style={css.buttons}>
 					<button
-						className="bp3-button bp3-intent-success bp3-icon-add"
+						className="bp5-button bp5-intent-success bp5-icon-add"
 						style={css.button}
 						type="button"
 						disabled={!this.props.changed || this.props.disabled}

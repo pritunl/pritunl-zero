@@ -42,28 +42,28 @@ export default class Session extends React.Component<Props, {}> {
 				style={css.buttons}
 			>
 				<a
-					className="bp3-button bp3-large bp3-intent-primary bp3-icon-download"
+					className="bp5-button bp5-large bp5-intent-primary bp5-icon-download"
 					style={css.button}
 					href="https://docs.pritunl.com/v1/docs/ssh-client"
 				>
 					Install SSH Client
 				</a>
 				<button
-					className="bp3-button bp3-large bp3-intent-success bp3-icon-id-number"
+					className="bp5-button bp5-large bp5-intent-success bp5-icon-id-number"
 					style={css.button}
 					onClick={this.props.onDevices}
 				>
 					Security Devices
 				</button>
 				<a
-					className="bp3-button bp3-large bp3-intent-warning bp3-icon-delete"
+					className="bp5-button bp5-large bp5-intent-warning bp5-icon-delete"
 					style={css.button}
 					href="/logout"
 				>
 					Logout
 				</a>
 				<a
-					className="bp3-button bp3-large bp3-intent-danger bp3-icon-trash"
+					className="bp5-button bp5-large bp5-intent-danger bp5-icon-trash"
 					style={css.button}
 					href="/logout_all"
 				>

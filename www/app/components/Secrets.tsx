@@ -74,7 +74,7 @@ export default class Secrets extends React.Component<{}, State> {
 					<div className="flex"/>
 					<div style={css.buttons}>
 						<button
-							className="bp3-button bp3-intent-success bp3-icon-add"
+							className="bp5-button bp5-intent-success bp5-icon-add"
 							style={css.button}
 							disabled={this.state.disabled}
 							type="button"
@@ -104,7 +104,7 @@ export default class Secrets extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!certsDom.length}
-				iconClass="bp3-icon-key"
+				iconClass="bp5-icon-key"
 				title="No secrets"
 				description="Add a new secret to get started."
 			/>

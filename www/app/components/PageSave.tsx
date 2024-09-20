@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 interface Props {
+	children?: React.ReactNode
 	style?: React.CSSProperties;
 	message: string;
 	changed: boolean;
@@ -51,7 +52,7 @@ export default class PageSave extends React.Component<Props, {}> {
 				</span>
 				<div style={css.buttons}>
 					<button
-						className="bp3-button bp3-icon-cross"
+						className="bp5-button bp5-icon-cross"
 						style={css.button}
 						hidden={this.props.hidden}
 						type="button"
@@ -61,7 +62,7 @@ export default class PageSave extends React.Component<Props, {}> {
 						Cancel
 					</button>
 					<button
-						className="bp3-button bp3-intent-success bp3-icon-tick"
+						className="bp5-button bp5-intent-success bp5-icon-tick"
 						style={css.button}
 						hidden={this.props.hidden}
 						type="button"

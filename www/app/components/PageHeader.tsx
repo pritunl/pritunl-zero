@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 interface Props {
+	children?: React.ReactNode
 	label?: string;
 }
 
@@ -24,7 +25,7 @@ export default class PageHeader extends React.Component<Props, {}> {
 			label = <h2 style={css.label}>{this.props.label}</h2>;
 		}
 
-		return <div className="bp3-border" style={css.header}>
+		return <div className="bp5-border" style={css.header}>
 			{label}
 			{this.props.children}
 		</div>;

@@ -370,13 +370,13 @@ export default class AlertDetailed extends React.Component<Props, State> {
 		for (let role of alert.roles) {
 			roles.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -389,13 +389,13 @@ export default class AlertDetailed extends React.Component<Props, State> {
 		for (let ignore of (alert.ignores || [])) {
 			ignores.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={ignore}
 				>
 					{ignore}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveIgnore(ignore);
 						}}
@@ -463,7 +463,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 		}
 
 		return <td
-			className="bp3-cell"
+			className="bp5-cell"
 			colSpan={2}
 			style={css.card}
 		>
@@ -482,7 +482,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 					>
 						<div>
 							<label
-								className="bp3-control bp3-checkbox"
+								className="bp5-control bp5-checkbox"
 								style={css.select}
 							>
 								<input
@@ -494,15 +494,15 @@ export default class AlertDetailed extends React.Component<Props, State> {
 										this.props.onSelect(evt.shiftKey);
 									}}
 								/>
-								<span className="bp3-control-indicator"/>
+								<span className="bp5-control-indicator"/>
 							</label>
 						</div>
 						<div className="flex tab-close"/>
 						<ConfirmButton
 							safe={true}
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
-							progressClassName="bp3-intent-danger"
-							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
+							progressClassName="bp5-intent-danger"
+							dialogClassName="bp5-intent-danger bp5-icon-delete"
 							dialogLabel="Delete Alert"
 							confirmMsg="Permanently delete this alert"
 							confirmInput={true}
@@ -522,7 +522,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 							this.set('name', val);
 						}}
 					/>
-					<label className="bp3-label">
+					<label className="bp5-label">
 						Roles
 						<Help
 							title="Roles"
@@ -534,7 +534,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 					</label>
 					<PageInputButton
 						disabled={this.state.disabled}
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -581,7 +581,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 							value="check_http_failed"
 						>HTTP Health Check Failed</option>
 					</PageSelect>
-					<label className="bp3-label" hidden={!ignoreShow}>
+					<label className="bp5-label" hidden={!ignoreShow}>
 						{ignoreLabel}
 						<Help
 							title={ignoreTitle}
@@ -593,7 +593,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 					</label>
 					<PageInputButton
 						disabled={this.state.disabled}
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add ignore"

@@ -441,13 +441,13 @@ export default class Node extends React.Component<Props, State> {
 
 			services.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={service.id}
 				>
 					{service.name}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveService(service.id);
 						}}
@@ -476,13 +476,13 @@ export default class Node extends React.Component<Props, State> {
 
 			authorities.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={authority.id}
 				>
 					{authority.name}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveAuthority(authority.id);
 						}}
@@ -519,13 +519,13 @@ export default class Node extends React.Component<Props, State> {
 
 			certificates.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={cert.id}
 				>
 					{cert.name}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveCert(cert.id);
 						}}
@@ -557,17 +557,17 @@ export default class Node extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="bp3-card"
+			className="bp5-card"
 			style={css.card}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
 							safe={true}
-							progressClassName="bp3-intent-danger"
-							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							progressClassName="bp5-intent-danger"
+							dialogClassName="bp5-intent-danger bp5-icon-delete"
 							dialogLabel="Delete Node"
 							confirmMsg="Permanently delete this node"
 							confirmInput={true}
@@ -675,10 +675,10 @@ export default class Node extends React.Component<Props, State> {
 							this.set('webauthn_domain', val);
 						}}
 					/>
-					<label className="bp3-label" style={css.label}>
+					<label className="bp5-label" style={css.label}>
 						Protocol and Port
-						<div className="bp3-control-group" style={css.inputGroup}>
-							<div className="bp3-select" style={css.protocol}>
+						<div className="bp5-control-group" style={css.inputGroup}>
+							<div className="bp5-select" style={css.protocol}>
 								<select
 									value={node.protocol || 'https'}
 									onChange={(evt): void => {
@@ -690,7 +690,7 @@ export default class Node extends React.Component<Props, State> {
 								</select>
 							</div>
 							<input
-								className="bp3-input"
+								className="bp5-input"
 								style={css.port}
 								type="text"
 								autoCapitalize="off"
@@ -713,7 +713,7 @@ export default class Node extends React.Component<Props, State> {
 						}}
 					/>
 					<label
-						className="bp3-label"
+						className="bp5-label"
 						style={css.label}
 						hidden={node.type.indexOf('proxy') === -1}
 					>
@@ -731,7 +731,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Add Service"
 						value={this.state.addService}
 						disabled={this.state.disabled || !this.props.services.length}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -743,7 +743,7 @@ export default class Node extends React.Component<Props, State> {
 						{servicesSelect}
 					</PageSelectButton>
 					<label
-						className="bp3-label"
+						className="bp5-label"
 						style={css.label}
 						hidden={node.type.indexOf('bastion') === -1}
 					>
@@ -761,7 +761,7 @@ export default class Node extends React.Component<Props, State> {
 						hidden={node.type.indexOf('bastion') === -1}
 						value={this.state.addAuthority}
 						disabled={this.state.disabled || !this.props.authorities.length}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -785,7 +785,7 @@ export default class Node extends React.Component<Props, State> {
 								value: node.software_version || 'Unknown',
 							},
 							{
-								valueClass: active ? '' : 'bp3-text-intent-danger',
+								valueClass: active ? '' : 'bp5-text-intent-danger',
 								label: 'Timestamp',
 								value: MiscUtils.formatDate(node.timestamp) || 'Inactive',
 							},
@@ -800,29 +800,29 @@ export default class Node extends React.Component<Props, State> {
 						]}
 						bars={[
 							{
-								progressClass: 'bp3-no-stripes bp3-intent-primary',
+								progressClass: 'bp5-no-stripes bp5-intent-primary',
 								label: 'Memory',
 								value: node.memory,
 							},
 							{
-								progressClass: 'bp3-no-stripes bp3-intent-success',
+								progressClass: 'bp5-no-stripes bp5-intent-success',
 								label: 'Load1',
 								value: node.load1,
 							},
 							{
-								progressClass: 'bp3-no-stripes bp3-intent-warning',
+								progressClass: 'bp5-no-stripes bp5-intent-warning',
 								label: 'Load5',
 								value: node.load5,
 							},
 							{
-								progressClass: 'bp3-no-stripes bp3-intent-danger',
+								progressClass: 'bp5-no-stripes bp5-intent-danger',
 								label: 'Load15',
 								value: node.load15,
 							},
 						]}
 					/>
 					<label
-						className="bp3-label"
+						className="bp5-label"
 						style={css.label}
 						hidden={node.protocol === 'http'}
 					>
@@ -840,7 +840,7 @@ export default class Node extends React.Component<Props, State> {
 						label="Add Certificate"
 						value={this.state.addCert}
 						disabled={this.state.disabled || !hasCertificates}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,

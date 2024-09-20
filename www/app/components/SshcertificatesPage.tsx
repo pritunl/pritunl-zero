@@ -95,7 +95,7 @@ export default class SshcertificatesPage extends React.Component<
 
 		return <div className="layout horizontal center-justified">
 			<button
-				className="bp3-button bp3-minimal bp3-icon-chevron-backward"
+				className="bp5-button bp5-minimal bp5-icon-chevron-backward"
 				hidden={pages < 5}
 				disabled={page === 0}
 				type="button"
@@ -107,7 +107,7 @@ export default class SshcertificatesPage extends React.Component<
 				}}
 			/>
 			<button
-				className="bp3-button bp3-minimal bp3-icon-chevron-left"
+				className="bp5-button bp5-minimal bp5-icon-chevron-left"
 				style={css.button}
 				disabled={page === 0}
 				type="button"
@@ -120,7 +120,7 @@ export default class SshcertificatesPage extends React.Component<
 			/>
 			{links}
 			<button
-				className="bp3-button bp3-minimal bp3-icon-chevron-right"
+				className="bp5-button bp5-minimal bp5-icon-chevron-right"
 				style={css.button}
 				disabled={page === pages - 1}
 				type="button"
@@ -133,7 +133,7 @@ export default class SshcertificatesPage extends React.Component<
 				}}
 			/>
 			<button
-				className="bp3-button bp3-minimal bp3-icon-chevron-forward"
+				className="bp5-button bp5-minimal bp5-icon-chevron-forward"
 				hidden={pages < 5}
 				disabled={page === pages - 1}
 				type="button"

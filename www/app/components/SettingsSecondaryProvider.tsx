@@ -251,7 +251,7 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 				break;
 		}
 
-		return <div className="bp3-card" style={css.card}>
+		return <div className="bp5-card" style={css.card}>
 			<h6 style={css.label}>{label}</h6>
 			<PageInfo
 				fields={[
@@ -287,7 +287,7 @@ export default class SettingsSecondaryProvider extends React.Component<Props, {}
 			/>
 			{options}
 			<button
-				className="bp3-button bp3-intent-danger"
+				className="bp5-button bp5-intent-danger"
 				onClick={(): void => {
 					this.props.onRemove();
 				}}

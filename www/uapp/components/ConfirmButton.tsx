@@ -154,7 +154,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 
 		let className = this.props.className || '';
 		if (!this.props.label) {
-			className += ' bp3-button-empty';
+			className += ' bp5-button-empty';
 		}
 
 		if (Constants.mobile) {
@@ -163,7 +163,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 
 			return <div style={css.box}>
 				<button
-					className={'bp3-button ' + className}
+					className={'bp5-button ' + className}
 					style={style}
 					type="button"
 					hidden={this.props.hidden}
@@ -183,18 +183,18 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					portalContainer={document.body}
 					onClose={this.closeDialog}
 				>
-					<div className="bp3-dialog-body">
+					<div className="bp5-dialog-body">
 						{confirmMsg}
 					</div>
-					<div className="bp3-dialog-footer">
-						<div className="bp3-dialog-footer-actions">
+					<div className="bp5-dialog-footer">
+						<div className="bp5-dialog-footer-actions">
 							<button
-								className="bp3-button"
+								className="bp5-button"
 								type="button"
 								onClick={this.closeDialog}
 							>Cancel</button>
 							<button
-								className="bp3-button bp3-intent-primary"
+								className="bp5-button bp5-intent-primary"
 								type="button"
 								onClick={this.closeDialogConfirm}
 							>Ok</button>
@@ -221,16 +221,16 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				}
 
 				confirmElem = <div
-					className={'bp3-progress-bar bp3-no-stripes ' + (
+					className={'bp5-progress-bar bp5-no-stripes ' + (
 						this.props.progressClassName || '')}
 					style={progressStyle}
 				>
-					<div className="bp3-progress-meter" style={confirmStyle}/>
+					<div className="bp5-progress-meter" style={confirmStyle}/>
 				</div>;
 			}
 
 			return <button
-				className={'bp3-button ' + className}
+				className={'bp5-button ' + className}
 				style={style}
 				type="button"
 				hidden={this.props.hidden}

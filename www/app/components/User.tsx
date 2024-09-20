@@ -60,7 +60,7 @@ export default class User extends React.Component<Props, {}> {
 		for (let role of user.roles) {
 			roles.push(
 				<div
-					className="bp3-tag bp3-intent-primary"
+					className="bp5-tag bp5-intent-primary"
 					style={css.tag}
 					key={role}
 				>
@@ -107,12 +107,12 @@ export default class User extends React.Component<Props, {}> {
 		}
 
 		return <div
-			className="bp3-card bp3-row"
+			className="bp5-card bp5-row"
 			style={cardStyle}
 		>
-			<div className="bp3-cell" style={css.name}>
+			<div className="bp5-cell" style={css.name}>
 				<div className="layout horizontal">
-					<label className="bp3-control bp3-checkbox" style={css.select}>
+					<label className="bp5-control bp5-checkbox" style={css.select}>
 						<input
 							type="checkbox"
 							checked={this.props.selected}
@@ -122,22 +122,22 @@ export default class User extends React.Component<Props, {}> {
 								this.props.onSelect(evt.shiftKey);
 							}}
 						/>
-						<span className="bp3-control-indicator"/>
+						<span className="bp5-control-indicator"/>
 					</label>
-					<ReactRouter.Link to={'/user/' + user.id} style={css.nameLink}>
+					<RouterLink to={'/user/' + user.id} style={css.nameLink}>
 						{user.username}
-					</ReactRouter.Link>
+					</RouterLink>
 				</div>
 			</div>
-			<div className="bp3-cell" style={css.type}>
+			<div className="bp5-cell" style={css.type}>
 				{userType}
 			</div>
-			<div className="bp3-cell" style={css.lastActivity}>
+			<div className="bp5-cell" style={css.lastActivity}>
 				{MiscUtils.formatDateShortTime(user.last_active) || 'Inactive'}
 			</div>
-			<div className="flex bp3-cell" style={css.roles}>
+			<div className="flex bp5-cell" style={css.roles}>
 				<div
-					className="bp3-tag bp3-intent-danger"
+					className="bp5-tag bp5-intent-danger"
 					style={css.tag}
 					hidden={!user.administrator}
 				>

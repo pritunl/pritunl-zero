@@ -73,14 +73,14 @@ export default class Session extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="bp3-card"
+			className="bp5-card"
 			style={cardStyle}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<button
-							className="bp3-button bp3-minimal bp3-intent-danger bp3-icon-trash"
+							className="bp5-button bp5-minimal bp5-intent-danger bp5-icon-trash"
 							type="button"
 							hidden={session.removed}
 							disabled={this.state.disabled}

@@ -628,13 +628,13 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 		for (let role of service.roles) {
 			roles.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={role}
 				>
 					{role}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
 						}}
@@ -677,13 +677,13 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 		for (let whitelistNet of service.whitelist_networks) {
 			whitelistNets.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.item}
 					key={whitelistNet}
 				>
 					{whitelistNet}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						onMouseUp={(): void => {
 							this.onRemoveWhitelistNet(whitelistNet);
 						}}
@@ -711,7 +711,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 		}
 
 		return <td
-			className="bp3-cell"
+			className="bp5-cell"
 			colSpan={2}
 			style={css.card}
 		>
@@ -730,7 +730,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					>
             <div>
               <label
-                className="bp3-control bp3-checkbox"
+                className="bp5-control bp5-checkbox"
                 style={css.select}
               >
                 <input
@@ -743,15 +743,15 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 										this.props.onSelect(evt.shiftKey);
 									}}
                 />
-                <span className="bp3-control-indicator"/>
+                <span className="bp5-control-indicator"/>
               </label>
             </div>
 						<div className="flex tab-close"/>
 						<ConfirmButton
 							safe={true}
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
-							progressClassName="bp3-intent-danger"
-							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
+							progressClassName="bp5-intent-danger"
+							dialogClassName="bp5-intent-danger bp5-icon-delete"
 							dialogLabel="Delete Service"
 							confirmMsg="Permanently delete this service"
 							confirmInput={true}
@@ -789,7 +789,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					</label>
 					{domains}
 					<button
-						className="bp3-button bp3-intent-success bp3-icon-add"
+						className="bp5-button bp5-intent-success bp5-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddDomain}
@@ -805,7 +805,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					</label>
 					{servers}
 					<button
-						className="bp3-button bp3-intent-success bp3-icon-add"
+						className="bp5-button bp5-intent-success bp5-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddServer}
@@ -842,7 +842,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 							},
 						]}
 					/>
-					<label className="bp3-label">
+					<label className="bp5-label">
 						Roles
 						<Help
 							title="Roles"
@@ -853,7 +853,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"
@@ -866,7 +866,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
-					<label className="bp3-label">
+					<label className="bp5-label">
 						Permitted Networks
 						<Help
 							title="Permitted Networks"
@@ -877,7 +877,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageInputButton
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add network"
@@ -899,7 +899,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					</label>
 					{whitelistPaths}
 					<button
-						className="bp3-button bp3-intent-success bp3-icon-add"
+						className="bp5-button bp5-intent-success bp5-icon-add"
 						style={css.itemsAdd}
 						type="button"
 						onClick={this.onAddWhitelistPath}

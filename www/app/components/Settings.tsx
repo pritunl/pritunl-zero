@@ -168,20 +168,20 @@ export default class Settings extends React.Component<{}, State> {
 				<PagePanel hidden={subscriptionActive}>
 					<NonState
 						hidden={false}
-						iconClass="bp3-icon-credit-card"
+						iconClass="bp5-icon-credit-card"
 						title="Subscription Required"
 						description="Subscription required for single sign-on."
 					/>
 				</PagePanel>
 				<PagePanel hidden={!subscriptionActive}>
-					<div className="bp3-border" style={css.providers}>
+					<div className="bp5-border" style={css.providers}>
 						<h5 style={css.providersLabel}>Authentication Providers</h5>
 					</div>
 					{providers}
 					<PageSelectButton
 						label="Add Provider"
 						value={this.state.provider}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,
@@ -210,14 +210,14 @@ export default class Settings extends React.Component<{}, State> {
 					</PageSelectButton>
 				</PagePanel>
 				<PagePanel>
-					<div className="bp3-border" style={css.secondaryProviders}>
+					<div className="bp5-border" style={css.secondaryProviders}>
 						<h5 style={css.providersLabel}>Two-Factor Providers</h5>
 					</div>
 					{secondaryProviders}
 					<PageSelectButton
 						label="Add Secondary Provider"
 						value={this.state.secondaryProvider}
-						buttonClass="bp3-intent-success"
+						buttonClass="bp5-intent-success"
 						onChange={(val: string): void => {
 							this.setState({
 								...this.state,

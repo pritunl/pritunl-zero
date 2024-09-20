@@ -1,6 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as BlueprintDateTime from '@blueprintjs/datetime';
+import * as BlueprintDateTime from '@blueprintjs/datetime2';
 import Help from './Help';
 
 interface Props {
@@ -41,7 +41,7 @@ export default class PageDateTime extends React.Component<Props, {}> {
 
 		return <div hidden={this.props.hidden}>
 			<div style={css.group}>
-				<label className="bp3-label" style={css.label}>
+				<label className="bp5-label" style={css.label}>
 					{this.props.label}
 					<Help
 						title={this.props.label}
@@ -49,16 +49,16 @@ export default class PageDateTime extends React.Component<Props, {}> {
 					/>
 				</label>
 				<div style={dateStyle}>
-					<BlueprintDateTime.DateTimePicker
+					<BlueprintDateTime.DatePicker3
 						value={this.props.disabled ? null : date}
+						showActionsBar={true}
 						timePickerProps={{
 							showArrowButtons: true,
 						}}
-						datePickerProps={{
-							showActionsBar: true,
-							minDate: minDate,
-							maxDate: maxDate,
-						}}
+						// dayPickerProps={{
+						// 	fromDate: minDate,
+						// 	toDate: maxDate,
+						// }}
 						onChange={(newDate: Date): void => {
 							if (this.props.disabled) {
 								return;

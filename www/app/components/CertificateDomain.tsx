@@ -24,10 +24,10 @@ const css = {
 
 export default class CertificateDomain extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		return <div className="bp3-control-group" style={css.group}>
+		return <div className="bp5-control-group" style={css.group}>
 			<div style={css.domainBox}>
 				<input
-					className="bp3-input"
+					className="bp5-input"
 					style={css.domain}
 					type="text"
 					autoCapitalize="off"
@@ -40,7 +40,7 @@ export default class CertificateDomain extends React.Component<Props, {}> {
 				/>
 			</div>
 			<button
-				className="bp3-button bp3-minimal bp3-intent-danger bp3-icon-remove"
+				className="bp5-button bp5-minimal bp5-intent-danger bp5-icon-remove"
 				onClick={(): void => {
 					this.props.onRemove();
 				}}

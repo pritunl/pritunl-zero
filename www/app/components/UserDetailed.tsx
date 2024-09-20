@@ -223,13 +223,13 @@ export default class UserDetailed extends React.Component<Props, State> {
 		for (let role of user.roles) {
 			roles.push(
 				<div
-					className="bp3-tag bp3-tag-removable bp3-intent-primary"
+					className="bp5-tag bp5-tag-removable bp5-intent-primary"
 					style={css.role}
 					key={role}
 				>
 					{role}
 					<button
-						className="bp3-tag-remove"
+						className="bp5-tag-remove"
 						disabled={this.state.locked}
 						onMouseUp={(): void => {
 							this.onRemoveRole(role);
@@ -246,11 +246,11 @@ export default class UserDetailed extends React.Component<Props, State> {
 					<div className="flex"/>
 					<div>
 						<ConfirmButton
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
 							style={css.button}
 							safe={true}
-							progressClassName="bp3-intent-danger"
-							dialogClassName="bp3-intent-danger bp3-icon-delete"
+							progressClassName="bp5-intent-danger"
+							dialogClassName="bp5-intent-danger bp5-icon-delete"
 							dialogLabel="Delete User"
 							confirmMsg="Permanently delete this user"
 							confirmInput={true}
@@ -336,7 +336,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 						<option value="jumpcloud">JumpCloud</option>
 						<option value="api">API</option>
 					</PageSelect>
-					<label className="bp3-label">
+					<label className="bp5-label">
 						Roles
 						<Help
 							title="Roles"
@@ -348,7 +348,7 @@ export default class UserDetailed extends React.Component<Props, State> {
 					</label>
 					<PageInputButton
 						disabled={this.state.locked}
-						buttonClass="bp3-intent-success bp3-icon-add"
+						buttonClass="bp5-intent-success bp5-icon-add"
 						label="Add"
 						type="text"
 						placeholder="Add role"

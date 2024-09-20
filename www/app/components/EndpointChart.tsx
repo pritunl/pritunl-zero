@@ -535,10 +535,10 @@ export default class EndpointChart extends React.Component<Props, State> {
 							if (!toolElm) {
 								toolElm = document.createElement('div');
 								toolElm.id = 'chartjs-tooltip';
-								toolElm.className = 'bp3-card';
-								toolElm.innerHTML = '<table class="bp3-html-table ' +
-									'bp3-html-table-bordered bp3-html-table-striped ' +
-									'bp3-small"></table>';
+								toolElm.className = 'bp5-card';
+								toolElm.innerHTML = '<table class="bp5-html-table ' +
+									'bp5-html-table-bordered bp5-html-table-striped ' +
+									'bp5-small"></table>';
 								document.body.appendChild(toolElm);
 							}
 

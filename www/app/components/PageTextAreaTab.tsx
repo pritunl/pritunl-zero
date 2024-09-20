@@ -56,7 +56,7 @@ export default class PageTextAreaTab extends React.Component<Props, State> {
 			tabs.push(
 				<li
 					key={i}
-					className="bp3-tab"
+					className="bp5-tab"
 					style={css.tab}
 					role="tab"
 					aria-selected={i == activeIndex}
@@ -71,7 +71,7 @@ export default class PageTextAreaTab extends React.Component<Props, State> {
 		}
 
 		return <label
-			className="bp3-label"
+			className="bp5-label"
 			style={css.label}
 			hidden={this.props.hidden}
 		>
@@ -80,13 +80,13 @@ export default class PageTextAreaTab extends React.Component<Props, State> {
 				title={this.props.label}
 				content={this.props.help}
 			/>
-			<div className="bp3-tabs">
-				<ul className="bp3-tab-list .modifier" role="tablist">
+			<div className="bp5-tabs">
+				<ul className="bp5-tab-list .modifier" role="tablist">
 					{tabs}
 				</ul>
 			</div>
 			<textarea
-				className="bp3-input"
+				className="bp5-input"
 				style={css.textarea}
 				disabled={this.props.disabled}
 				readOnly={this.props.readOnly}

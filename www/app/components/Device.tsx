@@ -242,9 +242,9 @@ export default class Device extends React.Component<Props, State> {
 			};
 		}
 
-		let alertIcon = 'bp3-icon-phone';
+		let alertIcon = 'bp5-icon-phone';
 		if (device.type === 'message') {
-			alertIcon = 'bp3-icon-mobile-phone';
+			alertIcon = 'bp5-icon-mobile-phone';
 		}
 
 		let cardStyle = {
@@ -315,8 +315,8 @@ export default class Device extends React.Component<Props, State> {
 		if (isPhone) {
 			testButton = <ConfirmButton
 				label="Send Test Alert"
-				className={'bp3-intent-success ' + alertIcon}
-				progressClassName="bp3-intent-success"
+				className={'bp5-intent-success ' + alertIcon}
+				progressClassName="bp5-intent-success"
 				style={css.controlButton}
 				disabled={this.state.disabled}
 				onConfirm={(): void => {
@@ -326,15 +326,15 @@ export default class Device extends React.Component<Props, State> {
 		}
 
 		return <div
-			className="bp3-card"
+			className="bp5-card"
 			style={cardStyle}
 		>
 			<div className="layout horizontal wrap">
 				<div style={css.group}>
 					<div style={css.remove}>
 						<ConfirmButton
-							className="bp3-minimal bp3-intent-danger bp3-icon-trash"
-							progressClassName="bp3-intent-danger"
+							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
+							progressClassName="bp5-intent-danger"
 							confirmMsg="Confirm device remove"
 							disabled={this.state.disabled}
 							onConfirm={this.onDelete}

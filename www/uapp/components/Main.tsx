@@ -78,7 +78,7 @@ export default class Main extends React.Component<{}, State> {
 			/>;
 		}
 
-		return <div className="bp3-card bp3-elevation-2" style={css.card}>
+		return <div className="bp5-card bp5-elevation-2" style={css.card}>
 			<LoadingBar style={css.loading} intent="primary"/>
 			{bodyElm}
 		</div>;
