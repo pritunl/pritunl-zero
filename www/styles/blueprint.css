@@ -9,6 +9,13 @@ html{
   -webkit-box-sizing:inherit;
           box-sizing:inherit; }
 
+body {
+  background-color: #f5f8fa !important;
+}
+body.bp5-dark {
+  background-color: #293742 !important;
+}
+
 body{
   font-size:14px;
   font-weight:400;
@@ -4082,7 +4089,7 @@ form{
   .bp5-running-text table th, table.bp5-html-table th{
     color:#182026;
     font-weight:600; }
-  
+
   .bp5-running-text table td,
   table.bp5-html-table td{
     color:#182026; }
