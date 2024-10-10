@@ -280,6 +280,19 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 
 	dialer := &websocket.Dialer{
 		Proxy: func(req *http.Request) (url *url.URL, err error) {
+			req.Header.Set("X-Forwarded-For",
+				node.Self.GetRemoteAddr(r))
+			req.Header.Set("X-Forwarded-Host", r.Host)
+			req.Header.Set("X-Forwarded-Proto", w.proxyProto)
+			req.Header.Set("X-Forwarded-Port", strconv.Itoa(w.proxyPort))
+
+			if authr != nil {
+				usr, _ := authr.GetUser(nil)
+				if usr != nil {
+					req.Header.Set("X-Forwarded-User", usr.Username)
+				}
+			}
+
 			if w.reqHost != "" {
 				req.Host = w.reqHost
 			} else {
