@@ -23,10 +23,26 @@ export function load(): Promise<void> {
 
 				token = res.body.token;
 
-				if (res.body.theme === 'light') {
-					Theme.light();
+				let theme = res.body.theme
+				if (theme) {
+					let themeParts = theme.split("-")
+					if (themeParts[1] === "5") {
+						Theme.themeVer5()
+					} else {
+						Theme.themeVer3()
+					}
+
+					if (themeParts[0] === "light") {
+						Theme.light();
+					} else {
+						Theme.dark();
+					}
 				} else {
 					Theme.dark();
+				}
+
+				if (res.body.editor_theme) {
+					Theme.setEditorTheme(res.body.editor_theme);
 				}
 
 				resolve();
