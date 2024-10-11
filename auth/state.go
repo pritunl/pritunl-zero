@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"net/url"
 	"sort"
 
 	"github.com/pritunl/pritunl-zero/settings"
@@ -138,7 +139,7 @@ func GetFastUserPath() (path string) {
 	return
 }
 
-func GetFastServicePath() (path string) {
+func GetFastServicePath(redirectUrl string) (path string) {
 	if settings.Auth.FastLogin && settings.Auth.ForceFastServiceLogin &&
 		len(settings.Auth.Providers) != 0 {
 	} else if !settings.Local.NoLocalAuth || !settings.Auth.FastLogin ||
@@ -166,6 +167,9 @@ func GetFastServicePath() (path string) {
 			path = fmt.Sprintf("/auth/request?id=%s", Google)
 		} else {
 			path = fmt.Sprintf("/auth/request?id=%s", provider.Id.Hex())
+		}
+		if redirectUrl != "" {
+			path += "&redirect_url=" + url.QueryEscape(redirectUrl)
 		}
 		return
 	}

@@ -8,7 +8,8 @@ import (
 )
 
 func staticIndexGet(c *gin.Context) {
-	fastPth := auth.GetFastServicePath()
+	fastPth := auth.GetFastServicePath(
+		c.Request.URL.Query().Get("redirect_url"))
 	if fastPth != "" {
 		c.Redirect(302, fastPth)
 		return
