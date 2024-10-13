@@ -12,7 +12,8 @@ import (
 )
 
 type themeData struct {
-	Theme string `json:"theme"`
+	Theme       string `json:"theme"`
+	EditorTheme string `json:"editor_theme"`
 }
 
 func themePut(c *gin.Context) {
@@ -41,8 +42,9 @@ func themePut(c *gin.Context) {
 	}
 
 	usr.Theme = data.Theme
+	usr.EditorTheme = data.EditorTheme
 
-	err = usr.CommitFields(db, set.NewSet("theme"))
+	err = usr.CommitFields(db, set.NewSet("theme", "editor_theme"))
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
