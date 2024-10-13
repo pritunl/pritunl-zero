@@ -9,8 +9,9 @@ import (
 )
 
 type csrfData struct {
-	Token string `json:"token"`
-	Theme string `json:"theme"`
+	Token       string `json:"token"`
+	Theme       string `json:"theme"`
+	EditorTheme string `json:"editor_theme"`
 }
 
 func csrfGet(c *gin.Context) {
@@ -30,8 +31,9 @@ func csrfGet(c *gin.Context) {
 	}
 
 	data := &csrfData{
-		Token: token,
-		Theme: usr.Theme,
+		Token:       token,
+		Theme:       usr.Theme,
+		EditorTheme: usr.EditorTheme,
 	}
 	c.JSON(200, data)
 }
