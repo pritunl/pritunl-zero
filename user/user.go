@@ -30,6 +30,7 @@ type User struct {
 	Token           string                `bson:"token" json:"token"`
 	Secret          string                `bson:"secret" json:"secret"`
 	Theme           string                `bson:"theme" json:"-"`
+	EditorTheme     string                `bson:"editor_theme" json:"-"`
 	LastActive      time.Time             `bson:"last_active" json:"last_active"`
 	LastSync        time.Time             `bson:"last_sync" json:"last_sync"`
 	Roles           []string              `bson:"roles" json:"roles"`
