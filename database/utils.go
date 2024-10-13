@@ -5,8 +5,34 @@ import (
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/mongo"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 )
+
+func FindProject(fields ...string) *options.FindOptions {
+	prcj := bson.M{}
+
+	for _, field := range fields {
+		prcj[field] = 1
+	}
+
+	return &options.FindOptions{
+		Projection: prcj,
+	}
+}
+
+func FindOneProject(fields ...string) *options.FindOneOptions {
+	prcj := bson.M{}
+
+	for _, field := range fields {
+		prcj[field] = 1
+	}
+
+	return &options.FindOneOptions{
+		Projection: prcj,
+	}
+}
 
 func GetErrorCodes(err error) (errCodes []int) {
 	switch err := err.(type) {
