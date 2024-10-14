@@ -2,9 +2,28 @@ package settings
 
 import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 var Auth *auth
+
+const (
+	SetOnInsert = "set_on_insert"
+	Merge       = "merge"
+	Overwrite   = "overwrite"
+
+	Azure     = "azure"
+	AuthZero  = "authzero"
+	Google    = "google"
+	OneLogin  = "onelogin"
+	Okta      = "okta"
+	JumpCloud = "jumpcloud"
+
+	Duo       = "duo"
+	OneLogin2 = "one_login"
+)
 
 type Provider struct {
 	Id              primitive.ObjectID `bson:"id" json:"id"`
@@ -13,6 +32,7 @@ type Provider struct {
 	DefaultRoles    []string           `bson:"default_roles" json:"default_roles"`
 	AutoCreate      bool               `bson:"auto_create" json:"auto_create"`
 	RoleManagement  string             `bson:"role_management" json:"role_management"`
+	Region          string             `bson:"region" json:"region"`                     // azure
 	Tenant          string             `bson:"tenant" json:"tenant"`                     // azure
 	ClientId        string             `bson:"client_id" json:"client_id"`               // azure + authzero
 	ClientSecret    string             `bson:"client_secret" json:"client_secret"`       // azure + authzero
@@ -24,6 +44,108 @@ type Provider struct {
 	IssuerUrl       string             `bson:"issuer_url" json:"issuer_url"`             // saml
 	SamlUrl         string             `bson:"saml_url" json:"saml_url"`                 // saml
 	SamlCert        string             `bson:"saml_cert" json:"saml_cert"`               // saml
+}
+
+func (p *Provider) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if p.Id.IsZero() {
+		p.Id = primitive.NewObjectID()
+	}
+
+	p.Label = utils.FilterStr(p.Label, 32)
+
+	switch p.Type {
+	case AuthZero:
+		p.Region = ""
+		p.Tenant = ""
+		p.GoogleKey = ""
+		p.GoogleEmail = ""
+		p.JumpCloudAppId = ""
+		p.JumpCloudSecret = ""
+		p.IssuerUrl = ""
+		p.SamlUrl = ""
+		p.SamlCert = ""
+		break
+	case Azure:
+		if p.Region == "" {
+			p.Region = "global"
+		}
+		p.Domain = ""
+		p.GoogleKey = ""
+		p.GoogleEmail = ""
+		p.JumpCloudAppId = ""
+		p.JumpCloudSecret = ""
+		p.IssuerUrl = ""
+		p.SamlUrl = ""
+		p.SamlCert = ""
+		break
+	case Google:
+		p.Region = ""
+		p.Tenant = ""
+		p.ClientId = ""
+		p.ClientSecret = ""
+		p.JumpCloudAppId = ""
+		p.JumpCloudSecret = ""
+		p.IssuerUrl = ""
+		p.SamlUrl = ""
+		p.SamlCert = ""
+		break
+	case OneLogin:
+		p.Region = ""
+		p.Tenant = ""
+		p.ClientId = ""
+		p.ClientSecret = ""
+		p.Domain = ""
+		p.GoogleKey = ""
+		p.GoogleEmail = ""
+		p.JumpCloudAppId = ""
+		p.JumpCloudSecret = ""
+		break
+	case Okta:
+		p.Region = ""
+		p.Tenant = ""
+		p.ClientId = ""
+		p.ClientSecret = ""
+		p.Domain = ""
+		p.GoogleKey = ""
+		p.GoogleEmail = ""
+		p.JumpCloudAppId = ""
+		p.JumpCloudSecret = ""
+		break
+	case JumpCloud:
+		p.Region = ""
+		p.Tenant = ""
+		p.ClientId = ""
+		p.ClientSecret = ""
+		p.Domain = ""
+		p.GoogleKey = ""
+		p.GoogleEmail = ""
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "unknown_provider_type",
+			Message: "Unknown authentication provider type",
+		}
+		return
+	}
+
+	switch p.RoleManagement {
+	case SetOnInsert, "":
+		break
+	case Merge:
+		break
+	case Overwrite:
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "unknown_role_management",
+			Message: "Unknown role management mode",
+		}
+		return
+	}
+
+	return
 }
 
 type SecondaryProvider struct {
@@ -43,6 +165,53 @@ type SecondaryProvider struct {
 	PhoneFactor    bool               `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
 	PasscodeFactor bool               `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
 	SmsFactor      bool               `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
+}
+
+func (p *SecondaryProvider) Validate(db *database.Database) (
+	errData *errortypes.ErrorData, err error) {
+
+	if p.Id.IsZero() {
+		p.Id = primitive.NewObjectID()
+	}
+
+	p.Name = utils.FilterStr(p.Name, 32)
+	p.Label = utils.FilterStr(p.Label, 32)
+
+	switch p.Type {
+	case Duo:
+		p.OneLoginRegion = ""
+		p.OneLoginId = ""
+		p.OneLoginSecret = ""
+		p.OktaDomain = ""
+		p.OktaToken = ""
+		break
+	case OneLogin2:
+		p.DuoHostname = ""
+		p.DuoKey = ""
+		p.DuoSecret = ""
+		p.OktaDomain = ""
+		p.OktaToken = ""
+		if p.OneLoginRegion == "" {
+			p.OneLoginRegion = "us"
+		}
+		break
+	case Okta:
+		p.DuoHostname = ""
+		p.DuoKey = ""
+		p.DuoSecret = ""
+		p.OneLoginRegion = ""
+		p.OneLoginId = ""
+		p.OneLoginSecret = ""
+		break
+	default:
+		errData = &errortypes.ErrorData{
+			Error:   "unknown_secondary_provider_type",
+			Message: "Unknown secondary authentication provider type",
+		}
+		return
+	}
+
+	return
 }
 
 type auth struct {
