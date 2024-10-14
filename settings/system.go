@@ -1,11 +1,5 @@
 package settings
 
-const (
-	SetOnInsert = "set_on_insert"
-	Merge       = "merge"
-	Overwrite   = "overwrite"
-)
-
 var System *system
 
 type system struct {
