@@ -40,6 +40,7 @@ func AzureRequest(db *database.Database, location, query string,
 		Callback    string `json:"callback"`
 		State       string `json:"state"`
 		Secret      string `json:"secret"`
+		Region      string `json:"region"`
 		DirectoryId string `json:"directory_id"`
 		AppId       string `json:"app_id"`
 		AppSecret   string `json:"app_secret"`
@@ -48,6 +49,7 @@ func AzureRequest(db *database.Database, location, query string,
 		Callback:    location + "/auth/callback",
 		State:       state,
 		Secret:      secret,
+		Region:      provider.Region,
 		DirectoryId: provider.Tenant,
 		AppId:       provider.ClientId,
 		AppSecret:   provider.ClientSecret,
