@@ -1,4 +1,4 @@
-package agent
+package useragent
 
 import (
 	"net/http"
