@@ -8,11 +8,11 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/useragent"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -41,7 +41,7 @@ type Certificate struct {
 	CertificateAuthorities []string             `bson:"certificate_authorities" json:"-"`
 	Certificates           []string             `bson:"certificates" json:"-"`
 	CertificatesInfo       []*Info              `bson:"certificates_info" json:"certificates_info"`
-	Agent                  *agent.Agent         `bson:"agent" json:"agent"`
+	Agent                  *useragent.Agent     `bson:"agent" json:"agent"`
 }
 
 func (c *Certificate) Commit(db *database.Database) (err error) {
@@ -155,7 +155,7 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 }
 
 func NewCertificate(db *database.Database, authrs []*authority.Authority,
-	usr *user.User, agnt *agent.Agent, pubKey string) (cert *Certificate,
+	usr *user.User, agnt *useragent.Agent, pubKey string) (cert *Certificate,
 	err error) {
 
 	cert = &Certificate{

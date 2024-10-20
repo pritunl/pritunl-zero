@@ -10,11 +10,11 @@ import (
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/rokey"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/useragent"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -27,7 +27,7 @@ type Session struct {
 	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
 	LastActive time.Time          `bson:"last_active" json:"last_active"`
 	Removed    bool               `bson:"removed" json:"removed"`
-	Agent      *agent.Agent       `bson:"agent" json:"agent"`
+	Agent      *useragent.Agent   `bson:"agent" json:"agent"`
 	user       *user.User         `bson:"-" json:"-"`
 }
 

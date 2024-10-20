@@ -6,9 +6,9 @@ import (
 
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
+	"github.com/pritunl/pritunl-zero/useragent"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -103,7 +103,7 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request,
 		return
 	}
 
-	agnt, err := agent.Parse(db, r)
+	agnt, err := useragent.Parse(db, r)
 	if err != nil {
 		return
 	}
@@ -173,7 +173,7 @@ func New(db *database.Database, r *http.Request, userId primitive.ObjectID,
 		return
 	}
 
-	agnt, err := agent.Parse(db, r)
+	agnt, err := useragent.Parse(db, r)
 	if err != nil {
 		return
 	}

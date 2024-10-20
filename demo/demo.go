@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/log"
@@ -13,6 +12,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/subscription"
+	"github.com/pritunl/pritunl-zero/useragent"
 )
 
 func IsDemo() bool {
@@ -33,9 +33,9 @@ func Blocked(c *gin.Context) bool {
 	return true
 }
 
-var Agent = &agent.Agent{
-	OperatingSystem: agent.Linux,
-	Browser:         agent.Chrome,
+var Agent = &useragent.Agent{
+	OperatingSystem: useragent.Linux,
+	Browser:         useragent.Chrome,
 	Ip:              "8.8.8.8",
 	Isp:             "Google",
 	Continent:       "North America",

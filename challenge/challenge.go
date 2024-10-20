@@ -9,7 +9,6 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
@@ -18,6 +17,7 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/useragent"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -168,7 +168,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		}
 	}
 
-	agnt, err := agent.Parse(db, r)
+	agnt, err := useragent.Parse(db, r)
 	if err != nil {
 		return
 	}

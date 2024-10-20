@@ -2,15 +2,16 @@ package policy
 
 import (
 	"fmt"
-	"github.com/pritunl/pritunl-zero/utils"
 	"net"
 	"net/http"
+
+	"github.com/pritunl/pritunl-zero/useragent"
+	"github.com/pritunl/pritunl-zero/utils"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/pritunl-zero/agent"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
@@ -198,7 +199,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 		return
 	}
 
-	agnt, err := agent.Parse(db, r)
+	agnt, err := useragent.Parse(db, r)
 	if err != nil {
 		return
 	}
