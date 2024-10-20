@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Add new web themes
+
 Version 1.0.3167.66 2024-07-26
 ------------------------------
 
