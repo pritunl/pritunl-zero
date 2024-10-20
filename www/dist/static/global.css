@@ -28,6 +28,11 @@ body.bp5-dark {
   background-color: #252a31;
 }
 
+code {
+  font-family: Consolas, Menlo, 'Roboto Mono', 'DejaVu Sans Mono';
+  font-weight: 400;
+}
+
 h2 {
   font-size: 28px;
 }
