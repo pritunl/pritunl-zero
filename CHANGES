@@ -1,8 +1,7 @@
 pritunl-zero changelog
 ======================
 
-Version 1.0.3253.39 2024-10-20
-------------------------------
+<%= version %>
 
 Add new web themes
 
