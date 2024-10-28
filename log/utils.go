@@ -94,7 +94,7 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 func Clear(db *database.Database) (err error) {
 	coll := db.Logs()
 
-	_, err = coll.DeleteMany(db, nil)
+	_, err = coll.DeleteMany(db, &bson.M{})
 	if err != nil {
 		err = database.ParseError(err)
 		return
