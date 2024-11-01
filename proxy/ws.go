@@ -3,7 +3,6 @@ package proxy
 import (
 	"crypto/tls"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -168,7 +167,24 @@ func (w *webSocketConn) Run(db *database.Database) {
 				wait <- true
 			}
 		}()
-		_, _ = io.Copy(w.back.UnderlyingConn(), w.front.UnderlyingConn())
+
+		for {
+			msgType, msg, err := w.back.ReadMessage()
+			if err != nil {
+				closeMsg := websocket.FormatCloseMessage(
+					websocket.CloseNormalClosure, fmt.Sprintf("%v", err))
+				if e, ok := err.(*websocket.CloseError); ok {
+					if e.Code != websocket.CloseNoStatusReceived {
+						closeMsg = websocket.FormatCloseMessage(e.Code, e.Text)
+					}
+				}
+				_ = w.front.WriteMessage(websocket.CloseMessage, closeMsg)
+				break
+			}
+
+			_ = w.front.WriteMessage(msgType, msg)
+		}
+
 		wait <- true
 	}()
 	go func() {
@@ -181,7 +197,24 @@ func (w *webSocketConn) Run(db *database.Database) {
 				wait <- true
 			}
 		}()
-		_, _ = io.Copy(w.front.UnderlyingConn(), w.back.UnderlyingConn())
+
+		for {
+			msgType, msg, err := w.front.ReadMessage()
+			if err != nil {
+				closeMsg := websocket.FormatCloseMessage(
+					websocket.CloseNormalClosure, fmt.Sprintf("%v", err))
+				if e, ok := err.(*websocket.CloseError); ok {
+					if e.Code != websocket.CloseNoStatusReceived {
+						closeMsg = websocket.FormatCloseMessage(e.Code, e.Text)
+					}
+				}
+				_ = w.back.WriteMessage(websocket.CloseMessage, closeMsg)
+				break
+			}
+
+			_ = w.back.WriteMessage(msgType, msg)
+		}
+
 		wait <- true
 	}()
 	<-wait
