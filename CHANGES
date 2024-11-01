@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3265.55 2024-11-01
+------------------------------
 
 Fix issue with proxied WebSockets
 
