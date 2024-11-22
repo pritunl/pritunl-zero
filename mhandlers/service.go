@@ -23,6 +23,7 @@ type serviceData struct {
 	Id                primitive.ObjectID       `json:"id"`
 	Name              string                   `json:"name"`
 	Type              string                   `json:"type"`
+	Http2             bool                     `json:"http2"`
 	ShareSession      bool                     `json:"share_session"`
 	LogoutPath        string                   `json:"logout_path"`
 	WebSockets        bool                     `json:"websockets"`
@@ -72,6 +73,7 @@ func servicePut(c *gin.Context) {
 
 	srvce.Name = data.Name
 	srvce.Type = data.Type
+	srvce.Http2 = data.Http2
 	srvce.ShareSession = data.ShareSession
 	srvce.LogoutPath = data.LogoutPath
 	srvce.WebSockets = data.WebSockets
@@ -87,6 +89,7 @@ func servicePut(c *gin.Context) {
 	fields := set.NewSet(
 		"name",
 		"type",
+		"http2",
 		"share_session",
 		"logout_path",
 		"websockets",
@@ -145,6 +148,7 @@ func servicePost(c *gin.Context) {
 	srvce := &service.Service{
 		Name:              data.Name,
 		Type:              data.Type,
+		Http2:             data.Http2,
 		ShareSession:      data.ShareSession,
 		LogoutPath:        data.LogoutPath,
 		WebSockets:        data.WebSockets,
