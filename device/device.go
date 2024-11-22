@@ -132,9 +132,7 @@ func (d *Device) Validate(db *database.Database) (
 	}
 	for _, level := range d.AlertLevels {
 		switch level {
-		case Low:
-		case Medium:
-		case High:
+		case Low, Medium, High:
 			break
 		default:
 			errData = &errortypes.ErrorData{
