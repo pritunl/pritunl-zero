@@ -91,6 +91,7 @@ func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
 
 	n := val.NumField()
 	for i := 0; i < n; i++ {
+		field := val.Field(i)
 		typ := val.Type().Field(i)
 
 		if typ.PkgPath != "" {
@@ -101,24 +102,67 @@ func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
 		if tag == "" || tag == "-" {
 			continue
 		}
+
 		tag = strings.Split(tag, ",")[0]
 
-		if !fields.Contains(tag) {
-			continue
-		}
+		if fields.Contains(tag) {
+			val := field.Interface()
 
-		val := val.Field(i).Interface()
-
-		switch valTyp := val.(type) {
-		case primitive.ObjectID:
-			if valTyp.IsZero() {
-				data[tag] = nil
-			} else {
+			switch valTyp := val.(type) {
+			case primitive.ObjectID:
+				if valTyp.IsZero() {
+					data[tag] = nil
+				} else {
+					data[tag] = val
+				}
+				break
+			default:
 				data[tag] = val
 			}
-			break
-		default:
-			data[tag] = val
+		} else if (field.Kind() == reflect.Struct) ||
+			(field.Kind() == reflect.Pointer &&
+				field.Elem().Kind() == reflect.Struct) {
+
+			var val reflect.Value
+			if field.Kind() == reflect.Struct {
+				val = field
+			} else {
+				val = reflect.ValueOf(field.Interface()).Elem()
+			}
+
+			x := val.NumField()
+			for j := 0; j < x; j++ {
+				nestedField := val.Field(j)
+				nestedTyp := val.Type().Field(j)
+
+				if nestedTyp.PkgPath != "" {
+					continue
+				}
+
+				nestedTag := nestedTyp.Tag.Get("bson")
+				if nestedTag == "" || nestedTag == "-" {
+					continue
+				}
+
+				nestedTag = strings.Split(nestedTag, ",")[0]
+				nestedTag = tag + "." + nestedTag
+
+				if fields.Contains(nestedTag) {
+					nestedVal := nestedField.Interface()
+
+					switch nestedValTyp := nestedVal.(type) {
+					case primitive.ObjectID:
+						if nestedValTyp.IsZero() {
+							data[nestedTag] = nil
+						} else {
+							data[nestedTag] = nestedVal
+						}
+						break
+					default:
+						data[nestedTag] = nestedVal
+					}
+				}
+			}
 		}
 	}
 
