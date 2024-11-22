@@ -19,6 +19,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/requires"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/pritunl/webauthn/webauthn"
 	"github.com/sirupsen/logrus"
@@ -71,6 +72,15 @@ func (n *Node) IsUser() bool {
 
 func (n *Node) IsProxy() bool {
 	return strings.Contains(n.Type, Proxy)
+}
+
+func (n *Node) IsOnline() bool {
+	if time.Since(n.Timestamp) > time.Duration(
+		settings.System.NodeTimestampTtl)*time.Second {
+
+		return false
+	}
+	return true
 }
 
 func (n *Node) AddRequest() {
