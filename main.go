@@ -22,6 +22,7 @@ Commands:
   unset             Unset a setting
   start             Start node
   clear-logs        Clear logs
+  reset-id          Reset node id with default configuration
   default-password  Get default administrator password
   reset-password    Reset administrator password
   disable-policies  Disable all policies
