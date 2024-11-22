@@ -35,6 +35,7 @@ type Service struct {
 	Id                 primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name               string             `bson:"name" json:"name"`
 	Type               string             `bson:"type" json:"type"`
+	Http2              bool               `bson:"http2" json:"http2"`
 	ShareSession       bool               `bson:"share_session" json:"share_session"`
 	LogoutPath         string             `bson:"logout_path" json:"logout_path"`
 	WebSockets         bool               `bson:"websockets" json:"websockets"`
