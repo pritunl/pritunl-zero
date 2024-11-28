@@ -95,7 +95,7 @@ def iter_packages():
         for name in os.listdir(target_path):
             if cur_version not in name:
                 continue
-            elif name.endswith(".pkg.tar.xz"):
+            elif name.endswith(".pkg.tar.zst"):
                 pass
             elif name.endswith(".rpm"):
                 pass
