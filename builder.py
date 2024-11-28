@@ -514,23 +514,8 @@ if cmd == 'upload' or cmd == 'build-upload':
 
     # Sync mirror
     subprocess.check_call([
-        'mc',
-        'mirror',
-        '--remove',
-        '--overwrite',
-        '--md5',
-        'mirror',
-        'repo-east/unstable',
-    ], cwd=pacur_path)
-
-    subprocess.check_call([
-        'mc',
-        'mirror',
-        '--remove',
-        '--overwrite',
-        '--md5',
-        'mirror',
-        'repo-west/unstable',
+        'sh',
+        'upload-unstable.sh',
     ], cwd=pacur_path)
 
 
