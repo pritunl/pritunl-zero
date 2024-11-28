@@ -1,8 +1,7 @@
 pritunl-zero changelog
 ======================
 
-Version 1.0.3291.12 2024-11-27
-------------------------------
+<%= version %>
 
 Add support for HTTP/2 services
 
