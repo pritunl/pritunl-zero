@@ -293,6 +293,7 @@ func (r *Router) startWeb() {
 		tlsConfig := &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			MaxVersion: tls.VersionTLS13,
+			NextProtos: []string{"h2"},
 			CipherSuites: []uint16{
 				tls.TLS_AES_128_GCM_SHA256,                        // 0x1301
 				tls.TLS_AES_256_GCM_SHA384,                        // 0x1302
