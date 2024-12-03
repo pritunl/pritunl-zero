@@ -1,4 +1,6 @@
 /// <reference path="../References.d.ts"/>
+import React from "react";
+
 export function uuid(): string {
 	return (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
 }
@@ -296,4 +298,21 @@ export function formatDateShortTime(dateStr: string): string {
 	}
 
 	return str;
+}
+
+export function highlightMatch(input: string, query: string): React.ReactNode {
+	if (!query) {
+		return input;
+	}
+
+	let index = input.indexOf(query)
+	if (index === -1) {
+		return input;
+	}
+
+	return <span>
+		{input.substring(0, index)}
+		<b>{input.substring(index, index + query.length)}</b>
+		{input.substring(index + query.length)}
+	</span>;
 }
