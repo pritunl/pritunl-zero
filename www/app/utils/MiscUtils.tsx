@@ -305,7 +305,7 @@ export function highlightMatch(input: string, query: string): React.ReactNode {
 		return input;
 	}
 
-	let index = input.indexOf(query)
+	let index = input.toLowerCase().indexOf(query.toLowerCase())
 	if (index === -1) {
 		return input;
 	}
