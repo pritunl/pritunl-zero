@@ -17,14 +17,15 @@ export let themeVer = 3;
 let editorThemeName = '';
 export const monospaceSize = "12px"
 export const monospaceFont = "Consolas, Menlo, 'Roboto Mono', 'DejaVu Sans Mono'"
+export const monospaceWeight = "500"
 
 export function save(): Promise<void> {
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.put('/theme')
 			.send({
-				theme: theme,
-        editor_theme: editorThemeName,
+				theme: theme + `-${themeVer}`,
+        		editor_theme: editorThemeName,
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
