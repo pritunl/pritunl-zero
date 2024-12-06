@@ -50,7 +50,9 @@ Csrf.load().then((): void => {
 	Event.init();
 
 	ReactDOM.render(
-		<div><Main/></div>,
+		<Blueprint.OverlaysProvider>
+			<div><Main/></div>
+		</Blueprint.OverlaysProvider>,
 		document.getElementById('app'),
 	);
 });
