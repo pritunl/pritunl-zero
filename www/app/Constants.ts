@@ -4,6 +4,7 @@ import * as MobileDetect from 'mobile-detect';
 let md = new MobileDetect(window.navigator.userAgent);
 
 export const mobile = !!md.mobile();
+export const mobileOs = md.os();
 
 export const loadDelay = 700;
 
