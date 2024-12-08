@@ -250,18 +250,23 @@ func (r *Router) initWeb() (err error) {
 	writeTimeout := time.Duration(settings.Router.WriteTimeout) * time.Second
 	idleTimeout := time.Duration(settings.Router.IdleTimeout) * time.Second
 
-	h2s := &http2.Server{
-		IdleTimeout:     idleTimeout,
-		ReadIdleTimeout: readTimeout,
-	}
 	r.webServer = &http.Server{
 		Addr:              fmt.Sprintf(":%d", r.port),
-		Handler:           h2c.NewHandler(r, h2s),
+		Handler:           r,
 		ReadTimeout:       readTimeout,
 		ReadHeaderTimeout: headerTimeout,
 		WriteTimeout:      writeTimeout,
 		IdleTimeout:       idleTimeout,
 		MaxHeaderBytes:    settings.Router.MaxHeaderBytes,
+	}
+
+	if settings.Router.H2cSupport {
+		h2s := &http2.Server{
+			IdleTimeout:     idleTimeout,
+			ReadIdleTimeout: readTimeout,
+		}
+
+		r.webServer.Handler = h2c.NewHandler(r, h2s)
 	}
 
 	return
