@@ -24,6 +24,7 @@ export interface Service {
 	id: string;
 	name?: string;
 	type?: string;
+	http2?: boolean;
 	share_session?: boolean;
 	logout_path?: string;
 	websockets?: boolean;
