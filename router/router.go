@@ -30,6 +30,8 @@ import (
 	"github.com/pritunl/pritunl-zero/uhandlers"
 	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 type Router struct {
@@ -248,9 +250,13 @@ func (r *Router) initWeb() (err error) {
 	writeTimeout := time.Duration(settings.Router.WriteTimeout) * time.Second
 	idleTimeout := time.Duration(settings.Router.IdleTimeout) * time.Second
 
+	h2s := &http2.Server{
+		IdleTimeout:     idleTimeout,
+		ReadIdleTimeout: readTimeout,
+	}
 	r.webServer = &http.Server{
 		Addr:              fmt.Sprintf(":%d", r.port),
-		Handler:           r,
+		Handler:           h2c.NewHandler(r, h2s),
 		ReadTimeout:       readTimeout,
 		ReadHeaderTimeout: headerTimeout,
 		WriteTimeout:      writeTimeout,
