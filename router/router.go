@@ -260,7 +260,7 @@ func (r *Router) initWeb() (err error) {
 		MaxHeaderBytes:    settings.Router.MaxHeaderBytes,
 	}
 
-	if settings.Router.H2cSupport {
+	if r.protocol == "http" {
 		h2s := &http2.Server{
 			IdleTimeout:     idleTimeout,
 			ReadIdleTimeout: readTimeout,
