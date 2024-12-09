@@ -1,6 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as ReactRouter from 'react-router-dom';
+import RouterLink from './RouterLink';
 import * as UserTypes from '../types/UserTypes';
 import UsersStore from '../stores/UsersStore';
 import * as UserActions from '../actions/UserActions';
@@ -227,13 +227,13 @@ export default class Users extends React.Component<{}, State> {
 							disabled={!this.selected || this.state.disabled}
 							onConfirm={this.onDelete}
 						/>
-						<ReactRouter.Link
-							className="bp3-button bp3-intent-success bp3-icon-add"
+						<RouterLink
+							className="bp5-button bp5-intent-success bp5-icon-add"
 							style={css.button}
 							to="/user"
 						>
 							New
-						</ReactRouter.Link>
+						</RouterLink>
 					</div>
 				</div>
 			</PageHeader>
