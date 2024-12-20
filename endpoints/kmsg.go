@@ -121,6 +121,7 @@ func GetKmsgLog(c context.Context, db *database.Database,
 	}
 	defer cursor.Close(c)
 
+	logDataRervse := LogData{}
 	for cursor.Next(c) {
 		doc := &Kmsg{}
 		err = cursor.Decode(doc)
@@ -129,13 +130,17 @@ func GetKmsgLog(c context.Context, db *database.Database,
 			return
 		}
 
-		logData = append(LogData{doc.FormattedLog()}, logData...)
+		logDataRervse = append(logDataRervse, doc.FormattedLog())
 	}
 
 	err = cursor.Err()
 	if err != nil {
 		err = database.ParseError(err)
 		return
+	}
+
+	for i := len(logDataRervse); i >= 0; i-- {
+		logData = append(logData, logDataRervse[i])
 	}
 
 	return
