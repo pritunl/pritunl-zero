@@ -8,6 +8,7 @@ import PageInputButton from './PageInputButton';
 import PageSwitch from './PageSwitch';
 import PageSelect from './PageSelect';
 import * as NodeTypes from "../types/NodeTypes";
+import * as Theme from "../Theme";
 
 interface Props {
 	hidden?: boolean;
@@ -56,8 +57,9 @@ const css = {
 	textarea: {
 		width: '100%',
 		resize: 'none',
-		fontSize: '12px',
-		fontFamily: '"Lucida Console", Monaco, monospace',
+		fontSize: Theme.monospaceSize,
+		fontFamily: Theme.monospaceFont,
+		fontWeight: Theme.monospaceWeight,
 	} as React.CSSProperties,
 };
 
