@@ -12,6 +12,7 @@ export interface Provider {
 }
 
 export interface AzureProvider extends Provider {
+	region?: string;
 	tenant?: string;
 	client_id?: string;
 	client_secret?: string;
