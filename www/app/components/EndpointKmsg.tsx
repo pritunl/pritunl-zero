@@ -4,12 +4,8 @@ import * as Theme from '../Theme';
 import * as EndpointTypes from '../types/EndpointTypes';
 import * as EndpointActions from '../actions/EndpointActions';
 import * as CheckActions from '../actions/CheckActions';
-import {Ace} from "ace-builds";
-import AceEditor from "react-ace";
-
-import "ace-builds/src-noconflict/mode-text";
-import "ace-builds/src-noconflict/theme-dracula";
-import "ace-builds/src-noconflict/theme-eclipse";
+import * as MonacoEditor from "@monaco-editor/react"
+import * as Monaco from "monaco-editor";
 
 interface Props {
 	endpoint?: string;
@@ -51,8 +47,9 @@ const css = {
 };
 
 export default class EndpointKmsg extends React.Component<Props, State> {
+	editor: Monaco.editor.IStandaloneCodeEditor
+	monaco: MonacoEditor.Monaco
 	loaded: boolean;
-	editor: Ace.Editor;
 
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -122,30 +119,16 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 				data: data.join(''),
 			});
 
-			setTimeout((): void => {
-				if (this.editor) {
-					this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-						false, true, null);
-				}
-			}, 100);
-			setTimeout((): void => {
-				if (this.editor) {
-					this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-						false, true, null);
-				}
-			}, 200);
-			setTimeout((): void => {
-				if (this.editor) {
-					this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-						false, true, null);
-				}
-			}, 300);
-			setTimeout((): void => {
-				if (this.editor) {
-					this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-						false, true, null);
-				}
-			}, 400);
+			const model = this.editor.getModel()
+			if (model) {
+				model.setValue(data.join(''))
+				const lineCount = model.getLineCount()
+				this.editor.revealLine(lineCount)
+				this.editor.setPosition({
+					lineNumber: lineCount,
+					column: model.getLineMaxColumn(lineCount),
+				})
+			}
 		}).catch((): void => {
 			if (loading) {
 				loading = false;
@@ -214,34 +197,31 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 				</div>
 			</div>
 			<div className="layout horizontal wrap" style={css.editorGroup}>
-				<AceEditor
-					name={this.props.endpoint + "-dmesg"}
-					theme={Theme.editorTheme()}
+				<MonacoEditor.Editor
 					height="400px"
 					width="100%"
-					mode="text"
-					fontSize="12px"
-					wrapEnabled={true}
-					showPrintMargin={false}
-					showGutter={true}
-					readOnly={true}
-					value={this.state.data}
-					editorProps={{
-						$blockScrolling: true,
+					defaultLanguage="markdown"
+					theme={Theme.getEditorTheme()}
+					defaultValue={this.state.data}
+					onMount={(editor: Monaco.editor.IStandaloneCodeEditor,
+							monaco: MonacoEditor.Monaco): void => {
+						this.monaco = monaco
+						this.editor = editor
 					}}
-					setOptions={{
-						showFoldWidgets: false,
-					}}
-					onLoad={(editor: Ace.Editor): void => {
-						this.editor = editor;
-						this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-							false, false, null);
-					}}
-					onChange={(): void => {
-						if (this.editor) {
-							this.editor.scrollToLine(Number.POSITIVE_INFINITY,
-								false, true, null);
-						}
+					options={{
+						folding: false,
+						fontSize: 12,
+						fontFamily: Theme.monospaceFont,
+						fontWeight: Theme.monospaceWeight,
+						tabSize: 4,
+						detectIndentation: false,
+						scrollBeyondLastLine: false,
+						readOnly: true,
+						minimap: {
+							enabled: false,
+						},
+						wordWrap: "on",
+						automaticLayout: true,
 					}}
 				/>
 			</div>
