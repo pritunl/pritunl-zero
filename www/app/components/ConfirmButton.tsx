@@ -16,8 +16,10 @@ interface Props {
 	confirmMsg?: string;
 	confirmInput?: boolean;
 	items?: string[];
+	menuItem?: boolean;
 	disabled?: boolean;
 	safe?: boolean;
+	children?: React.ReactNode
 	onConfirm?: () => void;
 }
 
@@ -89,6 +91,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			dialog: false,
+			input: '',
 		});
 	}
 
@@ -96,6 +99,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			dialog: false,
+			input: '',
 		});
 		if (this.props.onConfirm) {
 			this.props.onConfirm();
@@ -164,7 +168,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
-		let dialog = Constants.mobile || this.props.safe;
+		let dialog = Constants.mobile || this.props.safe || this.props.menuItem;
 
 		let style = {
 			...this.props.style,
@@ -224,6 +228,54 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				itemsList = <ul>{items}</ul>;
 			}
 
+			let dialogElem = <Blueprint.Dialog
+				title="Confirm"
+				style={css.dialog}
+				isOpen={this.state.dialog}
+				usePortal={true}
+				portalContainer={document.body}
+				onClose={this.closeDialog}
+			>
+				<div className="bp5-dialog-body">
+					{confirmMsg}
+					{itemsList}
+					{confirmInput}
+				</div>
+				<div className="bp5-dialog-footer">
+					<div className="bp5-dialog-footer-actions">
+						<button
+							className="bp5-button"
+							type="button"
+							onClick={this.closeDialog}
+						>Cancel</button>
+						<button
+							className={'bp5-button ' + dialogClassName}
+							type="button"
+							disabled={this.props.confirmInput &&
+								this.state.input !== 'delete'}
+							onClick={this.closeDialogConfirm}
+						>{this.props.dialogLabel || this.props.label}</button>
+					</div>
+				</div>
+			</Blueprint.Dialog>
+
+			if (this.props.menuItem) {
+				return <div>
+					<Blueprint.MenuItem
+						key="menu-new-unit"
+						className={className}
+						disabled={this.props.disabled}
+						onClick={(evt): void => {
+							evt.preventDefault()
+							evt.stopPropagation()
+							this.openDialog()
+						}}
+						text={this.props.label}
+					>{this.props.children}</Blueprint.MenuItem>
+					{dialogElem}
+				</div>
+			}
+
 			return <div style={css.box}>
 				<button
 					className={'bp5-button ' + className}
@@ -236,38 +288,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					onMouseLeave={dialog ? undefined : this.clearConfirm}
 					onClick={dialog ? this.openDialog : undefined}
 				>
-					{this.props.label}
+					{this.props.children || this.props.label}
 				</button>
-				<Blueprint.Dialog
-					title="Confirm"
-					style={css.dialog}
-					isOpen={this.state.dialog}
-					usePortal={true}
-					portalContainer={document.body}
-					onClose={this.closeDialog}
-				>
-					<div className="bp5-dialog-body">
-						{confirmMsg}
-						{itemsList}
-						{confirmInput}
-					</div>
-					<div className="bp5-dialog-footer">
-						<div className="bp5-dialog-footer-actions">
-							<button
-								className="bp5-button"
-								type="button"
-								onClick={this.closeDialog}
-							>Cancel</button>
-							<button
-								className={'bp5-button ' + dialogClassName}
-								type="button"
-								disabled={this.props.confirmInput &&
-									this.state.input !== 'delete'}
-								onClick={this.closeDialogConfirm}
-							>{this.props.dialogLabel || this.props.label}</button>
-						</div>
-					</div>
-				</Blueprint.Dialog>
+				{dialogElem}
 			</div>
 		} else {
 			let confirmElem: JSX.Element;
@@ -307,7 +330,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				onMouseLeave={dialog ? undefined : this.clearConfirm}
 				onClick={dialog ? this.openDialog : undefined}
 			>
-				{this.props.label}
+				{this.props.children || this.props.label}
 				{confirmElem}
 			</button>;
 		}
