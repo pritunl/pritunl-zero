@@ -3,6 +3,7 @@ pritunl-zero changelog
 
 <%= version %>
 
+Fix web app history events
 Improve HTTP/2 service support
 
 Version 1.0.3292.11 2024-11-28
