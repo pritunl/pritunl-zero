@@ -139,7 +139,7 @@ func GetKmsgLog(c context.Context, db *database.Database,
 		return
 	}
 
-	for i := len(logDataRervse); i >= 0; i-- {
+	for i := len(logDataRervse) - 1; i >= 0; i-- {
 		logData = append(logData, logDataRervse[i])
 	}
 
