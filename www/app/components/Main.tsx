@@ -210,6 +210,12 @@ export default class Main extends React.Component<{}, State> {
 							}}
 						>Subscription</button>
 					</RouterLink>
+					<a
+						className="bp5-button bp5-minimal bp5-icon-comment"
+						style={css.link}
+						href="https://forum.pritunl.com"
+						target="_blank"
+					>Community Forum</a>
 					<button
 						className="bp5-button bp5-minimal bp5-icon-refresh"
 						disabled={this.state.disabled}
