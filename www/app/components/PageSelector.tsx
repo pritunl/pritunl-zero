@@ -1,9 +1,9 @@
 /// <reference path="../References.d.ts"/>
-import * as React from 'react';
-import * as Blueprint from '@blueprintjs/core';
-import * as Icons from '@blueprintjs/icons';
-import Help from './Help';
-import PageSelectButton from './PageSelectButton';
+import * as React from "react"
+import * as Blueprint from "@blueprintjs/core"
+import * as Icons from "@blueprintjs/icons"
+import Help from "./Help"
+import PageSelectButton from "./PageSelectButton"
 
 interface Props {
 	hidden?: boolean
@@ -49,39 +49,50 @@ const css = {
 	menuRemove: {
 		opacity: 0.5,
 	} as React.CSSProperties,
-};
+}
 
 export class PageSelector extends React.Component<Props, State> {
 	constructor(props: any, context: any) {
-		super(props, context);
+		super(props, context)
 		this.state = {
 			selected: "",
-		};
+		}
 	}
 
 	render(): JSX.Element {
-		let itemsBox: JSX.Element;
+		let itemsBox: JSX.Element
 
 		if ((this.props.selected || []).length > (this.props.listMax || 6)) {
-			let items: JSX.Element[] = [];
-			(this.props.selected || []).forEach((item): void => {
-				items.push(
-					<Blueprint.MenuItem
-						key={item.id}
-						disabled={this.props.disabled}
-						selected={false}
-						roleStructure="menuitem"
-						icon={<Icons.Remove
-							style={css.menuRemove}
-						/>}
-						onClick={(evt): void => {
-							evt.stopPropagation()
-							this.props.onRemove(item.id)
-						}}
-						text={item.name}
-					/>,
-				)
+			const itemMap = new Map<string, Array<Item>>();
+
+			(this.props.selected || []).forEach((item) => {
+				if (!itemMap.has(item.name)) {
+					itemMap.set(item.name, [])
+				}
+				itemMap.get(item.name)!.push(item)
 			})
+
+			const items: JSX.Element[] = Array
+				.from(itemMap.keys())
+				.sort((a, b) => a.localeCompare(b))
+				.flatMap((name) =>
+					itemMap.get(name)!.map((item) =>
+						<Blueprint.MenuItem
+							key={item.id}
+							disabled={this.props.disabled}
+							selected={false}
+							roleStructure="menuitem"
+							icon={<Icons.Remove
+								style={css.menuRemove}
+							/>}
+							onClick={(evt): void => {
+								evt.stopPropagation()
+								this.props.onRemove(item.id)
+							}}
+							text={item.name}
+						/>
+					)
+				)
 
 			itemsBox = <Blueprint.Popover
 				content={<Blueprint.Menu style={css.menu}>
@@ -98,36 +109,60 @@ export class PageSelector extends React.Component<Props, State> {
 				/>
 			</Blueprint.Popover>
 		} else {
-			let items: JSX.Element[] = [];
-			(this.props.selected || []).forEach((item): void => {
-				items.push(
-					<div
-						className="bp5-tag bp5-tag-removable bp5-intent-primary"
-						style={css.item}
-						key={item.id}
-					>
-						{item.name}
-						<button
-							className="bp5-tag-remove"
-							onMouseUp={(): void => {
-								this.props.onRemove(item.id)
-							}}
-						/>
-					</div>,
-				)
+			const itemMap = new Map<string, Array<Item>>();
+
+			(this.props.selected || []).forEach((item) => {
+				if (!itemMap.has(item.name)) {
+					itemMap.set(item.name, []);
+				}
+				itemMap.get(item.name)!.push(item)
 			})
+
+			const items: JSX.Element[] = Array
+				.from(itemMap.keys())
+				.sort((a, b) => a.localeCompare(b))
+				.flatMap((name) =>
+					itemMap.get(name)!.map((item) =>
+						<div
+							className="bp5-tag bp5-tag-removable bp5-intent-primary"
+							style={css.item}
+							key={item.id}
+						>
+							{item.name}
+							<button
+								className="bp5-tag-remove"
+								onMouseUp={(): void => {
+									this.props.onRemove(item.id)
+								}}
+							/>
+						</div>
+					)
+				)
 
 			itemsBox = <div>{items}</div>
 		}
 
 		let selects: JSX.Element[] = [];
-		(this.props.options || []).forEach((item): void => {
-			selects.push(
-				<option key={item.id} value={item.id}>{item.name}</option>,
-			);
-		})
-		if (!selects.length) {
-			selects.push(<option key="null" value="">None</option>);
+		if ((this.props.options || []).length === 0) {
+			selects.push(<option key="null" value="">None</option>)
+		} else {
+			const optionsMap = new Map<string, Array<Item>>();
+
+			(this.props.options || []).forEach((item) => {
+				if (!optionsMap.has(item.name)) {
+					optionsMap.set(item.name, [])
+				}
+				optionsMap.get(item.name)!.push(item)
+			})
+
+			selects = Array
+				.from(optionsMap.keys())
+				.sort((a, b) => a.localeCompare(b))
+				.flatMap((name) =>
+					optionsMap.get(name)!.map((item) =>
+						<option key={item.id} value={item.id}>{item.name}</option>
+					)
+				)
 		}
 
 		return <div>
@@ -155,7 +190,7 @@ export class PageSelector extends React.Component<Props, State> {
 					this.setState({
 						...this.state,
 						selected: val,
-					});
+					})
 				}}
 				onSubmit={() => {
 					let id = this.state.selected
