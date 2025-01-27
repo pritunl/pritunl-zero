@@ -13,7 +13,7 @@ interface Props {
 }
 
 const minDate = new Date(2018, 0, 1);
-const maxDate = new Date(new Date().getFullYear() + 3, 0, 0);
+const maxDate = new Date(new Date().getFullYear() + 5, 0, 0);
 
 const css = {
 	group: {
@@ -52,13 +52,11 @@ export default class PageDateTime extends React.Component<Props, {}> {
 					<BlueprintDateTime.DatePicker3
 						value={this.props.disabled ? null : date}
 						showActionsBar={true}
+						minDate={minDate}
+						maxDate={maxDate}
 						timePickerProps={{
 							showArrowButtons: true,
 						}}
-						// dayPickerProps={{
-						// 	fromDate: minDate,
-						// 	toDate: maxDate,
-						// }}
 						onChange={(newDate: Date): void => {
 							if (this.props.disabled) {
 								return;
