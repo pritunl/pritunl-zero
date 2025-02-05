@@ -907,6 +907,14 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 						Add Permitted Path
 					</button>
 					<PageSwitch
+						label="Use HTTP/2"
+						help="Use HTTP/2 transport."
+						checked={service.http2}
+						onToggle={(): void => {
+							this.set('http2', !service.http2);
+						}}
+					/>
+					<PageSwitch
 						label="Share session with subdomains"
 						help="This option will allow an authenticated user to access multiple services across different subdomains without needing to authenticate at each services subdomain."
 						checked={service.share_session}
