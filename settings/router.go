@@ -20,6 +20,7 @@ type router struct {
 	MaxResponseHeaderBytes int    `bson:"max_response_header_bytes" default:"33554432"`
 	UnsafeRequests         bool   `bson:"unsafe_requests"`
 	UnsafeRemoteHeader     bool   `bson:"unsafe_remote_header"`
+	DebugWebSocket         bool   `bson:"debug_websocket"`
 	SkipVerify             bool   `bson:"skip_verify"`
 }
 
