@@ -12,7 +12,7 @@ import (
 func SyncUser(db *database.Database, usr *user.User) (
 	active bool, err error) {
 
-	if time.Since(usr.LastSync) < time.Duration(
+	if settings.Auth.Sync == 0 || time.Since(usr.LastSync) < time.Duration(
 		settings.Auth.Sync)*time.Second {
 
 		active = true
