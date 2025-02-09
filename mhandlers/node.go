@@ -1,9 +1,15 @@
 package mhandlers
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
@@ -29,6 +35,11 @@ type nodeData struct {
 	Authorities          []primitive.ObjectID `json:"authorities"`
 	ForwardedForHeader   string               `json:"forwarded_for_header"`
 	ForwardedProtoHeader string               `json:"forwarded_proto_header"`
+}
+
+type nodesData struct {
+	Nodes []*node.Node `json:"nodes"`
+	Count int64        `json:"count"`
 }
 
 func nodePut(c *gin.Context) {
@@ -166,8 +177,25 @@ func nodeGet(c *gin.Context) {
 
 func nodesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
+	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
 
-	nodes, err := node.GetAll(db)
+	query := bson.M{}
+
+	nodeId, ok := utils.ParseObjectId(c.Query("id"))
+	if ok {
+		query["_id"] = nodeId
+	}
+
+	name := strings.TrimSpace(c.Query("name"))
+	if name != "" {
+		query["name"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
+			"$options": "i",
+		}
+	}
+
+	nodes, count, err := node.GetAllPaged(db, &query, page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
@@ -183,5 +211,10 @@ func nodesGet(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, nodes)
+	data := &nodesData{
+		Nodes: nodes,
+		Count: count,
+	}
+
+	c.JSON(200, data)
 }
