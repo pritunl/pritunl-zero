@@ -5,8 +5,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/colorize"
+	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -28,6 +29,13 @@ func format(entry *logrus.Entry) (output []byte) {
 	for key, val := range entry.Data {
 		if key == "error" {
 			errStr = fmt.Sprintf("%s", val)
+			continue
+		} else if key == "error_data" {
+			if errData, ok := val.(*errortypes.ErrorData); ok {
+				entry.Data["error_key"] = errData.Error
+				entry.Data["error_msg"] = errData.Message
+				keys = append(keys, "error_key", "error_msg")
+			}
 			continue
 		}
 
@@ -69,6 +77,13 @@ func formatPlain(entry *logrus.Entry) (output []byte) {
 	for key, val := range entry.Data {
 		if key == "error" {
 			errStr = fmt.Sprintf("%s", val)
+			continue
+		} else if key == "error_data" {
+			if errData, ok := val.(*errortypes.ErrorData); ok {
+				entry.Data["error_key"] = errData.Error
+				entry.Data["error_msg"] = errData.Message
+				keys = append(keys, "error_key", "error_msg")
+			}
 			continue
 		}
 
