@@ -308,6 +308,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 	}
 
 	var backConn *websocket.Conn
+	var frontConn *websocket.Conn
 	var backResp *http.Response
 	var err error
 
@@ -337,6 +338,15 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		TLSClientConfig:  w.tlsConfig,
 	}
 
+	defer func() {
+		if backConn != nil {
+			_ = backConn.Close()
+		}
+		if frontConn != nil {
+			_ = frontConn.Close()
+		}
+	}()
+
 	backConn, backResp, err = dialer.Dial(u.String(), header)
 	if err != nil {
 		if backResp != nil {
@@ -344,30 +354,37 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 				errors.Wrapf(err, "proxy: WebSocket dial error %d",
 					backResp.StatusCode),
 			}
+			if settings.Router.DebugWebSocket {
+				WriteErrorLog(rw, r, 500, err)
+			} else {
+				WriteError(rw, r, 500, err)
+			}
 		} else {
 			err = &errortypes.RequestError{
 				errors.Wrap(err, "proxy: WebSocket dial error"),
 			}
+			if settings.Router.DebugWebSocket {
+				WriteErrorLog(rw, r, 500, err)
+			} else {
+				WriteError(rw, r, 500, err)
+			}
 		}
-		WriteErrorLog(rw, r, 500, err)
 		return
 	}
-	defer func() {
-		_ = backConn.Close()
-	}()
 
 	upgradeHeaders := getUpgradeHeaders(backResp)
-	frontConn, err := w.upgrader.Upgrade(rw, r, upgradeHeaders)
+	frontConn, err = w.upgrader.Upgrade(rw, r, upgradeHeaders)
 	if err != nil {
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "proxy: WebSocket upgrade error"),
 		}
-		WriteErrorLog(rw, r, 500, err)
+		if settings.Router.DebugWebSocket {
+			WriteErrorLog(rw, r, 500, err)
+		} else {
+			WriteError(rw, r, 500, err)
+		}
 		return
 	}
-	defer func() {
-		_ = frontConn.Close()
-	}()
 
 	conn := &webSocketConn{
 		front: frontConn,
