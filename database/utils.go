@@ -105,6 +105,11 @@ func ParseError(err error) (newErr error) {
 	errCodes := GetErrorCodes(err)
 	for _, errCode := range errCodes {
 		switch errCode {
+		case 66:
+			newErr = &ImmutableKeyError{
+				errors.New("database: Immutable key"),
+			}
+			return
 		case 85:
 			newErr = &IndexConflict{
 				errors.New("database: Index conflict"),
