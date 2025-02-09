@@ -16,6 +16,10 @@ type NotFoundError struct {
 	errors.DropboxError
 }
 
+type ImmutableKeyError struct {
+	errors.DropboxError
+}
+
 type DuplicateKeyError struct {
 	errors.DropboxError
 }
