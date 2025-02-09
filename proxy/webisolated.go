@@ -40,7 +40,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 
 	reqUrl, err := utils.ProxyUrl(r.URL, w.serverProto, w.serverHost)
 	if err != nil {
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 
@@ -49,7 +49,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = errortypes.ReadError{
 			errors.Wrap(err, "request: Read request failed"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 
@@ -119,7 +119,7 @@ func (w *webIsolated) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 	defer func() {
@@ -136,7 +136,7 @@ func (w *webIsolated) ServeOptionsHTTP(rw http.ResponseWriter,
 
 	reqUrl, err := utils.ProxyUrlLimited(r.URL, w.serverProto, w.serverHost)
 	if err != nil {
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 
@@ -145,7 +145,7 @@ func (w *webIsolated) ServeOptionsHTTP(rw http.ResponseWriter,
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Create request failed"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 
@@ -198,7 +198,7 @@ func (w *webIsolated) ServeOptionsHTTP(rw http.ResponseWriter,
 		err = errortypes.RequestError{
 			errors.Wrap(err, "request: Request failed"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 	defer func() {

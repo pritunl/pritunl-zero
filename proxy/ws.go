@@ -349,7 +349,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 				errors.Wrap(err, "proxy: WebSocket dial error"),
 			}
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 	defer func() {
@@ -362,7 +362,7 @@ func (w *webSocket) ServeHTTP(rw http.ResponseWriter, r *http.Request,
 		err = &errortypes.RequestError{
 			errors.Wrap(err, "proxy: WebSocket upgrade error"),
 		}
-		WriteError(rw, r, 500, err)
+		WriteErrorLog(rw, r, 500, err)
 		return
 	}
 	defer func() {

@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/sirupsen/logrus"
 )
 
-func WriteError(w http.ResponseWriter, r *http.Request, code int, err error) {
+func WriteErrorLog(w http.ResponseWriter, r *http.Request, code int, err error) {
 	http.Error(w, utils.GetStatusMessage(code), code)
 
 	logrus.WithFields(logrus.Fields{

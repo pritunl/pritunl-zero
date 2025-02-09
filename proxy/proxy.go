@@ -117,7 +117,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 		err := host.Service.RemoveWhitelistNetworks()
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -173,14 +173,14 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	authr, err := authorizer.AuthorizeProxy(db, host.Service, w, r)
 	if err != nil {
-		WriteError(w, r, 500, err)
+		WriteErrorLog(w, r, 500, err)
 		return true
 	}
 
 	if !authr.IsValid() {
 		err = authr.Clear(db, w, r)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -189,14 +189,14 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	usr, err := authr.GetUser(db)
 	if err != nil {
-		WriteError(w, r, 500, err)
+		WriteErrorLog(w, r, 500, err)
 		return true
 	}
 
 	if usr == nil {
 		err = authr.Clear(db, w, r)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -205,20 +205,20 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	active, err := auth.SyncUser(db, usr)
 	if err != nil {
-		WriteError(w, r, 500, err)
+		WriteErrorLog(w, r, 500, err)
 		return true
 	}
 
 	if !active {
 		err = session.RemoveAll(db, usr.Id)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
 		err = authr.Clear(db, w, r)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -228,14 +228,14 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	_, _, errAudit, errData, err := validator.ValidateProxy(
 		db, usr, authr.IsApi(), host.Service, r)
 	if err != nil {
-		WriteError(w, r, 500, err)
+		WriteErrorLog(w, r, 500, err)
 		return true
 	}
 
 	if errData != nil {
 		err = authr.Clear(db, w, r)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -255,7 +255,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 			errAudit,
 		)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
@@ -270,7 +270,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	if host.Service.MatchLogoutPath(r.URL.Path) {
 		err = authr.Clear(db, w, r)
 		if err != nil {
-			WriteError(w, r, 500, err)
+			WriteErrorLog(w, r, 500, err)
 			return true
 		}
 
