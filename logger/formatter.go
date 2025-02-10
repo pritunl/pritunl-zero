@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"time"
 
@@ -31,10 +32,12 @@ func format(entry *logrus.Entry) (output []byte) {
 			errStr = fmt.Sprintf("%s", val)
 			continue
 		} else if key == "error_data" {
-			if errData, ok := val.(*errortypes.ErrorData); ok {
-				entry.Data["error_key"] = errData.Error
-				entry.Data["error_msg"] = errData.Message
-				keys = append(keys, "error_key", "error_msg")
+			if val != nil && !reflect.ValueOf(val).IsNil() {
+				if errData, ok := val.(*errortypes.ErrorData); ok {
+					entry.Data["error_key"] = errData.Error
+					entry.Data["error_msg"] = errData.Message
+					keys = append(keys, "error_key", "error_msg")
+				}
 			}
 			continue
 		}
@@ -79,10 +82,12 @@ func formatPlain(entry *logrus.Entry) (output []byte) {
 			errStr = fmt.Sprintf("%s", val)
 			continue
 		} else if key == "error_data" {
-			if errData, ok := val.(*errortypes.ErrorData); ok {
-				entry.Data["error_key"] = errData.Error
-				entry.Data["error_msg"] = errData.Message
-				keys = append(keys, "error_key", "error_msg")
+			if val != nil && !reflect.ValueOf(val).IsNil() {
+				if errData, ok := val.(*errortypes.ErrorData); ok {
+					entry.Data["error_key"] = errData.Error
+					entry.Data["error_msg"] = errData.Message
+					keys = append(keys, "error_key", "error_msg")
+				}
 			}
 			continue
 		}
