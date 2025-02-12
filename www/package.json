@@ -1,9 +1,10 @@
 {
   "name": "pritunl-zero",
   "dependencies": {
-    "@blueprintjs/core": "5.10.3",
-    "@blueprintjs/datetime2": "2.3.5",
-    "@blueprintjs/icons": "5.9.0",
+    "@blueprintjs/core": "5.16.5",
+    "@blueprintjs/datetime2": "2.3.22",
+    "@blueprintjs/icons": "5.18.0",
+    "@blueprintjs/select": "5.3.10",
     "@github/webauthn-json": "2.1.1",
     "@monaco-editor/loader": "1.4.0",
     "@monaco-editor/react": "4.6.0",
