@@ -17,6 +17,11 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 body {
   font-family: Roboto, Noto, sans-serif;
 }
@@ -31,6 +36,9 @@ body.bp5-dark {
 code {
   font-family: Consolas, Menlo, 'Roboto Mono', 'DejaVu Sans Mono';
   font-weight: 400;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 h2 {
@@ -475,6 +483,46 @@ body.fullbleed {
 
 label.bp5-label .bp5-button-group {
   margin-top: 5px;
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-card {
+  background-color:#2f343c;
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-navbar {
+  background-color: rgb(47, 52, 60);
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]) {
+  background-color: rgb(56, 62, 71);
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]):hover {
+  background-color: rgb(47, 52, 60);
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]) {
+  background: none;
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]):hover {
+  background: rgba(143, 153, 168, 0.15);
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-select select {
+  background-color: rgb(56, 62, 71);
+}
+
+.bp5-dark:not(.bp3-theme) .bp5-select select:hover {
+  background-color: rgb(47, 52, 60);
+}
+
+.bp5-card .bp5-card-header {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.bp5-dark .bp5-card .bp5-card-header {
+  background-color: rgba(0, 0, 0, 0.13);
 }
 
 /***********************************************************************
