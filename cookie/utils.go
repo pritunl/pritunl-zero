@@ -59,6 +59,30 @@ func CleanAdmin(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func getCookieDomain(host string) string {
+	host = utils.StripPort(host)
+
+	if host == "" {
+		return ""
+	}
+
+	hostSpl := strings.Split(host, ".")
+	hostParts := 0
+	if len(hostSpl[len(hostSpl)-1]) == 2 {
+		hostParts = 3
+	} else {
+		hostParts = 2
+	}
+
+	if len(hostSpl) == hostParts {
+		return "." + host
+	} else if len(hostSpl) < hostParts {
+		return "."
+	}
+
+	return "." + strings.Join(hostSpl[1:], ".")
+}
+
 func getCookieTopDomain(host string) string {
 	host = utils.StripPort(host)
 
@@ -180,7 +204,7 @@ func CleanProxy(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cook)
 
-	domain := getCookieTopDomain(r.Host)
+	domain := getCookieDomain(r.Host)
 	if domain != "" {
 		cook = &http.Cookie{
 			Name:     "pritunl-zero",
