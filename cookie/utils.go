@@ -66,20 +66,25 @@ func getCookieTopDomain(host string) string {
 		return ""
 	}
 
-	minLen := 0
 	hostSpl := strings.Split(host, ".")
+	hostParts := 0
 	if len(hostSpl[len(hostSpl)-1]) == 2 {
-		minLen = 3
+		hostParts = 3
 	} else {
-		minLen = 2
+		hostParts = 2
 	}
 
-	if strings.Count(host, ".") >= minLen {
-		host = "." + strings.SplitN(host, ".", 2)[1]
-		return host
+	if len(hostSpl) == hostParts {
+		return "." + host
+	} else if len(hostSpl) < hostParts {
+		return "."
 	}
 
-	return ""
+	if settings.Router.RootDomainCookie {
+		return "." + strings.Join(hostSpl[len(hostSpl)-hostParts:], ".")
+	} else {
+		return "." + strings.Join(hostSpl[1:], ".")
+	}
 }
 
 func getCookieNextDomain(host string) string {
