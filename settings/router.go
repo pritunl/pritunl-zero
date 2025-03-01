@@ -18,6 +18,7 @@ type router struct {
 	ContinueTimeout        int    `bson:"continue_timeout" default:"10"`
 	MaxHeaderBytes         int    `bson:"max_header_bytes" default:"10485760"`
 	MaxResponseHeaderBytes int    `bson:"max_response_header_bytes" default:"33554432"`
+	RootDomainCookie       bool   `bson:"root_domain_cookie"`
 	UnsafeRequests         bool   `bson:"unsafe_requests"`
 	UnsafeRemoteHeader     bool   `bson:"unsafe_remote_header"`
 	DebugWebSocket         bool   `bson:"debug_websocket"`
