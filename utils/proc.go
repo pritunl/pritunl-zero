@@ -96,7 +96,8 @@ func ExecInput(dir, input, name string, arg ...string) (err error) {
 	}
 
 	if wrErr != nil {
-		return wrErr
+		err = wrErr
+		return
 	}
 
 	return
@@ -166,7 +167,8 @@ func ExecInputOutput(input, name string, arg ...string) (
 	}
 
 	if wrErr != nil {
-		return wrErr
+		err = wrErr
+		return
 	}
 
 	output = string(stdout.Bytes())
