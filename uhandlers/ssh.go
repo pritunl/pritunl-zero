@@ -559,7 +559,7 @@ func sshChallengePut(c *gin.Context) {
 		case ssh.Unavailable:
 			errData := &errortypes.ErrorData{
 				Error: "certificate_unavailable",
-				Message: "Cerification was approved but no " +
+				Message: "Certification was approved but no " +
 					"certificates are available",
 			}
 			c.JSON(412, errData)

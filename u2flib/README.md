@@ -8,7 +8,7 @@ the server side of an application.
 ## Features
 
 - Native Go implementation
-- No dependancies other than the Go standard library
+- No dependencies other than the Go standard library
 - Token attestation certificate verification
 
 ## Usage
