@@ -7,9 +7,10 @@ export interface Field {
 	valueClass?: string;
 	valueClasses?: string[];
 	label: string;
-	value: string | number | string[];
+	value?: string | number | string[];
 	hover?: JSX.Element;
 	copy?: boolean;
+	embedded?: Props;
 }
 
 export interface Bar {
@@ -46,14 +47,9 @@ const css = {
 	bar: {
 		maxWidth: '280px',
 	} as React.CSSProperties,
-	copy: {
-		cursor: 'pointer',
-		marginLeft: '3px',
-	} as React.CSSProperties,
-	copyHover: {
-		cursor: 'pointer',
-		marginLeft: '3px',
-		opacity: 0.7,
+	embedded: {
+		minWidth: '300px',
+		padding: '10px',
 	} as React.CSSProperties,
 };
 
@@ -85,7 +81,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 						value={field.value.toString()}
 					/>;
 				}
-			} else {
+			} else if (field.value) {
 				value = [];
 				for (let i = 0; i < field.value.length; i++) {
 					let copyItemBtn: JSX.Element;
@@ -111,13 +107,19 @@ export default class PageInfo extends React.Component<Props, {}> {
 				}
 			}
 
-			if (field.hover) {
+			if (field.hover || field.embedded) {
 				fields.push(
 					<Blueprint.Popover
 						key={field.label}
 						interactionKind="hover"
 						placement="bottom"
-						content={field.hover}
+						minimal={true}
+						content={field.hover || <div
+							style={css.embedded}
+							className="bp5-content-popover">
+								<PageInfo {...field.embedded}/>
+							</div>
+						}
 						renderTarget={({isOpen, ...targetProps}): JSX.Element => {
 								return <div {...targetProps} style={itemStyle}>
 								{field.label}
