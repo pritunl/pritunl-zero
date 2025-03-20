@@ -1,8 +1,8 @@
 module github.com/pritunl/pritunl-zero
 
-go 1.21.0
+go 1.23.0
 
-toolchain go1.22.5
+toolchain go1.23.1
 
 require (
 	github.com/aws/aws-sdk-go v1.49.21
@@ -20,8 +20,8 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/twilio/twilio-go v1.16.0
 	github.com/ua-parser/uap-go v0.0.0-20230823213814-f77b3e91e9dc
-	golang.org/x/crypto v0.31.0
-	golang.org/x/net v0.33.0
+	golang.org/x/crypto v0.36.0
+	golang.org/x/net v0.37.0
 	golang.org/x/oauth2 v0.15.0
 	google.golang.org/api v0.154.0
 )
@@ -82,10 +82,10 @@ require (
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/term v0.27.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/term v0.30.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
