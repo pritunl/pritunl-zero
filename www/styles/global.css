@@ -17,6 +17,18 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+  scrollbar-color: #5f6b7c #ffffff;
+}
+html.dark3-scroll {
+  scrollbar-color: #555b63 #30404d;
+}
+html.dark5-scroll {
+  scrollbar-color: #555b63 #2f343c;
+}
+
 body {
   font-family: Roboto, Noto, sans-serif;
 }
