@@ -208,8 +208,8 @@ github.com/twilio/twilio-go v1.16.0 h1:NabGDInWQYPFVAz2TPxpjfPFeoDlaB3MIww1PlZU+
 github.com/twilio/twilio-go v1.16.0/go.mod h1:tdnfQ5TjbewoAu4lf9bMsGvfuJ/QU9gYuv9yx3TSIXU=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
-github.com/ua-parser/uap-go v0.0.0-20230823213814-f77b3e91e9dc h1:iT5lwxf894PiMq7cnMMQg/7VOD1pxmu//gQuHWAFy4s=
-github.com/ua-parser/uap-go v0.0.0-20230823213814-f77b3e91e9dc/go.mod h1:BUbeWZiieNxAuuADTBNb3/aeje6on3DhU3rpWsQSB1E=
+github.com/ua-parser/uap-go v0.0.0-20250213224047-9c035f085b90 h1:rB0J+hLNltG1Qv+UF+MkdFz89XMps5BOAFJN4xWjc+s=
+github.com/ua-parser/uap-go v0.0.0-20250213224047-9c035f085b90/go.mod h1:BUbeWZiieNxAuuADTBNb3/aeje6on3DhU3rpWsQSB1E=
 github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=
 github.com/ugorji/go/codec v1.2.12/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=

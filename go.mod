@@ -19,7 +19,7 @@ require (
 	github.com/pritunl/webauthn v1.0.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/twilio/twilio-go v1.16.0
-	github.com/ua-parser/uap-go v0.0.0-20230823213814-f77b3e91e9dc
+	github.com/ua-parser/uap-go v0.0.0-20250213224047-9c035f085b90
 	golang.org/x/crypto v0.36.0
 	golang.org/x/net v0.37.0
 	golang.org/x/oauth2 v0.15.0
