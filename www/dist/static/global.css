@@ -20,6 +20,13 @@
 html {
   scrollbar-gutter: stable;
   overflow-y: scroll;
+  scrollbar-color: #5f6b7c #ffffff;
+}
+html.dark3-scroll {
+  scrollbar-color: #555b63 #30404d;
+}
+html.dark5-scroll {
+  scrollbar-color: #555b63 #2f343c;
 }
 
 body {
@@ -59,6 +66,20 @@ h5 {
 
 .hljs {
   border-radius: 3px;
+}
+
+code.intent-primary {
+  background-color: #ecf8ff;
+}
+.bp5-dark code.intent-primary {
+  background-color: #183345;
+}
+
+code.intent-secondary {
+  background-color: #fff1e7;
+}
+.bp5-dark code.intent-secondary {
+  background-color: #3a322c
 }
 
 .bp5-dark .logo-light {
@@ -168,6 +189,11 @@ label.bp5-label .bp5-button-group {
   margin-top: 5px !important;
 }
 
+.bp5-select-popover .bp5-menu {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 @keyframes bp5-loading-bar-frames {
   from {
     left: -200px;
@@ -205,9 +231,13 @@ label.bp5-label .bp5-button-group {
   position: fixed !important;
 }
 
-#chartjs-tooltip {
-  background-color: #fcfcfc;
+.bp3-theme.bp5-dark .bp5-datepicker {
+  background: #30404d !important;
 }
+
+#chartjs-tooltip {
+   background-color: #fcfcfc;
+ }
 
 .bp5-dark #chartjs-tooltip {
   background-color: #232f38;
@@ -493,27 +523,27 @@ label.bp5-label .bp5-button-group {
   background-color: rgb(47, 52, 60);
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]) {
+.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]):not(.bp5-datepicker *) {
   background-color: rgb(56, 62, 71);
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]):hover {
+.bp5-dark:not(.bp3-theme) .bp5-button:not([class*="bp5-intent-"]):not(.bp5-datepicker *):hover {
   background-color: rgb(47, 52, 60);
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]) {
+.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]):not(.bp5-datepicker *) {
   background: none;
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]):hover {
+.bp5-dark:not(.bp3-theme) .bp5-button.bp5-minimal:not([class*="bp5-intent-"]):not(.bp5-datepicker *):hover {
   background: rgba(143, 153, 168, 0.15);
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-select select {
+.bp5-dark:not(.bp3-theme) .bp5-select select:not(.bp5-datepicker *) {
   background-color: rgb(56, 62, 71);
 }
 
-.bp5-dark:not(.bp3-theme) .bp5-select select:hover {
+.bp5-dark:not(.bp3-theme) .bp5-select select:not(.bp5-datepicker *):hover {
   background-color: rgb(47, 52, 60);
 }
 

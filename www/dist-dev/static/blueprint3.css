@@ -23,6 +23,7 @@ body{
   line-height:1.28581;
   text-transform:none;
   color:#182026;
+  background-color: #f5f8fa;
   font-family:-apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", "blueprint-icons-16", sans-serif; }
 
 p{
@@ -4421,6 +4422,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f115";
 }
 
+.bp5-icon-announcement::before{
+  content:"\f396";
+}
+
 .bp5-icon-antenna::before{
   content:"\f116";
 }
@@ -4465,6 +4470,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f11e";
 }
 
+.bp5-icon-array-object::before{
+  content:"\f394";
+}
+
 .bp5-icon-array-string::before{
   content:"\f11f";
 }
@@ -4503,6 +4512,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-arrow-up::before{
   content:"\f129";
+}
+
+.bp5-icon-arrows-arc::before{
+  content:"\f387";
 }
 
 .bp5-icon-arrows-horizontal::before{
@@ -4561,6 +4574,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f133";
 }
 
+.bp5-icon-block-promote::before{
+  content:"\f372";
+}
+
 .bp5-icon-blocked-person::before{
   content:"\f134";
 }
@@ -4591,6 +4608,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-bring-forward::before{
   content:"\f354";
+}
+
+.bp5-icon-british-pound::before{
+  content:"\f386";
 }
 
 .bp5-icon-bug::before{
@@ -4789,6 +4810,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f165";
 }
 
+.bp5-icon-construction::before{
+  content:"\f395";
+}
+
 .bp5-icon-contrast::before{
   content:"\f166";
 }
@@ -4817,6 +4842,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f16a";
 }
 
+.bp5-icon-css-style::before{
+  content:"\f36b";
+}
+
 .bp5-icon-cube::before{
   content:"\f16d";
 }
@@ -4825,8 +4854,16 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f16b";
 }
 
+.bp5-icon-cube-edit::before{
+  content:"\f383";
+}
+
 .bp5-icon-cube-remove::before{
   content:"\f16c";
+}
+
+.bp5-icon-cubes::before{
+  content:"\f373";
 }
 
 .bp5-icon-curly-braces::before{
@@ -4849,12 +4886,24 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f171";
 }
 
+.bp5-icon-data-cloud::before{
+  content:"\f391";
+}
+
 .bp5-icon-data-connection::before{
   content:"\f172";
 }
 
 .bp5-icon-data-lineage::before{
   content:"\f173";
+}
+
+.bp5-icon-data-search::before{
+  content:"\f36f";
+}
+
+.bp5-icon-data-sync::before{
+  content:"\f36c";
 }
 
 .bp5-icon-database::before{
@@ -5033,6 +5082,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f19c";
 }
 
+.bp5-icon-excavator::before{
+  content:"\f36d";
+}
+
 .bp5-icon-exchange::before{
   content:"\f19d";
 }
@@ -5081,6 +5134,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f1a6";
 }
 
+.bp5-icon-fighter-jet::before{
+  content:"\f384";
+}
+
 .bp5-icon-film::before{
   content:"\f1a8";
 }
@@ -5103,6 +5160,14 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-filter-remove::before{
   content:"\f1ac";
+}
+
+.bp5-icon-filter-sort-asc::before{
+  content:"\f38e";
+}
+
+.bp5-icon-filter-sort-desc::before{
+  content:"\f38f";
 }
 
 .bp5-icon-flag::before{
@@ -5277,6 +5342,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f1d2";
 }
 
+.bp5-icon-globe-network-add::before{
+  content:"\f382";
+}
+
 .bp5-icon-graph::before{
   content:"\f1d5";
 }
@@ -5383,6 +5452,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-helper-management::before{
   content:"\f1ed";
+}
+
+.bp5-icon-hexagon::before{
+  content:"\f374";
 }
 
 .bp5-icon-high-priority::before{
@@ -5597,6 +5670,14 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f21d";
 }
 
+.bp5-icon-layout-bottom-row-three-tiles::before{
+  content:"\f364";
+}
+
+.bp5-icon-layout-bottom-row-two-tiles::before{
+  content:"\f363";
+}
+
 .bp5-icon-layout-circle::before{
   content:"\f21e";
 }
@@ -5613,8 +5694,24 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f221";
 }
 
+.bp5-icon-layout-left-column-three-tiles::before{
+  content:"\f366";
+}
+
+.bp5-icon-layout-left-column-two-tiles::before{
+  content:"\f365";
+}
+
 .bp5-icon-layout-linear::before{
   content:"\f222";
+}
+
+.bp5-icon-layout-right-column-three-tiles::before{
+  content:"\f368";
+}
+
+.bp5-icon-layout-right-column-two-tiles::before{
+  content:"\f367";
 }
 
 .bp5-icon-layout-skew-grid::before{
@@ -5623,6 +5720,30 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-layout-sorted-clusters::before{
   content:"\f224";
+}
+
+.bp5-icon-layout-three-columns::before{
+  content:"\f361";
+}
+
+.bp5-icon-layout-three-rows::before{
+  content:"\f362";
+}
+
+.bp5-icon-layout-top-row-three-tiles::before{
+  content:"\f36a";
+}
+
+.bp5-icon-layout-top-row-two-tiles::before{
+  content:"\f369";
+}
+
+.bp5-icon-layout-two-columns::before{
+  content:"\f35f";
+}
+
+.bp5-icon-layout-two-rows::before{
+  content:"\f360";
 }
 
 .bp5-icon-learning::before{
@@ -5659,6 +5780,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-link::before{
   content:"\f22d";
+}
+
+.bp5-icon-linked-squares::before{
+  content:"\f385";
 }
 
 .bp5-icon-list::before{
@@ -5869,6 +5994,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f25e";
 }
 
+.bp5-icon-notifications-add::before{
+  content:"\f398";
+}
+
 .bp5-icon-notifications-snooze::before{
   content:"\f25c";
 }
@@ -5883,6 +6012,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-numerical::before{
   content:"\f260";
+}
+
+.bp5-icon-object-view::before{
+  content:"\f390";
 }
 
 .bp5-icon-office::before{
@@ -5917,8 +6050,20 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f267";
 }
 
+.bp5-icon-output::before{
+  content:"\f370";
+}
+
+.bp5-icon-package::before{
+  content:"\f375";
+}
+
 .bp5-icon-page-layout::before{
   content:"\f268";
+}
+
+.bp5-icon-panel::before{
+  content:"\f381";
 }
 
 .bp5-icon-panel-stats::before{
@@ -5977,8 +6122,16 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f348";
 }
 
+.bp5-icon-phone-search::before{
+  content:"\f397";
+}
+
 .bp5-icon-pie-chart::before{
   content:"\f274";
+}
+
+.bp5-icon-pill::before{
+  content:"\f376";
 }
 
 .bp5-icon-pin::before{
@@ -6055,6 +6208,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-random::before{
   content:"\f286";
+}
+
+.bp5-icon-range-ring::before{
+  content:"\f371";
 }
 
 .bp5-icon-record::before{
@@ -6145,6 +6302,14 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f297";
 }
 
+.bp5-icon-rotate-ccw::before{
+  content:"\f389";
+}
+
+.bp5-icon-rotate-cw::before{
+  content:"\f388";
+}
+
 .bp5-icon-rotate-document::before{
   content:"\f299";
 }
@@ -6155,6 +6320,10 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-route::before{
   content:"\f29b";
+}
+
+.bp5-icon-run-history::before{
+  content:"\f393";
 }
 
 .bp5-icon-satellite::before{
@@ -6195,6 +6364,18 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-selection::before{
   content:"\f2a5";
+}
+
+.bp5-icon-selection-box::before{
+  content:"\f399";
+}
+
+.bp5-icon-selection-box-add::before{
+  content:"\f39a";
+}
+
+.bp5-icon-selection-box-edit::before{
+  content:"\f39b";
 }
 
 .bp5-icon-send-backward::before{
@@ -6239,6 +6420,14 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-series-search::before{
   content:"\f2ae";
+}
+
+.bp5-icon-server::before{
+  content:"\f378";
+}
+
+.bp5-icon-server-install::before{
+  content:"\f377";
 }
 
 .bp5-icon-settings::before{
@@ -6417,6 +6606,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f339";
 }
 
+.bp5-icon-subtract-right-join::before{
+  content:"\f392";
+}
+
 .bp5-icon-superscript::before{
   content:"\f33a";
 }
@@ -6465,8 +6658,32 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f2de";
 }
 
+.bp5-icon-table-sync::before{
+  content:"\f36e";
+}
+
 .bp5-icon-tag::before{
   content:"\f2df";
+}
+
+.bp5-icon-tag-add::before{
+  content:"\f379";
+}
+
+.bp5-icon-tag-promote::before{
+  content:"\f37a";
+}
+
+.bp5-icon-tag-refresh::before{
+  content:"\f37b";
+}
+
+.bp5-icon-tag-undo::before{
+  content:"\f37c";
+}
+
+.bp5-icon-tags::before{
+  content:"\f37d";
 }
 
 .bp5-icon-take-action::before{
@@ -6501,6 +6718,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f2ea";
 }
 
+.bp5-icon-th-add::before{
+  content:"\f38a";
+}
+
 .bp5-icon-th-derived::before{
   content:"\f2e6";
 }
@@ -6515,6 +6736,18 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-th-list::before{
   content:"\f2e9";
+}
+
+.bp5-icon-th-list-add::before{
+  content:"\f38b";
+}
+
+.bp5-icon-th-virtual::before{
+  content:"\f38c";
+}
+
+.bp5-icon-th-virtual-add::before{
+  content:"\f38d";
 }
 
 .bp5-icon-third-party::before{
@@ -6657,6 +6890,10 @@ span.bp5-icon:empty.bp5-icon-large{
   content:"\f30b";
 }
 
+.bp5-icon-vector::before{
+  content:"\f35e";
+}
+
 .bp5-icon-vertical-bar-chart-asc::before{
   content:"\f30c";
 }
@@ -6731,6 +6968,18 @@ span.bp5-icon:empty.bp5-icon-large{
 
 .bp5-icon-wrench::before{
   content:"\f31d";
+}
+
+.bp5-icon-wrench-redo::before{
+  content:"\f37e";
+}
+
+.bp5-icon-wrench-snooze::before{
+  content:"\f37f";
+}
+
+.bp5-icon-wrench-time::before{
+  content:"\f380";
 }
 
 .bp5-icon-zoom-in::before{
