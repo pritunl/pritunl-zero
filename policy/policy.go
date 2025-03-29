@@ -126,7 +126,7 @@ func (p *Policy) Validate(db *database.Database) (
 		"_id",
 		&bson.M{
 			"_id": &bson.M{
-				"$in": p.Services,
+				"$in": p.Authorities,
 			},
 		},
 	)
