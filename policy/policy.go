@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/pritunl/pritunl-zero/useragent"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -74,9 +75,27 @@ func (p *Policy) Validate(db *database.Database) (
 				return
 			}
 			break
-		case WhitelistNetworks:
-			break
-		case BlacklistNetworks:
+		case WhitelistNetworks, BlacklistNetworks:
+			newValues := []string{}
+			for _, val := range rule.Values {
+				_, network, e := net.ParseCIDR(strings.TrimSpace(val))
+				if e != nil {
+					if rule.Type == WhitelistNetworks {
+						errData = &errortypes.ErrorData{
+							Error:   "invalid_network",
+							Message: "Invalid network in permitted networks.",
+						}
+					} else {
+						errData = &errortypes.ErrorData{
+							Error:   "invalid_network",
+							Message: "Invalid network in blocked networks.",
+						}
+					}
+					return
+				}
+				newValues = append(newValues, network.String())
+			}
+			rule.Values = newValues
 			break
 		default:
 			errData = &errortypes.ErrorData{
