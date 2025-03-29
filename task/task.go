@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/utils"
+	"github.com/pritunl/pritunl-zero/version"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,6 +18,7 @@ var (
 
 type Task struct {
 	Name       string
+	Version    int
 	Hours      []int
 	Minutes    []int
 	Seconds    time.Duration
@@ -41,7 +43,7 @@ func (t *Task) scheduled(hour, min int) bool {
 	return false
 }
 
-func (t *Task) runShared(now time.Time) {
+func (t *Task) runShared(db *database.Database, now time.Time) {
 	defer func() {
 		panc := recover()
 		if panc != nil {
@@ -51,9 +53,6 @@ func (t *Task) runShared(now time.Time) {
 			}).Error("sync: Panic in run task")
 		}
 	}()
-
-	db := database.GetDatabase()
-	defer db.Close()
 
 	if t.Seconds == 0 {
 		time.Sleep(time.Duration(utils.RandInt(0, 1000)) * time.Millisecond)
@@ -113,7 +112,7 @@ func (t *Task) runShared(now time.Time) {
 	_ = job.Finished(db)
 }
 
-func (t *Task) runLocal(now time.Time) {
+func (t *Task) runLocal(db *database.Database, now time.Time) {
 	defer func() {
 		panc := recover()
 		if panc != nil {
@@ -123,9 +122,6 @@ func (t *Task) runLocal(now time.Time) {
 			}).Error("sync: Panic in run local task")
 		}
 	}()
-
-	db := database.GetDatabase()
-	defer db.Close()
 
 	if t.DebugNodes != nil {
 		matched := false
@@ -156,6 +152,28 @@ func (t *Task) runLocal(now time.Time) {
 
 func (t *Task) run(now time.Time) {
 	go func() {
+		db := database.GetDatabase()
+		defer db.Close()
+
+		if t.Version != 0 {
+			supported, err := version.Check(db, t.Name, t.Version)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"task":  t.Name,
+					"error": err,
+				}).Error("task: Version check failed")
+				return
+			}
+
+			if !supported {
+				logrus.WithFields(logrus.Fields{
+					"task":    t.Name,
+					"version": t.Version,
+				}).Info("task: Skipping incompatible task")
+				return
+			}
+		}
+
 		curTimestamp := t.timestamp
 		if !curTimestamp.IsZero() {
 			if time.Since(curTimestamp) > 10*time.Minute {
@@ -172,9 +190,9 @@ func (t *Task) run(now time.Time) {
 		}()
 
 		if t.Local {
-			t.runLocal(now)
+			t.runLocal(db, now)
 		} else {
-			t.runShared(now)
+			t.runShared(db, now)
 		}
 	}()
 }
@@ -236,8 +254,26 @@ func register(task *Task) {
 	registry = append(registry, task)
 }
 
-func Init() {
+func Init() (err error) {
+	for _, task := range registry {
+		if task.Version == 0 {
+			continue
+		}
+
+		err = version.Set(database.GetDatabase(), task.Name, task.Version)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"task":    task.Name,
+				"version": task.Version,
+				"error":   err,
+			}).Error("task: Failed to set task version")
+			return
+		}
+	}
+
 	go runScheduler()
+
+	return
 }
 
 func GetBlock(n time.Time, d time.Duration) int {
