@@ -17,7 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Node(testing bool) (err error) {
+func Node() (err error) {
 	objId, err := primitive.ObjectIDFromHex(config.Config.NodeId)
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -47,13 +47,9 @@ func Node(testing bool) (err error) {
 		}
 	}()
 
-	if testing {
-		time.Sleep(180 * time.Second)
-	} else {
-		sig := make(chan os.Signal, 2)
-		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-		<-sig
-	}
+	sig := make(chan os.Signal, 2)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+	<-sig
 
 	constants.Interrupt = true
 
