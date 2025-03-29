@@ -7,5 +7,3 @@ jspm_packages/*
 !static/*
 !dist/**/*.js
 !dist/**/*.map
-!dist-dev/**/*.js
-!dist-dev/**/*.map
