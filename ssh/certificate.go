@@ -13,7 +13,6 @@ import (
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/pritunl/pritunl-zero/useragent"
-	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Info struct {
@@ -119,8 +118,8 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 		if count == pageCount {
 			maxPage = 0
 		}
-		page = utils.Min64(page, maxPage)
-		skip := utils.Min64(page*pageCount, count)
+		page = min(page, maxPage)
+		skip := min(page*pageCount, count)
 		opts.Skip = &skip
 		opts.Limit = &pageCount
 	}

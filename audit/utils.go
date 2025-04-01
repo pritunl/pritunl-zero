@@ -10,7 +10,6 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/useragent"
-	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func Get(db *database.Database, adtId string) (
@@ -52,8 +51,8 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 		if count == pageCount {
 			maxPage = 0
 		}
-		page = utils.Min64(page, maxPage)
-		skip := utils.Min64(page*pageCount, count)
+		page = min(page, maxPage)
+		skip := min(page*pageCount, count)
 		opts.Skip = &skip
 		opts.Limit = &pageCount
 	}

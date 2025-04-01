@@ -6,7 +6,6 @@ import (
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func Get(db *database.Database, checkId primitive.ObjectID) (
@@ -121,8 +120,8 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	if count == pageCount {
 		maxPage = 0
 	}
-	page = utils.Min64(page, maxPage)
-	skip := utils.Min64(page*pageCount, count)
+	page = min(page, maxPage)
+	skip := min(page*pageCount, count)
 
 	cursor, err := coll.Find(
 		db,
