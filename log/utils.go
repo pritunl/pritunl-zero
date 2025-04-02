@@ -6,7 +6,6 @@ import (
 	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
-	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func Get(db *database.Database, logId primitive.ObjectID) (
@@ -54,8 +53,8 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 		if count == pageCount {
 			maxPage = 0
 		}
-		page = utils.Min64(page, maxPage)
-		skip := utils.Min64(page*pageCount, count)
+		page = min(page, maxPage)
+		skip := min(page*pageCount, count)
 		opts.Skip = &skip
 		opts.Limit = &pageCount
 	}
