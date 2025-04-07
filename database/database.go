@@ -183,6 +183,11 @@ func (d *Database) Tasks() (coll *Collection) {
 	return
 }
 
+func (d *Database) Versions() (coll *Collection) {
+	coll = d.getCollection("versions")
+	return
+}
+
 func (d *Database) Tokens() (coll *Collection) {
 	coll = d.getCollection("tokens")
 	return
