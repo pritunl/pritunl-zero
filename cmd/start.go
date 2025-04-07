@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"flag"
 	"os"
 	"os/signal"
 	"syscall"
@@ -51,19 +50,9 @@ var AddCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start server",
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, arg := range flag.Args() {
-			switch arg {
-			case "--debug":
-				constants.Production = false
-				break
-			case "--debug-web":
-				constants.DebugWeb = true
-				break
-			case "--fast-exit":
-				constants.FastExit = true
-				break
-			}
-		}
+		constants.Production = !startDebug
+		constants.DebugWeb = startDebugWeb
+		constants.FastExit = startFastExit
 
 		Init()
 
