@@ -76,8 +76,11 @@ var AddCmd = &cobra.Command{
 
 		sync.Init()
 
-		routr := &router.Router{}
+		logrus.WithFields(logrus.Fields{
+			"production": constants.Production,
+		}).Info("router: Starting node")
 
+		routr := &router.Router{}
 		routr.Init()
 
 		go func() {
