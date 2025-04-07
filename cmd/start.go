@@ -86,8 +86,7 @@ var AddCmd = &cobra.Command{
 		go func() {
 			err = routr.Run()
 			if err != nil && !constants.Interrupt {
-				cobra.CheckErr(err)
-				return
+				panic(err)
 			}
 		}()
 
