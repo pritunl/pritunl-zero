@@ -14,6 +14,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/router"
 	"github.com/pritunl/pritunl-zero/sync"
+	"github.com/pritunl/pritunl-zero/task"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -82,6 +83,11 @@ var AddCmd = &cobra.Command{
 
 		routr := &router.Router{}
 		routr.Init()
+
+		err = task.Init()
+		if err != nil {
+			return
+		}
 
 		go func() {
 			err = routr.Run()
