@@ -9,8 +9,9 @@ import (
 
 var acmeRenew = &Task{
 	Name:    "acme_renew",
+	Version: 1,
 	Hours:   []int{7},
-	Mins:    []int{45},
+	Minutes: []int{45},
 	Handler: acmeRenewHandler,
 }
 
