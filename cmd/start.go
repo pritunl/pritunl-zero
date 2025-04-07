@@ -39,7 +39,7 @@ func init() {
 		"Web server debug mode",
 	)
 	AddCmd.PersistentFlags().BoolVar(
-		&startDebug,
+		&startFastExit,
 		"fast-exit",
 		false,
 		"Exit without delay",
