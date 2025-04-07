@@ -26,24 +26,21 @@ var (
 )
 
 func init() {
-	AddCmd.PersistentFlags().BoolVarP(
+	AddCmd.PersistentFlags().BoolVar(
 		&startDebug,
 		"debug",
-		"",
 		false,
 		"Debug mode",
 	)
-	AddCmd.PersistentFlags().BoolVarP(
+	AddCmd.PersistentFlags().BoolVar(
 		&startDebugWeb,
 		"debug-web",
-		"",
 		false,
 		"Web server debug mode",
 	)
-	AddCmd.PersistentFlags().BoolVarP(
+	AddCmd.PersistentFlags().BoolVar(
 		&startDebug,
 		"fast-exit",
-		"",
 		false,
 		"Exit without delay",
 	)
