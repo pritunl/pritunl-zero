@@ -53,6 +53,9 @@ func (c *Certificate) Validate(db *database.Database) (
 		c.Type = Text
 	}
 
+	c.Key = strings.TrimSpace(c.Key)
+	c.Certificate = strings.TrimSpace(c.Certificate)
+
 	if c.Type == LetsEncrypt {
 		switch c.AcmeType {
 		case AcmeHTTP, "":
