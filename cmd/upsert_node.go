@@ -174,10 +174,20 @@ var UpsertNodeCmd = &cobra.Command{
 				"no-redirect-server")
 		}
 
-		if cmd.Flags().Changed("protocol") {
+		protocol, _ := cmd.Flags().GetString("protocol")
+		if protocol != "" {
 			fields.Add("protocol")
-			protocol, _ := cmd.Flags().GetString("protocol")
-			nde.Protocol = protocol
+			switch protocol {
+			case node.Http:
+				nde.Protocol = node.Http
+				break
+			case node.Https:
+				nde.Protocol = node.Https
+				break
+			default:
+				fmt.Fprintln(os.Stderr, "Node protocol invalid")
+				os.Exit(1)
+			}
 		}
 
 		if cmd.Flags().Changed("management-domain") {
