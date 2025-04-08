@@ -123,12 +123,8 @@ func (n *Node) RemoveType(nodeType string) bool {
 }
 
 func (n *Node) IsOnline() bool {
-	if time.Since(n.Timestamp) > time.Duration(
-		settings.System.NodeTimestampTtl)*time.Second {
-
-		return false
-	}
-	return true
+	return time.Since(n.Timestamp) <= time.Duration(
+		settings.System.NodeTimestampTtl)*time.Second
 }
 
 func (n *Node) AddRequest() {
