@@ -207,6 +207,16 @@ var UpsertNodeCmd = &cobra.Command{
 			nde.Hostname, _ = cmd.Flags().GetString("hostname")
 		}
 
+		errData, err := nde.Validate(db)
+		if err != nil {
+			return
+		}
+
+		if errData != nil {
+			err = errData.GetError()
+			return
+		}
+
 		err = nde.CommitFields(db, fields)
 		if err != nil {
 			return
