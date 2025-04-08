@@ -125,6 +125,16 @@ func (n *Node) GetWebauthn(origin string, strict bool) (
 	return
 }
 
+func (n *Node) HasService(srvcId primitive.ObjectID) bool {
+	for _, serviceId := range n.Services {
+		if serviceId == srvcId {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (n *Node) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
