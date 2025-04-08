@@ -47,6 +47,26 @@ func init() {
 		false,
 		"Disable redirect server",
 	)
+	UpsertNodeCmd.PersistentFlags().Bool(
+		"mangement",
+		false,
+		"Enable management web console service",
+	)
+	UpsertNodeCmd.PersistentFlags().Bool(
+		"user",
+		false,
+		"Enable user web console service",
+	)
+	UpsertNodeCmd.PersistentFlags().Bool(
+		"proxy",
+		false,
+		"Enable proxy web console service",
+	)
+	UpsertNodeCmd.PersistentFlags().Bool(
+		"bastion",
+		false,
+		"Enable bastion web console service",
+	)
 	UpsertNodeCmd.PersistentFlags().String(
 		"protocol",
 		"",
@@ -157,6 +177,58 @@ var UpsertNodeCmd = &cobra.Command{
 		}
 
 		fields := set.NewSet()
+
+		if cmd.Flags().Changed("management") {
+			management, _ := cmd.Flags().GetBool("management")
+			if management {
+				if nde.AddType(node.Management) {
+					fields.Add("type")
+				}
+			} else {
+				if nde.RemoveType(node.Management) {
+					fields.Add("type")
+				}
+			}
+		}
+
+		if cmd.Flags().Changed("user") {
+			user, _ := cmd.Flags().GetBool("user")
+			if user {
+				if nde.AddType(node.User) {
+					fields.Add("type")
+				}
+			} else {
+				if nde.RemoveType(node.User) {
+					fields.Add("type")
+				}
+			}
+		}
+
+		if cmd.Flags().Changed("proxy") {
+			proxy, _ := cmd.Flags().GetBool("proxy")
+			if proxy {
+				if nde.AddType(node.Proxy) {
+					fields.Add("type")
+				}
+			} else {
+				if nde.RemoveType(node.Proxy) {
+					fields.Add("type")
+				}
+			}
+		}
+
+		if cmd.Flags().Changed("bastion") {
+			bastion, _ := cmd.Flags().GetBool("bastion")
+			if bastion {
+				if nde.AddType(node.Bastion) {
+					fields.Add("type")
+				}
+			} else {
+				if nde.RemoveType(node.Bastion) {
+					fields.Add("type")
+				}
+			}
+		}
 
 		if cmd.Flags().Changed("port") {
 			fields.Add("port")
