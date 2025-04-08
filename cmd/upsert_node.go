@@ -13,6 +13,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/spf13/cobra"
 )
 
@@ -85,6 +86,16 @@ func init() {
 		"hostname",
 		"",
 		"Node hostname",
+	)
+	UpsertServiceCmd.PersistentFlags().StringSlice(
+		"add-service",
+		[]string{},
+		"Add service by name",
+	)
+	UpsertServiceCmd.PersistentFlags().StringSlice(
+		"remove-service",
+		[]string{},
+		"Remove service by name",
 	)
 	UpsertCmd.AddCommand(UpsertNodeCmd)
 }
@@ -205,6 +216,48 @@ var UpsertNodeCmd = &cobra.Command{
 		if cmd.Flags().Changed("hostname") {
 			fields.Add("hostname")
 			nde.Hostname, _ = cmd.Flags().GetString("hostname")
+		}
+
+		addServices, _ := cmd.Flags().GetStringSlice("add-service")
+		if len(addServices) > 0 {
+			for _, addService := range addServices {
+				srvc, e := service.GetOne(db, &bson.M{
+					"name": addService,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						fmt.Fprintf(os.Stderr,
+							"Failed to find service '%s' to add\n", name)
+						os.Exit(1)
+					}
+					return
+				}
+
+				if nde.AddService(srvc.Id) {
+					fields.Add("services")
+				}
+			}
+		}
+
+		removeServices, _ := cmd.Flags().GetStringSlice("remove-service")
+		if len(removeServices) > 0 {
+			for _, removeService := range removeServices {
+				srvc, e := service.GetOne(db, &bson.M{
+					"name": removeService,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						continue
+					}
+					return
+				}
+
+				if nde.RemoveService(srvc.Id) {
+					fields.Add("services")
+				}
+			}
 		}
 
 		errData, err := nde.Validate(db)
