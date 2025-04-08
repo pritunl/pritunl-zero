@@ -74,6 +74,54 @@ func (n *Node) IsProxy() bool {
 	return strings.Contains(n.Type, Proxy)
 }
 
+func (n *Node) HasType(nodeType string) bool {
+	return strings.Contains(n.Type, nodeType)
+}
+
+func (n *Node) AddType(nodeType string) bool {
+	if n.Type == "" {
+		n.Type = nodeType
+		return true
+	}
+
+	types := strings.Split(n.Type, "_")
+	for _, typ := range types {
+		if typ == nodeType {
+			return false
+		}
+	}
+
+	types = append(types, nodeType)
+	n.Type = strings.Join(types, "_")
+
+	return true
+}
+
+func (n *Node) RemoveType(nodeType string) bool {
+	if n.Type == "" {
+		return false
+	}
+
+	types := strings.Split(n.Type, "_")
+	found := false
+	newTypes := []string{}
+
+	for _, typ := range types {
+		if typ == nodeType {
+			found = true
+		} else {
+			newTypes = append(newTypes, typ)
+		}
+	}
+
+	if found {
+		n.Type = strings.Join(newTypes, "_")
+		return true
+	}
+
+	return false
+}
+
 func (n *Node) IsOnline() bool {
 	if time.Since(n.Timestamp) > time.Duration(
 		settings.System.NodeTimestampTtl)*time.Second {
