@@ -87,12 +87,12 @@ func init() {
 		"",
 		"Node hostname",
 	)
-	UpsertServiceCmd.PersistentFlags().StringSlice(
+	UpsertNodeCmd.PersistentFlags().StringSlice(
 		"add-service",
 		[]string{},
 		"Add service by name",
 	)
-	UpsertServiceCmd.PersistentFlags().StringSlice(
+	UpsertNodeCmd.PersistentFlags().StringSlice(
 		"remove-service",
 		[]string{},
 		"Remove service by name",
