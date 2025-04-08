@@ -273,6 +273,16 @@ var UpsertServiceCmd = &cobra.Command{
 			}
 		}
 
+		errData, err := srvc.Validate(db)
+		if err != nil {
+			return
+		}
+
+		if errData != nil {
+			err = errData.GetError()
+			return
+		}
+
 		if isNew {
 			err = srvc.Insert(db)
 			if err != nil {
