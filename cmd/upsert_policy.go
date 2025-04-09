@@ -27,11 +27,6 @@ func init() {
 		"Enable policy",
 	)
 	UpsertPolicyCmd.PersistentFlags().StringSlice(
-		"service",
-		[]string{},
-		"Policy services",
-	)
-	UpsertPolicyCmd.PersistentFlags().StringSlice(
 		"add-service",
 		[]string{},
 		"Add service by name",
