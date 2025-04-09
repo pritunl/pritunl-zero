@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
+	"github.com/pritunl/pritunl-zero/service"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,16 @@ func init() {
 		"service",
 		[]string{},
 		"Policy services",
+	)
+	UpsertPolicyCmd.PersistentFlags().StringSlice(
+		"add-service",
+		[]string{},
+		"Add service by name",
+	)
+	UpsertPolicyCmd.PersistentFlags().StringSlice(
+		"remove-service",
+		[]string{},
+		"Remove service by name",
 	)
 	UpsertPolicyCmd.PersistentFlags().StringSlice(
 		"role",
@@ -122,6 +133,62 @@ var UpsertPolicyCmd = &cobra.Command{
 			fields.Add("disabled")
 			enabled, _ := cmd.Flags().GetBool("enabled")
 			pol.Disabled = !enabled
+		}
+
+		addServices, _ := cmd.Flags().GetStringSlice("add-service")
+		if len(addServices) > 0 {
+			for _, addService := range addServices {
+				srvc, e := service.GetOne(db, &bson.M{
+					"name": addService,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						fmt.Fprintf(os.Stderr,
+							"Failed to find service '%s' to add\n", addService)
+						os.Exit(1)
+					}
+					return
+				}
+
+				found := false
+				for _, serviceId := range pol.Services {
+					if serviceId == srvc.Id {
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					pol.Services = append(pol.Services, srvc.Id)
+					fields.Add("services")
+				}
+			}
+		}
+
+		removeServices, _ := cmd.Flags().GetStringSlice("remove-service")
+		if len(removeServices) > 0 {
+			for _, removeService := range removeServices {
+				srvc, e := service.GetOne(db, &bson.M{
+					"name": removeService,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						continue
+					}
+					return
+				}
+
+				for i, serviceId := range pol.Services {
+					if serviceId == srvc.Id {
+						pol.Services = append(
+							pol.Services[:i], pol.Services[i+1:]...)
+						fields.Add("services")
+						break
+					}
+				}
+			}
 		}
 
 		roles, _ := cmd.Flags().GetStringSlice("role")
