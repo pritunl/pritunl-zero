@@ -7,6 +7,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
@@ -227,6 +228,13 @@ var UpsertCertificateCmd = &cobra.Command{
 			if err != nil {
 				return
 			}
+		}
+
+		_ = event.PublishDispatch(db, "certificate.change")
+
+		err = acme.Renew(db, cert)
+		if err != nil {
+			return
 		}
 
 		_ = event.PublishDispatch(db, "certificate.change")
