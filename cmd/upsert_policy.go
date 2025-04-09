@@ -7,6 +7,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/policy"
@@ -39,6 +40,16 @@ func init() {
 		"remove-service",
 		[]string{},
 		"Remove service by name",
+	)
+	UpsertPolicyCmd.PersistentFlags().StringSlice(
+		"add-authority",
+		[]string{},
+		"Add authority by name",
+	)
+	UpsertPolicyCmd.PersistentFlags().StringSlice(
+		"remove-authority",
+		[]string{},
+		"Remove authority by name",
 	)
 	UpsertPolicyCmd.PersistentFlags().StringSlice(
 		"role",
@@ -185,6 +196,62 @@ var UpsertPolicyCmd = &cobra.Command{
 						pol.Services = append(
 							pol.Services[:i], pol.Services[i+1:]...)
 						fields.Add("services")
+						break
+					}
+				}
+			}
+		}
+
+		addAuthorities, _ := cmd.Flags().GetStringSlice("add-authority")
+		if len(addAuthorities) > 0 {
+			for _, addAuthority := range addAuthorities {
+				auth, e := authority.GetOne(db, &bson.M{
+					"name": addAuthority,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						fmt.Fprintf(os.Stderr,
+							"Failed to find authority '%s' to add\n", addAuthority)
+						os.Exit(1)
+					}
+					return
+				}
+
+				found := false
+				for _, authorityId := range pol.Authorities {
+					if authorityId == auth.Id {
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					pol.Authorities = append(pol.Authorities, auth.Id)
+					fields.Add("authorities")
+				}
+			}
+		}
+
+		removeAuthorities, _ := cmd.Flags().GetStringSlice("remove-authority")
+		if len(removeAuthorities) > 0 {
+			for _, removeAuthority := range removeAuthorities {
+				auth, e := authority.GetOne(db, &bson.M{
+					"name": removeAuthority,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						continue
+					}
+					return
+				}
+
+				for i, authorityId := range pol.Authorities {
+					if authorityId == auth.Id {
+						pol.Authorities = append(
+							pol.Authorities[:i], pol.Authorities[i+1:]...)
+						fields.Add("authorities")
 						break
 					}
 				}
