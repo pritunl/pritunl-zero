@@ -11,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 	"github.com/pritunl/pritunl-zero/secret"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -68,6 +69,11 @@ var UpsertCertificateCmd = &cobra.Command{
 	Short: "Insert or update certificate",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		InitMinimal()
+
+		err = settings.Init()
+		if err != nil {
+			return
+		}
 
 		db := database.GetDatabase()
 		defer db.Close()
