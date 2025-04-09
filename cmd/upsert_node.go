@@ -307,7 +307,7 @@ var UpsertNodeCmd = &cobra.Command{
 					err = e
 					if _, ok := err.(*database.NotFoundError); ok {
 						fmt.Fprintf(os.Stderr,
-							"Failed to find service '%s' to add\n", name)
+							"Failed to find service '%s' to add\n", addService)
 						os.Exit(1)
 					}
 					return
