@@ -18,20 +18,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Node struct {
-	Name                 string `bson:"name" json:"name"`
-	Port                 int    `bson:"port" json:"port"`
-	NoRedirectServer     bool   `bson:"no_redirect_server" json:"no_redirect_server"`
-	Protocol             string `bson:"protocol" json:"protocol"`
-	ManagementDomain     string `bson:"management_domain" json:"management_domain"`
-	UserDomain           string `bson:"user_domain" json:"user_domain"`
-	WebauthnDomain       string `bson:"webauthn_domain" json:"webauthn_domain"`
-	EndpointDomain       string `bson:"endpoint_domain" json:"endpoint_domain"`
-	ForwardedForHeader   string `bson:"forwarded_for_header" json:"forwarded_for_header"`
-	ForwardedProtoHeader string `bson:"forwarded_proto_header" json:"forwarded_proto_header"`
-	Hostname             string `bson:"hostname" json:"hostname"`
-}
-
 func init() {
 	UpsertNodeCmd.PersistentFlags().String(
 		"name",
