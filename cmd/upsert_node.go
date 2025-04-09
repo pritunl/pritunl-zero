@@ -8,6 +8,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -116,6 +117,16 @@ func init() {
 		"remove-service",
 		[]string{},
 		"Remove service by name",
+	)
+	UpsertNodeCmd.PersistentFlags().StringSlice(
+		"add-certificate",
+		[]string{},
+		"Add certificate by name",
+	)
+	UpsertNodeCmd.PersistentFlags().StringSlice(
+		"remove-certificate",
+		[]string{},
+		"Remove certificate by name",
 	)
 	UpsertCmd.AddCommand(UpsertNodeCmd)
 }
@@ -338,6 +349,48 @@ var UpsertNodeCmd = &cobra.Command{
 
 				if nde.RemoveService(srvc.Id) {
 					fields.Add("services")
+				}
+			}
+		}
+
+		addCertificates, _ := cmd.Flags().GetStringSlice("add-certificate")
+		if len(addCertificates) > 0 {
+			for _, addCertificate := range addCertificates {
+				cert, e := certificate.GetOne(db, &bson.M{
+					"name": addCertificate,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						fmt.Fprintf(os.Stderr,
+							"Failed to find certificate '%s' to add\n", addCertificate)
+						os.Exit(1)
+					}
+					return
+				}
+
+				if nde.AddCertificate(cert.Id) {
+					fields.Add("certificates")
+				}
+			}
+		}
+
+		removeCertificates, _ := cmd.Flags().GetStringSlice("remove-certificate")
+		if len(removeCertificates) > 0 {
+			for _, removeCertificate := range removeCertificates {
+				cert, e := certificate.GetOne(db, &bson.M{
+					"name": removeCertificate,
+				})
+				if e != nil {
+					err = e
+					if _, ok := err.(*database.NotFoundError); ok {
+						continue
+					}
+					return
+				}
+
+				if nde.RemoveCertificate(cert.Id) {
+					fields.Add("certificates")
 				}
 			}
 		}
