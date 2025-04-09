@@ -259,77 +259,86 @@ func update() {
 	}
 }
 
+func Init() (err error) {
+	for name := range registry {
+		err = Update(name)
+		if err != nil {
+			return
+		}
+	}
+
+	db := database.GetDatabase()
+	defer db.Close()
+
+	if System.DatabaseVersion == 0 {
+		System.DatabaseVersion = constants.DatabaseVersion
+		err = Commit(db, System, set.NewSet("database_version"))
+		if err != nil {
+			return
+		}
+	}
+
+	if System.DatabaseVersion > constants.DatabaseVersion {
+		logrus.WithFields(logrus.Fields{
+			"database_version": System.DatabaseVersion,
+			"software_version": constants.DatabaseVersion,
+		}).Error("settings: Database version newer then software")
+
+		err = &errortypes.DatabaseError{
+			errors.New(
+				"settings: Database version newer then software"),
+		}
+		return
+	} else if System.DatabaseVersion != constants.DatabaseVersion {
+		logrus.WithFields(logrus.Fields{
+			"database_version":     System.DatabaseVersion,
+			"new_database_version": constants.DatabaseVersion,
+		}).Info("settings: Upgrading database version")
+
+		System.DatabaseVersion = constants.DatabaseVersion
+		err = Commit(db, System, set.NewSet("database_version"))
+		if err != nil {
+			return
+		}
+	}
+
+	if System.Name == "" {
+		System.Name = utils.RandName()
+		err = Commit(db, System, set.NewSet("name"))
+		if err != nil {
+			return
+		}
+	}
+
+	if Auth.Providers == nil {
+		Auth.Providers = []*Provider{}
+		err = Commit(db, Auth, set.NewSet("providers"))
+		if err != nil {
+			return
+		}
+	}
+	if Auth.SecondaryProviders == nil {
+		Auth.SecondaryProviders = []*SecondaryProvider{}
+		err = Commit(db, Auth, set.NewSet("secondary_providers"))
+		if err != nil {
+			return
+		}
+	}
+
+	go update()
+
+	return
+}
+
 func init() {
 	module := requires.New("settings")
 	module.After("database")
 
 	module.Handler = func() (err error) {
-		for name := range registry {
-			err = Update(name)
-			if err != nil {
-				return
-			}
-		}
-
-		db := database.GetDatabase()
-		defer db.Close()
-
-		if System.DatabaseVersion == 0 {
-			System.DatabaseVersion = constants.DatabaseVersion
-			err = Commit(db, System, set.NewSet("database_version"))
-			if err != nil {
-				return
-			}
-		}
-
-		if System.DatabaseVersion > constants.DatabaseVersion {
-			logrus.WithFields(logrus.Fields{
-				"database_version": System.DatabaseVersion,
-				"software_version": constants.DatabaseVersion,
-			}).Error("settings: Database version newer then software")
-
-			err = &errortypes.DatabaseError{
-				errors.New(
-					"settings: Database version newer then software"),
-			}
+		err = Init()
+		if err != nil {
 			return
-		} else if System.DatabaseVersion != constants.DatabaseVersion {
-			logrus.WithFields(logrus.Fields{
-				"database_version":     System.DatabaseVersion,
-				"new_database_version": constants.DatabaseVersion,
-			}).Info("settings: Upgrading database version")
-
-			System.DatabaseVersion = constants.DatabaseVersion
-			err = Commit(db, System, set.NewSet("database_version"))
-			if err != nil {
-				return
-			}
 		}
-
-		if System.Name == "" {
-			System.Name = utils.RandName()
-			err = Commit(db, System, set.NewSet("name"))
-			if err != nil {
-				return
-			}
-		}
-
-		if Auth.Providers == nil {
-			Auth.Providers = []*Provider{}
-			err = Commit(db, Auth, set.NewSet("providers"))
-			if err != nil {
-				return
-			}
-		}
-		if Auth.SecondaryProviders == nil {
-			Auth.SecondaryProviders = []*SecondaryProvider{}
-			err = Commit(db, Auth, set.NewSet("secondary_providers"))
-			if err != nil {
-				return
-			}
-		}
-
-		go update()
 
 		return
 	}
