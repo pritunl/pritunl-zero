@@ -192,7 +192,7 @@ func (n *Node) Validate(db *database.Database) (
 		n.Authorities = []primitive.ObjectID{}
 	}
 
-	if n.Protocol != "http" && n.Protocol != "https" {
+	if n.Protocol != Http && n.Protocol != Https {
 		errData = &errortypes.ErrorData{
 			Error:   "node_protocol_invalid",
 			Message: "Invalid node server protocol",
