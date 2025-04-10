@@ -20,6 +20,21 @@ func Get(db *database.Database, certId primitive.ObjectID) (
 	return
 }
 
+func GetOne(db *database.Database, query *bson.M) (
+	cert *Certificate, err error) {
+
+	coll := db.Certificates()
+	cert = &Certificate{}
+
+	err = coll.FindOne(db, query).Decode(cert)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (certs []*Certificate, err error) {
 	coll := db.Certificates()
 	certs = []*Certificate{}
