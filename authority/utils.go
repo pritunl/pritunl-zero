@@ -363,6 +363,21 @@ func Get(db *database.Database, authrId primitive.ObjectID) (
 	return
 }
 
+func GetOne(db *database.Database, query *bson.M) (
+	authr *Authority, err error) {
+
+	coll := db.Authorities()
+	authr = &Authority{}
+
+	err = coll.FindOne(db, query).Decode(authr)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetHsmToken(db *database.Database, token string) (
 	authr *Authority, err error) {
 
