@@ -21,6 +21,21 @@ func Get(db *database.Database, nodeId primitive.ObjectID) (
 	return
 }
 
+func GetOne(db *database.Database, query *bson.M) (
+	nde *Node, err error) {
+
+	coll := db.Nodes()
+	nde = &Node{}
+
+	err = coll.FindOne(db, query).Decode(nde)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAll(db *database.Database) (nodes []*Node, err error) {
 	coll := db.Nodes()
 	nodes = []*Node{}
