@@ -24,7 +24,9 @@ Csrf.load().then((): void => {
 	}
 
 	ReactDOM.render(
-		<div><Main/></div>,
+		<Blueprint.OverlaysProvider>
+			<div><Main/></div>
+		</Blueprint.OverlaysProvider>,
 		document.getElementById('app'),
 	);
 });
