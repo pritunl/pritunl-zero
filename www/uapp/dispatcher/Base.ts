@@ -25,11 +25,14 @@ export default class DispatcherBase<TPayload> {
 	}
 
 	unregister(id: DispatchToken): void {
-		console.error(
-			this._callbacks[id],
-			'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
-			id,
-		);
+		if (!this._callbacks[id]) {
+			console.error(
+				'Dispatcher.unregister(...): `%s` does not map ' +
+				'to a registered callback.',
+				id
+			);
+			return;
+		}
 		delete this._callbacks[id];
 	}
 
