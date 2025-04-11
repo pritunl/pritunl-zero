@@ -43,6 +43,9 @@ body.bp5-dark {
 code {
   font-family: Consolas, Menlo, 'Roboto Mono', 'DejaVu Sans Mono';
   font-weight: 400;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 h2 {
@@ -63,6 +66,20 @@ h5 {
 
 .hljs {
   border-radius: 3px;
+}
+
+code.intent-primary {
+  background-color: #ecf8ff;
+}
+.bp5-dark code.intent-primary {
+  background-color: #183345;
+}
+
+code.intent-secondary {
+  background-color: #fff1e7;
+}
+.bp5-dark code.intent-secondary {
+  background-color: #3a322c
 }
 
 .bp5-dark .logo-light {
