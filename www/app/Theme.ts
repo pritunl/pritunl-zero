@@ -174,18 +174,11 @@ export function removeChangeListener(callback: () => void): void {
 
 export let editorThemeNames: Record<string, string> = {}
 
-loader.config({
-    paths: {
-        vs: "./static/vs",
-    },
-})
+for (let themeName in EditorThemes.editorThemes) {
+	let editorTheme = EditorThemes.editorThemes[themeName]
+	Monaco.editor.defineTheme(themeName, editorTheme)
 
-loader.init().then((monaco: any) => {
-  for (let themeName in EditorThemes.editorThemes) {
-    let editorTheme = EditorThemes.editorThemes[themeName]
-    monaco.editor.defineTheme(themeName, editorTheme)
-
-    let formattedThemeName = MiscUtils.titleCase(themeName.replace("-", " "))
-    editorThemeNames[themeName] = formattedThemeName
-  }
-})
+	let formattedThemeName = MiscUtils.titleCase(
+	themeName.replaceAll("-", " "))
+	editorThemeNames[themeName] = formattedThemeName
+}
