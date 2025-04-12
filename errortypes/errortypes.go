@@ -55,3 +55,13 @@ func (e *ErrorData) GetError() (err error) {
 	}
 	return
 }
+
+func GetErrorMessage(err error) string {
+	if err == nil {
+		return ""
+	}
+	if intErr, ok := err.(errors.DropboxError); ok {
+		return intErr.GetMessage()
+	}
+	return err.Error()
+}
