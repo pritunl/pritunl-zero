@@ -48,3 +48,10 @@ type ErrorData struct {
 	Error   string `json:"error"`
 	Message string `json:"error_msg"`
 }
+
+func (e *ErrorData) GetError() (err error) {
+	err = &ParseError{
+		errors.Newf("error: Parse error %s - %s", e.Error, e.Message),
+	}
+	return
+}
