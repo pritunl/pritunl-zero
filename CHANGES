@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve node service selection
+
 Version 1.0.3324.37 2024-12-30
 ------------------------------
 
