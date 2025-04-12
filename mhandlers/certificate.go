@@ -1,9 +1,15 @@
 package mhandlers
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
@@ -25,6 +31,11 @@ type certificateData struct {
 	AcmeType    string             `json:"acme_type"`
 	AcmeAuth    string             `json:"acme_auth"`
 	AcmeSecret  primitive.ObjectID `json:"acme_secret"`
+}
+
+type certificatesData struct {
+	Certificates []*certificate.Certificate `json:"certificates"`
+	Count        int64                      `json:"count"`
 }
 
 func certificatePut(c *gin.Context) {
@@ -193,6 +204,34 @@ func certificateDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func certificatesDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := []primitive.ObjectID{}
+
+	err := c.Bind(&data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = certificate.RemoveMulti(db, data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "certificate.change")
+
+	c.JSON(200, nil)
+}
+
 func certificateGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
@@ -219,18 +258,47 @@ func certificateGet(c *gin.Context) {
 func certificatesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	certs, err := certificate.GetAll(db)
+	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
+
+	query := bson.M{}
+
+	certificateId, ok := utils.ParseObjectId(c.Query("id"))
+	if ok {
+		query["_id"] = certificateId
+	}
+
+	name := strings.TrimSpace(c.Query("name"))
+	if name != "" {
+		query["name"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
+			"$options": "i",
+		}
+	}
+
+	organization, ok := utils.ParseObjectId(c.Query("organization"))
+	if ok {
+		query["organization"] = organization
+	}
+
+	comment := strings.TrimSpace(c.Query("comment"))
+	if comment != "" {
+		query["comment"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", comment),
+			"$options": "i",
+		}
+	}
+
+	certs, count, err := certificate.GetAllPaged(db, &query, page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	if demo.IsDemo() {
-		for _, cert := range certs {
-			cert.Key = "demo"
-			cert.AcmeAccount = "demo"
-		}
+	data := &certificatesData{
+		Certificates: certs,
+		Count:        count,
 	}
 
-	c.JSON(200, certs)
+	c.JSON(200, data)
 }
