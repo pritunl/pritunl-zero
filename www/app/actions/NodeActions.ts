@@ -6,23 +6,34 @@ import * as Alert from '../Alert';
 import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as NodeTypes from '../types/NodeTypes';
+import NodesStore from '../stores/NodesStore';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
-export function sync(): Promise<void> {
+export function sync(noLoading?: boolean): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
-	let loader = new Loader().loading();
+	let loader: Loader;
+	if (!noLoading) {
+		loader = new Loader().loading();
+	}
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.get('/node')
+			.query({
+				...NodesStore.filter,
+				page: NodesStore.page,
+				page_count: NodesStore.pageCount,
+			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
-				loader.done();
+				if (loader) {
+					loader.done();
+				}
 
 				if (res && res.status === 401) {
 					window.location.href = '/login';
@@ -44,13 +55,34 @@ export function sync(): Promise<void> {
 				Dispatcher.dispatch({
 					type: NodeTypes.SYNC,
 					data: {
-						nodes: res.body,
+						nodes: res.body.nodes,
+						count: res.body.count,
 					},
 				});
 
 				resolve();
 			});
 	});
+}
+
+export function traverse(page: number): Promise<void> {
+	Dispatcher.dispatch({
+		type: NodeTypes.TRAVERSE,
+		data: {
+			page: page,
+		},
+	});
+	return sync();
+}
+
+export function filter(filt: NodeTypes.Filter): Promise<void> {
+	Dispatcher.dispatch({
+		type: NodeTypes.FILTER,
+		data: {
+			filter: filt,
+		},
+	});
+	return sync();
 }
 
 export function commit(node: NodeTypes.Node): Promise<void> {
