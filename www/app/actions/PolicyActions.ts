@@ -6,6 +6,7 @@ import * as Alert from '../Alert';
 import * as Csrf from '../Csrf';
 import Loader from '../Loader';
 import * as PolicyTypes from '../types/PolicyTypes';
+import PoliciesStore from '../stores/PoliciesStore';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
@@ -19,6 +20,11 @@ export function sync(): Promise<void> {
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.get('/policy')
+			.query({
+				...PoliciesStore.filter,
+				page: PoliciesStore.page,
+				page_count: PoliciesStore.pageCount,
+			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -45,6 +51,7 @@ export function sync(): Promise<void> {
 					type: PolicyTypes.SYNC,
 					data: {
 						policies: res.body,
+						count: res.body.count,
 					},
 				});
 
@@ -53,13 +60,33 @@ export function sync(): Promise<void> {
 	});
 }
 
-export function commit(cert: PolicyTypes.Policy): Promise<void> {
+export function traverse(page: number): Promise<void> {
+	Dispatcher.dispatch({
+		type: PolicyTypes.TRAVERSE,
+		data: {
+			page: page,
+		},
+	});
+	return sync();
+}
+
+export function filter(filt: PolicyTypes.Filter): Promise<void> {
+	Dispatcher.dispatch({
+		type: PolicyTypes.FILTER,
+		data: {
+			filter: filt,
+		},
+	});
+	return sync();
+}
+
+export function commit(policy: PolicyTypes.Policy): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.put('/policy/' + cert.id)
-			.send(cert)
+			.put('/policy/' + policy.id)
+			.send(policy)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -82,13 +109,13 @@ export function commit(cert: PolicyTypes.Policy): Promise<void> {
 	});
 }
 
-export function create(cert: PolicyTypes.Policy): Promise<void> {
+export function create(policy: PolicyTypes.Policy): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
 			.post('/policy')
-			.send(cert)
+			.send(policy)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -111,12 +138,12 @@ export function create(cert: PolicyTypes.Policy): Promise<void> {
 	});
 }
 
-export function remove(certId: string): Promise<void> {
+export function remove(policyId: string): Promise<void> {
 	let loader = new Loader().loading();
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.delete('/policy/' + certId)
+			.delete('/policy/' + policyId)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
 			.end((err: any, res: SuperAgent.Response): void => {
@@ -130,6 +157,35 @@ export function remove(certId: string): Promise<void> {
 
 				if (err) {
 					Alert.errorRes(res, 'Failed to delete policies');
+					reject(err);
+					return;
+				}
+
+				resolve();
+			});
+	});
+}
+
+export function removeMulti(authorityIds: string[]): Promise<void> {
+	let loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.delete('/authority')
+			.send(authorityIds)
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end((err: any, res: SuperAgent.Response): void => {
+				loader.done();
+
+				if (res && res.status === 401) {
+					window.location.href = '/login';
+					resolve();
+					return;
+				}
+
+				if (err) {
+					Alert.errorRes(res, 'Failed to delete authorities');
 					reject(err);
 					return;
 				}
