@@ -1,11 +1,15 @@
 package mhandlers
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
@@ -39,6 +43,11 @@ type authorityData struct {
 	HsmSerial          string             `json:"hsm_serial"`
 	HsmGenerateSecret  bool               `json:"hsm_generate_secret"`
 	ResetProxyHostKey  bool               `json:"reset_proxy_host_key"`
+}
+
+type authoritiesData struct {
+	Authorities []*authority.Authority `json:"authorities"`
+	Count       int64                  `json:"count"`
 }
 
 func authorityPut(c *gin.Context) {
@@ -281,6 +290,34 @@ func authorityDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func authoritiesDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := []primitive.ObjectID{}
+
+	err := c.Bind(&data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = authority.RemoveMulti(db, data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "authority.change")
+
+	c.JSON(200, nil)
+}
+
 func authorityGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
@@ -309,29 +346,53 @@ func authorityGet(c *gin.Context) {
 	c.JSON(200, authr)
 }
 
-func authoritysGet(c *gin.Context) {
+func authoritiesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	authrs, err := authority.GetAll(db)
+	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
+
+	query := bson.M{}
+
+	authorityId, ok := utils.ParseObjectId(c.Query("id"))
+	if ok {
+		query["_id"] = authorityId
+	}
+
+	name := strings.TrimSpace(c.Query("name"))
+	if name != "" {
+		query["name"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
+			"$options": "i",
+		}
+	}
+
+	organization, ok := utils.ParseObjectId(c.Query("organization"))
+	if ok {
+		query["organization"] = organization
+	}
+
+	description := strings.TrimSpace(c.Query("description"))
+	if description != "" {
+		query["description"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(description)),
+			"$options": "i",
+		}
+	}
+
+	authorities, count, err := authority.GetAllPaged(db, &query,
+		page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	if demo.IsDemo() {
-		for _, authr := range authrs {
-			for i := range authr.HostTokens {
-				authr.HostTokens[i] = "demo"
-			}
-		}
+	data := &authoritiesData{
+		Authorities: authorities,
+		Count:       count,
 	}
 
-	for _, authr := range authrs {
-		authr.Json()
-		authr.HsmSecret = ""
-	}
-
-	c.JSON(200, authrs)
+	c.JSON(200, data)
 }
 
 func authorityPublicKeyGet(c *gin.Context) {
