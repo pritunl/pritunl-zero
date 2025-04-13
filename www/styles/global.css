@@ -185,6 +185,15 @@ code.intent-secondary {
   animation: bp5-loading-bar-frames 2s linear infinite;
 }
 
+label.bp5-label .bp5-button-group {
+  margin-top: 5px !important;
+}
+
+.bp5-select-popover .bp5-menu {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 @keyframes bp5-loading-bar-frames {
   from {
     left: -200px;
