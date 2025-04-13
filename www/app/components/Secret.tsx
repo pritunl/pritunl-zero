@@ -1,339 +1,160 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as SecretTypes from '../types/SecretTypes';
-import * as SecretActions from '../actions/SecretActions';
 import * as MiscUtils from '../utils/MiscUtils';
-import PageInput from './PageInput';
-import PageSelect from './PageSelect';
-import PageInfo from './PageInfo';
-import PageTextArea from './PageTextArea';
-import PageSave from './PageSave';
-import ConfirmButton from './ConfirmButton';
-import Help from './Help';
-import * as Constants from "../Constants";
+import * as SecretTypes from '../types/SecretTypes';
+import SecretDetailed from './SecretDetailed';
 
 interface Props {
 	secret: SecretTypes.SecretRo;
-}
-
-interface State {
-	disabled: boolean;
-	changed: boolean;
-	message: string;
-	secret: SecretTypes.Secret;
+	selected: boolean;
+	onSelect: (shift: boolean) => void;
+	open: boolean;
+	onOpen: () => void;
 }
 
 const css = {
 	card: {
+		display: 'table-row',
+		width: '100%',
+		padding: 0,
+		boxShadow: 'none',
+		cursor: 'pointer',
+	} as React.CSSProperties,
+	cardOpen: {
+		display: 'table-row',
+		width: '100%',
+		padding: 0,
+		boxShadow: 'none',
 		position: 'relative',
-		padding: '10px 10px 0 10px',
-		marginBottom: '5px',
 	} as React.CSSProperties,
-	remove: {
-		position: 'absolute',
-		top: '5px',
-		right: '5px',
+	select: {
+		margin: '2px 0 0 0',
+		paddingTop: '3px',
+		minHeight: '18px',
 	} as React.CSSProperties,
-	domain: {
-		margin: '9px 5px 0 5px',
+	name: {
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '8px',
+	} as React.CSSProperties,
+	nameSpan: {
+		margin: '1px 5px 0 0',
+	} as React.CSSProperties,
+	item: {
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '9px',
+		whiteSpace: 'nowrap',
+	} as React.CSSProperties,
+	icon: {
+		marginRight: '3px',
+	} as React.CSSProperties,
+	bars: {
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '8px',
+		width: '30px',
+	} as React.CSSProperties,
+	bar: {
+		height: '6px',
+		marginBottom: '1px',
+	} as React.CSSProperties,
+	barLast: {
+		height: '6px',
+	} as React.CSSProperties,
+	roles: {
+		verticalAlign: 'top',
+		display: 'table-cell',
+		padding: '0 8px 8px 8px',
+	} as React.CSSProperties,
+	tag: {
+		margin: '8px 5px 0 5px',
 		height: '20px',
-	} as React.CSSProperties,
-	itemsLabel: {
-		display: 'block',
-	} as React.CSSProperties,
-	itemsAdd: {
-		margin: '8px 0 15px 0',
-	} as React.CSSProperties,
-	group: {
-		flex: 1,
-		minWidth: '280px',
-		margin: '0 10px',
-	} as React.CSSProperties,
-	save: {
-		paddingBottom: '10px',
-	} as React.CSSProperties,
-	label: {
-		width: '100%',
-		maxWidth: '280px',
-	} as React.CSSProperties,
-	inputGroup: {
-		width: '100%',
 	} as React.CSSProperties,
 };
 
-export default class Secret extends React.Component<Props, State> {
-	constructor(props: any, context: any) {
-		super(props, context);
-		this.state = {
-			disabled: false,
-			changed: false,
-			message: '',
-			secret: null,
-		};
-	}
+export default class Secret extends React.Component<Props, {}> {
+	render(): JSX.Element {
+		let secret = this.props.secret;
 
-	set(name: string, val: any): void {
-		let secret: any;
-
-		if (this.state.changed) {
-			secret = {
-				...this.state.secret,
-			};
-		} else {
-			secret = {
-				...this.props.secret,
-			};
+		if (this.props.open) {
+			return <div
+				className="bp5-card bp5-row"
+				style={css.cardOpen}
+			>
+				<SecretDetailed
+					secret={this.props.secret}
+					selected={this.props.selected}
+					onSelect={this.props.onSelect}
+					onClose={(): void => {
+						this.props.onOpen();
+					}}
+				/>
+			</div>;
 		}
 
-		secret[name] = val;
+		let cardStyle = {
+			...css.card,
+		};
 
-		this.setState({
-			...this.state,
-			changed: true,
-			secret: secret,
-		});
-	}
-
-	onSave = (): void => {
-		this.setState({
-			...this.state,
-			disabled: true,
-		});
-		SecretActions.commit(this.state.secret).then((): void => {
-			this.setState({
-				...this.state,
-				message: 'Your changes have been saved',
-				changed: false,
-				disabled: false,
-			});
-
-			setTimeout((): void => {
-				if (!this.state.changed) {
-					this.setState({
-						...this.state,
-						message: '',
-						changed: false,
-						secret: null,
-					});
-				}
-			}, 3000);
-		}).catch((): void => {
-			this.setState({
-				...this.state,
-				message: '',
-				disabled: false,
-			});
-		});
-	}
-
-	onDelete = (): void => {
-		this.setState({
-			...this.state,
-			disabled: true,
-		});
-		SecretActions.remove(this.props.secret.id).then((): void => {
-			this.setState({
-				...this.state,
-				disabled: false,
-			});
-		}).catch((): void => {
-			this.setState({
-				...this.state,
-				disabled: false,
-			});
-		});
-	}
-
-	render(): JSX.Element {
-		let secr: SecretTypes.Secret = this.state.secret ||
-			this.props.secret;
-
-		let keyLabel = "";
-		let keyHelp = "";
-		let keyPlaceholder = "";
-		let valLabel = "";
-		let valHelp = "";
-		let valPlaceholder = "";
-		let regionLabel = "";
-		let regionHelp = "";
-		let regionPlaceholder = "";
-		let publicKeyLabel = "";
-		let publicKeyHelp = "";
-		let publicKeyPlaceholder = "";
-
-		switch (secr.type) {
-			case "aws":
-			case "":
-				keyLabel = "AWS Key ID";
-				keyHelp = "Key for AWS API authentication.";
-				keyPlaceholder = "Key ID";
-				valLabel = "AWS Secret ID";
-				valHelp = "Key secret for AWS API authentication.";
-				valPlaceholder = "Key ID";
-				regionLabel = "AWS Region";
-				regionHelp = "Region for AWS API.";
-				regionPlaceholder = "Region";
-				publicKeyLabel = "";
-				publicKeyHelp = "";
-				publicKeyPlaceholder = "";
+		let secType: string
+		switch (secret.type) {
+			case 'aws':
+				secType = 'AWS';
 				break;
-			case "cloudflare":
-				keyLabel = "Cloudflare Token";
-				keyHelp = "Cloudflare API token.";
-				keyPlaceholder = "Token";
-				valLabel = "";
-				valHelp = "";
-				valPlaceholder = "";
-				regionLabel = "";
-				regionHelp = "";
-				regionPlaceholder = "";
-				publicKeyLabel = "";
-				publicKeyHelp = "";
-				publicKeyPlaceholder = "";
+			case 'cloudflare':
+				secType = 'Cloudflare';
 				break;
-			case "oracle_cloud":
-				keyLabel = "Oracle Cloud Tenancy OCID";
-				keyHelp = "Tenancy OCID for Oracle Cloud API authentication.";
-				keyPlaceholder = "Tenancy OCID";
-				valLabel = "Oracle Cloud User OCID";
-				valHelp = "User OCID for Oracle Cloud API authentication.";
-				valPlaceholder = "User OCID";
-				regionLabel = "Oracle Cloud Region";
-				regionHelp = "Region for Oracle Cloud API.";
-				regionPlaceholder = "Region";
-				publicKeyLabel = "Oracle Cloud Public Key";
-				publicKeyHelp = "Public key for Oracle Cloud API authentication.";
-				publicKeyPlaceholder = "Oracle Cloud Public Key";
+			case 'oracle_cloud':
+				secType = 'Oracle Cloud';
 				break;
+			default:
+				secType = 'Unknown';
 		}
 
 		return <div
-			className="bp5-card"
-			style={css.card}
+			className="bp5-card bp5-row"
+			style={cardStyle}
+			onClick={(evt): void => {
+				let target = evt.target as HTMLElement;
+
+				if (target.className.indexOf('open-ignore') !== -1) {
+					return;
+				}
+
+				this.props.onOpen();
+			}}
 		>
-			<div className="layout horizontal wrap">
-				<div style={css.group}>
-					<div style={css.remove}>
-						<ConfirmButton
-							safe={true}
-							className="bp5-minimal bp5-intent-danger bp5-icon-trash"
-							progressClassName="bp5-intent-danger"
-							dialogClassName="bp5-intent-danger bp5-icon-delete"
-							dialogLabel="Delete Secret"
-							confirmMsg="Permanently delete this secret"
-							confirmInput={true}
-							items={[secr.name]}
-							disabled={this.state.disabled}
-							onConfirm={this.onDelete}
-						/>
-					</div>
-					<PageInput
-						label="Name"
-						help="Name of secret"
-						type="text"
-						placeholder="Name"
-						value={secr.name}
-						onChange={(val): void => {
-							this.set('name', val);
-						}}
-					/>
-					<PageTextArea
-						label="Comment"
-						help="Secret comment."
-						placeholder="Secret comment"
-						rows={3}
-						value={secr.comment}
-						onChange={(val: string): void => {
-							this.set('comment', val);
-						}}
-					/>
-					<PageInput
-						label={keyLabel}
-						help={keyHelp}
-						hidden={keyLabel === ""}
-						type="text"
-						placeholder={keyPlaceholder}
-						value={secr.key}
-						onChange={(val: string): void => {
-							this.set('key', val);
-						}}
-					/>
-					<PageInput
-						label={valLabel}
-						help={valHelp}
-						hidden={valLabel === ""}
-						type="text"
-						placeholder={valPlaceholder}
-						value={secr.value}
-						onChange={(val: string): void => {
-							this.set('value', val);
-						}}
-					/>
-					<PageInput
-						label={regionLabel}
-						help={regionHelp}
-						hidden={regionLabel === ""}
-						type="text"
-						placeholder={regionPlaceholder}
-						value={secr.region}
-						onChange={(val: string): void => {
-							this.set('region', val);
-						}}
-					/>
-				</div>
-				<div style={css.group}>
-					<PageInfo
-						fields={[
-							{
-								label: 'ID',
-								value: this.props.secret.id || 'None',
-							},
-						]}
-					/>
-					<PageSelect
-						label="Type"
-						disabled={this.state.disabled}
-						help="Secret provider."
-						value={secr.type}
-						onChange={(val): void => {
-							this.set('type', val);
-						}}
+			<div className="bp5-cell" style={css.name}>
+				<div className="layout horizontal">
+					<label
+						className="bp5-control bp5-checkbox open-ignore"
+						style={css.select}
 					>
-						<option value="aws">AWS</option>
-						<option value="cloudflare">Cloudflare</option>
-						<option value="oracle_cloud">Oracle Cloud</option>
-					</PageSelect>
-					<PageTextArea
-						disabled={this.state.disabled}
-						hidden={publicKeyLabel === ""}
-						label={publicKeyLabel}
-						help={publicKeyHelp}
-						placeholder={publicKeyPlaceholder}
-						readOnly={true}
-						rows={6}
-						value={secr.public_key}
-						onChange={(val: string): void => {
-							this.set('public_key', val);
-						}}
-					/>
+						<input
+							type="checkbox"
+							className="open-ignore"
+							checked={this.props.selected}
+							onChange={(evt): void => {
+							}}
+							onClick={(evt): void => {
+								this.props.onSelect(evt.shiftKey);
+							}}
+						/>
+						<span className="bp5-control-indicator open-ignore"/>
+					</label>
+					<div style={css.nameSpan}>
+						{secret.name}
+					</div>
 				</div>
 			</div>
-			<PageSave
-				style={css.save}
-				hidden={!this.state.secret}
-				message={this.state.message}
-				changed={this.state.changed}
-				disabled={this.state.disabled}
-				light={true}
-				onCancel={(): void => {
-					this.setState({
-						...this.state,
-						changed: false,
-						secret: null,
-					});
-				}}
-				onSave={this.onSave}
-			/>
+			<div className="bp5-cell" style={css.item}>
+				<span
+					style={css.icon}
+					className="bp5-icon-standard bp5-text-muted bp5-icon-cloud"
+				/>
+				{secType}
+			</div>
 		</div>;
 	}
 }
