@@ -804,11 +804,35 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsSystem(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 2160 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsLoad(),
 		Keys: &bson.D{
 			{"t", 1},
 			{"e", 1},
 		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsLoad(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 2160 * time.Hour,
 	}
 	err = index.Create()
 	if err != nil {
@@ -828,11 +852,35 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsDisk(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 2160 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsDiskIo(),
 		Keys: &bson.D{
 			{"t", 1},
 			{"e", 1},
 		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsDiskIo(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 2160 * time.Hour,
 	}
 	err = index.Create()
 	if err != nil {
@@ -852,11 +900,35 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsNetwork(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 2160 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsCheck(),
 		Keys: &bson.D{
 			{"t", 1},
 			{"c", 1},
 		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsCheck(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 4320 * time.Hour,
 	}
 	err = index.Create()
 	if err != nil {
@@ -876,12 +948,36 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.EndpointsCheckLog(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 4320 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.EndpointsKmsg(),
 		Keys: &bson.D{
 			{"e", -1},
 			{"b", -1},
 			{"s", -1},
 		},
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
+		Collection: db.EndpointsKmsg(),
+		Keys: &bson.D{
+			{"t", 1},
+		},
+		Expire: 4320 * time.Hour,
 	}
 	err = index.Create()
 	if err != nil {
