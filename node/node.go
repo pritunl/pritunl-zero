@@ -179,6 +179,26 @@ func (n *Node) HasService(srvcId primitive.ObjectID) bool {
 	return false
 }
 
+func (n *Node) AddService(srvcId primitive.ObjectID) bool {
+	if n.HasService(srvcId) {
+		return false
+	}
+
+	n.Services = append(n.Services, srvcId)
+	return true
+}
+
+func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
+	for i, serviceId := range n.Services {
+		if serviceId == srvcId {
+			n.Services = append(n.Services[:i], n.Services[i+1:]...)
+			return true
+		}
+	}
+
+	return false
+}
+
 func (n *Node) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
