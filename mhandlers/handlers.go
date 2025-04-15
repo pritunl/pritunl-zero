@@ -57,11 +57,12 @@ func Register(engine *gin.Engine) {
 	dbGroup.POST("/auth/webauthn/register", authWanRegisterPost)
 	sessGroup.GET("/logout", logoutGet)
 
-	csrfGroup.GET("/authority", authoritysGet)
+	csrfGroup.GET("/authority", authoritiesGet)
 	csrfGroup.GET("/authority/:authr_id", authorityGet)
 	csrfGroup.PUT("/authority/:authr_id", authorityPut)
 	csrfGroup.POST("/authority", authorityPost)
 	csrfGroup.DELETE("/authority/:authr_id", authorityDelete)
+	csrfGroup.DELETE("/authority", authoritiesDelete)
 	csrfGroup.POST("/authority/:authr_id/token", authorityTokenPost)
 	csrfGroup.DELETE("/authority/:authr_id/token/:token",
 		authorityTokenDelete)
