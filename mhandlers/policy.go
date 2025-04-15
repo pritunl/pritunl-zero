@@ -1,9 +1,15 @@
 package mhandlers
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
@@ -30,6 +36,11 @@ type policyData struct {
 	ProxyDeviceSecondary      bool                    `json:"proxy_device_secondary"`
 	AuthorityDeviceSecondary  bool                    `json:"authority_device_secondary"`
 	AuthorityRequireSmartCard bool                    `json:"authority_require_smart_card"`
+}
+
+type policiesData struct {
+	Policies []*policy.Policy `json:"policies"`
+	Count    int64            `json:"count"`
 }
 
 func policyPut(c *gin.Context) {
@@ -199,6 +210,34 @@ func policyDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func policiesDelete(c *gin.Context) {
+	if demo.Blocked(c) {
+		return
+	}
+
+	db := c.MustGet("db").(*database.Database)
+	data := []primitive.ObjectID{}
+
+	err := c.Bind(&data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "handler: Bind error"),
+		}
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	err = policy.RemoveMulti(db, data)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	event.PublishDispatch(db, "policy.change")
+
+	c.JSON(200, nil)
+}
+
 func policyGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
@@ -220,11 +259,47 @@ func policyGet(c *gin.Context) {
 func policiesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
-	policies, err := policy.GetAll(db)
+	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
+	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
+
+	query := bson.M{}
+
+	policyId, ok := utils.ParseObjectId(c.Query("id"))
+	if ok {
+		query["_id"] = policyId
+	}
+
+	name := strings.TrimSpace(c.Query("name"))
+	if name != "" {
+		query["name"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(name)),
+			"$options": "i",
+		}
+	}
+
+	organization, ok := utils.ParseObjectId(c.Query("organization"))
+	if ok {
+		query["organization"] = organization
+	}
+
+	description := strings.TrimSpace(c.Query("description"))
+	if description != "" {
+		query["description"] = &bson.M{
+			"$regex":   fmt.Sprintf(".*%s.*", regexp.QuoteMeta(description)),
+			"$options": "i",
+		}
+	}
+
+	policies, count, err := policy.GetAllPaged(db, &query, page, pageCount)
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
 	}
 
-	c.JSON(200, policies)
+	data := &policiesData{
+		Policies: policies,
+		Count:    count,
+	}
+
+	c.JSON(200, data)
 }
