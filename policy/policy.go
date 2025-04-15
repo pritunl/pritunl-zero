@@ -416,6 +416,37 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 	return
 }
 
+func (p *Policy) HasService(srvcId primitive.ObjectID) bool {
+	for _, serviceId := range p.Services {
+		if serviceId == srvcId {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (p *Policy) AddService(srvcId primitive.ObjectID) bool {
+	if p.HasService(srvcId) {
+		return false
+	}
+
+	p.Services = append(p.Services, srvcId)
+	return true
+}
+
+func (p *Policy) RemoveService(srvcId primitive.ObjectID) bool {
+	for i, serviceId := range p.Services {
+		if serviceId == srvcId {
+			p.Services[i] = p.Services[len(p.Services)-1]
+			p.Services = p.Services[:len(p.Services)-1]
+			return true
+		}
+	}
+
+	return false
+}
+
 func (p *Policy) Commit(db *database.Database) (err error) {
 	coll := db.Policies()
 
