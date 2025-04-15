@@ -33,6 +33,15 @@ func Blocked(c *gin.Context) bool {
 	return true
 }
 
+func BlockedSilent(c *gin.Context) bool {
+	if !IsDemo() {
+		return false
+	}
+
+	c.JSON(200, nil)
+	return true
+}
+
 var Agent = &useragent.Agent{
 	OperatingSystem: useragent.Linux,
 	Browser:         useragent.Chrome,
