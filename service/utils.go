@@ -21,6 +21,21 @@ func Get(db *database.Database, serviceId primitive.ObjectID) (
 	return
 }
 
+func GetOne(db *database.Database, query *bson.M) (
+	srvce *Service, err error) {
+
+	coll := db.Services()
+	srvce = &Service{}
+
+	err = coll.FindOne(db, query).Decode(srvce)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetMulti(db *database.Database, serviceIds []primitive.ObjectID) (
 	services []*Service, err error) {
 
