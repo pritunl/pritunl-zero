@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
@@ -123,6 +124,33 @@ func StripPort(hostport string) string {
 	}
 
 	return hostport[:colon]
+}
+
+func SplitHostPort(hostport string) (host string, port int) {
+	colon := strings.IndexByte(hostport, ':')
+	if colon == -1 {
+		return hostport, 0
+	}
+
+	n := strings.Count(hostport, ":")
+	if n > 1 {
+		if hostport[0] == '[' {
+			i := strings.IndexByte(hostport, ']')
+			if i != -1 {
+				host = hostport[1:i]
+
+				if len(hostport) > i+1 && hostport[i+1] == ':' {
+					port, _ = strconv.Atoi(hostport[i+2:])
+				}
+				return
+			}
+		}
+		return hostport, 0
+	}
+
+	host = hostport[:colon]
+	port, _ = strconv.Atoi(hostport[colon+1:])
+	return
 }
 
 func FormatHostPort(hostname string, port int) string {
