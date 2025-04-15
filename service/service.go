@@ -168,7 +168,7 @@ func (s *Service) Validate(db *database.Database) (
 	}
 
 	for _, server := range s.Servers {
-		if server.Protocol != "http" && server.Protocol != "https" {
+		if server.Protocol != Http && server.Protocol != Https {
 			errData = &errortypes.ErrorData{
 				Error:   "service_protocol_invalid",
 				Message: "Invalid service server protocol",
@@ -184,7 +184,7 @@ func (s *Service) Validate(db *database.Database) (
 			return
 		}
 
-		if server.Port == 0 {
+		if server.Port < 1 || server.Port > 65535 {
 			errData = &errortypes.ErrorData{
 				Error:   "service_port_invalid",
 				Message: "Invalid service server port",
@@ -193,9 +193,10 @@ func (s *Service) Validate(db *database.Database) (
 		}
 	}
 
+	newWhitelistNetworks := []string{}
 	for _, cidr := range s.WhitelistNetworks {
-		_, _, err = net.ParseCIDR(cidr)
-		if err != nil {
+		_, ipNet, e := net.ParseCIDR(cidr)
+		if e != nil {
 			err = nil
 			errData = &errortypes.ErrorData{
 				Error:   "whitelist_network_invalid",
@@ -203,7 +204,9 @@ func (s *Service) Validate(db *database.Database) (
 			}
 			return
 		}
+		newWhitelistNetworks = append(newWhitelistNetworks, ipNet.String())
 	}
+	s.WhitelistNetworks = newWhitelistNetworks
 
 	s.Format()
 
