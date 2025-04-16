@@ -1,5 +1,6 @@
 package service
 
 const (
-	Http = "http"
+	Http  = "http"
+	Https = "https"
 )
