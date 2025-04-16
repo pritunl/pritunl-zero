@@ -3,7 +3,9 @@ package policy
 import (
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 func Get(db *database.Database, policyId primitive.ObjectID) (
@@ -14,6 +16,21 @@ func Get(db *database.Database, policyId primitive.ObjectID) (
 
 	err = coll.FindOneId(policyId, polcy)
 	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetOne(db *database.Database, query *bson.M) (
+	polcy *Policy, err error) {
+
+	coll := db.Policies()
+	polcy = &Policy{}
+
+	err = coll.FindOne(db, query).Decode(polcy)
+	if err != nil {
+		err = database.ParseError(err)
 		return
 	}
 
