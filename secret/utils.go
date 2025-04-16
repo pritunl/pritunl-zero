@@ -154,6 +154,23 @@ func Remove(db *database.Database, secrId primitive.ObjectID) (err error) {
 	return
 }
 
+func RemoveMulti(db *database.Database, secretIds []primitive.ObjectID) (
+	err error) {
+	coll := db.Secrets()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"_id": &bson.M{
+			"$in": secretIds,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func loadPrivateKey(secr *Secret) (
 	key *rsa.PrivateKey, fingerprint string, err error) {
 
