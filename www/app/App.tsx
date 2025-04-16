@@ -1,4 +1,11 @@
 /// <reference path="References.d.ts"/>
+import * as Monaco from "monaco-editor";
+import * as MonacoEditor from "@monaco-editor/react";
+
+MonacoEditor.loader.config({
+	monaco: Monaco
+})
+
 import 'chartjs-adapter-moment';
 import * as ChartJs from 'chart.js';
 import * as React from 'react';
