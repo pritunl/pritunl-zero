@@ -61,8 +61,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/authority/:authr_id", authorityGet)
 	csrfGroup.PUT("/authority/:authr_id", authorityPut)
 	csrfGroup.POST("/authority", authorityPost)
-	csrfGroup.DELETE("/authority/:authr_id", authorityDelete)
 	csrfGroup.DELETE("/authority", authoritiesDelete)
+	csrfGroup.DELETE("/authority/:authr_id", authorityDelete)
 	csrfGroup.POST("/authority/:authr_id/token", authorityTokenPost)
 	csrfGroup.DELETE("/authority/:authr_id/token/:token",
 		authorityTokenDelete)
@@ -72,6 +72,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/certificate/:cert_id", certificateGet)
 	csrfGroup.PUT("/certificate/:cert_id", certificatePut)
 	csrfGroup.POST("/certificate", certificatePost)
+	csrfGroup.DELETE("/certificate", certificatesDelete)
 	csrfGroup.DELETE("/certificate/:cert_id", certificateDelete)
 
 	engine.GET("/check", checkGet)
@@ -131,6 +132,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/secret/:secr_id", secretGet)
 	csrfGroup.PUT("/secret/:secr_id", secretPut)
 	csrfGroup.POST("/secret", secretPost)
+	csrfGroup.DELETE("/secret", secretsDelete)
 	csrfGroup.DELETE("/secret/:secr_id", secretDelete)
 
 	csrfGroup.GET("/service", servicesGet)
