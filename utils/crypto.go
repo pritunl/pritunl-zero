@@ -62,6 +62,10 @@ func RandBytes(size int) (bytes []byte, err error) {
 	return
 }
 
+func RandInt(min, max int) int {
+	return mathrand.Intn(max-min+1) + min
+}
+
 func RandObjectId() (oid primitive.ObjectID, err error) {
 	rid, err := RandBytes(12)
 	if err != nil {
