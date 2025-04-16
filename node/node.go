@@ -199,6 +199,37 @@ func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
 	return false
 }
 
+func (n *Node) HasCertificate(certId primitive.ObjectID) bool {
+	for _, certObjId := range n.Certificates {
+		if certObjId == certId {
+			return false
+		}
+	}
+
+	return false
+}
+
+func (n *Node) AddCertificate(certId primitive.ObjectID) bool {
+	if n.HasCertificate(certId) {
+		return false
+	}
+
+	n.Certificates = append(n.Certificates, certId)
+	return true
+}
+
+func (n *Node) RemoveCertificate(certId primitive.ObjectID) bool {
+	for i, certObjId := range n.Certificates {
+		if certObjId == certId {
+			n.Certificates = append(
+				n.Certificates[:i], n.Certificates[i+1:]...)
+			return true
+		}
+	}
+
+	return false
+}
+
 func (n *Node) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
