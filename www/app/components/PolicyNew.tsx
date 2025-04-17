@@ -111,7 +111,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 			addAuthority: null,
 			addRole: null,
 			policy: {
-				name: 'New Block',
+				name: 'New Policy',
 			},
 		};
 	}
@@ -138,7 +138,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		};
 
 		let rules = {
-			...policy.rules,
+			...(policy.rules || {}),
 		};
 
 		if (rule.values == null) {
@@ -203,7 +203,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		let serviceId = this.state.addService || this.props.services[0].id;
 
 		let services = [
-			...policy.services,
+			...(policy.services || []),
 		];
 
 		if (services.indexOf(serviceId) === -1) {
@@ -229,7 +229,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		};
 
 		let services = [
-			...policy.services,
+			...(policy.services || []),
 		];
 
 		let i = services.indexOf(service);
@@ -263,7 +263,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 			this.props.authorities[0].id;
 
 		let authorities = [
-			...policy.authorities,
+			...(policy.authorities || []),
 		];
 
 		if (authorities.indexOf(authorityId) === -1) {
@@ -289,7 +289,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		};
 
 		let authorities = [
-			...policy.authorities,
+			...(policy.authorities || []),
 		];
 
 		let i = authorities.indexOf(authority);
@@ -316,7 +316,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		};
 
 		let roles = [
-			...policy.roles,
+			...(policy.roles || []),
 		];
 
 		if (!this.state.addRole) {
@@ -348,7 +348,7 @@ export default class PolicyDetailed extends React.Component<Props, State> {
 		};
 
 		let roles = [
-			...policy.roles,
+			...(policy.roles || []),
 		];
 
 		let i = roles.indexOf(role);
