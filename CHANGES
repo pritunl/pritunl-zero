@@ -5,6 +5,7 @@ pritunl-zero changelog
 
 Improve node service selection
 Fix max user experation date
+Add paging and condensed view for all resources
 
 Version 1.0.3324.37 2024-12-30
 ------------------------------
