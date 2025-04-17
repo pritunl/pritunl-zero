@@ -279,3 +279,20 @@ func Remove(db *database.Database, policyId primitive.ObjectID) (err error) {
 
 	return
 }
+
+func RemoveMulti(db *database.Database, policyIds []primitive.ObjectID) (
+	err error) {
+	coll := db.Policies()
+
+	_, err = coll.DeleteMany(db, &bson.M{
+		"_id": &bson.M{
+			"$in": policyIds,
+		},
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
