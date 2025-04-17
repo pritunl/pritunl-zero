@@ -6,6 +6,7 @@ interface Props {
 	hidden: boolean;
 	iconClass: string;
 	title: string;
+	noDelay?: boolean;
 	description?: string;
 }
 
@@ -16,6 +17,11 @@ interface State {
 const css = {
 	state: {
 		height: 'auto',
+	} as React.CSSProperties,
+	stateIcon: {
+		fontSize: '48px',
+		lineHeight: '48px',
+		marginBottom: '0',
 	} as React.CSSProperties,
 };
 
@@ -30,12 +36,14 @@ export default class NonState extends React.Component<Props, State> {
 	}
 
 	componentDidMount(): void {
-		this.timeout = window.setTimeout((): void => {
-			this.setState({
-				...this.state,
-				initialized: true,
-			});
-		}, Constants.loadDelay);
+		if (!this.props.noDelay) {
+			this.timeout = window.setTimeout((): void => {
+				this.setState({
+					...this.state,
+					initialized: true,
+				});
+			}, Constants.loadDelay);
+		}
 	}
 
 	componentWillUnmount(): void {
@@ -55,9 +63,12 @@ export default class NonState extends React.Component<Props, State> {
 		return <div
 			className="bp5-non-ideal-state"
 			style={css.state}
-			hidden={this.props.hidden || !this.state.initialized}
+			hidden={this.props.hidden || (!this.state.initialized && !this.props.noDelay)}
 		>
-			<div className="bp5-non-ideal-state-visual bp5-non-ideal-state-icon">
+			<div
+				className="bp5-non-ideal-state-visual bp5-non-ideal-state-icon"
+				style={css.stateIcon}
+			>
 				<span className={'bp5-icon ' + this.props.iconClass}/>
 			</div>
 			<h4 className="bp5-non-ideal-state-title">{this.props.title}</h4>
