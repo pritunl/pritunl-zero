@@ -231,9 +231,13 @@ label.bp5-label .bp5-button-group {
   position: fixed !important;
 }
 
-#chartjs-tooltip {
-  background-color: #fcfcfc;
+.bp3-theme.bp5-dark .bp5-datepicker {
+  background: #30404d !important;
 }
+
+#chartjs-tooltip {
+   background-color: #fcfcfc;
+ }
 
 .bp5-dark #chartjs-tooltip {
   background-color: #232f38;
