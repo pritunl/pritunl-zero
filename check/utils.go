@@ -229,10 +229,39 @@ func GetRolesMapped(db *database.Database, rolesSet set.Set) (
 	return
 }
 
+func RemoveData(db *database.Database, checkId primitive.ObjectID) (
+	err error) {
+
+	coll := db.EndpointsCheck()
+	_, err = coll.DeleteMany(db, &bson.M{
+		"c": checkId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.EndpointsCheckLog()
+	_, err = coll.DeleteMany(db, &bson.M{
+		"c": checkId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func Remove(db *database.Database,
 	checkId primitive.ObjectID) (err error) {
 
 	coll := db.Checks()
+
+	err = RemoveData(db, checkId)
+	if err != nil {
+		return
+	}
 
 	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": checkId,
@@ -249,6 +278,13 @@ func RemoveMulti(db *database.Database, checkIds []primitive.ObjectID) (
 	err error) {
 
 	coll := db.Checks()
+
+	for _, checkId := range checkIds {
+		err = RemoveData(db, checkId)
+		if err != nil {
+			return
+		}
+	}
 
 	_, err = coll.DeleteMany(db, &bson.M{
 		"_id": &bson.M{
