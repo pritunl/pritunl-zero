@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3433.91 2025-04-18
+------------------------------
 
 Improve node service selection
 Fix max user experation date
