@@ -51,6 +51,23 @@ export default class SettingsProvider extends React.Component<Props, State> {
 		let provider = this.props.provider;
 
 		return <div>
+			<PageSelect
+				label="Region"
+				help="Azure active directory region"
+				value={provider.region}
+				onChange={(val): void => {
+					let state = this.clone();
+					state.region = val;
+					this.props.onChange(state);
+				}}
+			>
+				<option value="global2">Global (OAuth v2)</option>
+				<option value="us-gov2">US Goverment (OAuth v2)</option>
+				<option value="china2">China (OAuth v2)</option>
+				<option value="global">Global (OAuth v1)</option>
+				<option value="us-gov">US Goverment (OAuth v1)</option>
+				<option value="china">China (OAuth v1)</option>
+			</PageSelect>
 			<PageInput
 				label="Directory ID"
 				help="Azure active directory ID"
