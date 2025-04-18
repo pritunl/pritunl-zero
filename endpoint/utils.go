@@ -204,6 +204,24 @@ func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
 		return
 	}
 
+	coll = db.EndpointsCheck()
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	coll = db.EndpointsCheckLog()
+	_, err = coll.DeleteMany(db, &bson.M{
+		"e": endpointId,
+	})
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
 	return
 }
 
