@@ -512,16 +512,16 @@ if cmd == 'upload' or cmd == 'build-upload':
     )
 
 
+    # Add to github
+    for name, path in iter_packages():
+        post_git_asset(release_id, name, path)
+
+
     # Sync mirror
     subprocess.check_call([
         'sh',
         'upload-unstable.sh',
     ], cwd=pacur_path)
-
-
-    # Add to github
-    for name, path in iter_packages():
-        post_git_asset(release_id, name, path)
 
 
 if cmd == 'upload-github':
