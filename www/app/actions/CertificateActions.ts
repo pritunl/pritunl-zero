@@ -50,7 +50,7 @@ export function sync(): Promise<void> {
 				Dispatcher.dispatch({
 					type: CertificateTypes.SYNC,
 					data: {
-						certificates: res.body,
+						certificates: res.body.certificates,
 						count: res.body.count,
 					},
 				});
