@@ -50,7 +50,7 @@ export function sync(): Promise<void> {
 				Dispatcher.dispatch({
 					type: AuthorityTypes.SYNC,
 					data: {
-						authorities: res.body,
+						authorities: res.body.authorities,
 						count: res.body.count,
 					},
 				});
