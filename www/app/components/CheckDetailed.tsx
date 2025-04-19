@@ -586,7 +586,7 @@ export default class CheckDetailed extends React.Component<Props, State> {
 						Roles
 						<Help
 							title="Roles"
-							content="The user roles that will be allowed access to this check. At least one role must match for the user to access the check."
+							content="The roles used to match to endpoints. Endpoints that have a matching role will perform checks."
 						/>
 						<div>
 							{roles}
