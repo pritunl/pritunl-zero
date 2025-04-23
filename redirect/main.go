@@ -29,10 +29,6 @@ func main() {
 }
 
 func runServer() (err error) {
-	logger.WithFields(logger.Fields{
-		"port": 80,
-	}).Info("main: Starting HTTP server")
-
 	webPort, err := strconv.Atoi(os.Getenv("WEB_PORT"))
 	if err != nil {
 		err = &errortypes.ParseError{
@@ -40,6 +36,11 @@ func runServer() (err error) {
 		}
 		return
 	}
+
+	logger.WithFields(logger.Fields{
+		"port":     80,
+		"web_port": webPort,
+	}).Info("main: Starting HTTP server")
 
 	server := &http.Server{
 		Addr:         "0.0.0.0:80",
