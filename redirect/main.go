@@ -67,8 +67,6 @@ func runServer() (err error) {
 				return
 			}
 
-			println(req.URL.Host)
-
 			req.URL.Scheme = "https"
 			req.URL.Host = StripPort(req.Host)
 			if webPort != 443 {
