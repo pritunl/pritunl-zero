@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/pritunl/pritunl-zero/redirect/crypto"
 	"github.com/pritunl/tools/errors"
 	"github.com/pritunl/tools/errortypes"
 	"github.com/pritunl/tools/logger"
@@ -37,34 +39,63 @@ func runServer() (err error) {
 		return
 	}
 
+	privateKeyStr := os.Getenv("PRIVATE_KEY")
+	secretStr := os.Getenv("SECRET")
+
+	box := &crypto.AsymNaclHmac{}
+	box.Import(privateKeyStr, secretStr)
+
 	logger.WithFields(logger.Fields{
 		"port":     80,
 		"web_port": webPort,
-	}).Info("main: Starting HTTP server")
+	}).Info("main: Starting HTTP redirect server")
 
 	server := &http.Server{
-		Addr:         "0.0.0.0:80",
+		Addr:         ":80",
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
 
 		Handler: http.HandlerFunc(func(
 			w http.ResponseWriter, req *http.Request) {
 
-			if strings.HasPrefix(req.URL.Path,
+			if req.Method == "GET" && strings.HasPrefix(req.URL.Path,
 				"/.well-known/acme-challenge/") {
 
 				pathSplit := strings.Split(req.URL.Path, "/")
 				token := pathSplit[len(pathSplit)-1]
 
-				challenge := GetChallenge(token)
-				if challenge == "" {
+				chal := GetChallenge(token)
+				if chal == nil {
 					w.WriteHeader(404)
 					fmt.Fprint(w, "404 page not found")
 					return
 				}
 
 				w.WriteHeader(200)
-				fmt.Fprint(w, challenge)
+				fmt.Fprint(w, chal.Response)
+				return
+			} else if req.Method == "POST" && req.URL.Path == "/token" {
+				bodyBytes := make([]byte, 8096)
+				n, err := io.LimitReader(req.Body, 8096).Read(bodyBytes)
+				if err != nil && err != io.EOF {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprint(w, "Internal server error")
+					return
+				}
+				bodyBytes = bodyBytes[:n]
+
+				chal := &Challenge{}
+				err = box.UnsealJson(string(bodyBytes), chal)
+				if err != nil && err != io.EOF {
+					w.WriteHeader(http.StatusUnauthorized)
+					fmt.Fprint(w, "Failed to authorize")
+					return
+				}
+
+				AddChallenge(chal)
+
+				w.WriteHeader(200)
+				fmt.Fprint(w, "success")
 				return
 			}
 
