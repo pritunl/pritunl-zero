@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/pritunl/tools/errors"
-	"github.com/pritunl/tools/errortypes"
+	"github.com/dropbox/godropbox/errors"
+	"github.com/pritunl/pritunl-zero/errortypes"
 	"golang.org/x/crypto/nacl/secretbox"
 )
 
