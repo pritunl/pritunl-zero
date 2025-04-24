@@ -5,6 +5,7 @@ import (
 
 	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/event"
 )
 
 type Challenge struct {
@@ -39,6 +40,20 @@ func (c *Challenge) Remove(db *database.Database) (err error) {
 		default:
 			return
 		}
+	}
+
+	return
+}
+
+type ChallengeMsg struct {
+	Token    string `bson:"token" json:"token"`
+	Response string `bson:"response" json:"response"`
+}
+
+func (c *ChallengeMsg) Publish(db *database.Database) (err error) {
+	err = event.Publish(db, "acme", c)
+	if err != nil {
+		return
 	}
 
 	return
