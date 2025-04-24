@@ -1,4 +1,4 @@
-package main
+package crypto
 
 import (
 	"crypto/hmac"
@@ -21,8 +21,13 @@ type Message struct {
 }
 
 type AsymNaclHmac struct {
-	PrivateKey *[32]byte
-	Secret     *[32]byte
+	privateKey   *[32]byte
+	secret       *[32]byte
+	nonceHandler func(nonce []byte) error
+}
+
+func (a *AsymNaclHmac) RegisterNonce(handler func(nonce []byte) error) {
+	a.nonceHandler = handler
 }
 
 func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
@@ -44,10 +49,10 @@ func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
 		return
 	}
 
-	encData := secretbox.Seal(nil, data, nonce, a.PrivateKey)
+	encData := secretbox.Seal(nil, data, nonce, a.privateKey)
 	encStr := base64.StdEncoding.EncodeToString(encData)
 
-	hashFunc := hmac.New(sha512.New, a.Secret[:])
+	hashFunc := hmac.New(sha512.New, a.secret[:])
 	hashFunc.Write([]byte(encStr))
 	rawSignature := hashFunc.Sum(nil)
 	sigStr := base64.StdEncoding.EncodeToString(rawSignature)
@@ -80,7 +85,7 @@ func (a *AsymNaclHmac) SealJson(input any) (output string, err error) {
 }
 
 func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
-	hashFunc := hmac.New(sha512.New, a.Secret[:])
+	hashFunc := hmac.New(sha512.New, a.secret[:])
 	hashFunc.Write([]byte(msg.Message))
 	rawSignature := hashFunc.Sum(nil)
 	sigStr := base64.StdEncoding.EncodeToString(rawSignature)
@@ -107,6 +112,16 @@ func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
 		return
 	}
 
+	if a.nonceHandler != nil {
+		err = a.nonceHandler(nonceByt)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "crypto: Nonce validate failed"),
+			}
+			return
+		}
+	}
+
 	nonce := new([24]byte)
 	copy(nonce[:], nonceByt)
 
@@ -118,7 +133,7 @@ func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
 		return
 	}
 
-	decByt, ok := secretbox.Open(nil, encByt, nonce, a.PrivateKey)
+	decByt, ok := secretbox.Open(nil, encByt, nonce, a.privateKey)
 	if !ok {
 		err = &errortypes.AuthenticationError{
 			errors.New("crypto: Failed to decrypt message"),
@@ -157,8 +172,8 @@ func (a *AsymNaclHmac) UnsealJson(input string, output any) (err error) {
 }
 
 func (a *AsymNaclHmac) Export() (keyStr, secrStr string) {
-	keyStr = base64.StdEncoding.EncodeToString(a.PrivateKey[:])
-	secrStr = base64.StdEncoding.EncodeToString(a.Secret[:])
+	keyStr = base64.StdEncoding.EncodeToString(a.privateKey[:])
+	secrStr = base64.StdEncoding.EncodeToString(a.secret[:])
 	return
 }
 
@@ -193,20 +208,20 @@ func (a *AsymNaclHmac) Import(keyStr, secrStr string) {
 		return
 	}
 
-	if a.PrivateKey == nil {
-		a.PrivateKey = new([32]byte)
+	if a.privateKey == nil {
+		a.privateKey = new([32]byte)
 	}
-	if a.Secret == nil {
-		a.Secret = new([32]byte)
+	if a.secret == nil {
+		a.secret = new([32]byte)
 	}
 
-	copy(a.PrivateKey[:], keyByt)
-	copy(a.Secret[:], secrByt)
+	copy(a.privateKey[:], keyByt)
+	copy(a.secret[:], secrByt)
 
 	return
 }
 
-func New() (asym *AsymNaclHmac, err error) {
+func (a *AsymNaclHmac) Generate() (err error) {
 	privKey := new([32]byte)
 	_, err = io.ReadFull(rand.Reader, privKey[:])
 	if err != nil {
@@ -225,10 +240,8 @@ func New() (asym *AsymNaclHmac, err error) {
 		return
 	}
 
-	asym = &AsymNaclHmac{
-		PrivateKey: privKey,
-		Secret:     secKey,
-	}
+	a.privateKey = privKey
+	a.secret = secKey
 
 	return
 }
