@@ -1,4 +1,4 @@
-package main
+package crypto
 
 import (
 	"crypto/hmac"
@@ -21,8 +21,13 @@ type Message struct {
 }
 
 type AsymNaclHmac struct {
-	PrivateKey *[32]byte
-	Secret     *[32]byte
+	PrivateKey   *[32]byte
+	Secret       *[32]byte
+	nonceHandler func(nonce []byte) error
+}
+
+func (a *AsymNaclHmac) RegisterNonce(handler func(nonce []byte) error) {
+	a.nonceHandler = handler
 }
 
 func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
@@ -105,6 +110,16 @@ func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
 			errors.New("crypto: Invalid nonce length"),
 		}
 		return
+	}
+
+	if a.nonceHandler != nil {
+		err = a.nonceHandler(nonceByt)
+		if err != nil {
+			err = &errortypes.ParseError{
+				errors.Wrap(err, "crypto: Nonce validate failed"),
+			}
+			return
+		}
 	}
 
 	nonce := new([24]byte)
