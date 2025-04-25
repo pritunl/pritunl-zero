@@ -16,6 +16,7 @@ require (
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/oracle/oci-go-sdk/v65 v65.69.3
 	github.com/pritunl/mongo-go-driver v1.11.3
+	github.com/pritunl/tools v1.2.5
 	github.com/pritunl/webauthn v1.0.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.9.1
