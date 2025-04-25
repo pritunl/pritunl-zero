@@ -13,18 +13,31 @@ type Challenge struct {
 var (
 	challenges     = map[string]*Challenge{}
 	challengesLock = sync.Mutex{}
+	clearTimer     *time.Timer
+	timerLock      = sync.Mutex{}
 )
 
 func AddChallenge(chal *Challenge) {
-	challengesLock.Lock()
-	challenges[chal.Token] = chal
-	challengesLock.Unlock()
-	go func() {
-		time.Sleep(60 * time.Second)
+	timerLock.Lock()
+	if clearTimer != nil {
+		clearTimer.Stop()
+		clearTimer = nil
+	}
+
+	clearTimer = time.AfterFunc(60*time.Second, func() {
 		challengesLock.Lock()
 		challenges = map[string]*Challenge{}
 		challengesLock.Unlock()
-	}()
+
+		timerLock.Lock()
+		clearTimer = nil
+		timerLock.Unlock()
+	})
+	timerLock.Unlock()
+
+	challengesLock.Lock()
+	challenges[chal.Token] = chal
+	challengesLock.Unlock()
 }
 
 func GetChallenge(token string) (chal *Challenge) {
