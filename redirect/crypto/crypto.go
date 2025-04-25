@@ -31,6 +31,13 @@ func (a *AsymNaclHmac) RegisterNonce(handler func(nonce []byte) error) {
 }
 
 func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
+	if a.privateKey == nil || a.secret == nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("crypto: Private key and secret not loaded"),
+		}
+		return
+	}
+
 	nonce := new([24]byte)
 	_, err = io.ReadFull(rand.Reader, nonce[:])
 	if err != nil {
@@ -85,6 +92,13 @@ func (a *AsymNaclHmac) SealJson(input any) (output string, err error) {
 }
 
 func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
+	if a.privateKey == nil || a.secret == nil {
+		err = &errortypes.AuthenticationError{
+			errors.New("crypto: Private key and secret not loaded"),
+		}
+		return
+	}
+
 	hashFunc := hmac.New(sha512.New, a.secret[:])
 	hashFunc.Write([]byte(msg.Message))
 	rawSignature := hashFunc.Sum(nil)
@@ -177,7 +191,7 @@ func (a *AsymNaclHmac) Export() (keyStr, secrStr string) {
 	return
 }
 
-func (a *AsymNaclHmac) Import(keyStr, secrStr string) {
+func (a *AsymNaclHmac) Import(keyStr, secrStr string) (err error) {
 	keyByt, err := base64.StdEncoding.DecodeString(keyStr)
 	if err != nil {
 		err = &errortypes.ParseError{
