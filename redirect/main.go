@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		logger.WithFields(logger.Fields{
 			"error": err,
-		}).Error("main: Redirect server error")
+		}).Error("redirect: Redirect server error")
 		os.Exit(1)
 	}
 }
@@ -34,7 +34,7 @@ func runServer() (err error) {
 	webPort, err := strconv.Atoi(os.Getenv("WEB_PORT"))
 	if err != nil {
 		err = &errortypes.ParseError{
-			errors.Wrapf(err, "main: Failed to parse web port"),
+			errors.Wrapf(err, "redirect: Failed to parse web port"),
 		}
 		return
 	}
@@ -43,12 +43,16 @@ func runServer() (err error) {
 	secretStr := os.Getenv("SECRET")
 
 	box := &crypto.AsymNaclHmac{}
-	box.Import(privateKeyStr, secretStr)
+
+	err = box.Import(privateKeyStr, secretStr)
+	if err != nil {
+		return
+	}
 
 	logger.WithFields(logger.Fields{
 		"port":     80,
 		"web_port": webPort,
-	}).Info("main: Starting HTTP redirect server")
+	}).Info("redirect: Starting HTTP redirect server")
 
 	server := &http.Server{
 		Addr:         ":80",
@@ -113,7 +117,7 @@ func runServer() (err error) {
 	err = server.ListenAndServe()
 	if err != nil {
 		err = &errortypes.WriteError{
-			errors.Wrapf(err, "main: Failed to bind web server"),
+			errors.Wrapf(err, "redirect: Failed to bind web server"),
 		}
 		return
 	}
