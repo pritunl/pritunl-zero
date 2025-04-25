@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"time"
 )
 
 type Challenge struct {
@@ -18,6 +19,12 @@ func AddChallenge(chal *Challenge) {
 	challengesLock.Lock()
 	challenges[chal.Token] = chal
 	challengesLock.Unlock()
+	go func() {
+		time.Sleep(60 * time.Second)
+		challengesLock.Lock()
+		challenges = map[string]*Challenge{}
+		challengesLock.Unlock()
+	}()
 }
 
 func GetChallenge(token string) (chal *Challenge) {
