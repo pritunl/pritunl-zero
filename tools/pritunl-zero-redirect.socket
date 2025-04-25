@@ -1,0 +1,9 @@
+[Unit]
+Description=Pritunl Zero Redirect Server Socket
+
+[Socket]
+ListenStream=80
+Accept=no
+
+[Install]
+WantedBy=sockets.target

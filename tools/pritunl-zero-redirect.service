@@ -1,0 +1,37 @@
+[Unit]
+Description=Pritunl Zero Redirect Server Daemon
+Requires=pritunl-zero-redirect.socket
+After=pritunl-zero-redirect.socket
+
+[Service]
+ExecStart=/usr/bin/pritunl-zero-redirect
+EnvironmentFile=/var/lib/pritunl-zero/redirect.conf
+User=pritunl-zero-web
+Group=pritunl-zero-web
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+PrivateNetwork=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+MemoryDenyWriteExecute=true
+LockPersonality=true
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+RestrictSUIDSGID=true
+DevicePolicy=closed
+CapabilityBoundingSet=
+AmbientCapabilities=
+NoNewPrivileges=true
+IPAddressDeny=any
+SocketBindDeny=any
+ReadOnlyPaths=/
+InaccessiblePaths=/home /root /boot /opt /mnt /media
+
+[Install]
+WantedBy=multi-user.target
