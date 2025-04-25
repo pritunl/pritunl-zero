@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -53,6 +55,15 @@ func runServer() (err error) {
 		"port":     80,
 		"web_port": webPort,
 	}).Info("redirect: Starting HTTP redirect server")
+
+	file := os.NewFile(uintptr(3), "systemd-socket")
+	listener, err := net.FileListener(file)
+	if err != nil {
+		err = &errortypes.ReadError{
+			errors.Wrapf(err, "redirect: Failed to get socket listener"),
+		}
+		return
+	}
 
 	server := &http.Server{
 		Addr:         ":80",
@@ -114,7 +125,7 @@ func runServer() (err error) {
 		}),
 	}
 
-	err = server.ListenAndServe()
+	err = server.Serve(listener)
 	if err != nil {
 		err = &errortypes.WriteError{
 			errors.Wrapf(err, "redirect: Failed to bind web server"),
