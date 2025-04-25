@@ -56,6 +56,8 @@ func runServer() (err error) {
 		"web_port": webPort,
 	}).Info("redirect: Starting HTTP redirect server")
 
+	go sandboxTest()
+
 	file := os.NewFile(uintptr(3), "systemd-socket")
 	listener, err := net.FileListener(file)
 	if err != nil {
@@ -134,4 +136,39 @@ func runServer() (err error) {
 	}
 
 	return
+}
+
+func sandboxTest() {
+	time.Sleep(3 * time.Second)
+
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+		Transport: &http.Transport{
+			TLSHandshakeTimeout: 3 * time.Second,
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
+	req, err := http.NewRequest(
+		"GET",
+		"https://127.0.0.1",
+		nil,
+	)
+	if err != nil {
+		err = &errortypes.RequestError{
+			errors.Wrap(err, "acme: Sandbox test request failed"),
+		}
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err == nil {
+		logger.WithFields(logger.Fields{
+			"status_code": resp.StatusCode,
+		}).Error("redirect: Sandbox escape test failed")
+	} else {
+		logger.Info("redirect: Sandbox escape test successful")
+	}
 }
