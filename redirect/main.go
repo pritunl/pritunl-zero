@@ -41,12 +41,15 @@ func runServer() (err error) {
 		return
 	}
 
-	privateKeyStr := os.Getenv("PRIVATE_KEY")
-	secretStr := os.Getenv("SECRET")
+	key := crypto.AsymNaclHmacKey{
+		PublicKey: os.Getenv("PUBLIC_KEY"),
+		Key:       os.Getenv("KEY"),
+		Secret:    os.Getenv("SECRET"),
+	}
 
 	box := &crypto.AsymNaclHmac{}
 
-	err = box.Import(privateKeyStr, secretStr)
+	err = box.Import(key)
 	if err != nil {
 		return
 	}
