@@ -44,32 +44,33 @@ var (
 )
 
 type Router struct {
-	nodeHash         []byte
-	singleType       bool
-	managementType   bool
-	userType         bool
-	proxyType        bool
-	port             int
-	noRedirectServer bool
-	redirectSystemd  bool
-	protocol         string
-	certificates     *Certificates
-	box              *crypto.AsymNaclHmac
-	managementDomain string
-	userDomain       string
-	endpointDomain   string
-	stateLock        sync.Mutex
-	mRouter          *gin.Engine
-	uRouter          *gin.Engine
-	pRouter          *gin.Engine
-	waiter           sync.WaitGroup
-	lock             sync.Mutex
-	redirectServer   *http.Server
-	redirectContext  context.Context
-	redirectCancel   context.CancelFunc
-	webServer        *http.Server
-	proxy            *proxy.Proxy
-	stop             bool
+	nodeHash             []byte
+	singleType           bool
+	managementType       bool
+	userType             bool
+	proxyType            bool
+	port                 int
+	noRedirectServer     bool
+	redirectSystemd      bool
+	forceRedirectSystemd bool
+	protocol             string
+	certificates         *Certificates
+	box                  *crypto.AsymNaclHmac
+	managementDomain     string
+	userDomain           string
+	endpointDomain       string
+	stateLock            sync.Mutex
+	mRouter              *gin.Engine
+	uRouter              *gin.Engine
+	pRouter              *gin.Engine
+	waiter               sync.WaitGroup
+	lock                 sync.Mutex
+	redirectServer       *http.Server
+	redirectContext      context.Context
+	redirectCancel       context.CancelFunc
+	webServer            *http.Server
+	proxy                *proxy.Proxy
+	stop                 bool
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, re *http.Request) {
@@ -332,19 +333,26 @@ func (r *Router) startRedirect() {
 	}
 
 	if r.redirectSystemd {
+		defer r.stopRedirectSystemd()
+
 		err := r.startRedirectSystemd()
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("router: Falling back to main process redirect server")
+			if r.forceRedirectSystemd {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Failed to start systemd redirect server")
+				return
+			} else {
+				logrus.WithFields(logrus.Fields{
+					"error": err,
+				}).Error("router: Falling back to main process redirect server")
+			}
 		} else {
 			logrus.WithFields(logrus.Fields{
 				"production": constants.Production,
 				"protocol":   "http",
 				"port":       80,
 			}).Info("router: Started systemd redirect server")
-
-			defer r.stopRedirectSystemd()
 
 			ctx, cancel := context.WithCancel(context.Background())
 			r.redirectContext = ctx
@@ -432,6 +440,7 @@ func (r *Router) initWeb() (err error) {
 	r.noRedirectServer = node.Self.NoRedirectServer
 	r.redirectSystemd = utils.IsSystemd() ||
 		settings.Router.ForceRedirectSystemd
+	r.forceRedirectSystemd = settings.Router.ForceRedirectSystemd
 
 	if r.managementType && !r.userType && !r.proxyType {
 		r.singleType = true
