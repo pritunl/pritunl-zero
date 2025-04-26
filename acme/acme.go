@@ -292,19 +292,17 @@ func Generate(db *database.Database, cert *certificate.Certificate) (
 				return
 			}
 
-			if settings.Router.RedirectServerSystemd {
-				chalMsg := &ChallengeMsg{
-					Token:    authzChal.Token,
-					Response: resp,
-				}
-
-				err = chalMsg.Publish(db)
-				if err != nil {
-					return
-				}
-
-				time.Sleep(300 * time.Millisecond)
+			chalMsg := &ChallengeMsg{
+				Token:    authzChal.Token,
+				Response: resp,
 			}
+
+			err = chalMsg.Publish(db)
+			if err != nil {
+				return
+			}
+
+			time.Sleep(300 * time.Millisecond)
 		}
 
 		_, err = client.Accept(context.Background(), authzChal)
