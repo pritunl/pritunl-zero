@@ -1,10 +1,15 @@
 package utils
 
 import (
+	"io/ioutil"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 )
+
+var isSystemd *bool
 
 var (
 	safeChars = set.NewSet(
@@ -209,4 +214,45 @@ func SinceAbs(t time.Time) (s time.Duration) {
 		s = s * -1
 	}
 	return
+}
+
+func IsSystemd() bool {
+	if isSystemd != nil {
+		return *isSystemd
+	}
+
+	data, err := ioutil.ReadFile("/proc/1/cmdline")
+	if err == nil {
+		parts := strings.Split(string(data), "\x00")
+		if len(parts) > 0 && strings.Contains(
+			strings.ToLower(parts[0]), "systemd") {
+
+			isSysd := true
+			isSystemd = &isSysd
+			return true
+		}
+	}
+
+	data, err = ioutil.ReadFile("/proc/1/comm")
+	if err == nil {
+		if strings.Contains(strings.ToLower(string(data)), "systemd") {
+			isSysd := true
+			isSystemd = &isSysd
+			return true
+		}
+	}
+
+	cmd := exec.Command("ps", "-p", "1", "-o", "comm=")
+	output, err := cmd.Output()
+	if err == nil {
+		if strings.Contains(strings.ToLower(string(output)), "systemd") {
+			isSysd := true
+			isSystemd = &isSysd
+			return true
+		}
+	}
+
+	isSysd := false
+	isSystemd = &isSysd
+	return false
 }
