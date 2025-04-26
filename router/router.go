@@ -716,6 +716,10 @@ func (r *Router) hashNode() []byte {
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.WriteTimeout))
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.IdleTimeout))
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.MaxHeaderBytes))
+	_, _ = io.WriteString(hash, strconv.FormatBool(
+		utils.IsSystemd() || settings.Router.ForceRedirectSystemd))
+	io.WriteString(hash, strconv.FormatBool(
+		settings.Router.ForceRedirectSystemd))
 
 	certs := node.Self.CertificateObjs
 	if certs != nil {
