@@ -22,18 +22,18 @@ type Message struct {
 }
 
 type AsymNaclHmacKey struct {
-	PrivateKey        string
-	Secret            string
-	SigningPrivateKey string
-	SigningPublicKey  string
+	Key        string
+	Secret     string
+	PrivateKey string
+	PublicKey  string
 }
 
 type AsymNaclHmac struct {
-	privateKey     *[32]byte
-	secret         *[32]byte
-	signPublicKey  *[32]byte
-	signPrivateKey *[64]byte
-	nonceHandler   func(nonce []byte) error
+	key          *[32]byte
+	secret       *[32]byte
+	publicKey    *[32]byte
+	privateKey   *[64]byte
+	nonceHandler func(nonce []byte) error
 }
 
 func (a *AsymNaclHmac) RegisterNonce(handler func(nonce []byte) error) {
@@ -41,7 +41,7 @@ func (a *AsymNaclHmac) RegisterNonce(handler func(nonce []byte) error) {
 }
 
 func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
-	if a.privateKey == nil || a.secret == nil || a.signPrivateKey == nil {
+	if a.key == nil || a.secret == nil || a.privateKey == nil {
 		err = &errortypes.AuthenticationError{
 			errors.New("crypto: Private key and secret not loaded"),
 		}
@@ -66,8 +66,8 @@ func (a *AsymNaclHmac) Seal(input any) (msg *Message, err error) {
 		return
 	}
 
-	encByt := secretbox.Seal(nil, data, nonce, a.privateKey)
-	sigEncByt := sign.Sign(nil, encByt, a.signPrivateKey)
+	encByt := secretbox.Seal(nil, data, nonce, a.key)
+	sigEncByt := sign.Sign(nil, encByt, a.privateKey)
 	sigEncStr := base64.StdEncoding.EncodeToString(sigEncByt)
 
 	hashFunc := hmac.New(sha512.New, a.secret[:])
@@ -103,7 +103,7 @@ func (a *AsymNaclHmac) SealJson(input any) (output string, err error) {
 }
 
 func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
-	if a.privateKey == nil || a.secret == nil || a.signPublicKey == nil {
+	if a.key == nil || a.secret == nil || a.publicKey == nil {
 		err = &errortypes.AuthenticationError{
 			errors.New("crypto: Private key and secret not loaded"),
 		}
@@ -158,7 +158,7 @@ func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
 		return
 	}
 
-	encByt, valid := sign.Open(nil, sigEncByt, a.signPublicKey)
+	encByt, valid := sign.Open(nil, sigEncByt, a.publicKey)
 	if !valid {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "crypto: Failed to verify message signature"),
@@ -166,7 +166,7 @@ func (a *AsymNaclHmac) Unseal(msg *Message, output any) (err error) {
 		return
 	}
 
-	decByt, ok := secretbox.Open(nil, encByt, nonce, a.privateKey)
+	decByt, ok := secretbox.Open(nil, encByt, nonce, a.key)
 	if !ok {
 		err = &errortypes.AuthenticationError{
 			errors.New("crypto: Failed to decrypt message"),
@@ -206,29 +206,25 @@ func (a *AsymNaclHmac) UnsealJson(input string, output any) (err error) {
 
 func (a *AsymNaclHmac) Export() AsymNaclHmacKey {
 	return AsymNaclHmacKey{
-		PrivateKey: base64.StdEncoding.EncodeToString(
-			a.privateKey[:]),
-		Secret: base64.StdEncoding.EncodeToString(
-			a.secret[:]),
-		SigningPublicKey: base64.StdEncoding.EncodeToString(
-			a.signPublicKey[:]),
-		SigningPrivateKey: base64.StdEncoding.EncodeToString(
-			a.signPrivateKey[:]),
+		Key:        base64.StdEncoding.EncodeToString(a.key[:]),
+		Secret:     base64.StdEncoding.EncodeToString(a.secret[:]),
+		PublicKey:  base64.StdEncoding.EncodeToString(a.publicKey[:]),
+		PrivateKey: base64.StdEncoding.EncodeToString(a.privateKey[:]),
 	}
 }
 
 func (a *AsymNaclHmac) Import(key AsymNaclHmacKey) (err error) {
-	privKeyByt, err := base64.StdEncoding.DecodeString(key.PrivateKey)
+	keyByt, err := base64.StdEncoding.DecodeString(key.Key)
 	if err != nil {
 		err = &errortypes.ParseError{
-			errors.Wrap(err, "crypto: Failed to decode private key"),
+			errors.Wrap(err, "crypto: Failed to decode key"),
 		}
 		return
 	}
 
-	if len(privKeyByt) != 32 {
+	if len(keyByt) != 32 {
 		err = &errortypes.ParseError{
-			errors.New("crypto: Invalid private key length"),
+			errors.New("crypto: Invalid key length"),
 		}
 		return
 	}
@@ -248,68 +244,68 @@ func (a *AsymNaclHmac) Import(key AsymNaclHmacKey) (err error) {
 		return
 	}
 
-	signPubKeyByt, err := base64.StdEncoding.DecodeString(
-		key.SigningPublicKey)
+	pubKeyByt, err := base64.StdEncoding.DecodeString(
+		key.PublicKey)
 	if err != nil {
 		err = &errortypes.ParseError{
-			errors.Wrap(err, "crypto: Failed to decode signing public key"),
+			errors.Wrap(err, "crypto: Failed to decode public key"),
 		}
 		return
 	}
 
-	if len(signPubKeyByt) != 32 {
+	if len(pubKeyByt) != 32 {
 		err = &errortypes.ParseError{
-			errors.New("crypto: Invalid signing public key length"),
+			errors.New("crypto: Invalid public key length"),
 		}
 		return
 	}
 
-	if key.SigningPrivateKey != "" {
-		signPrivKeyByt, e := base64.StdEncoding.DecodeString(
-			key.SigningPrivateKey)
+	if key.PrivateKey != "" {
+		privKeyByt, e := base64.StdEncoding.DecodeString(
+			key.PrivateKey)
 		if e != nil {
 			err = &errortypes.ParseError{
-				errors.Wrap(e, "crypto: Failed to decode signing private key"),
+				errors.Wrap(e, "crypto: Failed to decode private key"),
 			}
 			return
 		}
 
-		if len(signPrivKeyByt) != 64 {
+		if len(privKeyByt) != 64 {
 			err = &errortypes.ParseError{
-				errors.New("crypto: Invalid signing private key length"),
+				errors.New("crypto: Invalid private key length"),
 			}
 			return
 		}
 
-		if a.signPrivateKey == nil {
-			a.signPrivateKey = new([64]byte)
+		if a.privateKey == nil {
+			a.privateKey = new([64]byte)
 		}
-		copy(a.signPrivateKey[:], signPrivKeyByt)
+		copy(a.privateKey[:], privKeyByt)
 	}
 
-	if a.privateKey == nil {
-		a.privateKey = new([32]byte)
+	if a.key == nil {
+		a.key = new([32]byte)
 	}
 	if a.secret == nil {
 		a.secret = new([32]byte)
 	}
-	if a.signPublicKey == nil {
-		a.signPublicKey = new([32]byte)
+	if a.publicKey == nil {
+		a.publicKey = new([32]byte)
 	}
 
-	copy(a.privateKey[:], privKeyByt)
+	copy(a.key[:], keyByt)
 	copy(a.secret[:], secrByt)
-	copy(a.signPublicKey[:], signPubKeyByt)
+	copy(a.publicKey[:], pubKeyByt)
 
 	return
 }
 
 func (a *AsymNaclHmac) Generate() (err error) {
-	privKey := new([32]byte)
-	_, err = io.ReadFull(rand.Reader, privKey[:])
+	key := new([32]byte)
+	_, err = io.ReadFull(rand.Reader, key[:])
 	if err != nil {
 		err = &errortypes.ParseError{
-			errors.Wrap(err, "crypto: Failed to generate private key"),
+			errors.Wrap(err, "crypto: Failed to generate key"),
 		}
 		return
 	}
@@ -331,10 +327,10 @@ func (a *AsymNaclHmac) Generate() (err error) {
 		return
 	}
 
-	a.privateKey = privKey
+	a.key = key
 	a.secret = secKey
-	a.signPublicKey = signPubKey
-	a.signPrivateKey = signPrivKey
+	a.publicKey = signPubKey
+	a.privateKey = signPrivKey
 
 	return
 }
