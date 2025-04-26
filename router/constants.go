@@ -6,7 +6,8 @@ import (
 
 const redirectConfTempl = `# pritunl-zero redirect server environment
 WEB_PORT={{.WebPort}}
-PRIVATE_KEY={{.PrivateKey}}
+PUBLIC_KEY={{.PublicKey}}
+KEY={{.Key}}
 SECRET={{.Secret}}
 `
 
@@ -16,7 +17,8 @@ var (
 )
 
 type redirectConfData struct {
-	WebPort    int
-	PrivateKey string
-	Secret     string
+	WebPort   int
+	PublicKey string
+	Key       string
+	Secret    string
 }

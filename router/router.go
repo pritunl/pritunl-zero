@@ -140,13 +140,14 @@ func (r *Router) initRedirect() (err error) {
 			return
 		}
 
-		privKeyStr, secStr := r.box.Export()
+		key := r.box.Export()
 
 		redirectOutput := &bytes.Buffer{}
 		redirectData := &redirectConfData{
-			WebPort:    r.port,
-			PrivateKey: privKeyStr,
-			Secret:     secStr,
+			WebPort:   r.port,
+			PublicKey: key.PublicKey,
+			Key:       key.Key,
+			Secret:    key.Secret,
 		}
 
 		err = redirectConf.Execute(redirectOutput, redirectData)
