@@ -87,6 +87,7 @@ func hsmGet(c *gin.Context) {
 	ticker := time.NewTicker(pingInterval)
 	socket.Ticker = ticker
 	sub := lst.Listen()
+	defer lst.Close()
 
 	authr.HsmStatus = authority.Connected
 	authr.HsmTimestamp = time.Now()
