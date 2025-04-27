@@ -26,6 +26,9 @@ func Register(engine *gin.Engine) {
 	dbGroup := engine.Group("")
 	dbGroup.Use(middlewear.Database)
 
+	authrGroup := dbGroup.Group("")
+	authrGroup.Use(middlewear.HasAuthority)
+
 	sessGroup := dbGroup.Group("")
 	sessGroup.Use(middlewear.SessionUser)
 
@@ -79,9 +82,9 @@ func Register(engine *gin.Engine) {
 	csrfGroup.PUT("/ssh/secondary", sshSecondaryPut)
 	csrfGroup.GET("/ssh/webauthn/request", sshWanRequestGet)
 	csrfGroup.POST("/ssh/webauthn/respond", sshWanRespondPost)
-	dbGroup.PUT("/ssh/challenge", sshChallengePut)
-	dbGroup.POST("/ssh/challenge", sshChallengePost)
-	dbGroup.POST("/ssh/host", sshHostPost)
+	authrGroup.PUT("/ssh/challenge", sshChallengePut)
+	authrGroup.POST("/ssh/challenge", sshChallengePost)
+	authrGroup.POST("/ssh/host", sshHostPost)
 
 	engine.GET("/robots.txt", middlewear.RobotsGet)
 
