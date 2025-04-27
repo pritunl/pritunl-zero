@@ -81,6 +81,7 @@ func eventGet(c *gin.Context) {
 	ticker := time.NewTicker(pingInterval)
 	socket.Ticker = ticker
 	sub := lst.Listen()
+	defer lst.Close()
 
 	go func() {
 		defer func() {
