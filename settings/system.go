@@ -8,6 +8,7 @@ type system struct {
 	DatabaseVersion                int    `bson:"database_version"`
 	Demo                           bool   `bson:"demo"`
 	License                        string `bson:"license"`
+	LibPath                        string `bson:"lib_path" default:"/var/lib/pritunl-zero"`
 	CookieAuthKey                  []byte `bson:"cookie_auth_key"`
 	CookieCryptoKey                []byte `bson:"cookie_crypto_key"`
 	ProxyCookieAuthKey             []byte `bson:"proxy_cookie_auth_key"`
