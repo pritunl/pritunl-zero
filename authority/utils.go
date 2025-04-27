@@ -125,6 +125,22 @@ func parseSubnetMatch(subnetMatch string) (
 	return
 }
 
+func HasOne(db *database.Database) (exists bool, err error) {
+	coll := db.Authorities()
+
+	count, err := coll.EstimatedDocumentCount(db)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	if count > 0 {
+		exists = true
+	}
+
+	return
+}
+
 func MarshalCertificate(cert *ssh.Certificate, comment string) (
 	data []byte, err error) {
 
