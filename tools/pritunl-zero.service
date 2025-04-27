@@ -1,0 +1,9 @@
+[Unit]
+Description=Pritunl Zero Daemon
+
+[Service]
+LimitNOFILE=50000
+ExecStart=/usr/bin/pritunl-zero start
+
+[Install]
+WantedBy=multi-user.target
