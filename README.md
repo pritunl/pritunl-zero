@@ -12,45 +12,54 @@ found at [docs.pritunl.com](https://docs.pritunl.com/docs/pritunl-zero)
 
 [![pritunl](img/logo_code.png)](https://docs.pritunl.com/docs/pritunl-zero)
 
-## Run from Source
+## Install from Source
 
 ```bash
 # Install Go
-sudo yum -y install git
+sudo dnf -y install git-core
 
-wget https://go.dev/dl/go1.18.linux-amd64.tar.gz
-echo "e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f go1.18.linux-amd64.tar.gz" | sha256sum -c -
+wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
+echo "68097bd680839cbc9d464a0edce4f7c333975e27a90246890e9f1078c7e702ad go1.24.2.linux-amd64.tar.gz" | sha256sum -c -
 
 sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xf go1.18.linux-amd64.tar.gz
-rm -f go1.18.linux-amd64.tar.gz
+sudo tar -C /usr/local -xf go1.24.2.linux-amd64.tar.gz
+rm -f go1.24.2.linux-amd64.tar.gz
 
 tee -a ~/.bashrc << EOF
-export GO111MODULE=on
 export GOPATH=\$HOME/go
+export GOROOT=/usr/local/go
 export PATH=/usr/local/go/bin:\$PATH
 EOF
 source ~/.bashrc
 
 # Install MongoDB
-sudo tee /etc/yum.repos.d/mongodb-org-5.0.repo << EOF
-[mongodb-org-5.0]
+sudo tee /etc/yum.repos.d/mongodb-org.repo << EOF
+[mongodb-org]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/8/mongodb-org/5.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-5.0.asc
+gpgkey=https://pgp.mongodb.com/server-8.0.asc
 EOF
 
-sudo yum -y install mongodb-org
-sudo service mongod start
+sudo dnf -y install mongodb-org
+sudo systemctl enable --now mongod
 
 # Install Pritunl Zero
-go get -u github.com/pritunl/pritunl-zero
+GOPROXY=direct go install -v github.com/pritunl/pritunl-zero@latest
 
-# Run Pritunl Zero (must be run from source directory)
-cd ~/go/src/github.com/pritunl/pritunl-zero
-sudo ~/go/bin/pritunl-zero start
+# Setup systemd units
+sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero.service /etc/systemd/system/
+sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero-redirect.socket /etc/systemd/system/
+sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero-redirect.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo useradd -r -s /sbin/nologin -c 'Pritunl web server' pritunl-zero-web
+
+# Install Pritunl Zero
+sudo mkdir -p /usr/share/pritunl-zero/www/
+sudo cp -r $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/www/dist/. /usr/share/pritunl-zero/www/
+sudo cp ~/go/bin/pritunl-zero /usr/bin/pritunl-zero
+sudo systemctl enable --now pritunl-zero
 ```
 
 ## License
