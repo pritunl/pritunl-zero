@@ -35,8 +35,8 @@ func Register(engine *gin.Engine) {
 	csrfGroup := authGroup.Group("")
 	csrfGroup.Use(middlewear.CsrfToken)
 
-	hsmAuthGroup := dbGroup.Group("")
-	hsmAuthGroup.Use(middlewear.AuthHsm)
+	// hsmAuthGroup := dbGroup.Group("")
+	// hsmAuthGroup.Use(middlewear.AuthHsm)
 
 	engine.NoRoute(middlewear.NotFound)
 
@@ -71,7 +71,7 @@ func Register(engine *gin.Engine) {
 	dbGroup.GET("/endpoint/:endpoint_id/comm",
 		handlers.EndpointCommGet)
 
-	hsmAuthGroup.GET("/hsm", hsmGet)
+	// hsmAuthGroup.GET("/hsm", hsmGet)
 
 	sessGroup.GET("/ssh", sshGet)
 	csrfGroup.PUT("/ssh/validate/:ssh_token", sshValidatePut)
