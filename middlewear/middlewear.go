@@ -312,6 +312,21 @@ func AuthUser(c *gin.Context) {
 	}
 }
 
+func HasAuthority(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	exists, err := authority.HasOne(db)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	if !exists {
+		utils.AbortWithStatus(c, 404)
+		return
+	}
+}
+
 func CsrfToken(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	authr := c.MustGet("authorizer").(*authorizer.Authorizer)
