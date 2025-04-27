@@ -1,7 +1,6 @@
 [Unit]
 Description=Pritunl Zero Redirect Server Daemon
 Requires=pritunl-zero-redirect.socket
-After=pritunl-zero-redirect.socket
 
 [Service]
 ExecStart=/usr/bin/pritunl-zero-redirect
