@@ -2,6 +2,7 @@ package event
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -17,9 +18,9 @@ import (
 type Listener struct {
 	db       *database.Database
 	state    bool
-	err      error
 	channels []string
 	stream   chan *Event
+	once     sync.Once
 }
 
 func (l *Listener) Listen() chan *Event {
@@ -28,7 +29,9 @@ func (l *Listener) Listen() chan *Event {
 
 func (l *Listener) Close() {
 	l.state = false
-	close(l.stream)
+	l.once.Do(func() {
+		close(l.stream)
+	})
 }
 
 func (l *Listener) sub(cursorId primitive.ObjectID) {
