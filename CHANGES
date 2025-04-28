@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3443.91 2025-04-28
+------------------------------
 
 Add isolated systemd redirect web server
 
