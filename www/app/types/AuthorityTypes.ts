@@ -1,6 +1,8 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'authority.sync';
 export const CHANGE = 'authority.change';
+export const TRAVERSE = 'authority.traverse';
+export const FILTER = 'authority.filter';
 export const SYNC_SECRET = 'authority.sync_secret';
 
 export interface Info {
@@ -41,6 +43,11 @@ export interface Authority {
 	reset_proxy_host_key?: boolean;
 }
 
+export interface Filter {
+	id?: string;
+	name?: string;
+}
+
 export type Authorities = Authority[];
 
 export type AuthorityRo = Readonly<Authority>;
@@ -53,5 +60,9 @@ export interface AuthorityDispatch {
 		secret?: string;
 		authority?: Authority;
 		authorities?: Authorities;
+		page?: number;
+		pageCount?: number;
+		filter?: Filter;
+		count?: number;
 	};
 }
