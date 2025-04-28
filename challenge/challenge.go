@@ -274,8 +274,16 @@ func NewChallenge(db *database.Database, pubKey string) (
 	chal *Challenge, err error) {
 
 	pubKey = strings.TrimSpace(pubKey)
+	pubKeyLen := len(pubKey)
 
-	if len(pubKey) > settings.System.SshPubKeyLen {
+	if pubKeyLen == 0 {
+		err = errortypes.ParseError{
+			errors.New("sshcert: Public key missing"),
+		}
+		return
+	}
+
+	if pubKeyLen > settings.System.SshPubKeyLen {
 		err = errortypes.ParseError{
 			errors.New("sshcert: Public key too long"),
 		}
