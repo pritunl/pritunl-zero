@@ -46,7 +46,7 @@ sudo dnf -y install mongodb-org
 sudo systemctl enable --now mongod
 
 # Install Pritunl Zero
-GOPROXY=direct go install -v github.com/pritunl/pritunl-zero@latest
+go install -v github.com/pritunl/pritunl-zero@latest
 
 # Setup systemd units
 sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero.service /etc/systemd/system/
