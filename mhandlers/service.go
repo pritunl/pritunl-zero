@@ -274,6 +274,11 @@ func servicesGet(c *gin.Context) {
 			query["type"] = typ
 		}
 
+		role := strings.TrimSpace(c.Query("role"))
+		if role != "" {
+			query["roles"] = role
+		}
+
 		organization, ok := utils.ParseObjectId(c.Query("organization"))
 		if ok {
 			query["organization"] = organization
