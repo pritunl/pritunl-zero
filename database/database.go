@@ -1021,9 +1021,13 @@ func addCollections() (err error) {
 	}
 	defer cursor.Close(db)
 
+	eventsExists := false
+	isCapped := false
+
 	for cursor.Next(db) {
 		item := &struct {
-			Name string `bson:"name"`
+			Name    string `bson:"name"`
+			Options bson.M `bson:"options"`
 		}{}
 		err = cursor.Decode(item)
 		if err != nil {
@@ -1032,7 +1036,13 @@ func addCollections() (err error) {
 		}
 
 		if item.Name == "events" {
-			return
+			eventsExists = true
+			if options, ok := item.Options["capped"]; ok {
+				if cappedBool, ok := options.(bool); ok && cappedBool {
+					isCapped = true
+				}
+			}
+			break
 		}
 	}
 
@@ -1042,18 +1052,33 @@ func addCollections() (err error) {
 		return
 	}
 
-	err = db.database.RunCommand(
-		context.Background(),
-		bson.D{
-			{"create", "events"},
-			{"capped", true},
-			{"max", 1000},
-			{"size", 5242880},
-		},
-	).Err()
-	if err != nil {
-		err = ParseError(err)
-		return
+	if eventsExists && !isCapped {
+		logrus.WithFields(logrus.Fields{
+			"collection": "events",
+		}).Warning("database: Correcting events capped collection")
+
+		err = db.database.Collection("events").Drop(context.Background())
+		if err != nil {
+			err = ParseError(err)
+			return
+		}
+		eventsExists = false
+	}
+
+	if !eventsExists {
+		err = db.database.RunCommand(
+			context.Background(),
+			bson.D{
+				{"create", "events"},
+				{"capped", true},
+				{"max", 1000},
+				{"size", 5242880},
+			},
+		).Err()
+		if err != nil {
+			err = ParseError(err)
+			return
+		}
 	}
 
 	return
