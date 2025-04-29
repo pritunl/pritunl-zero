@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3444.34 2025-04-29
+------------------------------
 
 Isolated web server improvements
 
