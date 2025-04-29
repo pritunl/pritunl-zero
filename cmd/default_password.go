@@ -18,7 +18,7 @@ var DefaultPasswordCmd = &cobra.Command{
 	Use:   "default-password",
 	Short: "Get default administrator password",
 	Run: func(cmd *cobra.Command, args []string) {
-		Init()
+		InitMinimal()
 
 		db := database.GetDatabase()
 		defer db.Close()
