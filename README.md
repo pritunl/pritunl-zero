@@ -47,6 +47,7 @@ sudo systemctl enable --now mongod
 
 # Install Pritunl Zero
 go install -v github.com/pritunl/pritunl-zero@latest
+go install -v github.com/pritunl/pritunl-zero/redirect@latest
 
 # Setup systemd units
 sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero.service /etc/systemd/system/
@@ -59,6 +60,7 @@ sudo useradd -r -s /sbin/nologin -c 'Pritunl web server' pritunl-zero-web
 sudo mkdir -p /usr/share/pritunl-zero/www/
 sudo cp -r $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/www/dist/. /usr/share/pritunl-zero/www/
 sudo cp ~/go/bin/pritunl-zero /usr/bin/pritunl-zero
+sudo cp ~/go/bin/redirect /usr/bin/pritunl-zero-redirect
 sudo systemctl enable --now pritunl-zero
 ```
 
