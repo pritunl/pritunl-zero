@@ -294,15 +294,7 @@ func Connect() (err error) {
 	opts.SetRetryReads(true)
 	opts.SetRetryWrites(true)
 
-	client, err := mongo.NewClient(opts)
-	if err != nil {
-		err = &ConnectionError{
-			errors.Wrap(err, "database: Client error"),
-		}
-		return
-	}
-
-	err = client.Connect(context.Background())
+	client, err := mongo.Connect(context.Background(), opts)
 	if err != nil {
 		err = &ConnectionError{
 			errors.Wrap(err, "database: Connection error"),
