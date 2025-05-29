@@ -191,6 +191,12 @@ func newWeb(proxyProto string, proxyPort int, host *Host,
 		},
 	}
 
+	if settings.Router.DisableIdleConnections {
+		transportFix.transport.DisableKeepAlives = true
+		transportFix.transport.MaxIdleConns = 0
+		transportFix.transport.MaxIdleConnsPerHost = 0
+	}
+
 	if host.Service.Http2 {
 		transportFix.transport2 = &http2.Transport{
 			TLSClientConfig: tlsConfig,
