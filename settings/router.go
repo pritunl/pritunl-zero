@@ -16,6 +16,7 @@ type router struct {
 	IdleConnTimeout        int    `bson:"idle_conn_timeout" default:"90"`
 	HandshakeTimeout       int    `bson:"handshake_timeout" default:"10"`
 	ContinueTimeout        int    `bson:"continue_timeout" default:"10"`
+	DisableIdleConnections bool   `bson:"disable_idle_connections"`
 	MaxHeaderBytes         int    `bson:"max_header_bytes" default:"10485760"`
 	MaxResponseHeaderBytes int    `bson:"max_response_header_bytes" default:"33554432"`
 	ForceRedirectSystemd   bool   `bson:"force_redirect_systemd"`
