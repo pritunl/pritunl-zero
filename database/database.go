@@ -767,6 +767,18 @@ func addIndexes() (err error) {
 	}
 
 	index = &Index{
+		Collection: db.Sessions(),
+		Keys: &bson.D{
+			{"timestamp", 1},
+		},
+		Expire: 4320 * time.Hour,
+	}
+	err = index.Create()
+	if err != nil {
+		return
+	}
+
+	index = &Index{
 		Collection: db.Tasks(),
 		Keys: &bson.D{
 			{"timestamp", 1},
