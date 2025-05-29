@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
+	"github.com/pritunl/pritunl-zero/middlewear"
 	"github.com/pritunl/pritunl-zero/static"
 	"github.com/pritunl/pritunl-zero/utils"
 )
@@ -124,5 +125,8 @@ func staticTestingGet(c *gin.Context) {
 	}
 
 	c.Writer.Header().Add("Content-Type", static.GetMimeType(pth))
-	fileServer.ServeHTTP(c.Writer, c.Request)
+
+	gzipWriter := middlewear.NewGzipWriter(c)
+	defer gzipWriter.Close()
+	fileServer.ServeHTTP(gzipWriter, c.Request)
 }
