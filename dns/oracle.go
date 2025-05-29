@@ -197,6 +197,10 @@ func (o *Oracle) DnsCommit(db *database.Database,
 		}
 	}
 
+	if len(items) == 0 {
+		return
+	}
+
 	logrus.WithFields(logrus.Fields{
 		"domain":     domain,
 		"operations": oracleOps,
