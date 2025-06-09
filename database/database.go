@@ -18,11 +18,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	Client          *mongo.Client
-	DefaultDatabase string
-)
-
 type Database struct {
 	ctx      context.Context
 	client   *mongo.Client
@@ -302,11 +297,10 @@ func Connect() (err error) {
 		return
 	}
 
-	Client = client
+	setClient(client)
 
 	err = ValidateDatabase()
 	if err != nil {
-		Client = nil
 		return
 	}
 
@@ -365,35 +359,26 @@ func ValidateDatabase() (err error) {
 	return
 }
 
-func GetDatabase() (db *Database) {
-	client := Client
+func getDatabase(ctx context.Context, client *mongo.Client) *Database {
 	if client == nil {
-		return
+		return nil
 	}
 
 	database := client.Database(DefaultDatabase)
 
-	db = &Database{
-		client:   client,
-		database: database,
-	}
-	return
-}
-
-func GetDatabaseCtx(ctx context.Context) (db *Database) {
-	client := Client
-	if client == nil {
-		return
-	}
-
-	database := client.Database(DefaultDatabase)
-
-	db = &Database{
+	return &Database{
 		ctx:      ctx,
 		client:   client,
 		database: database,
 	}
-	return
+}
+
+func GetDatabase() *Database {
+	return getDatabase(nil, getClient())
+}
+
+func GetDatabaseCtx(ctx context.Context) *Database {
+	return getDatabase(ctx, getClient())
 }
 
 func addIndexes() (err error) {
