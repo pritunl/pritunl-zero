@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/x509"
+	"slices"
 	"strings"
 	"time"
 
@@ -258,13 +259,7 @@ func (d *Device) CheckLevel(level int) bool {
 		return false
 	}
 
-	for _, lvl := range d.AlertLevels {
-		if level == lvl {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(d.AlertLevels, level)
 }
 
 func (d *Device) Commit(db *database.Database) (err error) {

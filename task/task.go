@@ -3,6 +3,7 @@ package task
 import (
 	"fmt"
 	"runtime/debug"
+	"slices"
 	"time"
 
 	"github.com/pritunl/pritunl-zero/database"
@@ -33,10 +34,8 @@ type Task struct {
 func (t *Task) scheduled(hour, min int) bool {
 	for _, h := range t.Hours {
 		if h == hour {
-			for _, m := range t.Minutes {
-				if m == min {
-					return true
-				}
+			if slices.Contains(t.Minutes, min) {
+				return true
 			}
 		}
 	}
