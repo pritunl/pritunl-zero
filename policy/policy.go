@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/pritunl/pritunl-zero/useragent"
@@ -417,13 +418,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 }
 
 func (p *Policy) HasService(srvcId primitive.ObjectID) bool {
-	for _, serviceId := range p.Services {
-		if serviceId == srvcId {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(p.Services, srvcId)
 }
 
 func (p *Policy) AddService(srvcId primitive.ObjectID) bool {

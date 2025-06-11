@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -85,10 +86,8 @@ func (n *Node) AddType(nodeType string) bool {
 	}
 
 	types := strings.Split(n.Type, "_")
-	for _, typ := range types {
-		if typ == nodeType {
-			return false
-		}
+	if slices.Contains(types, nodeType) {
+		return false
 	}
 
 	types = append(types, nodeType)
@@ -170,13 +169,7 @@ func (n *Node) GetWebauthn(origin string, strict bool) (
 }
 
 func (n *Node) HasService(srvcId primitive.ObjectID) bool {
-	for _, serviceId := range n.Services {
-		if serviceId == srvcId {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(n.Services, srvcId)
 }
 
 func (n *Node) AddService(srvcId primitive.ObjectID) bool {
@@ -200,10 +193,8 @@ func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
 }
 
 func (n *Node) HasCertificate(certId primitive.ObjectID) bool {
-	for _, certObjId := range n.Certificates {
-		if certObjId == certId {
-			return false
-		}
+	if slices.Contains(n.Certificates, certId) {
+		return false
 	}
 
 	return false
