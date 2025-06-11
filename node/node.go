@@ -194,7 +194,7 @@ func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
 
 func (n *Node) HasCertificate(certId primitive.ObjectID) bool {
 	if slices.Contains(n.Certificates, certId) {
-		return false
+		return true
 	}
 
 	return false
