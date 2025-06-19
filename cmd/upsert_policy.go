@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"slices"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/pritunl/mongo-go-driver/bson"
@@ -157,13 +158,7 @@ var UpsertPolicyCmd = &cobra.Command{
 					return
 				}
 
-				found := false
-				for _, serviceId := range pol.Services {
-					if serviceId == srvc.Id {
-						found = true
-						break
-					}
-				}
+				found := slices.Contains(pol.Services, srvc.Id)
 
 				if !found {
 					pol.Services = append(pol.Services, srvc.Id)
@@ -213,13 +208,7 @@ var UpsertPolicyCmd = &cobra.Command{
 					return
 				}
 
-				found := false
-				for _, authorityId := range pol.Authorities {
-					if authorityId == auth.Id {
-						found = true
-						break
-					}
-				}
+				found := slices.Contains(pol.Authorities, auth.Id)
 
 				if !found {
 					pol.Authorities = append(pol.Authorities, auth.Id)

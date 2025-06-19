@@ -21,6 +21,7 @@ import (
 	"math/big"
 	"net"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -411,14 +412,7 @@ func (a *Authority) createCertificateLocal(
 
 	roles := usr.Roles
 	if a.JumpProxy() != "" {
-		hasBastion := false
-
-		for _, role := range roles {
-			if role == "bastion" {
-				hasBastion = true
-				break
-			}
-		}
+		hasBastion := slices.Contains(roles, "bastion")
 
 		if !hasBastion {
 			roles = append(usr.Roles, "bastion")
@@ -493,14 +487,7 @@ func (a *Authority) createCertificateHsm(db *database.Database,
 
 	roles := usr.Roles
 	if a.JumpProxy() != "" {
-		hasBastion := false
-
-		for _, role := range roles {
-			if role == "bastion" {
-				hasBastion = true
-				break
-			}
-		}
+		hasBastion := slices.Contains(roles, "bastion")
 
 		if !hasBastion {
 			roles = append(usr.Roles, "bastion")

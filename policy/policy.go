@@ -227,13 +227,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 	for _, rule := range p.Rules {
 		switch rule.Type {
 		case OperatingSystem:
-			match := false
-			for _, value := range rule.Values {
-				if value == agnt.OperatingSystem {
-					match = true
-					break
-				}
-			}
+			match := slices.Contains(rule.Values, agnt.OperatingSystem)
 
 			if !match {
 				if rule.Disable {
@@ -257,13 +251,7 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 			}
 			break
 		case Browser:
-			match := false
-			for _, value := range rule.Values {
-				if value == agnt.Browser {
-					match = true
-					break
-				}
-			}
+			match := slices.Contains(rule.Values, agnt.Browser)
 
 			if !match {
 				if rule.Disable {
