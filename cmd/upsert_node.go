@@ -35,7 +35,7 @@ func init() {
 		"Disable redirect server",
 	)
 	UpsertNodeCmd.PersistentFlags().Bool(
-		"mangement",
+		"management",
 		false,
 		"Enable management web console service",
 	)

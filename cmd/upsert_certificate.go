@@ -50,7 +50,7 @@ func init() {
 	UpsertCertificateCmd.PersistentFlags().String(
 		"acme-type",
 		"",
-		"ACME vertification method (http, dns)",
+		"ACME verification method (http, dns)",
 	)
 	UpsertCertificateCmd.PersistentFlags().String(
 		"acme-api",
