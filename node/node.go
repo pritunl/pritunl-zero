@@ -59,8 +59,46 @@ type Node struct {
 	Hostname             string                     `bson:"hostname" json:"hostname"`
 	Version              int                        `bson:"version" json:"-"`
 	CertificateObjs      []*certificate.Certificate `bson:"-" json:"-"`
-	reqLock              sync.Mutex                 `bson:"-" json:"-"`
 	reqCount             *list.List                 `bson:"-" json:"-"`
+	lock                 sync.Mutex                 `bson:"-" json:"-"`
+}
+
+func (n *Node) Copy() *Node {
+	n.lock.Lock()
+	defer n.lock.Unlock()
+
+	nde := &Node{
+		Id:                   n.Id,
+		Name:                 n.Name,
+		Type:                 n.Type,
+		Timestamp:            n.Timestamp,
+		Port:                 n.Port,
+		NoRedirectServer:     n.NoRedirectServer,
+		Protocol:             n.Protocol,
+		Certificate:          n.Certificate,
+		Certificates:         n.Certificates,
+		SelfCertificate:      n.SelfCertificate,
+		SelfCertificateKey:   n.SelfCertificateKey,
+		ManagementDomain:     n.ManagementDomain,
+		UserDomain:           n.UserDomain,
+		WebauthnDomain:       n.WebauthnDomain,
+		EndpointDomain:       n.EndpointDomain,
+		Services:             n.Services,
+		Authorities:          n.Authorities,
+		RequestsMin:          n.RequestsMin,
+		ForwardedForHeader:   n.ForwardedForHeader,
+		ForwardedProtoHeader: n.ForwardedProtoHeader,
+		Memory:               n.Memory,
+		Load1:                n.Load1,
+		Load5:                n.Load5,
+		Load15:               n.Load15,
+		SoftwareVersion:      n.SoftwareVersion,
+		Hostname:             n.Hostname,
+		Version:              n.Version,
+		CertificateObjs:      n.CertificateObjs,
+	}
+
+	return nde
 }
 
 func (n *Node) IsManagement() bool {
