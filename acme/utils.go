@@ -10,6 +10,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"net"
+	"slices"
 	"strings"
 	"time"
 
@@ -65,11 +66,9 @@ func DnsTxtWait(domain, val string) (found bool, err error) {
 			continue
 		}
 
-		for _, record := range records {
-			if record == val {
-				found = true
-				return
-			}
+		if slices.Contains(records, val) {
+			found = true
+			return
 		}
 	}
 

@@ -12,33 +12,33 @@ database.
 
 To enrol a new token:
 
-    app_id := "http://localhost"
-    c, _ := NewChallenge(app_id, []string{app_id})
-    req, _ := u2f.NewWebRegisterRequest(c, existingTokens)
-    // Send the request to the browser.
-    var resp RegisterResponse
-    // Read resp from the browser.
-    reg, err := Register(resp, c)
-    if err != nil {
-         // Registration failed.
-    }
-    // Store reg in the database.
+	app_id := "http://localhost"
+	c, _ := NewChallenge(app_id, []string{app_id})
+	req, _ := u2f.NewWebRegisterRequest(c, existingTokens)
+	// Send the request to the browser.
+	var resp RegisterResponse
+	// Read resp from the browser.
+	reg, err := Register(resp, c)
+	if err != nil {
+	     // Registration failed.
+	}
+	// Store reg in the database.
 
 To perform an authentication:
 
-    var regs []Registration
-    // Fetch regs from the database.
-    c, _ := NewChallenge(app_id, []string{app_id})
-    req, _ := c.SignRequest(regs)
-    // Send the request to the browser.
-    var resp SignResponse
-    // Read resp from the browser.
-    new_counter, err := reg.Authenticate(resp, c)
-    if err != nil {
-        // Authentication failed.
-    }
-    reg.Counter = new_counter
-    // Store updated Registration in the database.
+	var regs []Registration
+	// Fetch regs from the database.
+	c, _ := NewChallenge(app_id, []string{app_id})
+	req, _ := c.SignRequest(regs)
+	// Send the request to the browser.
+	var resp SignResponse
+	// Read resp from the browser.
+	new_counter, err := reg.Authenticate(resp, c)
+	if err != nil {
+	    // Authentication failed.
+	}
+	reg.Counter = new_counter
+	// Store updated Registration in the database.
 
 The FIDO U2F specification can be found here:
 https://fidoalliance.org/specifications/download
@@ -51,6 +51,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 )
@@ -104,13 +105,7 @@ func verifyClientData(clientData []byte, challenge Challenge) error {
 		return err
 	}
 
-	foundFacetID := false
-	for _, facetID := range challenge.TrustedFacets {
-		if facetID == cd.Origin {
-			foundFacetID = true
-			break
-		}
-	}
+	foundFacetID := slices.Contains(challenge.TrustedFacets, cd.Origin)
 	if !foundFacetID {
 		return errors.New("u2f: untrusted facet id")
 	}
