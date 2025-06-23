@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"container/list"
 	"io/ioutil"
 	"os/exec"
 	"strings"
@@ -255,4 +256,12 @@ func IsSystemd() bool {
 	isSysd := false
 	isSystemd = &isSysd
 	return false
+}
+
+func CopyList(src *list.List) *list.List {
+	dst := list.New()
+	for x := src.Front(); x != nil; x = x.Next() {
+		dst.PushBack(x.Value)
+	}
+	return dst
 }
