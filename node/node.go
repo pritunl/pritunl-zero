@@ -165,10 +165,10 @@ func (n *Node) IsOnline() bool {
 }
 
 func (n *Node) AddRequest() {
-	n.reqLock.Lock()
+	n.lock.Lock()
 	back := n.reqCount.Back()
 	back.Value = back.Value.(int) + 1
-	n.reqLock.Unlock()
+	n.lock.Unlock()
 }
 
 func (n *Node) GetWebauthn(origin string, strict bool) (
