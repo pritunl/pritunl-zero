@@ -261,6 +261,32 @@ func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 		},
 	}
 
+	transportFix := &TransportFix{
+		transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			DialContext: (&net.Dialer{
+				Timeout:   dialTimeout,
+				KeepAlive: dialKeepAlive,
+				DualStack: true,
+			}).DialContext,
+			MaxResponseHeaderBytes: int64(
+				settings.Router.MaxResponseHeaderBytes),
+			MaxIdleConns:          maxIdleConns,
+			MaxIdleConnsPerHost:   maxIdleConnsPerHost,
+			ResponseHeaderTimeout: headerTimeout,
+			IdleConnTimeout:       idleConnTimeout,
+			TLSHandshakeTimeout:   handshakeTimeout,
+			ExpectContinueTimeout: continueTimeout,
+			TLSClientConfig:       tlsConfig,
+		},
+	}
+
+	if settings.Router.DisableIdleConnections {
+		transportFix.transport.DisableKeepAlives = true
+		transportFix.transport.MaxIdleConns = 0
+		transportFix.transport.MaxIdleConnsPerHost = 0
+	}
+
 	w = &webIsolated{
 		reqHost:     host.Domain.Host,
 		serverProto: server.Protocol,
@@ -268,25 +294,7 @@ func newWebIsolated(proxyProto string, proxyPort int, host *Host,
 		proxyProto:  proxyProto,
 		proxyPort:   proxyPort,
 		Client: &http.Client{
-			Transport: &TransportFix{
-				transport: &http.Transport{
-					Proxy: http.ProxyFromEnvironment,
-					DialContext: (&net.Dialer{
-						Timeout:   dialTimeout,
-						KeepAlive: dialKeepAlive,
-						DualStack: true,
-					}).DialContext,
-					MaxResponseHeaderBytes: int64(
-						settings.Router.MaxResponseHeaderBytes),
-					MaxIdleConns:          maxIdleConns,
-					MaxIdleConnsPerHost:   maxIdleConnsPerHost,
-					ResponseHeaderTimeout: headerTimeout,
-					IdleConnTimeout:       idleConnTimeout,
-					TLSHandshakeTimeout:   handshakeTimeout,
-					ExpectContinueTimeout: continueTimeout,
-					TLSClientConfig:       tlsConfig,
-				},
-			},
+			Transport: transportFix,
 			CheckRedirect: func(r *http.Request, v []*http.Request) error {
 				return http.ErrUseLastResponse
 			},
