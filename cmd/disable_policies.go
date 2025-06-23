@@ -15,7 +15,7 @@ var DisablePoliciesCmd = &cobra.Command{
 	Use:   "disable-policies",
 	Short: "Disable all active policies",
 	Run: func(cmd *cobra.Command, args []string) {
-		Init()
+		InitMinimal()
 
 		db := database.GetDatabase()
 		defer db.Close()
