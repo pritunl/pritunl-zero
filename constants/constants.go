@@ -31,6 +31,8 @@ var (
 		),
 	}
 	StaticTestingRoot = []string{
+		"/home/cloud/git/pritunl-zero/www/dist-dev",
 		"/home/cloud/go/src/github.com/pritunl/pritunl-zero/www/dist-dev",
+		"/usr/share/pritunl-zero/www",
 	}
 )
