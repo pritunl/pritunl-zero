@@ -1,6 +1,8 @@
 package dns
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -147,10 +149,16 @@ func (a *Aws) DnsCommit(db *database.Database,
 
 	_, err = a.sessRoute53.ChangeResourceRecordSets(input)
 	if err != nil {
-		err = &errortypes.ApiError{
-			errors.Wrap(err, "acme: AWS record change error"),
+		if strings.Contains(err.Error(), "delete") &&
+			strings.Contains(err.Error(), "not found") {
+
+			err = nil
+		} else {
+			err = &errortypes.ApiError{
+				errors.Wrap(err, "acme: AWS record change error"),
+			}
+			return
 		}
-		return
 	}
 
 	return
@@ -318,10 +326,16 @@ func (a *Aws) DnsTxtDelete(db *database.Database,
 
 	_, err = a.sessRoute53.ChangeResourceRecordSets(input)
 	if err != nil {
-		err = &errortypes.ApiError{
-			errors.Wrap(err, "acme: AWS route53 record set error"),
+		if strings.Contains(err.Error(), "delete") &&
+			strings.Contains(err.Error(), "not found") {
+
+			err = nil
+		} else {
+			err = &errortypes.ApiError{
+				errors.Wrap(err, "acme: AWS record change error"),
+			}
+			return
 		}
-		return
 	}
 
 	return
