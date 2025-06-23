@@ -491,9 +491,12 @@ func (n *Node) loadCerts(db *database.Database) (err error) {
 	return
 }
 
-func (n *Node) sync() {
+func (n *Node) sync() (nde *Node) {
 	db := database.GetDatabase()
 	defer db.Close()
+
+	nde = n.Copy()
+	n = nde
 
 	n.Timestamp = time.Now()
 
@@ -547,41 +550,33 @@ func (n *Node) sync() {
 			"error": err,
 		}).Error("node: Failed to load node certificate")
 	}
-}
 
-func (n *Node) keepalive() {
-	for {
-		n.sync()
-		time.Sleep(1 * time.Second)
-	}
-}
-
-func (n *Node) reqInit() {
-	n.reqLock.Lock()
-	n.reqCount = list.New()
-	for i := 0; i < 60; i++ {
-		n.reqCount.PushBack(0)
-	}
-	n.reqLock.Unlock()
-}
-
-func (n *Node) reqSync() {
-	for {
-		time.Sleep(1 * time.Second)
-
-		n.reqLock.Lock()
-
-		var count int64
-		for elm := n.reqCount.Front(); elm != nil; elm = elm.Next() {
-			count += int64(elm.Value.(int))
+	var reqCount *list.List
+	if Self != nil {
+		Self.lock.Lock()
+		reqCount = utils.CopyList(Self.reqCount)
+		Self.lock.Unlock()
+	} else {
+		reqCount = list.New()
+		for i := 0; i < 60; i++ {
+			reqCount.PushBack(0)
 		}
-		n.RequestsMin = count
-
-		n.reqCount.Remove(n.reqCount.Front())
-		n.reqCount.PushBack(0)
-
-		n.reqLock.Unlock()
 	}
+
+	var count int64
+	for elm := reqCount.Front(); elm != nil; elm = elm.Next() {
+		count += int64(elm.Value.(int))
+	}
+	n.RequestsMin = count
+
+	reqCount.Remove(reqCount.Front())
+	reqCount.PushBack(0)
+
+	n.reqCount = reqCount
+
+	Self = n
+
+	return
 }
 
 func (n *Node) Init() (err error) {
@@ -654,19 +649,21 @@ func (n *Node) Init() (err error) {
 		return
 	}
 
-	n.reqInit()
-
-	err = n.loadCerts(db)
-	if err != nil {
-		return
-	}
+	n.sync()
 
 	_ = event.PublishDispatch(db, "node.change")
 
-	Self = n
+	go func() {
+		nde := n
+		for {
+			if constants.Interrupt {
+				return
+			}
 
-	go n.keepalive()
-	go n.reqSync()
+			nde = nde.sync()
+			time.Sleep(1 * time.Second)
+		}
+	}()
 
 	return
 }
