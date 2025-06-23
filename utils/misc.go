@@ -4,10 +4,12 @@ import (
 	"container/list"
 	"io/ioutil"
 	"os/exec"
+	"runtime/debug"
 	"strings"
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
+	"github.com/sirupsen/logrus"
 )
 
 var isSystemd *bool
@@ -256,6 +258,16 @@ func IsSystemd() bool {
 	isSysd := false
 	isSystemd = &isSysd
 	return false
+}
+
+func RecoverLog() {
+	panc := recover()
+	if panc != nil {
+		logrus.WithFields(logrus.Fields{
+			"trace": string(debug.Stack()),
+			"panic": panc,
+		}).Error("sync: Panic in goroutine")
+	}
 }
 
 func CopyList(src *list.List) *list.List {
