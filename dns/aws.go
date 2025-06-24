@@ -97,14 +97,10 @@ func (a *Aws) DnsCommit(db *database.Database,
 		return
 	}
 
-	action := aws.String("DELETE")
-	resourceRecs := []*route53.ResourceRecord{}
-	values := []string{}
+	deleteResourceRecs := []*route53.ResourceRecord{}
+	updateResourceRecs := []*route53.ResourceRecord{}
+	operations := []string{}
 	for _, op := range ops {
-		if op.Operation == UPSERT || op.Operation == RETAIN {
-			action = aws.String("UPSERT")
-		}
-
 		if recordType == "AAAA" {
 			val := normalizeIp(op.Value)
 			if val == "" {
@@ -116,46 +112,83 @@ func (a *Aws) DnsCommit(db *database.Database,
 			op.Value = val
 		}
 
-		resourceRecs = append(resourceRecs, &route53.ResourceRecord{
+		resourceRec := &route53.ResourceRecord{
 			Value: aws.String(op.Value),
-		})
-		values = append(values, op.Value)
+		}
+
+		if op.Operation == UPSERT || op.Operation == RETAIN {
+			operations = append(operations, "add:"+op.Value)
+			updateResourceRecs = append(updateResourceRecs, resourceRec)
+		} else {
+			operations = append(operations, "remove:"+op.Value)
+			deleteResourceRecs = append(deleteResourceRecs, resourceRec)
+		}
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"operation": *action,
-		"domain":    domain,
-		"values":    values,
+		"domain":     domain,
+		"operations": operations,
 	}).Info("domain: AWS dns batch operation")
 
-	input := &route53.ChangeResourceRecordSetsInput{
-		ChangeBatch: &route53.ChangeBatch{
-			Changes: []*route53.Change{
-				{
-					Action: action,
-					ResourceRecordSet: &route53.ResourceRecordSet{
-						Name: aws.String(domain),
-						Type: aws.String(recordType),
-						TTL: aws.Int64(int64(
-							settings.Acme.DnsAwsTtl)),
-						ResourceRecords: resourceRecs,
+	if len(deleteResourceRecs) > 0 {
+		input := &route53.ChangeResourceRecordSetsInput{
+			ChangeBatch: &route53.ChangeBatch{
+				Changes: []*route53.Change{
+					{
+						Action: aws.String("DELETE"),
+						ResourceRecordSet: &route53.ResourceRecordSet{
+							Name: aws.String(domain),
+							Type: aws.String(recordType),
+							TTL: aws.Int64(int64(
+								settings.Acme.DnsAwsTtl)),
+							ResourceRecords: deleteResourceRecs,
+						},
 					},
 				},
+				Comment: aws.String("Pritunl delete record"),
 			},
-			Comment: aws.String("Pritunl update record"),
-		},
-		HostedZoneId: aws.String(zoneId),
+			HostedZoneId: aws.String(zoneId),
+		}
+
+		_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+		if err != nil {
+			if strings.Contains(err.Error(), "delete") &&
+				strings.Contains(err.Error(), "not found") {
+
+				err = nil
+			} else {
+				err = &errortypes.ApiError{
+					errors.Wrap(err, "acme: AWS record delete error"),
+				}
+				return
+			}
+		}
 	}
 
-	_, err = a.sessRoute53.ChangeResourceRecordSets(input)
-	if err != nil {
-		if strings.Contains(err.Error(), "delete") &&
-			strings.Contains(err.Error(), "not found") {
+	if len(updateResourceRecs) > 0 {
+		input := &route53.ChangeResourceRecordSetsInput{
+			ChangeBatch: &route53.ChangeBatch{
+				Changes: []*route53.Change{
+					{
+						Action: aws.String("UPSERT"),
+						ResourceRecordSet: &route53.ResourceRecordSet{
+							Name: aws.String(domain),
+							Type: aws.String(recordType),
+							TTL: aws.Int64(int64(
+								settings.Acme.DnsAwsTtl)),
+							ResourceRecords: updateResourceRecs,
+						},
+					},
+				},
+				Comment: aws.String("Pritunl update record"),
+			},
+			HostedZoneId: aws.String(zoneId),
+		}
 
-			err = nil
-		} else {
+		_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+		if err != nil {
 			err = &errortypes.ApiError{
-				errors.Wrap(err, "acme: AWS record change error"),
+				errors.Wrap(err, "acme: AWS record update error"),
 			}
 			return
 		}
