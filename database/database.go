@@ -1154,7 +1154,7 @@ func fixData() (err error) {
 
 func init() {
 	module := requires.New("database")
-	module.After("config")
+	module.After("logger")
 
 	module.Handler = func() (err error) {
 		for {
