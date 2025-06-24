@@ -106,7 +106,7 @@ func (o *Oracle) DnsCommit(db *database.Database,
 	items := []dns.RecordOperation{}
 
 	values := set.NewSet()
-	oracleOps := []string{}
+	operations := []string{}
 
 	for _, op := range ops {
 		if recordType == "AAAA" {
@@ -126,7 +126,7 @@ func (o *Oracle) DnsCommit(db *database.Database,
 		case RETAIN:
 			break
 		case UPSERT:
-			oracleOps = append(oracleOps, "add:"+op.Value)
+			operations = append(operations, "add:"+op.Value)
 			items = append(items, dns.RecordOperation{
 				Domain: &domain,
 				Rtype:  utils.PointerString(recordType),
@@ -137,7 +137,7 @@ func (o *Oracle) DnsCommit(db *database.Database,
 			})
 			break
 		case DELETE:
-			oracleOps = append(oracleOps, "remove:"+op.Value)
+			operations = append(operations, "remove:"+op.Value)
 			items = append(items, dns.RecordOperation{
 				Domain: &domain,
 				Rtype:  utils.PointerString(recordType),
@@ -185,7 +185,7 @@ func (o *Oracle) DnsCommit(db *database.Database,
 				continue
 			}
 
-			oracleOps = append(oracleOps, "remove_unknown:"+*record.Rdata)
+			operations = append(operations, "remove_unknown:"+*record.Rdata)
 			items = append(items, dns.RecordOperation{
 				Domain: &domain,
 				Rtype:  utils.PointerString(recordType),
@@ -203,7 +203,7 @@ func (o *Oracle) DnsCommit(db *database.Database,
 
 	logrus.WithFields(logrus.Fields{
 		"domain":     domain,
-		"operations": oracleOps,
+		"operations": operations,
 	}).Info("domain: Oracle dns batch operation")
 
 	req := dns.PatchZoneRecordsRequest{
