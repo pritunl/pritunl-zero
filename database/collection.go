@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -270,6 +271,108 @@ func SelectFieldsAll(obj interface{}, fields set.Set) (data bson.M) {
 	}
 	if dataUnseted {
 		data["$unset"] = dataUnset
+	}
+
+	return
+}
+
+type ArraySelectFields struct {
+	count       int
+	setFields   bson.M
+	unsetFields bson.M
+	filters     []interface{}
+	push        []interface{}
+	pull        []primitive.ObjectID
+	rootKey     string
+	idKey       string
+	modified    bool
+}
+
+func (a *ArraySelectFields) Modified() bool {
+	return a.modified
+}
+
+func (a *ArraySelectFields) Update(docId primitive.ObjectID,
+	update bson.M) {
+
+	a.modified = true
+
+	matchKey := fmt.Sprintf("elem%d", a.count)
+	a.count += 1
+
+	setStr := fmt.Sprintf("%s.$[%s].", a.rootKey, matchKey)
+
+	for key, val := range update {
+		a.setFields[setStr+key] = val
+	}
+
+	a.filters = append(a.filters, bson.M{
+		fmt.Sprintf("%s.%s", matchKey, a.idKey): docId,
+	})
+}
+
+func (a *ArraySelectFields) Push(doc interface{}) {
+	a.modified = true
+	a.push = append(a.push, doc)
+}
+
+func (a *ArraySelectFields) Delete(docId primitive.ObjectID) {
+	a.modified = true
+	a.pull = append(a.pull, docId)
+}
+
+func (a *ArraySelectFields) GetQuery() (query bson.M, filters []interface{}) {
+	query = bson.M{}
+	if len(a.setFields) > 0 {
+		query["$set"] = a.setFields
+	}
+	if len(a.unsetFields) > 0 {
+		query["$unset"] = a.unsetFields
+	}
+
+	filters = a.filters
+
+	if len(a.push) > 0 {
+		query["$push"] = bson.M{
+			a.rootKey: bson.M{
+				"$each": &a.push,
+			},
+		}
+	}
+
+	if len(a.pull) > 0 {
+		query["$pull"] = bson.M{
+			a.rootKey: bson.M{
+				a.idKey: bson.M{
+					"$in": a.pull,
+				},
+			},
+		}
+	}
+
+	return
+}
+
+func NewArraySelectFields(obj interface{}, rootKey string, fields set.Set) (
+	arraySel *ArraySelectFields) {
+
+	selectFields := SelectFieldsAll(obj, fields)
+	setFields := selectFields["$set"].(bson.M)
+
+	var unsetFields bson.M
+	if _, exists := selectFields["$unset"]; exists {
+		unsetFields = selectFields["$unset"].(bson.M)
+	}
+
+	arraySel = &ArraySelectFields{
+		count:       1,
+		setFields:   setFields,
+		unsetFields: unsetFields,
+		filters:     []interface{}{},
+		push:        []interface{}{},
+		pull:        []primitive.ObjectID{},
+		rootKey:     rootKey,
+		idKey:       "id",
 	}
 
 	return
