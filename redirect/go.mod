@@ -6,7 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/pritunl/tools v1.2.6
-	golang.org/x/crypto v0.37.0
+	golang.org/x/crypto v0.39.0
 )
 
-require golang.org/x/sys v0.32.0 // indirect
+require golang.org/x/sys v0.33.0 // indirect
