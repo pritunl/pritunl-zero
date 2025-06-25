@@ -1,6 +1,7 @@
 {
   "name": "pritunl-zero",
   "dependencies": {
+    "@babel/runtime": "7.26.10",
     "@blueprintjs/core": "5.16.5",
     "@blueprintjs/datetime2": "2.3.22",
     "@blueprintjs/icons": "5.18.0",
@@ -40,6 +41,7 @@
     "terser-webpack-plugin": "5.3.10"
   },
   "devDependencies": {
+    "@babel/runtime": "7.26.10",
     "css-loader": "7.1.2",
     "monaco-editor-webpack-plugin": "7.1.0",
     "source-map-loader": "3.0.1",
