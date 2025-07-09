@@ -28,6 +28,7 @@ interface State {
 	dialog: boolean;
 	confirm: number;
 	confirming: string;
+	force: boolean;
 }
 
 const css = {
@@ -77,6 +78,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			dialog: false,
 			confirm: 0,
 			confirming: null,
+			force: false,
 		};
 	}
 
@@ -84,6 +86,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			dialog: true,
+			force: evt?.ctrlKey || false,
 		});
 	}
 
@@ -92,6 +95,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			...this.state,
 			dialog: false,
 			input: '',
+			force: false,
 		});
 	}
 
@@ -187,7 +191,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		}
 
 		let confirmInput: JSX.Element;
-		if (this.props.confirmInput) {
+		if (this.props.confirmInput && !this.state.force) {
 			confirmInput = <label
 				className="bp5-label"
 				style={css.label}
@@ -251,7 +255,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 						<button
 							className={'bp5-button ' + dialogClassName}
 							type="button"
-							disabled={this.props.confirmInput &&
+							disabled={this.props.confirmInput && !this.state.force &&
 								this.state.input !== 'delete'}
 							onClick={this.closeDialogConfirm}
 						>{this.props.dialogLabel || this.props.label}</button>
