@@ -2,6 +2,7 @@ package validator
 
 import (
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
@@ -209,13 +210,7 @@ func ValidateProxy(db *database.Database, usr *user.User,
 		usrRoles.Add(role)
 	}
 
-	roleMatch := false
-	for _, role := range srvc.Roles {
-		if usrRoles.Contains(role) {
-			roleMatch = true
-			break
-		}
-	}
+	roleMatch := slices.ContainsFunc(srvc.Roles, usrRoles.Contains)
 
 	if !roleMatch {
 		errAudit = audit.Fields{
