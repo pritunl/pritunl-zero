@@ -23,13 +23,14 @@ Command Help: builder [command] --help
 Commands:
   version               Print the version and exit
   set-version           Set current version
-  build                 Build and release"""
+  build                 Build and release
+  update-gitlab         Update gitlab token"""
 
 CONSTANTS_PATH = 'constants/constants.go'
 CHANGES_PATH = 'CHANGES'
 STABLE_PACUR_PATH = '../pritunl-pacur'
 TEST_PACUR_PATH = '../pritunl-pacur-test'
-BUILD_KEYS_PATH = 'build_keys.json'
+BUILD_KEYS_PATH = os.path.expanduser('~/data/build/pritunl_build.json')
 BUILD_TARGETS = ('pritunl-zero',)
 REPO_NAME = 'pritunl-zero'
 
@@ -116,58 +117,61 @@ else:
 
 def aes_encrypt(passphrase, data):
     enc_salt = os.urandom(32)
-    enc_iv = os.urandom(16)
+    enc_iv = os.urandom(12)
 
     kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA1(),
+        algorithm=hashes.SHA512(),
         length=32,
         salt=enc_salt,
-        iterations=1000,
+        iterations=10000000,
         backend=default_backend(),
     )
     enc_key = kdf.derive(passphrase.encode())
 
-    data += '\x00' * (16 - (len(data) % 16))
-
     cipher = Cipher(
         algorithms.AES(enc_key),
-        modes.CBC(enc_iv),
+        modes.GCM(enc_iv),
         backend=default_backend()
     ).encryptor()
-    enc_data = cipher.update(data.encode()) + cipher.finalize()
+
+    enc_data = cipher.update(data.encode('utf-8')) + cipher.finalize()
+    auth_tag = cipher.tag
 
     return '\n'.join([
         base64.b64encode(enc_salt).decode('utf-8'),
         base64.b64encode(enc_iv).decode('utf-8'),
         base64.b64encode(enc_data).decode('utf-8'),
+        base64.b64encode(auth_tag).decode('utf-8'),
     ])
 
 def aes_decrypt(passphrase, data):
     data = data.split('\n')
-    if len(data) < 3:
+    if len(data) < 4:
         raise ValueError('Invalid encryption data')
 
     enc_salt = base64.b64decode(data[0])
     enc_iv = base64.b64decode(data[1])
     enc_data = base64.b64decode(data[2])
+    auth_tag = base64.b64decode(data[3])
 
     kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA1(),
+        algorithm=hashes.SHA512(),
         length=32,
         salt=enc_salt,
-        iterations=1000,
+        iterations=10000000,
         backend=default_backend(),
     )
     enc_key = kdf.derive(passphrase.encode())
 
     cipher = Cipher(
         algorithms.AES(enc_key),
-        modes.CBC(enc_iv),
+        modes.GCM(enc_iv, auth_tag),
         backend=default_backend()
     ).decryptor()
-    data = cipher.update(enc_data) + cipher.finalize()
 
-    return data.decode('utf-8').replace('\x00', '')
+    decrypted_data = cipher.update(enc_data) + cipher.finalize()
+
+    return decrypted_data.decode('utf-8')
 
 passphrase = getpass.getpass('Enter passphrase: ')
 
@@ -208,8 +212,6 @@ with open(BUILD_KEYS_PATH, 'r') as build_keys_file:
     github_token = build_keys['github_token']
     gitlab_host = build_keys['gitlab_host']
     gitlab_token = build_keys['gitlab_token']
-    mirror_url = build_keys['mirror_url']
-    test_mirror_url = build_keys['test_mirror_url']
 
 
 # Get package info
@@ -222,6 +224,18 @@ parser = optparse.OptionParser(usage=USAGE)
 
 build_num = 0
 
+
+if cmd == 'update-gitlab':
+    build_keys['gitlab_token'] = getpass.getpass('Enter Gitlab Token: ')
+
+    data = json.dumps(build_keys, indent=4)
+
+    enc_data = aes_encrypt(passphrase, data)
+
+    with open(BUILD_KEYS_PATH, 'w') as build_keys_file:
+        build_keys_file.write(enc_data)
+
+    sys.exit(0)
 
 # Run cmd
 if cmd == 'version':
