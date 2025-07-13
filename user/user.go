@@ -1,7 +1,6 @@
 package user
 
 import (
-	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -200,7 +199,13 @@ func (u *User) RolesMatch(roles []string) bool {
 		usrRoles.Add(role)
 	}
 
-	return slices.ContainsFunc(roles, usrRoles.Contains)
+	for _, role := range roles {
+		if usrRoles.Contains(role) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (u *User) RolesMerge(roles []string) bool {
