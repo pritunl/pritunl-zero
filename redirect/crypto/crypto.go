@@ -24,8 +24,8 @@ type Message struct {
 type AsymNaclHmacKey struct {
 	Key        string
 	Secret     string
-	PrivateKey string
 	PublicKey  string
+	PrivateKey string
 }
 
 type AsymNaclHmac struct {
