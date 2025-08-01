@@ -131,6 +131,50 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
+func GetAllNames(db *database.Database, query *bson.M) (
+	certs []*Certificate, err error) {
+
+	coll := db.Certificates()
+	certs = []*Certificate{}
+
+	cursor, err := coll.Find(
+		db,
+		query,
+		&options.FindOptions{
+			Sort: &bson.D{
+				{"name", 1},
+			},
+			Projection: &bson.D{
+				{"name", 1},
+			},
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		crt := &Certificate{}
+		err = cursor.Decode(crt)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		certs = append(certs, crt)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func Remove(db *database.Database, certId primitive.ObjectID) (err error) {
 	coll := db.Certificates()
 
