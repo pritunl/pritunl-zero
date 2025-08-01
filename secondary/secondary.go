@@ -13,6 +13,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/pritunl/mongo-go-driver/bson"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
@@ -778,10 +779,27 @@ func (s *Secondary) Complete(db *database.Database) (
 		}
 		return
 	}
-
 	s.Disabled = true
-	err = s.CommitFields(db, set.NewSet("disabled"))
+
+	coll := db.SecondaryTokens()
+	resp, err := coll.UpdateOne(db, &bson.M{
+		"_id":      s.Id,
+		"disabled": false,
+	}, &bson.M{
+		"$set": &bson.M{
+			"disabled": true,
+		},
+	})
 	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	if resp.ModifiedCount == 0 {
+		errData = &errortypes.ErrorData{
+			Error:   "secondary_update_disabled",
+			Message: "Secondary authentication update is already completed",
+		}
 		return
 	}
 
