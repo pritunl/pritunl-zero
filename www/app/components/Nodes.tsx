@@ -102,7 +102,7 @@ export default class Nodes extends React.Component<{}, State> {
 		NodeActions.sync();
 		ServiceActions.syncNames();
 		AuthorityActions.sync();
-		CertificateActions.sync();
+		CertificateActions.syncAll();
 
 		this.interval = setInterval(() => {
 			NodeActions.sync(true);

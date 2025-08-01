@@ -11,6 +11,39 @@ import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
 
+function createSyncCallback(curSyncId: string, loader: any, resolve: () => void, reject: (error: any) => void) {
+	return (err: any, res: SuperAgent.Response): void => {
+		loader.done();
+
+		if (res && res.status === 401) {
+			window.location.href = '/login';
+			resolve();
+			return;
+		}
+
+		if (curSyncId !== syncId) {
+			resolve();
+			return;
+		}
+
+		if (err) {
+			Alert.errorRes(res, 'Failed to load certificates');
+			reject(err);
+			return;
+		}
+
+		Dispatcher.dispatch({
+			type: CertificateTypes.SYNC,
+			data: {
+				certificates: res.body.certificates,
+				count: res.body.count,
+			},
+		});
+
+		resolve();
+	};
+}
+
 export function sync(): Promise<void> {
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
@@ -27,36 +60,7 @@ export function sync(): Promise<void> {
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
-			.end((err: any, res: SuperAgent.Response): void => {
-				loader.done();
-
-				if (res && res.status === 401) {
-					window.location.href = '/login';
-					resolve();
-					return;
-				}
-
-				if (curSyncId !== syncId) {
-					resolve();
-					return;
-				}
-
-				if (err) {
-					Alert.errorRes(res, 'Failed to load certificates');
-					reject(err);
-					return;
-				}
-
-				Dispatcher.dispatch({
-					type: CertificateTypes.SYNC,
-					data: {
-						certificates: res.body.certificates,
-						count: res.body.count,
-					},
-				});
-
-				resolve();
-			});
+			.end(createSyncCallback(curSyncId, loader, resolve, reject));
 	});
 }
 
@@ -192,6 +196,25 @@ export function removeMulti(certificateIds: string[]): Promise<void> {
 
 				resolve();
 			});
+	});
+}
+
+export function syncAll(): Promise<void> {
+	const curSyncId = MiscUtils.uuid();
+	syncId = curSyncId;
+
+	const loader = new Loader().loading();
+
+	return new Promise<void>((resolve, reject): void => {
+		SuperAgent
+			.get('/certificate')
+			.query({
+				page: 0,
+				page_count: 10000,
+			})
+			.set('Accept', 'application/json')
+			.set('Csrf-Token', Csrf.token)
+			.end(createSyncCallback(curSyncId, loader, resolve, reject));
 	});
 }
 
