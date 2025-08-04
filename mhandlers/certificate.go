@@ -259,13 +259,13 @@ func certificatesGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
 	if c.Query("names") == "true" {
-		nodes, err := certificate.GetAllNames(db, &bson.M{})
+		certs, err := certificate.GetAllNames(db, &bson.M{})
 		if err != nil {
 			utils.AbortWithError(c, 500, err)
 			return
 		}
 
-		c.JSON(200, nodes)
+		c.JSON(200, certs)
 		return
 	}
 
