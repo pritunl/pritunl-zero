@@ -5,3 +5,8 @@ export function setLocation(location: string) {
 	let evt = new Event("router_update")
 	window.dispatchEvent(evt)
 }
+
+export function reload() {
+	let evt = new Event("router_update")
+	window.dispatchEvent(evt)
+}
