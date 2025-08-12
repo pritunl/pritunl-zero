@@ -132,10 +132,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 }
 
 func GetAllNames(db *database.Database, query *bson.M) (
-	certs []*Certificate, err error) {
+	certs []*database.Named, err error) {
 
 	coll := db.Certificates()
-	certs = []*Certificate{}
+	certs = []*database.Named{}
 
 	cursor, err := coll.Find(
 		db,
@@ -156,7 +156,7 @@ func GetAllNames(db *database.Database, query *bson.M) (
 	defer cursor.Close(db)
 
 	for cursor.Next(db) {
-		crt := &Certificate{}
+		crt := &database.Named{}
 		err = cursor.Decode(crt)
 		if err != nil {
 			err = database.ParseError(err)
