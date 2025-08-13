@@ -63,7 +63,7 @@ type Router struct {
 	mRouter              *gin.Engine
 	uRouter              *gin.Engine
 	pRouter              *gin.Engine
-	waiter               sync.WaitGroup
+	waiter               *sync.WaitGroup
 	lock                 sync.Mutex
 	redirectServer       *http.Server
 	redirectContext      context.Context
@@ -788,7 +788,7 @@ func (r *Router) Run() (err error) {
 			continue
 		}
 
-		r.waiter = sync.WaitGroup{}
+		r.waiter = &sync.WaitGroup{}
 		r.startServers()
 		r.waiter.Wait()
 
