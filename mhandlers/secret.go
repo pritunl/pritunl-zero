@@ -231,6 +231,17 @@ func secretGet(c *gin.Context) {
 func secretsGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 
+	if c.Query("names") == "true" {
+		nodes, err := secret.GetAllNames(db, &bson.M{})
+		if err != nil {
+			utils.AbortWithError(c, 500, err)
+			return
+		}
+
+		c.JSON(200, nodes)
+		return
+	}
+
 	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
 	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
 
