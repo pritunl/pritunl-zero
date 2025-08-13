@@ -110,23 +110,32 @@ func GetAll(db *database.Database) (services []*Service, err error) {
 	return
 }
 
-func GetAllName(db *database.Database) (services []*Service, err error) {
+func GetAllNames(db *database.Database) (
+	services []*database.Named, err error) {
+
 	coll := db.Services()
-	services = []*Service{}
+	services = []*database.Named{}
 
 	cursor, err := coll.Find(
 		db,
 		&bson.M{},
 		&options.FindOptions{
+			Sort: &bson.D{
+				{"name", 1},
+			},
 			Projection: &bson.D{
 				{"name", 1},
 			},
 		},
 	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
 	defer cursor.Close(db)
 
 	for cursor.Next(db) {
-		srvc := &Service{}
+		srvc := &database.Named{}
 		err = cursor.Decode(srvc)
 		if err != nil {
 			err = database.ParseError(err)
