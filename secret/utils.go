@@ -76,6 +76,50 @@ func GetAll(db *database.Database) (secrs []*Secret, err error) {
 	return
 }
 
+func GetAllNames(db *database.Database, query *bson.M) (
+	secrets []*database.Named, err error) {
+
+	coll := db.Secrets()
+	secrets = []*database.Named{}
+
+	cursor, err := coll.Find(
+		db,
+		query,
+		&options.FindOptions{
+			Sort: &bson.D{
+				{"name", 1},
+			},
+			Projection: &bson.D{
+				{"name", 1},
+			},
+		},
+	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+	defer cursor.Close(db)
+
+	for cursor.Next(db) {
+		secr := &database.Named{}
+		err = cursor.Decode(secr)
+		if err != nil {
+			err = database.ParseError(err)
+			return
+		}
+
+		secrets = append(secrets, secr)
+	}
+
+	err = cursor.Err()
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
+
+	return
+}
+
 func GetAllPaged(db *database.Database, query *bson.M,
 	page, pageCount int64) (secrets []*Secret, count int64, err error) {
 
