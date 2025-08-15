@@ -268,6 +268,16 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if host.Service.MatchLogoutPath(r.URL.Path) {
+		if r.Header.Get("Purpose") == "prefetch" ||
+			r.Header.Get("Sec-Purpose") == "prefetch" ||
+			r.Header.Get("X-Purpose") == "prefetch" ||
+			r.Header.Get("X-Purpose") == "preview" ||
+			r.Header.Get("X-moz") == "prefetch" {
+
+			http.Error(w, "Prefetch blocked", http.StatusServiceUnavailable)
+			return true
+		}
+
 		err = authr.Clear(db, w, r)
 		if err != nil {
 			WriteErrorLog(w, r, 500, err)
