@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
@@ -163,7 +164,25 @@ func init() {
 		}
 		if Config.MongoUri == "" && mongoUri == "" {
 			save = true
-			Config.MongoUri = DefaultMongoUri
+
+			data, err := utils.ReadExists("/var/lib/mongo/credentials.txt")
+			if err != nil {
+				err = nil
+			} else {
+				lines := strings.Split(string(data), "\n")
+				for _, line := range lines {
+					if strings.HasPrefix(strings.TrimSpace(line),
+						"mongodb://pritunl-zero") {
+
+						Config.MongoUri = strings.TrimSpace(line)
+						break
+					}
+				}
+			}
+
+			if Config.MongoUri == "" {
+				Config.MongoUri = DefaultMongoUri
+			}
 		}
 
 		if save {
