@@ -299,13 +299,14 @@ func Connect() (err error) {
 
 	setClient(client)
 
-	err = ValidateDatabase()
+	version, err := ValidateDatabase()
 	if err != nil {
 		return
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"mongodb_hosts": mongoUrl.Hosts,
+		"mongodb_hosts":   mongoUrl.Hosts,
+		"mongodb_version": version,
 	}).Info("database: Connected to MongoDB server")
 
 	err = addCollections()
@@ -321,8 +322,26 @@ func Connect() (err error) {
 	return
 }
 
-func ValidateDatabase() (err error) {
+func ValidateDatabase() (version string, err error) {
 	db := GetDatabase()
+	defer db.Close()
+
+	buildInfo := bson.M{}
+	err = db.database.RunCommand(
+		db,
+		bson.D{{"buildInfo", 1}},
+	).Decode(&buildInfo)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("database: Failed to get MongoDB version")
+		err = nil
+	}
+
+	version, ok := buildInfo["version"].(string)
+	if version == "" || !ok {
+		version = "unknown"
+	}
 
 	cursor, err := db.database.ListCollections(
 		db, &bson.M{})
