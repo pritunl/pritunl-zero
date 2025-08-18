@@ -38,7 +38,9 @@
     "react-transition-group": "4.4.5",
     "superagent": "9.0.2",
     "systemjs": "6.15.1",
-    "terser-webpack-plugin": "5.3.10"
+    "terser-webpack-plugin": "5.3.10",
+    "formidable": ">= 3.5.4",
+    "form-data": ">=4.0.4"
   },
   "devDependencies": {
     "@babel/runtime": "7.26.10",
