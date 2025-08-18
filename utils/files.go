@@ -105,6 +105,23 @@ func ExistsRemove(pth string) (err error) {
 	return
 }
 
+func ReadExists(path string) (data string, err error) {
+	dataByt, err := ioutil.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = nil
+			return
+		}
+		err = &errortypes.ReadError{
+			errors.Wrapf(err, "utils: Failed to read '%s'", path),
+		}
+		return
+	}
+
+	data = string(dataByt)
+	return
+}
+
 func Remove(path string) (err error) {
 	if invalidPaths.Contains(path) {
 		err = &errortypes.WriteError{
