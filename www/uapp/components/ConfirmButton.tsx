@@ -8,23 +8,33 @@ interface Props {
 	style?: React.CSSProperties;
 	grouped?: boolean;
 	className?: string;
+	dialogClassName?: string;
 	hidden?: boolean;
 	progressClassName?: string;
 	label?: string;
+	dialogLabel?: string;
 	confirmMsg?: string;
+	confirmInput?: boolean;
+	items?: string[];
+	menuItem?: boolean;
 	disabled?: boolean;
+	safe?: boolean;
+	children?: React.ReactNode
 	onConfirm?: () => void;
 }
 
 interface State {
+	input: string;
 	dialog: boolean;
 	confirm: number;
 	confirming: string;
+	force: boolean;
 }
 
 const css = {
 	box: {
 		display: 'inline-flex',
+		verticalAlign: 'middle',
 	} as React.CSSProperties,
 	actionProgress: {
 		position: 'absolute',
@@ -47,7 +57,17 @@ const css = {
 		height: '4px',
 	} as React.CSSProperties,
 	dialog: {
-		width: '180px',
+		scrollbarGutter: "stable",
+		width: '340px',
+		position: 'absolute',
+	} as React.CSSProperties,
+	label: {
+		width: '100%',
+		maxWidth: '220px',
+		margin: '18px 0 0 0',
+	} as React.CSSProperties,
+	input: {
+		width: '100%',
 	} as React.CSSProperties,
 };
 
@@ -55,16 +75,19 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	constructor(props: Props, context: any) {
 		super(props, context);
 		this.state = {
+			input: '',
 			dialog: false,
 			confirm: 0,
 			confirming: null,
+			force: false,
 		};
 	}
 
-	openDialog = (): void => {
+	openDialog = (evt?: React.MouseEvent<HTMLElement>): void => {
 		this.setState({
 			...this.state,
 			dialog: true,
+			force: evt?.ctrlKey || false,
 		});
 	}
 
@@ -72,6 +95,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			dialog: false,
+			input: '',
+			force: false,
 		});
 	}
 
@@ -79,6 +104,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		this.setState({
 			...this.state,
 			dialog: false,
+			input: '',
 		});
 		if (this.props.onConfirm) {
 			this.props.onConfirm();
@@ -134,8 +160,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				});
 			}
 
-			i += 1;
-		}, 3);
+			i += 2;
+		}, 8);
 	}
 
 	clearConfirm = (): void => {
@@ -147,6 +173,8 @@ export default class ConfirmButton extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
+		let dialog = Constants.mobile || this.props.safe || this.props.menuItem;
+
 		let style = {
 			...this.props.style,
 		};
@@ -157,9 +185,102 @@ export default class ConfirmButton extends React.Component<Props, State> {
 			className += ' bp5-button-empty';
 		}
 
-		if (Constants.mobile) {
+		let dialogClassName = this.props.dialogClassName ||
+			this.props.className || '';
+		if (!this.props.label && !this.props.dialogLabel) {
+			dialogClassName += ' bp5-button-empty';
+		}
+
+		let confirmInput: JSX.Element;
+		if (this.props.confirmInput && !this.state.force) {
+			confirmInput = <label
+				className="bp5-label"
+				style={css.label}
+			>
+				Enter "delete" to confirm:
+				<input
+					className="bp5-input"
+					style={css.input}
+					disabled={this.props.disabled}
+					autoCapitalize="off"
+					spellCheck={false}
+					placeholder='Enter "delete" to confirm'
+					value={this.state.input}
+					onKeyDown={(evt): void => {
+						if (evt.key === "Enter" && this.state.input === 'delete') {
+							this.closeDialogConfirm();
+						}
+					}}
+					onChange={(evt): void => {
+						this.setState({
+							...this.state,
+							input: evt.target.value,
+						});
+					}}
+				/>
+			</label>;
+		}
+
+		if (dialog) {
 			let confirmMsg = this.props.confirmMsg ? this.props.confirmMsg :
 				'Confirm ' + (this.props.label || '');
+			let itemsList: JSX.Element;
+			if (this.props.items) {
+				let items: JSX.Element[] = [];
+				for (let item of this.props.items) {
+					items.push(<li key={item}>{item}</li>);
+				}
+				itemsList = <ul>{items}</ul>;
+			}
+
+			let dialogElem = <Blueprint.Dialog
+				title="Confirm"
+				style={css.dialog}
+				isOpen={this.state.dialog}
+				usePortal={true}
+				portalContainer={document.body}
+				onClose={this.closeDialog}
+			>
+				<div className="bp5-dialog-body">
+					{confirmMsg}
+					{itemsList}
+					{confirmInput}
+				</div>
+				<div className="bp5-dialog-footer">
+					<div className="bp5-dialog-footer-actions">
+						<button
+							className="bp5-button"
+							type="button"
+							onClick={this.closeDialog}
+						>Cancel</button>
+						<button
+							className={'bp5-button ' + dialogClassName}
+							type="button"
+							disabled={this.props.confirmInput && !this.state.force &&
+								this.state.input !== 'delete'}
+							onClick={this.closeDialogConfirm}
+						>{this.props.dialogLabel || this.props.label}</button>
+					</div>
+				</div>
+			</Blueprint.Dialog>
+
+			if (this.props.menuItem) {
+				return <div>
+					<Blueprint.MenuItem
+						key="menu-new-unit"
+						className={className}
+						disabled={this.props.disabled}
+						hidden={this.props.hidden}
+						onClick={(evt): void => {
+							evt.preventDefault()
+							evt.stopPropagation()
+							this.openDialog(evt as React.MouseEvent<HTMLElement>)
+						}}
+						text={this.props.label}
+					>{this.props.children}</Blueprint.MenuItem>
+					{dialogElem}
+				</div>
+			}
 
 			return <div style={css.box}>
 				<button
@@ -168,39 +289,14 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					type="button"
 					hidden={this.props.hidden}
 					disabled={this.props.disabled}
-					onMouseDown={Constants.mobile ? undefined : this.confirm}
-					onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
-					onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
-					onClick={Constants.mobile ? this.openDialog : undefined}
+					onMouseDown={dialog ? undefined : this.confirm}
+					onMouseUp={dialog ? undefined : this.clearConfirm}
+					onMouseLeave={dialog ? undefined : this.clearConfirm}
+					onClick={dialog ? (evt) => this.openDialog(evt) : undefined}
 				>
-					{this.props.label}
+					{this.props.children || this.props.label}
 				</button>
-				<Blueprint.Dialog
-					title="Confirm"
-					style={css.dialog}
-					isOpen={this.state.dialog}
-					usePortal={true}
-					portalContainer={document.body}
-					onClose={this.closeDialog}
-				>
-					<div className="bp5-dialog-body">
-						{confirmMsg}
-					</div>
-					<div className="bp5-dialog-footer">
-						<div className="bp5-dialog-footer-actions">
-							<button
-								className="bp5-button"
-								type="button"
-								onClick={this.closeDialog}
-							>Cancel</button>
-							<button
-								className="bp5-button bp5-intent-primary"
-								type="button"
-								onClick={this.closeDialogConfirm}
-							>Ok</button>
-						</div>
-					</div>
-				</Blueprint.Dialog>
+				{dialogElem}
 			</div>
 		} else {
 			let confirmElem: JSX.Element;
@@ -235,12 +331,12 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				type="button"
 				hidden={this.props.hidden}
 				disabled={this.props.disabled}
-				onMouseDown={Constants.mobile ? undefined : this.confirm}
-				onMouseUp={Constants.mobile ? undefined : this.clearConfirm}
-				onMouseLeave={Constants.mobile ? undefined : this.clearConfirm}
-				onClick={Constants.mobile ? this.openDialog : undefined}
+				onMouseDown={dialog ? undefined : this.confirm}
+				onMouseUp={dialog ? undefined : this.clearConfirm}
+				onMouseLeave={dialog ? undefined : this.clearConfirm}
+				onClick={dialog ? this.openDialog : undefined}
 			>
-				{this.props.label}
+				{this.props.children || this.props.label}
 				{confirmElem}
 			</button>;
 		}
