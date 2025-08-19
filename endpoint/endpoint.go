@@ -35,8 +35,8 @@ import (
 
 type Endpoint struct {
 	Id            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	User          primitive.ObjectID `bson:"user,omitempty" json:"user"`
 	Name          string             `bson:"name" json:"name"`
+	Username      string             `bson:"username" json:"username"`
 	Roles         []string           `bson:"roles" json:"roles"`
 	ClientKey     *ClientKey         `bson:"client_key" json:"client_key"`
 	ServerKey     *ServerKey         `bson:"server_key" json:"-"`
