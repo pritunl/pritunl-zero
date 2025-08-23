@@ -26,10 +26,10 @@ export function load(): Promise<void> {
 				let theme = res.body.theme
 				if (theme) {
 					let themeParts = theme.split("-")
-					if (themeParts[1] === "5") {
-						Theme.themeVer5()
-					} else {
+					if (themeParts[1] === "3") {
 						Theme.themeVer3()
+					} else {
+						Theme.themeVer5()
 					}
 
 					if (themeParts[0] === "light") {
