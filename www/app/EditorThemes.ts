@@ -51,7 +51,14 @@ let allHallowsEve = {
 		"editor.selectionBackground": "#73597EE0",
 		"editor.lineHighlightBackground": "#333300",
 		"editorCursor.foreground": "#FFFFFF",
-		"editorWhitespace.foreground": "#404040"
+		"editorWhitespace.foreground": "#404040",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -108,7 +115,14 @@ let amy = {
 		"editor.selectionBackground": "#80000080",
 		"editor.lineHighlightBackground": "#80000040",
 		"editorCursor.foreground": "#7070FF",
-		"editorWhitespace.foreground": "#BFBFBF"
+		"editorWhitespace.foreground": "#BFBFBF",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -156,7 +170,14 @@ let birdsOfParadise = {
 		"editor.selectionBackground": "#16120E",
 		"editor.lineHighlightBackground": "#1F1611",
 		"editorCursor.foreground": "#E6E1C4",
-		"editorWhitespace.foreground": "#42302D"
+		"editorWhitespace.foreground": "#42302D",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -200,7 +221,14 @@ let blackboard = {
 		"editor.selectionBackground": "#253B76",
 		"editor.lineHighlightBackground": "#FFFFFF0F",
 		"editorCursor.foreground": "#FFFFFFA6",
-		"editorWhitespace.foreground": "#FFFFFF40"
+		"editorWhitespace.foreground": "#FFFFFF40",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -581,7 +609,14 @@ let brillianceBlack = {
 		"editor.selectionBackground": "#0010B499",
 		"editor.lineHighlightBackground": "#00008033",
 		"editorCursor.foreground": "#3333FF",
-		"editorWhitespace.foreground": "#CCCCCC1A"
+		"editorWhitespace.foreground": "#CCCCCC1A",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -891,7 +926,14 @@ let brillianceDull = {
 		"editor.selectionBackground": "#2E2EE64D",
 		"editor.lineHighlightBackground": "#0000801A",
 		"editorCursor.foreground": "#7979B7",
-		"editorWhitespace.foreground": "#CDCDCD1A"
+		"editorWhitespace.foreground": "#CDCDCD1A",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -929,7 +971,14 @@ let chromeDevTools = {
 		"editor.selectionBackground": "#BAD6FD",
 		"editor.lineHighlightBackground": "#0000001A",
 		"editorCursor.foreground": "#000000",
-		"editorWhitespace.foreground": "#B3B3B3F4"
+		"editorWhitespace.foreground": "#B3B3B3F4",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -972,7 +1021,14 @@ let cloudsMidnight = {
 		"editor.selectionBackground": "#000000",
 		"editor.lineHighlightBackground": "#D7D7D708",
 		"editorCursor.foreground": "#7DA5DC",
-		"editorWhitespace.foreground": "#BFBFBF"
+		"editorWhitespace.foreground": "#BFBFBF",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1014,7 +1070,14 @@ let clouds = {
 		"editor.selectionBackground": "#BDD5FC",
 		"editor.lineHighlightBackground": "#FFFBD1",
 		"editorCursor.foreground": "#000000",
-		"editorWhitespace.foreground": "#BFBFBF"
+		"editorWhitespace.foreground": "#BFBFBF",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1085,7 +1148,14 @@ let cobalt = {
 		"editor.selectionBackground": "#B36539BF",
 		"editor.lineHighlightBackground": "#00000059",
 		"editorCursor.foreground": "#FFFFFF",
-		"editorWhitespace.foreground": "#FFFFFF26"
+		"editorWhitespace.foreground": "#FFFFFF26",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1148,7 +1218,14 @@ let dracula = {
 		"editorCursor.foreground": "#f8f8f0",
 		"editorWhitespace.foreground": "#3B3A32",
 		"editorIndentGuide.activeBackground": "#9D550FB0",
-		"editor.selectionHighlightBorder": "#222218"
+		"editor.selectionHighlightBorder": "#222218",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1232,7 +1309,14 @@ let dreamweaver = {
 		"editor.selectionBackground": "#5EA0FF",
 		"editor.lineHighlightBackground": "#00000012",
 		"editorCursor.foreground": "#000000",
-		"editorWhitespace.foreground": "#BFBFBF"
+		"editorWhitespace.foreground": "#BFBFBF",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1286,7 +1370,14 @@ let espressoLibre = {
 		"editor.selectionBackground": "#C3DCFF",
 		"editor.lineHighlightBackground": "#3A312C",
 		"editorCursor.foreground": "#889AFF",
-		"editorWhitespace.foreground": "#BFBFBF"
+		"editorWhitespace.foreground": "#BFBFBF",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1372,16 +1463,23 @@ let githubDark = {
     {"foreground": "79b8ff","fontStyle": "underline","token": "string.other.link"}
   ],
 	"colors": {
-		"editor.foreground": "#f6f8fa",
-		"editor.background": "#24292e",
+		"editor.foreground": "#c9d1d9",
+		"editor.background": "#0d1117",
 		"editor.selectionBackground": "#4c2889",
 		"editor.inactiveSelectionBackground": "#444d56",
 		"editor.lineHighlightBackground": "#444d56",
-		"editorCursor.foreground": "#ffffff",
+		"editorCursor.foreground": "#c9d1d9",
 		"editorWhitespace.foreground": "#6a737d",
 		"editorIndentGuide.background": "#6a737d",
 		"editorIndentGuide.activeBackground": "#f6f8fa",
-		"editor.selectionHighlightBorder": "#444d56"
+		"editor.selectionHighlightBorder": "#444d56",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1476,7 +1574,14 @@ let githubLight = {
 		"editorWhitespace.foreground": "#959da5",
 		"editorIndentGuide.background": "#959da5",
 		"editorIndentGuide.activeBackground": "#24292e",
-		"editor.selectionHighlightBorder": "#fafbfc"
+		"editor.selectionHighlightBorder": "#fafbfc",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1545,7 +1650,14 @@ let github = {
 		"editor.selectionBackground": "#B4D5FE",
 		"editor.lineHighlightBackground": "#FFFEEB",
 		"editorCursor.foreground": "#666666",
-		"editorWhitespace.foreground": "#BBBBBB"
+		"editorWhitespace.foreground": "#BBBBBB",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1588,7 +1700,14 @@ let merbivoreSoft = {
 		"editor.selectionBackground": "#454545",
 		"editor.lineHighlightBackground": "#333435",
 		"editorCursor.foreground": "#FFFFFF",
-		"editorWhitespace.foreground": "#404040"
+		"editorWhitespace.foreground": "#404040",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1635,7 +1754,14 @@ let monokai = {
 		"editorCursor.foreground": "#F8F8F0",
 		"editorWhitespace.foreground": "#3B3A32",
 		"editorIndentGuide.activeBackground": "#9D550FB0",
-		"editor.selectionHighlightBorder": "#222218"
+		"editor.selectionHighlightBorder": "#222218",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1814,7 +1940,14 @@ let nightOwl = {
 		"editorCursor.foreground": "#80a4c2",
 		"editorWhitespace.foreground": "#2e2040",
 		"editorIndentGuide.background": "#5e81ce52",
-		"editor.selectionHighlightBorder": "#122d42"
+		"editor.selectionHighlightBorder": "#122d42",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1848,7 +1981,14 @@ let nord = {
 		"editor.selectionBackground": "#434C5ECC",
 		"editor.lineHighlightBackground": "#3B4252",
 		"editorCursor.foreground": "#D8DEE9",
-		"editorWhitespace.foreground": "#434C5ECC"
+		"editorWhitespace.foreground": "#434C5ECC",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -1956,7 +2096,14 @@ let oceanicNext = {
 		"editorCursor.foreground": "#c0c5ce",
 		"editorWhitespace.foreground": "#65737e",
 		"editorIndentGuide.background": "#65737F",
-		"editorIndentGuide.activeBackground": "#FBC95A"
+		"editorIndentGuide.activeBackground": "#FBC95A",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2033,7 +2180,14 @@ let pastelsOnDark = {
 		"editor.selectionBackground": "#73597E80",
 		"editor.lineHighlightBackground": "#353030",
 		"editorCursor.foreground": "#FFFFFF",
-		"editorWhitespace.foreground": "#4F4D4D"
+		"editorWhitespace.foreground": "#4F4D4D",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2117,7 +2271,14 @@ let sunburst = {
 		"editor.selectionBackground": "#DDF0FF33",
 		"editor.lineHighlightBackground": "#FFFFFF0D",
 		"editorCursor.foreground": "#A7A7A7",
-		"editorWhitespace.foreground": "#CAE2FB3D"
+		"editorWhitespace.foreground": "#CAE2FB3D",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2189,7 +2350,14 @@ let tomorrowNightBlue = {
 		"editor.selectionBackground": "#003F8E",
 		"editor.lineHighlightBackground": "#00346E",
 		"editorCursor.foreground": "#FFFFFF",
-		"editorWhitespace.foreground": "#404F7D"
+		"editorWhitespace.foreground": "#404F7D",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2260,7 +2428,14 @@ let tomorrowNightBright = {
 		"editor.selectionBackground": "#424242",
 		"editor.lineHighlightBackground": "#2A2A2A",
 		"editorCursor.foreground": "#9F9F9F",
-		"editorWhitespace.foreground": "#343434"
+		"editorWhitespace.foreground": "#343434",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2330,7 +2505,14 @@ let tomorrowNightEighties = {
 		"editor.selectionBackground": "#515151",
 		"editor.lineHighlightBackground": "#393939",
 		"editorCursor.foreground": "#CCCCCC",
-		"editorWhitespace.foreground": "#6A6A6A"
+		"editorWhitespace.foreground": "#6A6A6A",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2398,10 +2580,17 @@ let tomorrowNight = {
 	"colors": {
 		"editor.foreground": "#C5C8C6",
 		"editor.background": "#1D1F21",
-		"editor.selectionBackground": "#373B41",
+		"editor.selectionBackground": "#3074B8",
 		"editor.lineHighlightBackground": "#282A2E",
 		"editorCursor.foreground": "#AEAFAD",
-		"editorWhitespace.foreground": "#4B4E55"
+		"editorWhitespace.foreground": "#4B4E55",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2471,7 +2660,14 @@ let tomorrow = {
 		"editor.selectionBackground": "#D6D6D6",
 		"editor.lineHighlightBackground": "#EFEFEF",
 		"editorCursor.foreground": "#AEAFAD",
-		"editorWhitespace.foreground": "#D1D1D1"
+		"editorWhitespace.foreground": "#D1D1D1",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
@@ -2546,7 +2742,14 @@ let twilight = {
 		"editor.selectionBackground": "#DDF0FF33",
 		"editor.lineHighlightBackground": "#FFFFFF08",
 		"editorCursor.foreground": "#A7A7A7",
-		"editorWhitespace.foreground": "#FFFFFF40"
+		"editorWhitespace.foreground": "#FFFFFF40",
+
+		'diffEditor.insertedTextBackground': '#2ea04320',
+		'diffEditor.insertedLineBackground': '#2ea04326',
+		'diffEditor.removedTextBackground': '#f8514920',
+		'diffEditor.removedLineBackground': '#f8514920',
+		'diffEditor.insertedTextBorder': '#2ea04300',
+		'diffEditor.removedTextBorder': '#f8514900',
 	}
 } as Monaco.editor.IStandaloneThemeData
 
