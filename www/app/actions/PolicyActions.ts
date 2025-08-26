@@ -171,7 +171,7 @@ export function removeMulti(authorityIds: string[]): Promise<void> {
 
 	return new Promise<void>((resolve, reject): void => {
 		SuperAgent
-			.delete('/authority')
+			.delete('/policy')
 			.send(authorityIds)
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
