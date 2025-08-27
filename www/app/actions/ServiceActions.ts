@@ -202,7 +202,7 @@ export function syncNames(): Promise<void> {
 		SuperAgent
 			.get('/service')
 			.query({
-				service_names: "true",
+				names: true,
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
