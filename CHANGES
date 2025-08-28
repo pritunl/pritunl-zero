@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Fix resource leak if server starts without database available
+Prevent browser prefetch requests from triggering service logout
 
 Version 1.0.3444.47 2025-04-29
 ------------------------------
