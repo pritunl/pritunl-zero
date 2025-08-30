@@ -69,7 +69,7 @@ func (p *Provider) Validate(db *database.Database) (
 		break
 	case Azure:
 		if p.Region == "" {
-			p.Region = "global"
+			p.Region = "global2"
 		}
 		p.Domain = ""
 		p.GoogleKey = ""
