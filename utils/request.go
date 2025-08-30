@@ -180,7 +180,7 @@ func ParseObjectId(strId string) (objId primitive.ObjectID, ok bool) {
 	return
 }
 
-func ParseObjectIdNil(strId string) (objId primitive.ObjectID) {
+func ObjectIdHex(strId string) (objId primitive.ObjectID) {
 	if strId == "" {
 		objId = primitive.NilObjectID
 		return
