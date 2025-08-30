@@ -180,6 +180,22 @@ func ParseObjectId(strId string) (objId primitive.ObjectID, ok bool) {
 	return
 }
 
+func ParseObjectIdNil(strId string) (objId primitive.ObjectID) {
+	if strId == "" {
+		objId = primitive.NilObjectID
+		return
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(strId)
+	if err != nil {
+		objId = primitive.NilObjectID
+		return
+	}
+
+	objId = objectId
+	return
+}
+
 func GetStatusMessage(code int) string {
 	return fmt.Sprintf("%d %s", code, http.StatusText(code))
 }
