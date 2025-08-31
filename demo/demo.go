@@ -6,8 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/mongo-go-driver/bson/primitive"
 	"github.com/pritunl/pritunl-zero/audit"
+	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/log"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
@@ -182,4 +184,38 @@ var Subscription = &subscription.Subscription{
 	CancelAtPeriodEnd: false,
 	Balance:           0,
 	UrlKey:            "demo",
+}
+
+// Nodes
+var Nodes = []*node.Node{
+	&node.Node{
+		Id:               utils.ObjectIdHex("5c74b2974ad0407c1ba1ab6e"),
+		Name:             "pritunl-east0",
+		Type:             "management_proxy_user",
+		Timestamp:        time.Now(),
+		Port:             80,
+		NoRedirectServer: true,
+		Protocol:         "http",
+		Certificate:      primitive.ObjectID{},
+		Certificates: []primitive.ObjectID{
+			utils.ObjectIdHex("5a7544ae0accad1a8a53ba3d"),
+		},
+		ManagementDomain: "demo.zero.pritunl.com",
+		UserDomain:       "user.demo.zero.pritunl.com",
+		WebauthnDomain:   "zero.pritunl.com",
+		EndpointDomain:   "demo.zero.pritunl.com",
+		Services: []primitive.ObjectID{
+			utils.ObjectIdHex("5b6cd0eb57e4a9a88cbf0678"),
+		},
+		Authorities:          []primitive.ObjectID{},
+		RequestsMin:          32,
+		ForwardedForHeader:   "X-Forwarded-For",
+		ForwardedProtoHeader: "X-Forwarded-Proto",
+		Memory:               25,
+		Load1:                10,
+		Load5:                15,
+		Load15:               20,
+		SoftwareVersion:      constants.Version,
+		Hostname:             "pritunl-east0",
+	},
 }
