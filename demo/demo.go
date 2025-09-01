@@ -10,6 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/log"
 	"github.com/pritunl/pritunl-zero/node"
+	"github.com/pritunl/pritunl-zero/policy"
 	"github.com/pritunl/pritunl-zero/session"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/ssh"
@@ -217,5 +218,40 @@ var Nodes = []*node.Node{
 		Load15:               20,
 		SoftwareVersion:      constants.Version,
 		Hostname:             "pritunl-east0",
+	},
+}
+
+// Policies
+var Policies = []*policy.Policy{
+	{
+		Id:       utils.ObjectIdHex("67b8a03e4866ba90e6c45a8c"),
+		Name:     "policy",
+		Disabled: false,
+		Roles: []string{
+			"pritunl",
+		},
+		Services: []primitive.ObjectID{
+			utils.ObjectIdHex("5b6cd0eb57e4a9a88cbf0678"),
+		},
+		Rules: map[string]*policy.Rule{
+			"location": {
+				Type:    "location",
+				Disable: false,
+				Values: []string{
+					"US",
+				},
+			},
+			"whitelist_networks": {
+				Type:    "whitelist_networks",
+				Disable: false,
+				Values: []string{
+					"10.0.0.0/8",
+				},
+			},
+		},
+		AdminSecondary:       primitive.ObjectID{},
+		UserSecondary:        primitive.ObjectID{},
+		AdminDeviceSecondary: true,
+		UserDeviceSecondary:  true,
 	},
 }
