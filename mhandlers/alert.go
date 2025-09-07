@@ -211,6 +211,24 @@ func alertsDelete(c *gin.Context) {
 	c.JSON(200, nil)
 }
 
+func alertGet(c *gin.Context) {
+	db := c.MustGet("db").(*database.Database)
+
+	alertId, ok := utils.ParseObjectId(c.Query("id"))
+	if !ok {
+		utils.AbortWithStatus(c, 400)
+		return
+	}
+
+	alrt, err := alert.Get(db, alertId)
+	if err != nil {
+		utils.AbortWithError(c, 500, err)
+		return
+	}
+
+	c.JSON(200, alrt)
+}
+
 func alertsGet(c *gin.Context) {
 	db := c.MustGet("db").(*database.Database)
 	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
