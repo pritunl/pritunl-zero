@@ -69,13 +69,11 @@ func (c *Collection) CommitFields(id interface{}, data interface{},
 	return
 }
 
-func (c *Collection) Upsert(id interface{}, data interface{}) (err error) {
+func (c *Collection) Upsert(query *bson.M, data interface{}) (err error) {
 	opts := &options.UpdateOptions{}
 	opts.SetUpsert(true)
 
-	_, err = c.UpdateOne(c.db, &bson.M{
-		"_id": id,
-	}, &bson.M{
+	_, err = c.UpdateOne(c.db, query, &bson.M{
 		"$set": data,
 	}, opts)
 	if err != nil {
@@ -154,7 +152,7 @@ func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
 					switch nestedValTyp := nestedVal.(type) {
 					case primitive.ObjectID:
 						if nestedValTyp.IsZero() {
-							data[nestedTag] = nil
+							data[nestedTag] = primitive.NilObjectID
 						} else {
 							data[nestedTag] = nestedVal
 						}
@@ -204,7 +202,7 @@ func SelectFieldsAll(obj interface{}, fields set.Set) (data bson.M) {
 						dataUnset[tag] = 1
 						dataUnseted = true
 					} else {
-						dataSet[tag] = nil
+						dataSet[tag] = primitive.NilObjectID
 					}
 				} else {
 					dataSet[tag] = val
@@ -252,7 +250,7 @@ func SelectFieldsAll(obj interface{}, fields set.Set) (data bson.M) {
 								dataUnset[nestedTag] = 1
 								dataUnseted = true
 							} else {
-								dataSet[nestedTag] = nil
+								dataSet[nestedTag] = primitive.NilObjectID
 							}
 						} else {
 							dataSet[nestedTag] = nestedVal
