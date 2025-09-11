@@ -431,7 +431,7 @@ func authorityPublicKeyGet(c *gin.Context) {
 		return
 	}
 
-	publicKeys := ""
+	var publicKeys strings.Builder
 
 	authrs, err := authority.GetMulti(db, authrIds)
 	if err != nil {
@@ -439,10 +439,10 @@ func authorityPublicKeyGet(c *gin.Context) {
 	}
 
 	for _, authr := range authrs {
-		publicKeys += strings.TrimSpace(authr.PublicKey) + "\n"
+		publicKeys.WriteString(strings.TrimSpace(authr.PublicKey) + "\n")
 	}
 
-	c.String(200, publicKeys)
+	c.String(200, publicKeys.String())
 }
 
 func authorityTokenPost(c *gin.Context) {
