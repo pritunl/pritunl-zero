@@ -233,6 +233,12 @@ func certificatesDelete(c *gin.Context) {
 }
 
 func certificateGet(c *gin.Context) {
+	if demo.IsDemo() {
+		cert := demo.Certificates[0]
+		c.JSON(200, cert)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	certId, ok := utils.ParseObjectId(c.Param("cert_id"))
@@ -256,6 +262,16 @@ func certificateGet(c *gin.Context) {
 }
 
 func certificatesGet(c *gin.Context) {
+	if demo.IsDemo() {
+		data := &certificatesData{
+			Certificates: demo.Certificates,
+			Count:        int64(len(demo.Certificates)),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	if c.Query("names") == "true" {
