@@ -41,6 +41,7 @@ func Register(engine *gin.Engine) {
 	csrfGroup.GET("/audit/:user_id", auditsGet)
 
 	csrfGroup.GET("/alert", alertsGet)
+	csrfGroup.GET("/alert/:alert_id", alertGet)
 	csrfGroup.PUT("/alert/:alert_id", alertPut)
 	csrfGroup.POST("/alert", alertPost)
 	csrfGroup.DELETE("/alert", alertsDelete)
