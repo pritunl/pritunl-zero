@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
@@ -150,6 +151,13 @@ func nodeDelete(c *gin.Context) {
 }
 
 func nodeGet(c *gin.Context) {
+	if demo.IsDemo() {
+		nde := demo.Nodes[0]
+		nde.Timestamp = time.Now()
+		c.JSON(200, nde)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	nodeId, ok := utils.ParseObjectId(c.Param("node_id"))
@@ -164,18 +172,24 @@ func nodeGet(c *gin.Context) {
 		return
 	}
 
-	if demo.IsDemo() {
-		nde.RequestsMin = 32
-		nde.Memory = 25.0
-		nde.Load1 = 10.0
-		nde.Load5 = 15.0
-		nde.Load15 = 20.0
-	}
-
 	c.JSON(200, nde)
 }
 
 func nodesGet(c *gin.Context) {
+	if demo.IsDemo() {
+		for _, nde := range demo.Nodes {
+			nde.Timestamp = time.Now()
+		}
+
+		data := &nodesData{
+			Nodes: demo.Nodes,
+			Count: int64(len(demo.Nodes)),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
 	pageCount, _ := strconv.ParseInt(c.Query("page_count"), 10, 0)
@@ -199,16 +213,6 @@ func nodesGet(c *gin.Context) {
 	if err != nil {
 		utils.AbortWithError(c, 500, err)
 		return
-	}
-
-	if demo.IsDemo() {
-		for _, nde := range nodes {
-			nde.RequestsMin = 32
-			nde.Memory = 25.0
-			nde.Load1 = 10.0
-			nde.Load5 = 15.0
-			nde.Load15 = 20.0
-		}
 	}
 
 	data := &nodesData{
