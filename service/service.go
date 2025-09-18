@@ -265,6 +265,7 @@ func init() {
 	module := requires.New("service")
 	module.After("settings")
 
+	// Fix v1.0.1317.75 service creation
 	module.Handler = func() (err error) {
 		db := database.GetDatabase()
 		defer db.Close()
