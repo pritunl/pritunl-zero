@@ -206,6 +206,12 @@ func secretsDelete(c *gin.Context) {
 }
 
 func secretGet(c *gin.Context) {
+	if demo.IsDemo() {
+		secr := demo.Secrets[0]
+		c.JSON(200, secr)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	secrId, ok := utils.ParseObjectId(c.Param("secr_id"))
@@ -229,6 +235,16 @@ func secretGet(c *gin.Context) {
 }
 
 func secretsGet(c *gin.Context) {
+	if demo.IsDemo() {
+		data := &secretsData{
+			Secrets: demo.Secrets,
+			Count:   int64(len(demo.Secrets)),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	if c.Query("names") == "true" {
