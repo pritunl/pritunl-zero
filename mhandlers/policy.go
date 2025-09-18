@@ -239,6 +239,12 @@ func policiesDelete(c *gin.Context) {
 }
 
 func policyGet(c *gin.Context) {
+	if demo.IsDemo() {
+		polcy := demo.Policies[0]
+		c.JSON(200, polcy)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	polcyId, ok := utils.ParseObjectId(c.Param("policy_id"))
@@ -257,6 +263,16 @@ func policyGet(c *gin.Context) {
 }
 
 func policiesGet(c *gin.Context) {
+	if demo.IsDemo() {
+		data := &policiesData{
+			Policies: demo.Policies,
+			Count:    int64(len(demo.Policies)),
+		}
+
+		c.JSON(200, data)
+		return
+	}
+
 	db := c.MustGet("db").(*database.Database)
 
 	page, _ := strconv.ParseInt(c.Query("page"), 10, 0)
