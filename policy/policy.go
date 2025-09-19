@@ -112,7 +112,7 @@ func (p *Policy) Validate(db *database.Database) (
 
 	services := []bson.ObjectID{}
 	coll := db.Services()
-	servicesInf, err := coll.Distinct(
+	err = coll.Distinct(
 		db,
 		"_id",
 		&bson.M{
@@ -120,16 +120,10 @@ func (p *Policy) Validate(db *database.Database) (
 				"$in": p.Services,
 			},
 		},
-	)
+	).Decode(&services)
 	if err != nil {
 		err = database.ParseError(err)
 		return
-	}
-
-	for _, idInf := range servicesInf {
-		if id, ok := idInf.(bson.ObjectID); ok {
-			services = append(services, id)
-		}
 	}
 
 	p.Services = services
@@ -140,7 +134,7 @@ func (p *Policy) Validate(db *database.Database) (
 
 	authorities := []bson.ObjectID{}
 	coll = db.Authorities()
-	authrsInf, err := coll.Distinct(
+	err = coll.Distinct(
 		db,
 		"_id",
 		&bson.M{
@@ -148,16 +142,10 @@ func (p *Policy) Validate(db *database.Database) (
 				"$in": p.Authorities,
 			},
 		},
-	)
+	).Decode(&authorities)
 	if err != nil {
 		err = database.ParseError(err)
 		return
-	}
-
-	for _, idInf := range authrsInf {
-		if id, ok := idInf.(bson.ObjectID); ok {
-			authorities = append(authorities, id)
-		}
 	}
 
 	p.Authorities = authorities
