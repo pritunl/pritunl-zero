@@ -1,13 +1,12 @@
 package service
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
-func Get(db *database.Database, serviceId primitive.ObjectID) (
+func Get(db *database.Database, serviceId bson.ObjectID) (
 	srvce *Service, err error) {
 
 	coll := db.Services()
@@ -36,7 +35,7 @@ func GetOne(db *database.Database, query *bson.M) (
 	return
 }
 
-func GetMulti(db *database.Database, serviceIds []primitive.ObjectID) (
+func GetMulti(db *database.Database, serviceIds []bson.ObjectID) (
 	services []*Service, err error) {
 
 	coll := db.Services()
@@ -119,14 +118,9 @@ func GetAllNames(db *database.Database) (
 	cursor, err := coll.Find(
 		db,
 		&bson.M{},
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Projection: &bson.D{
-				{"name", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetProjection(bson.D{{"name", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -184,13 +178,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	defer cursor.Close(db)
 
@@ -215,7 +206,7 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
-func Remove(db *database.Database, serviceId primitive.ObjectID) (err error) {
+func Remove(db *database.Database, serviceId bson.ObjectID) (err error) {
 	coll := db.Services()
 
 	_, err = coll.DeleteMany(db, &bson.M{
@@ -229,7 +220,7 @@ func Remove(db *database.Database, serviceId primitive.ObjectID) (err error) {
 	return
 }
 
-func RemoveMulti(db *database.Database, serviceIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, serviceIds []bson.ObjectID) (
 	err error) {
 
 	coll := db.Services()

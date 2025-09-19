@@ -3,10 +3,10 @@ package utils
 import (
 	"sort"
 
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 )
 
-type ObjectIdSlice []primitive.ObjectID
+type ObjectIdSlice []bson.ObjectID
 
 func (o ObjectIdSlice) Len() int {
 	return len(o)
@@ -20,6 +20,6 @@ func (o ObjectIdSlice) Swap(i, j int) {
 	o[i], o[j] = o[j], o[i]
 }
 
-func SortObjectIds(x []primitive.ObjectID) {
+func SortObjectIds(x []bson.ObjectID) {
 	sort.Sort(ObjectIdSlice(x))
 }

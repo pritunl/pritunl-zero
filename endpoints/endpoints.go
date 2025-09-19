@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -20,7 +19,7 @@ const (
 
 type Doc interface {
 	GetCollection(*database.Database) *database.Collection
-	Format(primitive.ObjectID) time.Time
+	Format(bson.ObjectID) time.Time
 	StaticData() *bson.M
 	CheckAlerts(resources []*alert.Alert) []*Alert
 	Handle(*database.Database) (bool, bool, error)
@@ -35,8 +34,8 @@ type ChartData = map[string][]*Point
 
 type LogData = []string
 
-func GenerateId(endpointId primitive.ObjectID,
-	timestamp time.Time) primitive.ObjectID {
+func GenerateId(endpointId bson.ObjectID,
+	timestamp time.Time) bson.ObjectID {
 
 	var b [12]byte
 
@@ -72,7 +71,7 @@ func GetObj(typ string) Doc {
 }
 
 func GetChart(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, typ string, start, end time.Time,
+	endpoint bson.ObjectID, typ string, start, end time.Time,
 	interval time.Duration) (ChartData, error) {
 
 	start = start.Add(time.Duration(start.UnixMilli()%
@@ -101,7 +100,7 @@ func GetChart(c context.Context, db *database.Database,
 }
 
 func GetLog(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, typ string) (LogData, error) {
+	endpoint bson.ObjectID, typ string) (LogData, error) {
 
 	switch typ {
 	case "kmsg":

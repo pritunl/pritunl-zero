@@ -1,14 +1,13 @@
 package policy
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
-func Get(db *database.Database, policyId primitive.ObjectID) (
+func Get(db *database.Database, policyId bson.ObjectID) (
 	polcy *Policy, err error) {
 
 	coll := db.Policies()
@@ -37,7 +36,7 @@ func GetOne(db *database.Database, query *bson.M) (
 	return
 }
 
-func GetService(db *database.Database, serviceId primitive.ObjectID) (
+func GetService(db *database.Database, serviceId bson.ObjectID) (
 	policies []*Policy, err error) {
 
 	coll := db.Policies()
@@ -119,7 +118,7 @@ func GetRoles(db *database.Database, roles []string) (
 	return
 }
 
-func GetAuthoritiesRoles(db *database.Database, authrIds []primitive.ObjectID,
+func GetAuthoritiesRoles(db *database.Database, authrIds []bson.ObjectID,
 	roles []string) (policies []*Policy, err error) {
 
 	coll := db.Policies()
@@ -232,13 +231,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -266,7 +262,7 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
-func Remove(db *database.Database, policyId primitive.ObjectID) (err error) {
+func Remove(db *database.Database, policyId bson.ObjectID) (err error) {
 	coll := db.Policies()
 
 	_, err = coll.DeleteMany(db, &bson.M{
@@ -280,7 +276,7 @@ func Remove(db *database.Database, policyId primitive.ObjectID) (err error) {
 	return
 }
 
-func RemoveMulti(db *database.Database, policyIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, policyIds []bson.ObjectID) (
 	err error) {
 
 	coll := db.Policies()

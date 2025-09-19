@@ -8,9 +8,8 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -21,9 +20,9 @@ import (
 )
 
 type User struct {
-	Id              primitive.ObjectID    `bson:"_id,omitempty" json:"id"`
+	Id              bson.ObjectID         `bson:"_id,omitempty" json:"id"`
 	Type            string                `bson:"type" json:"type"`
-	Provider        primitive.ObjectID    `bson:"provider" json:"provider"`
+	Provider        bson.ObjectID         `bson:"provider" json:"provider"`
 	Username        string                `bson:"username" json:"username"`
 	Password        string                `bson:"password" json:"-"`
 	DefaultPassword string                `bson:"default_password" json:"-"`
@@ -170,9 +169,9 @@ func (u *User) Insert(db *database.Database) (err error) {
 func (u *User) Upsert(db *database.Database) (err error) {
 	coll := db.Users()
 
-	opts := &options.FindOneAndUpdateOptions{}
-	opts.SetUpsert(true)
-	opts.SetReturnDocument(options.After)
+	opts := options.FindOneAndUpdate().
+		SetUpsert(true).
+		SetReturnDocument(options.After)
 
 	err = coll.FindOneAndUpdate(
 		db,

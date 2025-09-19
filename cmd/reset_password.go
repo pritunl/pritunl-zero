@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/user"
 	"github.com/spf13/cobra"

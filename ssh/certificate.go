@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
@@ -31,16 +30,16 @@ type Host struct {
 }
 
 type Certificate struct {
-	Id                     primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
-	UserId                 primitive.ObjectID   `bson:"user_id,omitempty" json:"user_id"`
-	AuthorityIds           []primitive.ObjectID `bson:"authority_ids" json:"authority_ids"`
-	Timestamp              time.Time            `bson:"timestamp" json:"timestamp"`
-	PubKey                 string               `bson:"pub_key"`
-	Hosts                  []*Host              `bson:"hosts" json:"hosts"`
-	CertificateAuthorities []string             `bson:"certificate_authorities" json:"-"`
-	Certificates           []string             `bson:"certificates" json:"-"`
-	CertificatesInfo       []*Info              `bson:"certificates_info" json:"certificates_info"`
-	Agent                  *useragent.Agent     `bson:"agent" json:"agent"`
+	Id                     bson.ObjectID    `bson:"_id,omitempty" json:"id"`
+	UserId                 bson.ObjectID    `bson:"user_id,omitempty" json:"user_id"`
+	AuthorityIds           []bson.ObjectID  `bson:"authority_ids" json:"authority_ids"`
+	Timestamp              time.Time        `bson:"timestamp" json:"timestamp"`
+	PubKey                 string           `bson:"pub_key"`
+	Hosts                  []*Host          `bson:"hosts" json:"hosts"`
+	CertificateAuthorities []string         `bson:"certificate_authorities" json:"-"`
+	Certificates           []string         `bson:"certificates" json:"-"`
+	CertificatesInfo       []*Info          `bson:"certificates_info" json:"certificates_info"`
+	Agent                  *useragent.Agent `bson:"agent" json:"agent"`
 }
 
 func (c *Certificate) Commit(db *database.Database) (err error) {
@@ -79,7 +78,7 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 	return
 }
 
-func GetCertificate(db *database.Database, certId primitive.ObjectID) (
+func GetCertificate(db *database.Database, certId bson.ObjectID) (
 	cert *Certificate, err error) {
 
 	coll := db.SshCertificates()
@@ -93,7 +92,7 @@ func GetCertificate(db *database.Database, certId primitive.ObjectID) (
 	return
 }
 
-func GetCertificates(db *database.Database, userId primitive.ObjectID,
+func GetCertificates(db *database.Database, userId bson.ObjectID,
 	page, pageCount int64) (certs []*Certificate, count int64, err error) {
 
 	coll := db.SshCertificates()
@@ -107,11 +106,8 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 		return
 	}
 
-	opts := options.FindOptions{
-		Sort: &bson.D{
-			{"timestamp", -1},
-		},
-	}
+	opts := options.Find().
+		SetSort(bson.D{{"timestamp", -1}})
 
 	if pageCount != 0 {
 		maxPage := count / pageCount
@@ -120,13 +116,12 @@ func GetCertificates(db *database.Database, userId primitive.ObjectID,
 		}
 		page = min(page, maxPage)
 		skip := min(page*pageCount, count)
-		opts.Skip = &skip
-		opts.Limit = &pageCount
+		opts.SetSkip(skip).SetLimit(pageCount)
 	}
 
 	cursor, err := coll.Find(db, &bson.M{
 		"user_id": userId,
-	}, &opts)
+	}, opts)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -158,9 +153,9 @@ func NewCertificate(db *database.Database, authrs []*authority.Authority,
 	err error) {
 
 	cert = &Certificate{
-		Id:                     primitive.NewObjectID(),
+		Id:                     bson.NewObjectID(),
 		UserId:                 usr.Id,
-		AuthorityIds:           []primitive.ObjectID{},
+		AuthorityIds:           []bson.ObjectID{},
 		Timestamp:              time.Now(),
 		PubKey:                 pubKey,
 		Hosts:                  []*Host{},

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -54,7 +54,7 @@ var Users = []*user.User{
 	&user.User{
 		Id:            utils.ObjectIdHex("5b6cd11857e4a9a88cbf072e"),
 		Type:          "local",
-		Provider:      primitive.ObjectID{},
+		Provider:      bson.ObjectID{},
 		Username:      "demo",
 		Token:         "",
 		Secret:        "",
@@ -69,7 +69,7 @@ var Users = []*user.User{
 	&user.User{
 		Id:            utils.ObjectIdHex("5a7542190accad1a8a53b568"),
 		Type:          "local",
-		Provider:      primitive.ObjectID{},
+		Provider:      bson.ObjectID{},
 		Username:      "pritunl",
 		Token:         "",
 		Secret:        "",
@@ -125,7 +125,7 @@ var Sessions = []*session.Session{
 var Sshcerts = []*ssh.Certificate{
 	&ssh.Certificate{
 		Id: utils.ObjectIdHex("5a180207051a45ffacf3b846"),
-		AuthorityIds: []primitive.ObjectID{
+		AuthorityIds: []bson.ObjectID{
 			utils.ObjectIdHex("5a191ca03745632d533cf597"),
 		},
 		Timestamp: time.Unix(1498018860, 0),
@@ -199,18 +199,18 @@ var Nodes = []*node.Node{
 		Port:             80,
 		NoRedirectServer: true,
 		Protocol:         "http",
-		Certificate:      primitive.ObjectID{},
-		Certificates: []primitive.ObjectID{
+		Certificate:      bson.ObjectID{},
+		Certificates: []bson.ObjectID{
 			utils.ObjectIdHex("5a7544ae0accad1a8a53ba3d"),
 		},
 		ManagementDomain: "demo.zero.pritunl.com",
 		UserDomain:       "user.demo.zero.pritunl.com",
 		WebauthnDomain:   "zero.pritunl.com",
 		EndpointDomain:   "demo.zero.pritunl.com",
-		Services: []primitive.ObjectID{
+		Services: []bson.ObjectID{
 			utils.ObjectIdHex("5b6cd0eb57e4a9a88cbf0678"),
 		},
-		Authorities:          []primitive.ObjectID{},
+		Authorities:          []bson.ObjectID{},
 		RequestsMin:          32,
 		ForwardedForHeader:   "X-Forwarded-For",
 		ForwardedProtoHeader: "X-Forwarded-Proto",
@@ -232,7 +232,7 @@ var Policies = []*policy.Policy{
 		Roles: []string{
 			"pritunl",
 		},
-		Services: []primitive.ObjectID{
+		Services: []bson.ObjectID{
 			utils.ObjectIdHex("5b6cd0eb57e4a9a88cbf0678"),
 		},
 		Rules: map[string]*policy.Rule{
@@ -251,8 +251,8 @@ var Policies = []*policy.Policy{
 				},
 			},
 		},
-		AdminSecondary:       primitive.ObjectID{},
-		UserSecondary:        primitive.ObjectID{},
+		AdminSecondary:       bson.ObjectID{},
+		UserSecondary:        bson.ObjectID{},
 		AdminDeviceSecondary: true,
 		UserDeviceSecondary:  true,
 	},

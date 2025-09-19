@@ -1,14 +1,13 @@
 package certificate
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
-func Get(db *database.Database, certId primitive.ObjectID) (
+func Get(db *database.Database, certId bson.ObjectID) (
 	cert *Certificate, err error) {
 
 	coll := db.Certificates()
@@ -97,13 +96,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -140,14 +136,9 @@ func GetAllNames(db *database.Database, query *bson.M) (
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Projection: &bson.D{
-				{"name", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetProjection(bson.D{{"name", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -175,7 +166,7 @@ func GetAllNames(db *database.Database, query *bson.M) (
 	return
 }
 
-func Remove(db *database.Database, certId primitive.ObjectID) (err error) {
+func Remove(db *database.Database, certId bson.ObjectID) (err error) {
 	coll := db.Certificates()
 
 	err = RemoveNode(db, certId)
@@ -194,7 +185,7 @@ func Remove(db *database.Database, certId primitive.ObjectID) (err error) {
 	return
 }
 
-func RemoveMulti(db *database.Database, certIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, certIds []bson.ObjectID) (
 	err error) {
 	coll := db.Certificates()
 
@@ -212,7 +203,7 @@ func RemoveMulti(db *database.Database, certIds []primitive.ObjectID) (
 }
 
 func RemoveNode(db *database.Database,
-	certId primitive.ObjectID) (err error) {
+	certId bson.ObjectID) (err error) {
 
 	coll := db.Nodes()
 

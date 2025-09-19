@@ -2,13 +2,12 @@ package check
 
 import (
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
-func Get(db *database.Database, checkId primitive.ObjectID) (
+func Get(db *database.Database, checkId bson.ObjectID) (
 	chck *Check, err error) {
 
 	coll := db.Checks()
@@ -22,7 +21,7 @@ func Get(db *database.Database, checkId primitive.ObjectID) (
 	return
 }
 
-func GetMulti(db *database.Database, checkIds []primitive.ObjectID) (
+func GetMulti(db *database.Database, checkIds []bson.ObjectID) (
 	checks []*Check, err error) {
 
 	coll := db.Checks()
@@ -126,13 +125,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	defer cursor.Close(db)
 
@@ -229,7 +225,7 @@ func GetRolesMapped(db *database.Database, rolesSet set.Set) (
 	return
 }
 
-func RemoveData(db *database.Database, checkId primitive.ObjectID) (
+func RemoveData(db *database.Database, checkId bson.ObjectID) (
 	err error) {
 
 	coll := db.EndpointsCheck()
@@ -254,7 +250,7 @@ func RemoveData(db *database.Database, checkId primitive.ObjectID) (
 }
 
 func Remove(db *database.Database,
-	checkId primitive.ObjectID) (err error) {
+	checkId bson.ObjectID) (err error) {
 
 	coll := db.Checks()
 
@@ -274,7 +270,7 @@ func Remove(db *database.Database,
 	return
 }
 
-func RemoveMulti(db *database.Database, checkIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, checkIds []bson.ObjectID) (
 	err error) {
 
 	coll := db.Checks()

@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/settings"
 )
 
 var (
-	clientCertCache     = map[primitive.ObjectID]*clientCertCacheData{}
+	clientCertCache     = map[bson.ObjectID]*clientCertCacheData{}
 	clientCertCacheLock sync.Mutex
 )
 

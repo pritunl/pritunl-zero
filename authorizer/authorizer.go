@@ -3,7 +3,7 @@ package authorizer
 import (
 	"net/http"
 
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/cookie"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/service"
@@ -145,11 +145,11 @@ func (a *Authorizer) GetUser(db *database.Database) (
 	return
 }
 
-func (a *Authorizer) ServiceId() primitive.ObjectID {
+func (a *Authorizer) ServiceId() bson.ObjectID {
 	if a.srvc != nil {
 		return a.srvc.Id
 	}
-	return primitive.NilObjectID
+	return bson.NilObjectID
 }
 
 func (a *Authorizer) GetSession() *session.Session {

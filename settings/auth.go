@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -26,31 +26,31 @@ const (
 )
 
 type Provider struct {
-	Id              primitive.ObjectID `bson:"id" json:"id"`
-	Type            string             `bson:"type" json:"type"`
-	Label           string             `bson:"label" json:"label"`
-	DefaultRoles    []string           `bson:"default_roles" json:"default_roles"`
-	AutoCreate      bool               `bson:"auto_create" json:"auto_create"`
-	RoleManagement  string             `bson:"role_management" json:"role_management"`
-	Region          string             `bson:"region" json:"region"`                     // azure
-	Tenant          string             `bson:"tenant" json:"tenant"`                     // azure
-	ClientId        string             `bson:"client_id" json:"client_id"`               // azure + authzero
-	ClientSecret    string             `bson:"client_secret" json:"client_secret"`       // azure + authzero
-	Domain          string             `bson:"domain" json:"domain"`                     // google + authzero
-	GoogleKey       string             `bson:"google_key" json:"google_key"`             // google
-	GoogleEmail     string             `bson:"google_email" json:"google_email"`         // google
-	JumpCloudAppId  string             `bson:"jumpcloud_app_id" json:"jumpcloud_app_id"` // jumpcloud
-	JumpCloudSecret string             `bson:"jumpcloud_secret" json:"jumpcloud_secret"` // jumpcloud
-	IssuerUrl       string             `bson:"issuer_url" json:"issuer_url"`             // saml
-	SamlUrl         string             `bson:"saml_url" json:"saml_url"`                 // saml
-	SamlCert        string             `bson:"saml_cert" json:"saml_cert"`               // saml
+	Id              bson.ObjectID `bson:"id" json:"id"`
+	Type            string        `bson:"type" json:"type"`
+	Label           string        `bson:"label" json:"label"`
+	DefaultRoles    []string      `bson:"default_roles" json:"default_roles"`
+	AutoCreate      bool          `bson:"auto_create" json:"auto_create"`
+	RoleManagement  string        `bson:"role_management" json:"role_management"`
+	Region          string        `bson:"region" json:"region"`                     // azure
+	Tenant          string        `bson:"tenant" json:"tenant"`                     // azure
+	ClientId        string        `bson:"client_id" json:"client_id"`               // azure + authzero
+	ClientSecret    string        `bson:"client_secret" json:"client_secret"`       // azure + authzero
+	Domain          string        `bson:"domain" json:"domain"`                     // google + authzero
+	GoogleKey       string        `bson:"google_key" json:"google_key"`             // google
+	GoogleEmail     string        `bson:"google_email" json:"google_email"`         // google
+	JumpCloudAppId  string        `bson:"jumpcloud_app_id" json:"jumpcloud_app_id"` // jumpcloud
+	JumpCloudSecret string        `bson:"jumpcloud_secret" json:"jumpcloud_secret"` // jumpcloud
+	IssuerUrl       string        `bson:"issuer_url" json:"issuer_url"`             // saml
+	SamlUrl         string        `bson:"saml_url" json:"saml_url"`                 // saml
+	SamlCert        string        `bson:"saml_cert" json:"saml_cert"`               // saml
 }
 
 func (p *Provider) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if p.Id.IsZero() {
-		p.Id = primitive.NewObjectID()
+		p.Id = bson.NewObjectID()
 	}
 
 	p.Label = utils.FilterStr(p.Label, 32)
@@ -149,29 +149,29 @@ func (p *Provider) Validate(db *database.Database) (
 }
 
 type SecondaryProvider struct {
-	Id             primitive.ObjectID `bson:"id" json:"id"`
-	Type           string             `bson:"type" json:"type"`
-	Name           string             `bson:"name" json:"name"`
-	Label          string             `bson:"label" json:"label"`
-	DuoHostname    string             `bson:"duo_hostname" json:"duo_hostname"`         // duo
-	DuoKey         string             `bson:"duo_key" json:"duo_key"`                   // duo
-	DuoSecret      string             `bson:"duo_secret" json:"duo_secret"`             // duo
-	OneLoginRegion string             `bson:"one_login_region" json:"one_login_region"` // onelogin
-	OneLoginId     string             `bson:"one_login_id" json:"one_login_id"`         // onelogin
-	OneLoginSecret string             `bson:"one_login_secret" json:"one_login_secret"` // onelogin
-	OktaDomain     string             `bson:"okta_domain" json:"okta_domain"`           // okta
-	OktaToken      string             `bson:"okta_token" json:"okta_token"`             // okta
-	PushFactor     bool               `bson:"push_factor" json:"push_factor"`           // duo + onelogin + okta
-	PhoneFactor    bool               `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
-	PasscodeFactor bool               `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
-	SmsFactor      bool               `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
+	Id             bson.ObjectID `bson:"id" json:"id"`
+	Type           string        `bson:"type" json:"type"`
+	Name           string        `bson:"name" json:"name"`
+	Label          string        `bson:"label" json:"label"`
+	DuoHostname    string        `bson:"duo_hostname" json:"duo_hostname"`         // duo
+	DuoKey         string        `bson:"duo_key" json:"duo_key"`                   // duo
+	DuoSecret      string        `bson:"duo_secret" json:"duo_secret"`             // duo
+	OneLoginRegion string        `bson:"one_login_region" json:"one_login_region"` // onelogin
+	OneLoginId     string        `bson:"one_login_id" json:"one_login_id"`         // onelogin
+	OneLoginSecret string        `bson:"one_login_secret" json:"one_login_secret"` // onelogin
+	OktaDomain     string        `bson:"okta_domain" json:"okta_domain"`           // okta
+	OktaToken      string        `bson:"okta_token" json:"okta_token"`             // okta
+	PushFactor     bool          `bson:"push_factor" json:"push_factor"`           // duo + onelogin + okta
+	PhoneFactor    bool          `bson:"phone_factor" json:"phone_factor"`         // duo + onelogin + okta
+	PasscodeFactor bool          `bson:"passcode_factor" json:"passcode_factor"`   // duo + onelogin + okta
+	SmsFactor      bool          `bson:"sms_factor" json:"sms_factor"`             // duo + onelogin + okta
 }
 
 func (p *SecondaryProvider) Validate(db *database.Database) (
 	errData *errortypes.ErrorData, err error) {
 
 	if p.Id.IsZero() {
-		p.Id = primitive.NewObjectID()
+		p.Id = bson.NewObjectID()
 	}
 
 	p.Name = utils.FilterStr(p.Name, 32)
@@ -237,7 +237,7 @@ type auth struct {
 	LimiterExpire         int                  `bson:"limiter_expire" json:"limiter_expire" default:"600"`
 }
 
-func (a *auth) GetProvider(id primitive.ObjectID) *Provider {
+func (a *auth) GetProvider(id bson.ObjectID) *Provider {
 	for _, provider := range a.Providers {
 		if provider.Id == id {
 			return provider
@@ -247,7 +247,7 @@ func (a *auth) GetProvider(id primitive.ObjectID) *Provider {
 	return nil
 }
 
-func (a *auth) GetSecondaryProvider(id primitive.ObjectID) *SecondaryProvider {
+func (a *auth) GetSecondaryProvider(id bson.ObjectID) *SecondaryProvider {
 	for _, provider := range a.SecondaryProviders {
 		if provider.Id == id {
 			return provider

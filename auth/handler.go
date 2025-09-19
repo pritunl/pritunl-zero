@@ -11,7 +11,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -82,7 +82,7 @@ func Request(c *gin.Context) {
 		c.Redirect(302, redirect)
 		return
 	} else {
-		providerId, err := primitive.ObjectIDFromHex(id)
+		providerId, err := bson.ObjectIDFromHex(id)
 		if err != nil {
 			err = &errortypes.ParseError{
 				errors.Wrap(err, "auth: ObjectId parse error"),

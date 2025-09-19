@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -17,7 +17,7 @@ import (
 
 func ValidateAdmin(db *database.Database, usr *user.User,
 	isApi bool, r *http.Request) (deviceAuth bool,
-	secProvider primitive.ObjectID, errAudit audit.Fields,
+	secProvider bson.ObjectID, errAudit audit.Fields,
 	errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
@@ -98,7 +98,7 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 }
 
 func ValidateUser(db *database.Database, usr *user.User,
-	isApi bool, r *http.Request) (deviceAuth bool, secProvider primitive.ObjectID,
+	isApi bool, r *http.Request) (deviceAuth bool, secProvider bson.ObjectID,
 	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {
@@ -168,7 +168,7 @@ func ValidateUser(db *database.Database, usr *user.User,
 
 func ValidateProxy(db *database.Database, usr *user.User,
 	isApi bool, srvc *service.Service, r *http.Request) (
-	deviceAuth bool, secProvider primitive.ObjectID,
+	deviceAuth bool, secProvider bson.ObjectID,
 	errAudit audit.Fields, errData *errortypes.ErrorData, err error) {
 
 	if !usr.ActiveUntil.IsZero() && usr.ActiveUntil.Before(time.Now()) {

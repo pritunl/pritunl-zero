@@ -8,18 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 )
 
 type Kmsg struct {
-	Id        primitive.ObjectID `bson:"_id" json:"id"`
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
+	Id        bson.ObjectID `bson:"_id" json:"id"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
 
 	Boot     int64  `bson:"b" json:"b"`
 	Priortiy int    `bson:"p" json:"p"`
@@ -27,7 +26,7 @@ type Kmsg struct {
 	Message  string `bson:"m" json:"m"`
 }
 
-func (d *Kmsg) generateId() primitive.ObjectID {
+func (d *Kmsg) generateId() bson.ObjectID {
 	var b [12]byte
 
 	hash := fnv.New64a()
@@ -45,7 +44,7 @@ func (d *Kmsg) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsKmsg()
 }
 
-func (d *Kmsg) Format(id primitive.ObjectID) time.Time {
+func (d *Kmsg) Format(id bson.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Id = d.generateId()
 	return d.Timestamp
@@ -94,7 +93,7 @@ func (d *Kmsg) FormattedLog() string {
 }
 
 func GetKmsgLog(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID) (logData LogData, err error) {
+	endpoint bson.ObjectID) (logData LogData, err error) {
 
 	logData = []string{}
 
@@ -104,16 +103,15 @@ func GetKmsgLog(c context.Context, db *database.Database,
 
 	cursor, err := coll.Find(
 		c,
-		&bson.M{
+		bson.M{
 			"e": endpoint,
 		},
-		&options.FindOptions{
-			Limit: &limit,
-			Sort: &bson.D{
+		options.Find().
+			SetLimit(limit).
+			SetSort(bson.D{
 				{"b", -1},
 				{"s", -1},
-			},
-		},
+			}),
 	)
 	if err != nil {
 		err = database.ParseError(err)

@@ -1,14 +1,13 @@
 package log
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
 )
 
-func Get(db *database.Database, logId primitive.ObjectID) (
+func Get(db *database.Database, logId bson.ObjectID) (
 	entry *Entry, err error) {
 
 	coll := db.Logs()
@@ -42,11 +41,8 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 		}
 	}
 
-	opts := options.FindOptions{
-		Sort: &bson.D{
-			{"$natural", -1},
-		},
-	}
+	opts := options.Find().
+		SetSort(bson.D{{"$natural", -1}})
 
 	if pageCount != 0 {
 		maxPage := count / pageCount
@@ -55,14 +51,13 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 		}
 		page = min(page, maxPage)
 		skip := min(page*pageCount, count)
-		opts.Skip = &skip
-		opts.Limit = &pageCount
+		opts.SetSkip(skip).SetLimit(pageCount)
 	}
 
 	cursor, err := coll.Find(
 		db,
 		query,
-		&opts,
+		opts,
 	)
 	if err != nil {
 		err = database.ParseError(err)

@@ -1,8 +1,8 @@
 package version
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
@@ -38,9 +38,6 @@ func Check(db *database.Database, module string, ver int) (
 func Set(db *database.Database, module string, ver int) (err error) {
 	coll := db.Versions()
 
-	opts := &options.UpdateOptions{}
-	opts.SetUpsert(true)
-
 	_, err = coll.UpdateOne(
 		db,
 		&bson.M{
@@ -54,7 +51,7 @@ func Set(db *database.Database, module string, ver int) (err error) {
 				"_id": module,
 			},
 		},
-		opts,
+		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {
 		err = database.ParseError(err)

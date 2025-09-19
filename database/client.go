@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/mongo"
+	"github.com/pritunl/mongo-go-driver/v2/mongo"
 	"github.com/sirupsen/logrus"
 )
 

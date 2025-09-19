@@ -6,7 +6,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
 	"github.com/pritunl/pritunl-zero/database"
@@ -260,7 +260,7 @@ func deviceWanRegisterGet(c *gin.Context) {
 
 	if deviceCount > 0 || !secProviderId.IsZero() {
 		secType := ""
-		var secProvider primitive.ObjectID
+		var secProvider bson.ObjectID
 
 		if deviceCount == 0 {
 			if deviceType == device.SmartCard {

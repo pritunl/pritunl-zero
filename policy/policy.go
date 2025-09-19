@@ -12,8 +12,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/node"
@@ -30,22 +29,22 @@ type Rule struct {
 }
 
 type Policy struct {
-	Id                        primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
-	Name                      string               `bson:"name" json:"name"`
-	Disabled                  bool                 `bson:"disabled" json:"disabled"`
-	Services                  []primitive.ObjectID `bson:"services" json:"services"`
-	Authorities               []primitive.ObjectID `bson:"authorities" json:"authorities"`
-	Roles                     []string             `bson:"roles" json:"roles"`
-	Rules                     map[string]*Rule     `bson:"rules" json:"rules"`
-	AdminSecondary            primitive.ObjectID   `bson:"admin_secondary,omitempty" json:"admin_secondary"`
-	UserSecondary             primitive.ObjectID   `bson:"user_secondary,omitempty" json:"user_secondary"`
-	ProxySecondary            primitive.ObjectID   `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
-	AuthoritySecondary        primitive.ObjectID   `bson:"authority_secondary,omitempty" json:"authority_secondary"`
-	AdminDeviceSecondary      bool                 `bson:"admin_device_secondary" json:"admin_device_secondary"`
-	UserDeviceSecondary       bool                 `bson:"user_device_secondary" json:"user_device_secondary"`
-	ProxyDeviceSecondary      bool                 `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
-	AuthorityDeviceSecondary  bool                 `bson:"authority_device_secondary" json:"authority_device_secondary"`
-	AuthorityRequireSmartCard bool                 `bson:"authority_require_smart_card" json:"authority_require_smart_card"`
+	Id                        bson.ObjectID    `bson:"_id,omitempty" json:"id"`
+	Name                      string           `bson:"name" json:"name"`
+	Disabled                  bool             `bson:"disabled" json:"disabled"`
+	Services                  []bson.ObjectID  `bson:"services" json:"services"`
+	Authorities               []bson.ObjectID  `bson:"authorities" json:"authorities"`
+	Roles                     []string         `bson:"roles" json:"roles"`
+	Rules                     map[string]*Rule `bson:"rules" json:"rules"`
+	AdminSecondary            bson.ObjectID    `bson:"admin_secondary,omitempty" json:"admin_secondary"`
+	UserSecondary             bson.ObjectID    `bson:"user_secondary,omitempty" json:"user_secondary"`
+	ProxySecondary            bson.ObjectID    `bson:"proxy_secondary,omitempty" json:"proxy_secondary"`
+	AuthoritySecondary        bson.ObjectID    `bson:"authority_secondary,omitempty" json:"authority_secondary"`
+	AdminDeviceSecondary      bool             `bson:"admin_device_secondary" json:"admin_device_secondary"`
+	UserDeviceSecondary       bool             `bson:"user_device_secondary" json:"user_device_secondary"`
+	ProxyDeviceSecondary      bool             `bson:"proxy_device_secondary" json:"proxy_device_secondary"`
+	AuthorityDeviceSecondary  bool             `bson:"authority_device_secondary" json:"authority_device_secondary"`
+	AuthorityRequireSmartCard bool             `bson:"authority_require_smart_card" json:"authority_require_smart_card"`
 }
 
 func (p *Policy) Validate(db *database.Database) (
@@ -108,10 +107,10 @@ func (p *Policy) Validate(db *database.Database) (
 	}
 
 	if p.Services == nil {
-		p.Services = []primitive.ObjectID{}
+		p.Services = []bson.ObjectID{}
 	}
 
-	services := []primitive.ObjectID{}
+	services := []bson.ObjectID{}
 	coll := db.Services()
 	servicesInf, err := coll.Distinct(
 		db,
@@ -128,7 +127,7 @@ func (p *Policy) Validate(db *database.Database) (
 	}
 
 	for _, idInf := range servicesInf {
-		if id, ok := idInf.(primitive.ObjectID); ok {
+		if id, ok := idInf.(bson.ObjectID); ok {
 			services = append(services, id)
 		}
 	}
@@ -136,10 +135,10 @@ func (p *Policy) Validate(db *database.Database) (
 	p.Services = services
 
 	if p.Authorities == nil {
-		p.Authorities = []primitive.ObjectID{}
+		p.Authorities = []bson.ObjectID{}
 	}
 
-	authorities := []primitive.ObjectID{}
+	authorities := []bson.ObjectID{}
 	coll = db.Authorities()
 	authrsInf, err := coll.Distinct(
 		db,
@@ -156,7 +155,7 @@ func (p *Policy) Validate(db *database.Database) (
 	}
 
 	for _, idInf := range authrsInf {
-		if id, ok := idInf.(primitive.ObjectID); ok {
+		if id, ok := idInf.(bson.ObjectID); ok {
 			authorities = append(authorities, id)
 		}
 	}
@@ -166,22 +165,22 @@ func (p *Policy) Validate(db *database.Database) (
 	if !p.AdminSecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.AdminSecondary) == nil {
 
-		p.AdminSecondary = primitive.NilObjectID
+		p.AdminSecondary = bson.NilObjectID
 	}
 	if !p.UserSecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.UserSecondary) == nil {
 
-		p.UserSecondary = primitive.NilObjectID
+		p.UserSecondary = bson.NilObjectID
 	}
 	if !p.ProxySecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.ProxySecondary) == nil {
 
-		p.ProxySecondary = primitive.NilObjectID
+		p.ProxySecondary = bson.NilObjectID
 	}
 	if !p.AuthoritySecondary.IsZero() &&
 		settings.Auth.GetSecondaryProvider(p.AuthoritySecondary) == nil {
 
-		p.AuthoritySecondary = primitive.NilObjectID
+		p.AuthoritySecondary = bson.NilObjectID
 	}
 
 	hasWebAuthn := false
@@ -405,11 +404,11 @@ func (p *Policy) ValidateUser(db *database.Database, usr *user.User,
 	return
 }
 
-func (p *Policy) HasService(srvcId primitive.ObjectID) bool {
+func (p *Policy) HasService(srvcId bson.ObjectID) bool {
 	return slices.Contains(p.Services, srvcId)
 }
 
-func (p *Policy) AddService(srvcId primitive.ObjectID) bool {
+func (p *Policy) AddService(srvcId bson.ObjectID) bool {
 	if p.HasService(srvcId) {
 		return false
 	}
@@ -418,7 +417,7 @@ func (p *Policy) AddService(srvcId primitive.ObjectID) bool {
 	return true
 }
 
-func (p *Policy) RemoveService(srvcId primitive.ObjectID) bool {
+func (p *Policy) RemoveService(srvcId bson.ObjectID) bool {
 	for i, serviceId := range p.Services {
 		if serviceId == srvcId {
 			p.Services[i] = p.Services[len(p.Services)-1]

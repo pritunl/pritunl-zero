@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/mongo"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 )
 
 var (
@@ -86,8 +86,7 @@ func GenerateIndexName(doc bson.D) (indexName string, err error) {
 }
 
 func (i *Index) Create() (err error) {
-	opts := &options.IndexOptions{}
-	opts.SetBackground(true)
+	opts := options.Index()
 
 	if i.Unique {
 		opts.SetUnique(true)
@@ -119,7 +118,7 @@ func (i *Index) Create() (err error) {
 		if _, ok := err.(*IndexConflict); ok {
 			err = nil
 
-			_, err = i.Collection.Indexes().DropOne(
+			err = i.Collection.Indexes().DropOne(
 				context.Background(),
 				indexName,
 			)

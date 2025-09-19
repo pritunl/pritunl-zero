@@ -9,8 +9,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -20,7 +19,7 @@ import (
 )
 
 type serviceData struct {
-	Id                primitive.ObjectID       `json:"id"`
+	Id                bson.ObjectID            `json:"id"`
 	Name              string                   `json:"name"`
 	Type              string                   `json:"type"`
 	Http2             bool                     `json:"http2"`
@@ -28,7 +27,7 @@ type serviceData struct {
 	LogoutPath        string                   `json:"logout_path"`
 	WebSockets        bool                     `json:"websockets"`
 	DisableCsrfCheck  bool                     `json:"disable_csrf_check"`
-	ClientAuthority   primitive.ObjectID       `json:"client_authority"`
+	ClientAuthority   bson.ObjectID            `json:"client_authority"`
 	Domains           []*service.Domain        `json:"domains"`
 	Roles             []string                 `json:"roles"`
 	Servers           []*service.Server        `json:"servers"`
@@ -214,7 +213,7 @@ func servicesDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	dta := []primitive.ObjectID{}
+	dta := []bson.ObjectID{}
 
 	err := c.Bind(&dta)
 	if err != nil {

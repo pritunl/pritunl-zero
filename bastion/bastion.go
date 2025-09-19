@@ -9,7 +9,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -20,7 +20,7 @@ import (
 )
 
 type Bastion struct {
-	Authority  primitive.ObjectID
+	Authority  bson.ObjectID
 	Container  string
 	authr      *authority.Authority
 	certExpire time.Time

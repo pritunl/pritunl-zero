@@ -12,7 +12,7 @@ import (
 	"regexp"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
@@ -66,7 +66,7 @@ func RandInt(min, max int) int {
 	return mathrand.Intn(max-min+1) + min
 }
 
-func RandObjectId() (oid primitive.ObjectID, err error) {
+func RandObjectId() (oid bson.ObjectID, err error) {
 	rid, err := RandBytes(12)
 	if err != nil {
 		return

@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -20,21 +19,21 @@ var (
 )
 
 type Event struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Channel   string             `bson:"channel" json:"channel"`
-	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
-	Data      bson.M             `bson:"data" json:"data"`
+	Id        bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string        `bson:"channel" json:"channel"`
+	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Data      bson.M        `bson:"data" json:"data"`
 }
 
 type EventPublish struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Channel   string             `bson:"channel" json:"channel"`
-	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
-	Data      interface{}        `bson:"data" json:"data"`
+	Id        bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string        `bson:"channel" json:"channel"`
+	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Data      interface{}   `bson:"data" json:"data"`
 }
 
 type CustomEvent interface {
-	GetId() primitive.ObjectID
+	GetId() bson.ObjectID
 	GetData() interface{}
 }
 
@@ -43,7 +42,7 @@ type Dispatch struct {
 }
 
 func getCursorId(db *database.Database, coll *database.Collection,
-	channels []string) (id primitive.ObjectID, err error) {
+	channels []string) (id bson.ObjectID, err error) {
 
 	msg := &EventPublish{}
 
@@ -64,11 +63,8 @@ func getCursorId(db *database.Database, coll *database.Collection,
 		err = coll.FindOne(
 			db,
 			query,
-			&options.FindOneOptions{
-				Sort: &bson.D{
-					{"$natural", -1},
-				},
-			},
+			options.FindOne().
+				SetSort(bson.D{{"$natural", -1}}),
 		).Decode(msg)
 		if err != nil {
 			err = database.ParseError(err)
@@ -98,7 +94,7 @@ func getCursorId(db *database.Database, coll *database.Collection,
 	return
 }
 
-func getCursorIdRetry(channels []string) primitive.ObjectID {
+func getCursorIdRetry(channels []string) bson.ObjectID {
 	db := database.GetDatabase()
 	defer db.Close()
 
@@ -131,7 +127,7 @@ func Publish(db *database.Database, channel string, data interface{}) (
 	coll := db.Events()
 
 	msg := &EventPublish{
-		Id:        primitive.NewObjectID(),
+		Id:        bson.NewObjectID(),
 		Channel:   channel,
 		Timestamp: time.Now(),
 		Data:      data,
@@ -179,21 +175,16 @@ func Subscribe(channels []string, duration time.Duration,
 		}
 	}
 
-	queryOpts := &options.FindOptions{
-		Sort: &bson.D{
-			{"$natural", 1},
-		},
-	}
-	queryOpts.SetMaxAwaitTime(duration)
-	queryOpts.SetCursorType(options.TailableAwait)
-
-	query := &bson.M{
-		"_id": &bson.M{
+	queryOpts := options.Find().
+		SetSort(bson.D{{"$natural", 1}}).
+		SetMaxAwaitTime(duration).
+		SetCursorType(options.TailableAwait)
+	query := bson.M{
+		"_id": bson.M{
 			"$gt": cursorId,
 		},
 		"channel": channelBson,
 	}
-
 	var cursor *mongo.Cursor
 	var err error
 	for {
@@ -330,13 +321,10 @@ func SubscribeType(channels []string, duration time.Duration,
 		}
 	}
 
-	queryOpts := &options.FindOptions{
-		Sort: &bson.D{
-			{"$natural", 1},
-		},
-	}
-	queryOpts.SetMaxAwaitTime(duration)
-	queryOpts.SetCursorType(options.TailableAwait)
+	queryOpts := options.Find().
+		SetSort(bson.D{{"$natural", 1}}).
+		SetMaxAwaitTime(duration).
+		SetCursorType(options.TailableAwait)
 
 	query := &bson.M{
 		"_id": &bson.M{

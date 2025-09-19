@@ -9,8 +9,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -20,17 +19,17 @@ import (
 )
 
 type policyData struct {
-	Id                        primitive.ObjectID      `json:"id"`
+	Id                        bson.ObjectID           `json:"id"`
 	Name                      string                  `json:"name"`
 	Disabled                  bool                    `json:"disabled"`
-	Services                  []primitive.ObjectID    `json:"services"`
-	Authorities               []primitive.ObjectID    `json:"authorities"`
+	Services                  []bson.ObjectID         `json:"services"`
+	Authorities               []bson.ObjectID         `json:"authorities"`
 	Roles                     []string                `json:"roles"`
 	Rules                     map[string]*policy.Rule `json:"rules"`
-	AdminSecondary            primitive.ObjectID      `json:"admin_secondary"`
-	UserSecondary             primitive.ObjectID      `json:"user_secondary"`
-	ProxySecondary            primitive.ObjectID      `json:"proxy_secondary"`
-	AuthoritySecondary        primitive.ObjectID      `json:"authority_secondary"`
+	AdminSecondary            bson.ObjectID           `json:"admin_secondary"`
+	UserSecondary             bson.ObjectID           `json:"user_secondary"`
+	ProxySecondary            bson.ObjectID           `json:"proxy_secondary"`
+	AuthoritySecondary        bson.ObjectID           `json:"authority_secondary"`
 	AdminDeviceSecondary      bool                    `json:"admin_device_secondary"`
 	UserDeviceSecondary       bool                    `json:"user_device_secondary"`
 	ProxyDeviceSecondary      bool                    `json:"proxy_device_secondary"`
@@ -216,7 +215,7 @@ func policiesDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	data := []primitive.ObjectID{}
+	data := []bson.ObjectID{}
 
 	err := c.Bind(&data)
 	if err != nil {

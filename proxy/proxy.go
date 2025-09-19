@@ -11,7 +11,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/auth"
 	"github.com/pritunl/pritunl-zero/authority"
@@ -28,7 +28,7 @@ import (
 )
 
 type Host struct {
-	Id                primitive.ObjectID
+	Id                bson.ObjectID
 	Service           *service.Service
 	Domain            *service.Domain
 	WhitelistNetworks []*net.IPNet
@@ -39,9 +39,9 @@ type Host struct {
 type Proxy struct {
 	Hosts         map[string]*Host
 	WildcardHosts map[string]*Host
-	wProxies      map[primitive.ObjectID][]*web
-	wsProxies     map[primitive.ObjectID][]*webSocket
-	wiProxies     map[primitive.ObjectID][]*webIsolated
+	wProxies      map[bson.ObjectID][]*web
+	wsProxies     map[bson.ObjectID][]*webSocket
+	wiProxies     map[bson.ObjectID][]*webIsolated
 }
 
 func (p *Proxy) MatchHost(domain string) (hst *Host, wildcard bool) {
@@ -62,9 +62,9 @@ func (p *Proxy) MatchHost(domain string) (hst *Host, wildcard bool) {
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	host, wildcard := p.MatchHost(utils.StripPort(r.Host))
 
-	var hostId primitive.ObjectID
+	var hostId bson.ObjectID
 	if host == nil {
-		hostId = primitive.NilObjectID
+		hostId = bson.NilObjectID
 	} else {
 		hostId = host.Id
 	}
@@ -293,7 +293,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (p *Proxy) reloadHosts(db *database.Database,
-	services []primitive.ObjectID) (err error) {
+	services []bson.ObjectID) (err error) {
 
 	hosts := map[string]*Host{}
 	wildcardHosts := map[string]*Host{}
@@ -392,7 +392,7 @@ func (p *Proxy) reloadHosts(db *database.Database,
 			}
 
 			srvcDomain := &Host{
-				Id:                primitive.NewObjectID(),
+				Id:                bson.NewObjectID(),
 				Service:           srvc,
 				Domain:            domain,
 				WhitelistNetworks: whitelistNets,
@@ -420,9 +420,9 @@ func (p *Proxy) reloadHosts(db *database.Database,
 func (p *Proxy) reloadProxies(db *database.Database, proto string, port int) (
 	err error) {
 
-	wProxies := map[primitive.ObjectID][]*web{}
-	wsProxies := map[primitive.ObjectID][]*webSocket{}
-	wiProxies := map[primitive.ObjectID][]*webIsolated{}
+	wProxies := map[bson.ObjectID][]*web{}
+	wsProxies := map[bson.ObjectID][]*webSocket{}
+	wiProxies := map[bson.ObjectID][]*webIsolated{}
 
 	for _, hostSet := range []map[string]*Host{p.Hosts, p.WildcardHosts} {
 		for _, host := range hostSet {
@@ -484,9 +484,9 @@ func (p *Proxy) watchNode() {
 		err := p.update()
 		if err != nil {
 			p.Hosts = map[string]*Host{}
-			p.wProxies = map[primitive.ObjectID][]*web{}
-			p.wsProxies = map[primitive.ObjectID][]*webSocket{}
-			p.wiProxies = map[primitive.ObjectID][]*webIsolated{}
+			p.wProxies = map[bson.ObjectID][]*web{}
+			p.wsProxies = map[bson.ObjectID][]*webSocket{}
+			p.wiProxies = map[bson.ObjectID][]*webIsolated{}
 
 			logrus.WithFields(logrus.Fields{
 				"error": err,
@@ -499,8 +499,8 @@ func (p *Proxy) watchNode() {
 
 func (p *Proxy) Init() {
 	p.Hosts = map[string]*Host{}
-	p.wProxies = map[primitive.ObjectID][]*web{}
-	p.wsProxies = map[primitive.ObjectID][]*webSocket{}
-	p.wiProxies = map[primitive.ObjectID][]*webIsolated{}
+	p.wProxies = map[bson.ObjectID][]*web{}
+	p.wsProxies = map[bson.ObjectID][]*webSocket{}
+	p.wiProxies = map[bson.ObjectID][]*webIsolated{}
 	go p.watchNode()
 }

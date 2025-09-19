@@ -8,8 +8,8 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -25,8 +25,6 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 
 	selector := database.SelectFields(group, set.NewSet("_id"))
 	updated := database.SelectFields(group, fields)
-	opts := &options.UpdateOptions{}
-	opts.SetUpsert(true)
 
 	_, err = coll.UpdateOne(
 		db,
@@ -34,7 +32,7 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 		&bson.M{
 			"$set": updated,
 		},
-		opts,
+		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -56,11 +54,8 @@ func Get(db *database.Database, group string, key string) (
 		&bson.M{
 			"_id": group,
 		},
-		&options.FindOneOptions{
-			Projection: &bson.D{
-				{key, 1},
-			},
-		},
+		options.FindOne().
+			SetProjection(bson.D{{key, 1}}),
 	).Decode(grp)
 	if err != nil {
 		err = database.ParseError(err)
@@ -85,8 +80,6 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 	err error) {
 
 	coll := db.Settings()
-	opts := &options.UpdateOptions{}
-	opts.SetUpsert(true)
 
 	_, err = coll.UpdateOne(
 		db,
@@ -98,7 +91,7 @@ func Set(db *database.Database, group string, key string, val interface{}) (
 				key: val,
 			},
 		},
-		opts,
+		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -112,8 +105,6 @@ func Unset(db *database.Database, group string, key string) (
 	err error) {
 
 	coll := db.Settings()
-	opts := &options.UpdateOptions{}
-	opts.SetUpsert(true)
 
 	_, err = coll.UpdateOne(
 		db,
@@ -125,7 +116,7 @@ func Unset(db *database.Database, group string, key string) (
 				key: "",
 			},
 		},
-		opts,
+		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {
 		err = database.ParseError(err)

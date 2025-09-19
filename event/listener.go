@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/sirupsen/logrus"
@@ -34,7 +33,7 @@ func (l *Listener) Close() {
 	})
 }
 
-func (l *Listener) sub(cursorId primitive.ObjectID) {
+func (l *Listener) sub(cursorId bson.ObjectID) {
 	coll := l.db.Events()
 
 	var channelBson interface{}
@@ -46,13 +45,10 @@ func (l *Listener) sub(cursorId primitive.ObjectID) {
 		}
 	}
 
-	queryOpts := &options.FindOptions{
-		Sort: &bson.D{
-			{"$natural", 1},
-		},
-	}
-	queryOpts.SetMaxAwaitTime(10 * time.Second)
-	queryOpts.SetCursorType(options.TailableAwait)
+	queryOpts := options.Find().
+		SetSort(bson.D{{"$natural", 1}}).
+		SetMaxAwaitTime(10 * time.Second).
+		SetCursorType(options.TailableAwait)
 
 	query := &bson.M{
 		"_id": &bson.M{

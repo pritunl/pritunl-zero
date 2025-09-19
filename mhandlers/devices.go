@@ -4,7 +4,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/alertevent"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/authorizer"
@@ -19,13 +19,13 @@ import (
 )
 
 type deviceData struct {
-	User         primitive.ObjectID `json:"user"`
-	Name         string             `json:"name"`
-	Type         string             `json:"type"`
-	Mode         string             `json:"mode"`
-	Number       string             `json:"number"`
-	AlertLevels  []int              `json:"alert_levels"`
-	SshPublicKey string             `json:"ssh_public_key"`
+	User         bson.ObjectID `json:"user"`
+	Name         string        `json:"name"`
+	Type         string        `json:"type"`
+	Mode         string        `json:"mode"`
+	Number       string        `json:"number"`
+	AlertLevels  []int         `json:"alert_levels"`
+	SshPublicKey string        `json:"ssh_public_key"`
 }
 
 func devicePut(c *gin.Context) {

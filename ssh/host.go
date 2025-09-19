@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -41,8 +41,8 @@ func NewHostCertificate(db *database.Database, hostname string, port int,
 	}
 
 	cert = &Certificate{
-		Id:               primitive.NewObjectID(),
-		AuthorityIds:     []primitive.ObjectID{},
+		Id:               bson.NewObjectID(),
+		AuthorityIds:     []bson.ObjectID{},
 		Timestamp:        time.Now(),
 		PubKey:           pubKey,
 		Certificates:     []string{},
@@ -121,8 +121,8 @@ func NewBastionHostCertificate(db *database.Database, hostname,
 	}
 
 	cert = &Certificate{
-		Id:               primitive.NewObjectID(),
-		AuthorityIds:     []primitive.ObjectID{},
+		Id:               bson.NewObjectID(),
+		AuthorityIds:     []bson.ObjectID{},
 		Timestamp:        time.Now(),
 		PubKey:           pubKey,
 		Certificates:     []string{},

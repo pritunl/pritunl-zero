@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/useragent"
@@ -26,7 +25,7 @@ func Get(db *database.Database, adtId string) (
 	return
 }
 
-func GetAll(db *database.Database, userId primitive.ObjectID,
+func GetAll(db *database.Database, userId bson.ObjectID,
 	page, pageCount int64) (audits []*Audit, count int64, err error) {
 
 	coll := db.Audits()
@@ -40,11 +39,8 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 		return
 	}
 
-	opts := options.FindOptions{
-		Sort: &bson.D{
-			{"$natural", -1},
-		},
-	}
+	opts := options.Find().
+		SetSort(bson.D{{"$natural", -1}})
 
 	if pageCount != 0 {
 		maxPage := count / pageCount
@@ -53,13 +49,12 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 		}
 		page = min(page, maxPage)
 		skip := min(page*pageCount, count)
-		opts.Skip = &skip
-		opts.Limit = &pageCount
+		opts.SetSkip(skip).SetLimit(pageCount)
 	}
 
-	cursor, err := coll.Find(db, &bson.M{
+	cursor, err := coll.Find(db, bson.M{
 		"u": userId,
-	}, &opts)
+	}, opts)
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -87,7 +82,7 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 }
 
 func New(db *database.Database, r *http.Request,
-	userId primitive.ObjectID, typ string, fields Fields) (err error) {
+	userId bson.ObjectID, typ string, fields Fields) (err error) {
 
 	if settings.System.Demo {
 		return

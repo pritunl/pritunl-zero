@@ -7,8 +7,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
@@ -22,16 +21,16 @@ import (
 )
 
 type Challenge struct {
-	Id            string             `bson:"_id"`
-	CertificateId primitive.ObjectID `bson:"certificate_id,omitempty"`
-	Timestamp     time.Time          `bson:"timestamp"`
-	State         string             `bson:"state"`
-	PubKey        string             `bson:"pub_key"`
+	Id            string        `bson:"_id"`
+	CertificateId bson.ObjectID `bson:"certificate_id,omitempty"`
+	Timestamp     time.Time     `bson:"timestamp"`
+	State         string        `bson:"state"`
+	PubKey        string        `bson:"pub_key"`
 }
 
 func (c *Challenge) Approve(db *database.Database, usr *user.User,
 	r *http.Request, deviceSec, secondary bool) (deviceAuth bool,
-	secProvider primitive.ObjectID, err error,
+	secProvider bson.ObjectID, err error,
 	errData *errortypes.ErrorData) {
 
 	allAuthrs, err := authority.GetAll(db)
@@ -39,7 +38,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 		return
 	}
 
-	authrIds := []primitive.ObjectID{}
+	authrIds := []bson.ObjectID{}
 	authrs := []*authority.Authority{}
 	for _, authr := range allAuthrs {
 		if authr.UserHasAccess(usr) {
@@ -180,7 +179,7 @@ func (c *Challenge) Approve(db *database.Database, usr *user.User,
 
 	if len(cert.Certificates) == 0 {
 		c.State = ssh.Unavailable
-		c.CertificateId = primitive.NilObjectID
+		c.CertificateId = bson.NilObjectID
 	} else {
 		err = cert.Insert(db)
 		if err != nil {
@@ -216,7 +215,7 @@ func (c *Challenge) Deny(db *database.Database, usr *user.User) (err error) {
 	}
 
 	c.State = ssh.Denied
-	c.CertificateId = primitive.NilObjectID
+	c.CertificateId = bson.NilObjectID
 
 	coll := db.SshChallenges()
 

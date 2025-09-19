@@ -4,8 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
@@ -20,12 +19,12 @@ type authData struct {
 }
 
 type Token struct {
-	Id        string             `bson:"_id"`
-	Type      string             `bson:"type"`
-	Secret    string             `bson:"secret"`
-	Timestamp time.Time          `bson:"timestamp"`
-	Provider  primitive.ObjectID `bson:"provider,omitempty"`
-	Query     string             `bson:"query"`
+	Id        string        `bson:"_id"`
+	Type      string        `bson:"type"`
+	Secret    string        `bson:"secret"`
+	Timestamp time.Time     `bson:"timestamp"`
+	Provider  bson.ObjectID `bson:"provider,omitempty"`
+	Query     string        `bson:"query"`
 }
 
 func (t *Token) Remove(db *database.Database) (err error) {

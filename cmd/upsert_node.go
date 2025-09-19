@@ -6,8 +6,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/database"
@@ -135,7 +134,7 @@ var UpsertNodeCmd = &cobra.Command{
 
 		var nde *node.Node
 		if name == "self" {
-			objId, e := primitive.ObjectIDFromHex(config.Config.NodeId)
+			objId, e := bson.ObjectIDFromHex(config.Config.NodeId)
 			if e != nil {
 				err = &errortypes.ParseError{
 					errors.Wrap(e, "cmd: Failed to parse ObjectId"),

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/useragent"
@@ -13,12 +13,12 @@ import (
 type Fields map[string]interface{}
 
 type Audit struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	User      primitive.ObjectID `bson:"u" json:"user"`
-	Timestamp time.Time          `bson:"t" json:"timestamp"`
-	Type      string             `bson:"y" json:"type"`
-	Fields    Fields             `bson:"f" json:"fields"`
-	Agent     *useragent.Agent   `bson:"a" json:"agent"`
+	Id        bson.ObjectID    `bson:"_id,omitempty" json:"id"`
+	User      bson.ObjectID    `bson:"u" json:"user"`
+	Timestamp time.Time        `bson:"t" json:"timestamp"`
+	Type      string           `bson:"y" json:"type"`
+	Fields    Fields           `bson:"f" json:"fields"`
+	Agent     *useragent.Agent `bson:"a" json:"agent"`
 }
 
 func (a *Audit) Insert(db *database.Database) (err error) {

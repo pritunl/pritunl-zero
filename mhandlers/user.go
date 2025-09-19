@@ -10,8 +10,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -21,16 +20,16 @@ import (
 )
 
 type userData struct {
-	Id             primitive.ObjectID `json:"id"`
-	Type           string             `json:"type"`
-	Username       string             `json:"username"`
-	Password       string             `json:"password"`
-	Roles          []string           `json:"roles"`
-	Administrator  string             `json:"administrator"`
-	Permissions    []string           `json:"permissions"`
-	GenerateSecret bool               `json:"generate_secret"`
-	Disabled       bool               `json:"disabled"`
-	ActiveUntil    time.Time          `json:"active_until"`
+	Id             bson.ObjectID `json:"id"`
+	Type           string        `json:"type"`
+	Username       string        `json:"username"`
+	Password       string        `json:"password"`
+	Roles          []string      `json:"roles"`
+	Administrator  string        `json:"administrator"`
+	Permissions    []string      `json:"permissions"`
+	GenerateSecret bool          `json:"generate_secret"`
+	Disabled       bool          `json:"disabled"`
+	ActiveUntil    time.Time     `json:"active_until"`
 }
 
 type usersData struct {
@@ -347,7 +346,7 @@ func usersDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	data := []primitive.ObjectID{}
+	data := []bson.ObjectID{}
 
 	err := c.Bind(&data)
 	if err != nil {

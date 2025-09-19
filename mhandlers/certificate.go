@@ -9,8 +9,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
@@ -21,16 +20,16 @@ import (
 )
 
 type certificateData struct {
-	Id          primitive.ObjectID `json:"id"`
-	Name        string             `json:"name"`
-	Comment     string             `json:"comment"`
-	Type        string             `json:"type"`
-	Key         string             `json:"key"`
-	Certificate string             `json:"certificate"`
-	AcmeDomains []string           `json:"acme_domains"`
-	AcmeType    string             `json:"acme_type"`
-	AcmeAuth    string             `json:"acme_auth"`
-	AcmeSecret  primitive.ObjectID `json:"acme_secret"`
+	Id          bson.ObjectID `json:"id"`
+	Name        string        `json:"name"`
+	Comment     string        `json:"comment"`
+	Type        string        `json:"type"`
+	Key         string        `json:"key"`
+	Certificate string        `json:"certificate"`
+	AcmeDomains []string      `json:"acme_domains"`
+	AcmeType    string        `json:"acme_type"`
+	AcmeAuth    string        `json:"acme_auth"`
+	AcmeSecret  bson.ObjectID `json:"acme_secret"`
 }
 
 type certificatesData struct {
@@ -210,7 +209,7 @@ func certificatesDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	data := []primitive.ObjectID{}
+	data := []bson.ObjectID{}
 
 	err := c.Bind(&data)
 	if err != nil {

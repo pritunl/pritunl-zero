@@ -10,8 +10,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -21,21 +20,21 @@ import (
 )
 
 type nodeData struct {
-	Id                   primitive.ObjectID   `json:"id"`
-	Name                 string               `json:"name"`
-	Type                 string               `json:"type"`
-	Port                 int                  `json:"port"`
-	NoRedirectServer     bool                 `json:"no_redirect_server"`
-	Protocol             string               `json:"protocol"`
-	Certificates         []primitive.ObjectID `json:"certificates"`
-	ManagementDomain     string               `json:"management_domain"`
-	UserDomain           string               `json:"user_domain"`
-	EndpointDomain       string               `json:"endpoint_domain"`
-	WebauthnDomain       string               `json:"webauthn_domain"`
-	Services             []primitive.ObjectID `json:"services"`
-	Authorities          []primitive.ObjectID `json:"authorities"`
-	ForwardedForHeader   string               `json:"forwarded_for_header"`
-	ForwardedProtoHeader string               `json:"forwarded_proto_header"`
+	Id                   bson.ObjectID   `json:"id"`
+	Name                 string          `json:"name"`
+	Type                 string          `json:"type"`
+	Port                 int             `json:"port"`
+	NoRedirectServer     bool            `json:"no_redirect_server"`
+	Protocol             string          `json:"protocol"`
+	Certificates         []bson.ObjectID `json:"certificates"`
+	ManagementDomain     string          `json:"management_domain"`
+	UserDomain           string          `json:"user_domain"`
+	EndpointDomain       string          `json:"endpoint_domain"`
+	WebauthnDomain       string          `json:"webauthn_domain"`
+	Services             []bson.ObjectID `json:"services"`
+	Authorities          []bson.ObjectID `json:"authorities"`
+	ForwardedForHeader   string          `json:"forwarded_for_header"`
+	ForwardedProtoHeader string          `json:"forwarded_proto_header"`
 }
 
 type nodesData struct {

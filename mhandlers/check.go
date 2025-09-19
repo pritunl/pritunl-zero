@@ -10,8 +10,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
@@ -22,16 +21,16 @@ import (
 )
 
 type checkData struct {
-	Id         primitive.ObjectID `json:"id"`
-	Name       string             `json:"name"`
-	Roles      []string           `json:"roles"`
-	Frequency  int                `json:"frequency"`
-	Type       string             `json:"type"`
-	Targets    []string           `json:"targets"`
-	Timeout    int                `json:"timeout"`
-	Method     string             `json:"method"`
-	StatusCode int                `json:"status_code"`
-	Headers    []*check.Header    `json:"headers"`
+	Id         bson.ObjectID   `json:"id"`
+	Name       string          `json:"name"`
+	Roles      []string        `json:"roles"`
+	Frequency  int             `json:"frequency"`
+	Type       string          `json:"type"`
+	Targets    []string        `json:"targets"`
+	Timeout    int             `json:"timeout"`
+	Method     string          `json:"method"`
+	StatusCode int             `json:"status_code"`
+	Headers    []*check.Header `json:"headers"`
 }
 
 type checksData struct {
@@ -196,7 +195,7 @@ func checksDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	dta := []primitive.ObjectID{}
+	dta := []bson.ObjectID{}
 
 	err := c.Bind(&dta)
 	if err != nil {

@@ -4,17 +4,16 @@ import (
 	"context"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
 type Network struct {
-	Id        primitive.ObjectID `bson:"_id" json:"id"`
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
+	Id        bson.ObjectID `bson:"_id" json:"id"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
 
 	Interfaces []*Interface `bson:"i" json:"i"`
 }
@@ -64,7 +63,7 @@ func (d *Network) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsNetwork()
 }
 
-func (d *Network) Format(id primitive.ObjectID) time.Time {
+func (d *Network) Format(id bson.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Timestamp = d.Timestamp.UTC().Truncate(1 * time.Minute)
 	d.Id = GenerateId(id, d.Timestamp)
@@ -94,7 +93,7 @@ func (d *Network) Handle(db *database.Database) (handled, checkAlerts bool,
 }
 
 func GetNetworkChartSingle(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, start, end time.Time) (
+	endpoint bson.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {
 
 	coll := db.EndpointsNetwork()
@@ -109,15 +108,12 @@ func GetNetworkChartSingle(c context.Context, db *database.Database,
 
 	cursor, err := coll.Find(
 		c,
-		&bson.M{
+		bson.M{
 			"e": endpoint,
 			"t": timeQuery,
 		},
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"t", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"t", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -159,7 +155,7 @@ func GetNetworkChartSingle(c context.Context, db *database.Database,
 }
 
 func GetNetworkChart(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, start, end time.Time,
+	endpoint bson.ObjectID, start, end time.Time,
 	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {

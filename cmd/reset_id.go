@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/logger"
 	"github.com/sirupsen/logrus"
@@ -24,7 +24,7 @@ var ResetIdCmd = &cobra.Command{
 			return
 		}
 
-		config.Config.NodeId = primitive.NewObjectID().Hex()
+		config.Config.NodeId = bson.NewObjectID().Hex()
 
 		err = config.Save()
 		if err != nil {

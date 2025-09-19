@@ -2,22 +2,22 @@ package alert
 
 import (
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Alert struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name      string             `bson:"name" json:"name"`
-	Roles     []string           `bson:"roles" json:"roles"`
-	Resource  string             `bson:"resource" json:"resource"`
-	Level     int                `bson:"level" json:"level"`
-	Frequency int                `bson:"frequency" json:"frequency"`
-	Ignores   []string           `bson:"ignores" json:"ignores"`
-	ValueInt  int                `bson:"value_int" json:"value_int"`
-	ValueStr  string             `bson:"value_str" json:"value_str"`
+	Id        bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name      string        `bson:"name" json:"name"`
+	Roles     []string      `bson:"roles" json:"roles"`
+	Resource  string        `bson:"resource" json:"resource"`
+	Level     int           `bson:"level" json:"level"`
+	Frequency int           `bson:"frequency" json:"frequency"`
+	Ignores   []string      `bson:"ignores" json:"ignores"`
+	ValueInt  int           `bson:"value_int" json:"value_int"`
+	ValueStr  string        `bson:"value_str" json:"value_str"`
 }
 
 func (a *Alert) Validate(db *database.Database) (

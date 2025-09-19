@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
@@ -41,13 +41,13 @@ type HsmPayload struct {
 }
 
 type HsmEvent struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Channel   string             `bson:"channel" json:"channel"`
-	Timestamp time.Time          `bson:"timestamp" json:"timestamp"`
-	Data      *HsmPayload        `bson:"data" json:"data"`
+	Id        bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Channel   string        `bson:"channel" json:"channel"`
+	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
+	Data      *HsmPayload   `bson:"data" json:"data"`
 }
 
-func (h *HsmEvent) GetId() primitive.ObjectID {
+func (h *HsmEvent) GetId() bson.ObjectID {
 	return h.Id
 }
 

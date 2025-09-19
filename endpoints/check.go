@@ -6,9 +6,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/check"
 	"github.com/pritunl/pritunl-zero/database"
@@ -16,10 +15,10 @@ import (
 )
 
 type Check struct {
-	Id        primitive.ObjectID `bson:"_id" json:"id"`
-	Check     primitive.ObjectID `bson:"c" json:"c"`
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
+	Id        bson.ObjectID `bson:"_id" json:"id"`
+	Check     bson.ObjectID `bson:"c" json:"c"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
 
 	TargetsUp   int `bson:"u" json:"-"`
 	TargetsDown int `bson:"d" json:"-"`
@@ -33,17 +32,17 @@ type Check struct {
 }
 
 type CheckLog struct {
-	Id        primitive.ObjectID `bson:"_id" json:"id"`
-	Check     primitive.ObjectID `bson:"c" json:"c"`
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
-	Log       []string           `bson:"l" json:"l"`
+	Id        bson.ObjectID `bson:"_id" json:"id"`
+	Check     bson.ObjectID `bson:"c" json:"c"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
+	Log       []string      `bson:"l" json:"l"`
 }
 
 type CheckAgg struct {
 	Id struct {
-		Endpoint  primitive.ObjectID `bson:"e"`
-		Timestamp int64              `bson:"t"`
+		Endpoint  bson.ObjectID `bson:"e"`
+		Timestamp int64         `bson:"t"`
 	} `bson:"_id"`
 	TargetsUp   int     `bson:"u"`
 	TargetsDown int     `bson:"d"`
@@ -58,7 +57,7 @@ func (d *Check) GetLogCollection(db *database.Database) *database.Collection {
 	return db.EndpointsCheckLog()
 }
 
-func (d *Check) Format(id primitive.ObjectID) time.Time {
+func (d *Check) Format(id bson.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Timestamp = d.Timestamp.UTC().Truncate(10 * time.Second)
 	d.Id = GenerateId(id, d.Timestamp)
@@ -204,7 +203,7 @@ func (d *Check) HandleOld(db *database.Database) (handled, checkAlerts bool,
 	return
 }
 
-func (d *CheckLog) FormattedLog(names map[primitive.ObjectID]string) (
+func (d *CheckLog) FormattedLog(names map[bson.ObjectID]string) (
 	log LogData) {
 
 	log = LogData{}
@@ -230,7 +229,7 @@ func (d *CheckLog) FormattedLog(names map[primitive.ObjectID]string) (
 }
 
 func GetCheckChartSingle(c context.Context, db *database.Database,
-	checkId primitive.ObjectID, start, end time.Time) (
+	checkId bson.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {
 
 	coll := db.EndpointsCheck()
@@ -255,15 +254,12 @@ func GetCheckChartSingle(c context.Context, db *database.Database,
 
 	cursor, err := coll.Find(
 		c,
-		&bson.M{
+		bson.M{
 			"c": checkId,
 			"t": timeQuery,
 		},
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"t", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"t", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -303,7 +299,7 @@ func GetCheckChartSingle(c context.Context, db *database.Database,
 }
 
 func GetCheckChart(c context.Context, db *database.Database,
-	checkId primitive.ObjectID, start, end time.Time,
+	checkId bson.ObjectID, start, end time.Time,
 	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {
@@ -415,7 +411,7 @@ func GetCheckChart(c context.Context, db *database.Database,
 }
 
 func GetCheckLog(c context.Context, db *database.Database,
-	checkId primitive.ObjectID) (logData LogData, err error) {
+	checkId bson.ObjectID) (logData LogData, err error) {
 
 	logData = []string{}
 
@@ -435,15 +431,12 @@ func GetCheckLog(c context.Context, db *database.Database,
 
 	cursor, err := coll.Find(
 		c,
-		&bson.M{
+		bson.M{
 			"c": checkId,
 		},
-		&options.FindOptions{
-			Limit: &limit,
-			Sort: &bson.D{
-				{"t", -1},
-			},
-		},
+		options.Find().
+			SetLimit(limit).
+			SetSort(bson.D{{"t", -1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)

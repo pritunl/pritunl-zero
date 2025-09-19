@@ -9,7 +9,7 @@ import (
 
 	"github.com/dropbox/godropbox/errors"
 	"github.com/opensearch-project/opensearch-go/opensearchapi"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/sirupsen/logrus"
 )
@@ -40,7 +40,7 @@ func Index(index string, data interface{}, noRetry bool) {
 
 	doc := &Document{
 		Index:   index + dateSuffix(),
-		Id:      primitive.NewObjectID().Hex(),
+		Id:      bson.NewObjectID().Hex(),
 		Data:    data,
 		NoRetry: noRetry,
 	}

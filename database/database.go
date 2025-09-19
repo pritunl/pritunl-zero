@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/mongo"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
-	"github.com/pritunl/mongo-go-driver/mongo/readconcern"
-	"github.com/pritunl/mongo-go-driver/mongo/writeconcern"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/readconcern"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/writeconcern"
 	"github.com/pritunl/mongo-go-driver/x/mongo/driver/connstring"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
@@ -68,13 +68,9 @@ func (d *Database) getCollection(name string) (coll *Collection) {
 }
 
 func (d *Database) getCollectionWeak(name string) (coll *Collection) {
-	opts := &options.CollectionOptions{}
-
-	opts.WriteConcern = writeconcern.New(
-		writeconcern.W(1),
-		writeconcern.WTimeout(10*time.Second),
-	)
-	opts.ReadConcern = readconcern.Local()
+	opts := options.Collection()
+	opts.SetWriteConcern(writeconcern.W1())
+	opts.SetReadConcern(readconcern.Local())
 
 	coll = &Collection{
 		db:         d,
@@ -289,7 +285,7 @@ func Connect() (err error) {
 	opts.SetRetryReads(true)
 	opts.SetRetryWrites(true)
 
-	client, err := mongo.Connect(context.Background(), opts)
+	client, err := mongo.Connect(opts)
 	if err != nil {
 		err = &ConnectionError{
 			errors.Wrap(err, "database: Connection error"),

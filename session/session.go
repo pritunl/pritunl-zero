@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/rokey"
@@ -19,16 +19,16 @@ import (
 )
 
 type Session struct {
-	Id         string             `bson:"_id" json:"id"`
-	Type       string             `bson:"type" json:"type"`
-	User       primitive.ObjectID `bson:"user" json:"user"`
-	Rokey      primitive.ObjectID `bson:"rokey" json:"-"`
-	Secret     string             `bson:"secret" json:"-"`
-	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
-	LastActive time.Time          `bson:"last_active" json:"last_active"`
-	Removed    bool               `bson:"removed" json:"removed"`
-	Agent      *useragent.Agent   `bson:"agent" json:"agent"`
-	user       *user.User         `bson:"-" json:"-"`
+	Id         string           `bson:"_id" json:"id"`
+	Type       string           `bson:"type" json:"type"`
+	User       bson.ObjectID    `bson:"user" json:"user"`
+	Rokey      bson.ObjectID    `bson:"rokey" json:"-"`
+	Secret     string           `bson:"secret" json:"-"`
+	Timestamp  time.Time        `bson:"timestamp" json:"timestamp"`
+	LastActive time.Time        `bson:"last_active" json:"last_active"`
+	Removed    bool             `bson:"removed" json:"removed"`
+	Agent      *useragent.Agent `bson:"agent" json:"agent"`
+	user       *user.User       `bson:"-" json:"-"`
 }
 
 func (s *Session) CheckSignature(db *database.Database, inSig string) (

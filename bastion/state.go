@@ -1,12 +1,12 @@
 package bastion
 
-import "github.com/pritunl/mongo-go-driver/bson/primitive"
+import "github.com/pritunl/mongo-go-driver/v2/bson"
 
 var (
-	state = map[primitive.ObjectID]*Bastion{}
+	state = map[bson.ObjectID]*Bastion{}
 )
 
-func Get(authrId primitive.ObjectID) (bast *Bastion) {
+func Get(authrId bson.ObjectID) (bast *Bastion) {
 	bast = state[authrId]
 
 	if bast != nil && !bast.State() {
@@ -32,7 +32,7 @@ func GetAll() (basts []*Bastion) {
 	return
 }
 
-func New(authrId primitive.ObjectID) (bast *Bastion) {
+func New(authrId bson.ObjectID) (bast *Bastion) {
 	bast = &Bastion{
 		Authority: authrId,
 	}

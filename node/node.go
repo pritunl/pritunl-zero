@@ -12,9 +12,8 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
@@ -31,23 +30,23 @@ var (
 )
 
 type Node struct {
-	Id                   primitive.ObjectID         `bson:"_id" json:"id"`
+	Id                   bson.ObjectID              `bson:"_id" json:"id"`
 	Name                 string                     `bson:"name" json:"name"`
 	Type                 string                     `bson:"type" json:"type"`
 	Timestamp            time.Time                  `bson:"timestamp" json:"timestamp"`
 	Port                 int                        `bson:"port" json:"port"`
 	NoRedirectServer     bool                       `bson:"no_redirect_server" json:"no_redirect_server"`
 	Protocol             string                     `bson:"protocol" json:"protocol"`
-	Certificate          primitive.ObjectID         `bson:"certificate" json:"certificate"`
-	Certificates         []primitive.ObjectID       `bson:"certificates" json:"certificates"`
+	Certificate          bson.ObjectID              `bson:"certificate" json:"certificate"`
+	Certificates         []bson.ObjectID            `bson:"certificates" json:"certificates"`
 	SelfCertificate      string                     `bson:"self_certificate_key" json:"-"`
 	SelfCertificateKey   string                     `bson:"self_certificate" json:"-"`
 	ManagementDomain     string                     `bson:"management_domain" json:"management_domain"`
 	UserDomain           string                     `bson:"user_domain" json:"user_domain"`
 	WebauthnDomain       string                     `bson:"webauthn_domain" json:"webauthn_domain"`
 	EndpointDomain       string                     `bson:"endpoint_domain" json:"endpoint_domain"`
-	Services             []primitive.ObjectID       `bson:"services" json:"services"`
-	Authorities          []primitive.ObjectID       `bson:"authorities" json:"authorities"`
+	Services             []bson.ObjectID            `bson:"services" json:"services"`
+	Authorities          []bson.ObjectID            `bson:"authorities" json:"authorities"`
 	RequestsMin          int64                      `bson:"requests_min" json:"requests_min"`
 	ForwardedForHeader   string                     `bson:"forwarded_for_header" json:"forwarded_for_header"`
 	ForwardedProtoHeader string                     `bson:"forwarded_proto_header" json:"forwarded_proto_header"`
@@ -206,11 +205,11 @@ func (n *Node) GetWebauthn(origin string, strict bool) (
 	return
 }
 
-func (n *Node) HasService(srvcId primitive.ObjectID) bool {
+func (n *Node) HasService(srvcId bson.ObjectID) bool {
 	return slices.Contains(n.Services, srvcId)
 }
 
-func (n *Node) AddService(srvcId primitive.ObjectID) bool {
+func (n *Node) AddService(srvcId bson.ObjectID) bool {
 	if n.HasService(srvcId) {
 		return false
 	}
@@ -219,7 +218,7 @@ func (n *Node) AddService(srvcId primitive.ObjectID) bool {
 	return true
 }
 
-func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
+func (n *Node) RemoveService(srvcId bson.ObjectID) bool {
 	for i, serviceId := range n.Services {
 		if serviceId == srvcId {
 			n.Services = append(n.Services[:i], n.Services[i+1:]...)
@@ -230,7 +229,7 @@ func (n *Node) RemoveService(srvcId primitive.ObjectID) bool {
 	return false
 }
 
-func (n *Node) HasCertificate(certId primitive.ObjectID) bool {
+func (n *Node) HasCertificate(certId bson.ObjectID) bool {
 	if slices.Contains(n.Certificates, certId) {
 		return true
 	}
@@ -238,7 +237,7 @@ func (n *Node) HasCertificate(certId primitive.ObjectID) bool {
 	return false
 }
 
-func (n *Node) AddCertificate(certId primitive.ObjectID) bool {
+func (n *Node) AddCertificate(certId bson.ObjectID) bool {
 	if n.HasCertificate(certId) {
 		return false
 	}
@@ -247,7 +246,7 @@ func (n *Node) AddCertificate(certId primitive.ObjectID) bool {
 	return true
 }
 
-func (n *Node) RemoveCertificate(certId primitive.ObjectID) bool {
+func (n *Node) RemoveCertificate(certId bson.ObjectID) bool {
 	for i, certObjId := range n.Certificates {
 		if certObjId == certId {
 			n.Certificates = append(
@@ -265,11 +264,11 @@ func (n *Node) Validate(db *database.Database) (
 	n.Name = utils.FilterName(n.Name)
 
 	if n.Services == nil {
-		n.Services = []primitive.ObjectID{}
+		n.Services = []bson.ObjectID{}
 	}
 
 	if n.Authorities == nil {
-		n.Authorities = []primitive.ObjectID{}
+		n.Authorities = []bson.ObjectID{}
 	}
 
 	if n.Protocol != Http && n.Protocol != Https {
@@ -289,7 +288,7 @@ func (n *Node) Validate(db *database.Database) (
 	}
 
 	if n.Certificates == nil || n.Protocol != "https" {
-		n.Certificates = []primitive.ObjectID{}
+		n.Certificates = []bson.ObjectID{}
 	}
 
 	if n.Type == "" {
@@ -325,11 +324,11 @@ func (n *Node) Validate(db *database.Database) (
 	}
 
 	if !strings.Contains(n.Type, Proxy) {
-		n.Services = []primitive.ObjectID{}
+		n.Services = []bson.ObjectID{}
 	}
 
 	if !strings.Contains(n.Type, Bastion) {
-		n.Authorities = []primitive.ObjectID{}
+		n.Authorities = []bson.ObjectID{}
 	}
 
 	n.Format()
@@ -415,8 +414,8 @@ func (n *Node) update(db *database.Database) (err error) {
 	coll := db.Nodes()
 
 	nde := &Node{}
-	opts := &options.FindOneAndUpdateOptions{}
-	opts.SetReturnDocument(options.After)
+	opts := options.FindOneAndUpdate().
+		SetReturnDocument(options.After)
 
 	err = coll.FindOneAndUpdate(
 		db,
@@ -614,15 +613,12 @@ func (n *Node) Init() (err error) {
 	}
 
 	if n.Services == nil {
-		n.Services = []primitive.ObjectID{}
+		n.Services = []bson.ObjectID{}
 	}
 
 	if n.Authorities == nil {
-		n.Authorities = []primitive.ObjectID{}
+		n.Authorities = []bson.ObjectID{}
 	}
-
-	opts := &options.UpdateOptions{}
-	opts.SetUpsert(true)
 
 	_, err = coll.UpdateOne(
 		db,
@@ -642,7 +638,7 @@ func (n *Node) Init() (err error) {
 				"software_version": n.SoftwareVersion,
 			},
 		},
-		opts,
+		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -690,7 +686,7 @@ func init() {
 					(node.Certificates == nil ||
 						len(node.Certificates) == 0) {
 
-					node.Certificates = []primitive.ObjectID{
+					node.Certificates = []bson.ObjectID{
 						node.Certificate,
 					}
 					changed.Add("certificates")

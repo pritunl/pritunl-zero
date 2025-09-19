@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/user"
@@ -13,16 +12,16 @@ import (
 )
 
 type Alert struct {
-	Id         string             `bson:"_id" json:"_id"`
-	Name       string             `bson:"name" json:"name"`
-	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
-	Roles      []string           `bson:"roles" json:"roles"`
-	Source     primitive.ObjectID `bson:"source" json:"source"`
-	SourceName string             `bson:"source_name" json:"source_name"`
-	Level      int                `bson:"level" json:"level"`
-	Resource   string             `bson:"resource" json:"resource"`
-	Message    string             `bson:"message" json:"message"`
-	Frequency  time.Duration      `bson:"frequency" json:"frequency"`
+	Id         string        `bson:"_id" json:"_id"`
+	Name       string        `bson:"name" json:"name"`
+	Timestamp  time.Time     `bson:"timestamp" json:"timestamp"`
+	Roles      []string      `bson:"roles" json:"roles"`
+	Source     bson.ObjectID `bson:"source" json:"source"`
+	SourceName string        `bson:"source_name" json:"source_name"`
+	Level      int           `bson:"level" json:"level"`
+	Resource   string        `bson:"resource" json:"resource"`
+	Message    string        `bson:"message" json:"message"`
+	Frequency  time.Duration `bson:"frequency" json:"frequency"`
 }
 
 func (a *Alert) GetFrequency() (frequency time.Duration) {
@@ -172,7 +171,7 @@ func (a *Alert) Send(db *database.Database, roles []string) (err error) {
 	return
 }
 
-func New(roles []string, source primitive.ObjectID,
+func New(roles []string, source bson.ObjectID,
 	name, sourceName, resource, message string, level int,
 	frequency time.Duration) {
 

@@ -1,13 +1,12 @@
 package endpoint
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
-func Get(db *database.Database, endpointId primitive.ObjectID) (
+func Get(db *database.Database, endpointId bson.ObjectID) (
 	endpt *Endpoint, err error) {
 
 	coll := db.Endpoints()
@@ -21,7 +20,7 @@ func Get(db *database.Database, endpointId primitive.ObjectID) (
 	return
 }
 
-func GetMulti(db *database.Database, endpointIds []primitive.ObjectID) (
+func GetMulti(db *database.Database, endpointIds []bson.ObjectID) (
 	endpoints []*Endpoint, err error) {
 
 	coll := db.Endpoints()
@@ -125,13 +124,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	defer cursor.Close(db)
 
@@ -156,7 +152,7 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
-func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
+func RemoveData(db *database.Database, endpointId bson.ObjectID) (
 	err error) {
 
 	coll := db.EndpointsSystem()
@@ -226,7 +222,7 @@ func RemoveData(db *database.Database, endpointId primitive.ObjectID) (
 }
 
 func Remove(db *database.Database,
-	endpointId primitive.ObjectID) (err error) {
+	endpointId bson.ObjectID) (err error) {
 
 	err = RemoveData(db, endpointId)
 	if err != nil {
@@ -246,7 +242,7 @@ func Remove(db *database.Database,
 	return
 }
 
-func RemoveMulti(db *database.Database, endpointIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, endpointIds []bson.ObjectID) (
 	err error) {
 
 	coll := db.Endpoints()

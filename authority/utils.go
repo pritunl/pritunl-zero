@@ -16,9 +16,8 @@ import (
 	"strings"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -366,7 +365,7 @@ func ParseSshPubKey(data string) (pubKey crypto.PublicKey, err error) {
 	return
 }
 
-func Get(db *database.Database, authrId primitive.ObjectID) (
+func Get(db *database.Database, authrId bson.ObjectID) (
 	authr *Authority, err error) {
 
 	coll := db.Authorities()
@@ -412,7 +411,7 @@ func GetHsmToken(db *database.Database, token string) (
 	return
 }
 
-func GetMulti(db *database.Database, authrIds []primitive.ObjectID) (
+func GetMulti(db *database.Database, authrIds []bson.ObjectID) (
 	authrs []*Authority, err error) {
 
 	coll := db.Authorities()
@@ -487,14 +486,9 @@ func GetAllNames(db *database.Database, query *bson.M) (
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Projection: &bson.D{
-				{"name", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetProjection(bson.D{{"name", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -552,13 +546,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -623,7 +614,7 @@ func GetTokens(db *database.Database, tokens []string) (
 	return
 }
 
-func Remove(db *database.Database, authrId primitive.ObjectID) (
+func Remove(db *database.Database, authrId bson.ObjectID) (
 	errData *errortypes.ErrorData, err error) {
 
 	err = RemoveNode(db, authrId)
@@ -672,7 +663,7 @@ func Remove(db *database.Database, authrId primitive.ObjectID) (
 	return
 }
 
-func RemoveMulti(db *database.Database, authorityIds []primitive.ObjectID) (
+func RemoveMulti(db *database.Database, authorityIds []bson.ObjectID) (
 	err error) {
 	coll := db.Authorities()
 
@@ -690,7 +681,7 @@ func RemoveMulti(db *database.Database, authorityIds []primitive.ObjectID) (
 }
 
 func RemoveNode(db *database.Database,
-	authrId primitive.ObjectID) (err error) {
+	authrId bson.ObjectID) (err error) {
 
 	coll := db.Nodes()
 

@@ -11,7 +11,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
@@ -29,19 +29,19 @@ type Info struct {
 }
 
 type Certificate struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name        string             `bson:"name" json:"name"`
-	Comment     string             `bson:"comment" json:"comment"`
-	Type        string             `bson:"type" json:"type"`
-	Key         string             `bson:"key" json:"key"`
-	Certificate string             `bson:"certificate" json:"certificate"`
-	Info        *Info              `bson:"info" json:"info"`
-	AcmeHash    string             `bson:"acme_hash" json:"-"`
-	AcmeAccount string             `bson:"acme_account" json:"-"`
-	AcmeDomains []string           `bson:"acme_domains" json:"acme_domains"`
-	AcmeType    string             `bson:"acme_type" json:"acme_type"`
-	AcmeAuth    string             `bson:"acme_auth" json:"acme_auth"`
-	AcmeSecret  primitive.ObjectID `bson:"acme_secret,omitempty" json:"acme_secret"`
+	Id          bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name        string        `bson:"name" json:"name"`
+	Comment     string        `bson:"comment" json:"comment"`
+	Type        string        `bson:"type" json:"type"`
+	Key         string        `bson:"key" json:"key"`
+	Certificate string        `bson:"certificate" json:"certificate"`
+	Info        *Info         `bson:"info" json:"info"`
+	AcmeHash    string        `bson:"acme_hash" json:"-"`
+	AcmeAccount string        `bson:"acme_account" json:"-"`
+	AcmeDomains []string      `bson:"acme_domains" json:"acme_domains"`
+	AcmeType    string        `bson:"acme_type" json:"acme_type"`
+	AcmeAuth    string        `bson:"acme_auth" json:"acme_auth"`
+	AcmeSecret  bson.ObjectID `bson:"acme_secret,omitempty" json:"acme_secret"`
 }
 
 func (c *Certificate) Validate(db *database.Database) (
@@ -98,7 +98,7 @@ func (c *Certificate) Validate(db *database.Database) (
 		c.AcmeDomains = []string{}
 		c.AcmeType = ""
 		c.AcmeAuth = ""
-		c.AcmeSecret = primitive.NilObjectID
+		c.AcmeSecret = bson.NilObjectID
 	}
 
 	if c.AcmeDomains == nil {
@@ -235,7 +235,7 @@ func (c *Certificate) Insert(db *database.Database) (err error) {
 		return
 	}
 
-	c.Id = resp.InsertedID.(primitive.ObjectID)
+	c.Id = resp.InsertedID.(bson.ObjectID)
 
 	return
 }

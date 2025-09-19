@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

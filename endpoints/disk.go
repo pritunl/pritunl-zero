@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
 type Disk struct {
-	Id        primitive.ObjectID `bson:"_id" json:"id"`
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
+	Id        bson.ObjectID `bson:"_id" json:"id"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
 
 	Mounts []*Mount `bson:"m" json:"m"`
 }
@@ -53,7 +52,7 @@ func (d *Disk) GetCollection(db *database.Database) *database.Collection {
 	return db.EndpointsDisk()
 }
 
-func (d *Disk) Format(id primitive.ObjectID) time.Time {
+func (d *Disk) Format(id bson.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Timestamp = d.Timestamp.UTC().Truncate(1 * time.Minute)
 	d.Id = GenerateId(id, d.Timestamp)
@@ -101,7 +100,7 @@ func (d *Disk) Handle(db *database.Database) (handled, checkAlerts bool,
 }
 
 func GetDiskChartSingle(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, start, end time.Time) (
+	endpoint bson.ObjectID, start, end time.Time) (
 	chartData ChartData, err error) {
 
 	coll := db.EndpointsDisk()
@@ -116,15 +115,12 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 
 	cursor, err := coll.Find(
 		c,
-		&bson.M{
+		bson.M{
 			"e": endpoint,
 			"t": timeQuery,
 		},
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"t", 1},
-			},
-		},
+		options.Find().
+			SetSort(bson.D{{"t", 1}}),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -158,7 +154,7 @@ func GetDiskChartSingle(c context.Context, db *database.Database,
 }
 
 func GetDiskChart(c context.Context, db *database.Database,
-	endpoint primitive.ObjectID, start, end time.Time,
+	endpoint bson.ObjectID, start, end time.Time,
 	interval time.Duration) (chartData ChartData, err error) {
 
 	if interval == 1*time.Minute {

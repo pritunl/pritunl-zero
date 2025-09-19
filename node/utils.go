@@ -1,13 +1,12 @@
 package node
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
-func Get(db *database.Database, nodeId primitive.ObjectID) (
+func Get(db *database.Database, nodeId bson.ObjectID) (
 	nde *Node, err error) {
 
 	coll := db.Nodes()
@@ -98,13 +97,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	cursor, err := coll.Find(
 		db,
 		query,
-		&options.FindOptions{
-			Sort: &bson.D{
-				{"name", 1},
-			},
-			Skip:  &skip,
-			Limit: &pageCount,
-		},
+		options.Find().
+			SetSort(bson.D{{"name", 1}}).
+			SetSkip(skip).
+			SetLimit(pageCount),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -133,7 +129,7 @@ func GetAllPaged(db *database.Database, query *bson.M,
 	return
 }
 
-func Remove(db *database.Database, nodeId primitive.ObjectID) (err error) {
+func Remove(db *database.Database, nodeId bson.ObjectID) (err error) {
 	coll := db.Nodes()
 
 	_, err = coll.DeleteOne(db, &bson.M{

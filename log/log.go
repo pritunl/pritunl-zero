@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/event"
@@ -14,7 +14,7 @@ import (
 var published = false
 
 type Entry struct {
-	Id        primitive.ObjectID     `bson:"_id,omitempty" json:"id"`
+	Id        bson.ObjectID          `bson:"_id,omitempty" json:"id"`
 	Level     string                 `bson:"level" json:"level"`
 	Timestamp time.Time              `bson:"timestamp" json:"timestamp"`
 	Message   string                 `bson:"message" json:"message"`

@@ -4,14 +4,13 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
-func Get(db *database.Database, userId primitive.ObjectID) (
+func Get(db *database.Database, userId bson.ObjectID) (
 	usr *User, err error) {
 
 	coll := db.Users()
@@ -25,7 +24,7 @@ func Get(db *database.Database, userId primitive.ObjectID) (
 	return
 }
 
-func GetUpdate(db *database.Database, userId primitive.ObjectID) (
+func GetUpdate(db *database.Database, userId bson.ObjectID) (
 	usr *User, err error) {
 
 	coll := db.Users()
@@ -112,11 +111,8 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	coll := db.Users()
 	users = []*User{}
 
-	opts := options.FindOptions{
-		Sort: &bson.D{
-			{"username", 1},
-		},
-	}
+	opts := options.Find().
+		SetSort(bson.D{{"username", 1}})
 
 	if pageCount != 0 {
 		if len(*query) == 0 {
@@ -139,14 +135,13 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 		}
 		page = min(page, maxPage)
 		skip := min(page*pageCount, count)
-		opts.Skip = &skip
-		opts.Limit = &pageCount
+		opts.SetSkip(skip).SetLimit(pageCount)
 	}
 
 	cursor, err := coll.Find(
 		db,
 		query,
-		&opts,
+		opts,
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -174,12 +169,11 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 	return
 }
 
-func Remove(db *database.Database, userIds []primitive.ObjectID) (
+func Remove(db *database.Database, userIds []bson.ObjectID) (
 	errData *errortypes.ErrorData, err error) {
 
 	coll := db.Users()
-	opts := &options.CountOptions{}
-	opts.SetLimit(1)
+	opts := options.Count().SetLimit(1)
 
 	count, err := coll.CountDocuments(
 		db,
@@ -243,12 +237,11 @@ func Count(db *database.Database) (count int64, err error) {
 	return
 }
 
-func hasSuperSkip(db *database.Database, skipId primitive.ObjectID) (
+func hasSuperSkip(db *database.Database, skipId bson.ObjectID) (
 	exists bool, err error) {
 
 	coll := db.Users()
-	opts := &options.CountOptions{}
-	opts.SetLimit(1)
+	opts := options.Count().SetLimit(1)
 
 	count, err := coll.CountDocuments(
 		db,

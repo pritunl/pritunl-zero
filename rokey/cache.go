@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 )
 
 var (
-	cache         = map[primitive.ObjectID]*Rokey{}
+	cache         = map[bson.ObjectID]*Rokey{}
 	cacheLock     = sync.RWMutex{}
 	cacheTime     = map[string]*Rokey{}
 	cacheTimeLock = sync.RWMutex{}
@@ -25,7 +25,7 @@ func GetCache(typ string, timeblock time.Time) *Rokey {
 	return nil
 }
 
-func GetCacheId(typ string, rkeyId primitive.ObjectID) *Rokey {
+func GetCacheId(typ string, rkeyId bson.ObjectID) *Rokey {
 	cacheLock.RLock()
 	rkey := cache[rkeyId]
 	cacheLock.RUnlock()

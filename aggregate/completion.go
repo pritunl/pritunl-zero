@@ -1,9 +1,8 @@
 package aggregate
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/node"
@@ -20,9 +19,8 @@ func get(db *database.Database, coll *database.Collection,
 	query, projection *bson.M, new func() interface{},
 	add func(interface{})) (err error) {
 
-	cursor, err := coll.Find(db, query, &options.FindOptions{
-		Projection: projection,
-	})
+	cursor, err := coll.Find(db, query, options.Find().
+		SetProjection(projection))
 	if err != nil {
 		err = database.ParseError(err)
 		return
@@ -43,7 +41,7 @@ func get(db *database.Database, coll *database.Collection,
 	return
 }
 
-func GetCompletion(db *database.Database, orgId primitive.ObjectID) (
+func GetCompletion(db *database.Database, orgId bson.ObjectID) (
 	cmpl *Completion, err error) {
 
 	cmpl = &Completion{}

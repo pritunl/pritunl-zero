@@ -5,8 +5,7 @@ import (
 	"os"
 
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/acme"
 	"github.com/pritunl/pritunl-zero/certificate"
 	"github.com/pritunl/pritunl-zero/database"
@@ -189,7 +188,7 @@ var UpsertCertificateCmd = &cobra.Command{
 
 			fields.Add("acme_secret")
 			if acmeSecret == "" {
-				cert.AcmeSecret = primitive.NilObjectID
+				cert.AcmeSecret = bson.NilObjectID
 			} else {
 				secr, e := secret.GetOne(db, &bson.M{
 					"name": acmeSecret,

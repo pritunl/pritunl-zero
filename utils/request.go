@@ -14,7 +14,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
 )
 
@@ -163,15 +163,15 @@ func FormatHostPort(hostname string, port int) string {
 	return fmt.Sprintf("%s:%d", hostname, port)
 }
 
-func ParseObjectId(strId string) (objId primitive.ObjectID, ok bool) {
+func ParseObjectId(strId string) (objId bson.ObjectID, ok bool) {
 	if strId == "" {
-		objId = primitive.NilObjectID
+		objId = bson.NilObjectID
 		return
 	}
 
-	objectId, err := primitive.ObjectIDFromHex(strId)
+	objectId, err := bson.ObjectIDFromHex(strId)
 	if err != nil {
-		objId = primitive.NilObjectID
+		objId = bson.NilObjectID
 		return
 	}
 
@@ -180,15 +180,15 @@ func ParseObjectId(strId string) (objId primitive.ObjectID, ok bool) {
 	return
 }
 
-func ObjectIdHex(strId string) (objId primitive.ObjectID) {
+func ObjectIdHex(strId string) (objId bson.ObjectID) {
 	if strId == "" {
-		objId = primitive.NilObjectID
+		objId = bson.NilObjectID
 		return
 	}
 
-	objectId, err := primitive.ObjectIDFromHex(strId)
+	objectId, err := bson.ObjectIDFromHex(strId)
 	if err != nil {
-		objId = primitive.NilObjectID
+		objId = bson.NilObjectID
 		return
 	}
 

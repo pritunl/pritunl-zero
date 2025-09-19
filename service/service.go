@@ -7,8 +7,7 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/requires"
@@ -32,21 +31,21 @@ type WhitelistPath struct {
 }
 
 type Service struct {
-	Id                 primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name               string             `bson:"name" json:"name"`
-	Type               string             `bson:"type" json:"type"`
-	Http2              bool               `bson:"http2" json:"http2"`
-	ShareSession       bool               `bson:"share_session" json:"share_session"`
-	LogoutPath         string             `bson:"logout_path" json:"logout_path"`
-	WebSockets         bool               `bson:"websockets" json:"websockets"`
-	DisableCsrfCheck   bool               `bson:"disable_csrf_check" json:"disable_csrf_check"`
-	ClientAuthority    primitive.ObjectID `bson:"client_authority,omitempty" json:"client_authority"`
-	Domains            []*Domain          `bson:"domains" json:"domains"`
-	Roles              []string           `bson:"roles" json:"roles"`
-	Servers            []*Server          `bson:"servers" json:"servers"`
-	WhitelistNetworks  []string           `bson:"whitelist_networks" json:"whitelist_networks"`
-	WhitelistPaths     []*WhitelistPath   `bson:"whitelist_paths" json:"whitelist_paths"`
-	WhitelistOptions   bool               `bson:"whitelist_options" json:"whitelist_options"`
+	Id                 bson.ObjectID    `bson:"_id,omitempty" json:"id"`
+	Name               string           `bson:"name" json:"name"`
+	Type               string           `bson:"type" json:"type"`
+	Http2              bool             `bson:"http2" json:"http2"`
+	ShareSession       bool             `bson:"share_session" json:"share_session"`
+	LogoutPath         string           `bson:"logout_path" json:"logout_path"`
+	WebSockets         bool             `bson:"websockets" json:"websockets"`
+	DisableCsrfCheck   bool             `bson:"disable_csrf_check" json:"disable_csrf_check"`
+	ClientAuthority    bson.ObjectID    `bson:"client_authority,omitempty" json:"client_authority"`
+	Domains            []*Domain        `bson:"domains" json:"domains"`
+	Roles              []string         `bson:"roles" json:"roles"`
+	Servers            []*Server        `bson:"servers" json:"servers"`
+	WhitelistNetworks  []string         `bson:"whitelist_networks" json:"whitelist_networks"`
+	WhitelistPaths     []*WhitelistPath `bson:"whitelist_paths" json:"whitelist_paths"`
+	WhitelistOptions   bool             `bson:"whitelist_options" json:"whitelist_options"`
 	logoutPathExtMatch int
 }
 

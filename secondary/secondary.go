@@ -13,8 +13,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/device"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -40,8 +39,8 @@ type Secondary struct {
 	usr         *user.User                  `bson:"-"`
 	provider    *settings.SecondaryProvider `bson:"-"`
 	Id          string                      `bson:"_id"`
-	ProviderId  primitive.ObjectID          `bson:"provider_id,omitempty"`
-	UserId      primitive.ObjectID          `bson:"user_id"`
+	ProviderId  bson.ObjectID               `bson:"provider_id,omitempty"`
+	UserId      bson.ObjectID               `bson:"user_id"`
 	Type        string                      `bson:"type"`
 	ChallengeId string                      `bson:"challenge_id"`
 	Timestamp   time.Time                   `bson:"timestamp"`

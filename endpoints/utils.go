@@ -1,15 +1,14 @@
 package endpoints
 
 import (
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
-	"github.com/pritunl/mongo-go-driver/mongo/options"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
+	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/database"
 )
 
 type endpointName struct {
-	Id   primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name string             `bson:"name" json:"name"`
+	Id   bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name string        `bson:"name" json:"name"`
 }
 
 func getRolesName(db *database.Database, roles []string) (
@@ -24,16 +23,13 @@ func getRolesName(db *database.Database, roles []string) (
 
 	cursor, err := coll.Find(
 		db,
-		&bson.M{
-			"roles": &bson.M{
+		bson.M{
+			"roles": bson.M{
 				"$in": roles,
 			},
 		},
-		&options.FindOptions{
-			Projection: &bson.D{
-				{"name", 1},
-			},
-		},
+		options.Find().
+			SetProjection(bson.D{{"name", 1}}),
 	)
 	defer cursor.Close(db)
 
@@ -58,9 +54,9 @@ func getRolesName(db *database.Database, roles []string) (
 }
 
 func getRolesNameMapped(db *database.Database, roles []string) (
-	endptsMap map[primitive.ObjectID]string, err error) {
+	endptsMap map[bson.ObjectID]string, err error) {
 
-	endptsMap = map[primitive.ObjectID]string{}
+	endptsMap = map[bson.ObjectID]string{}
 
 	endpts, err := getRolesName(db, roles)
 	if err != nil {

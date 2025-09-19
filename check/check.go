@@ -5,33 +5,32 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Check struct {
-	Id         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name       string             `bson:"name" json:"name"`
-	Roles      []string           `bson:"roles" json:"roles"`
-	Frequency  int                `bson:"frequency" json:"frequency"`
-	Type       string             `bson:"type" json:"type"`
-	Targets    []string           `bson:"targets" json:"targets"`
-	Timeout    int                `bson:"timeout" json:"timeout"`
-	Method     string             `bson:"method" json:"method"`
-	StatusCode int                `bson:"status_code" json:"status_code"`
-	Headers    []*Header          `bson:"headers" json:"headers"`
-	States     []*State           `bson:"states" json:"states"`
+	Id         bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Roles      []string      `bson:"roles" json:"roles"`
+	Frequency  int           `bson:"frequency" json:"frequency"`
+	Type       string        `bson:"type" json:"type"`
+	Targets    []string      `bson:"targets" json:"targets"`
+	Timeout    int           `bson:"timeout" json:"timeout"`
+	Method     string        `bson:"method" json:"method"`
+	StatusCode int           `bson:"status_code" json:"status_code"`
+	Headers    []*Header     `bson:"headers" json:"headers"`
+	States     []*State      `bson:"states" json:"states"`
 }
 
 type State struct {
-	Endpoint  primitive.ObjectID `bson:"e" json:"e"`
-	Timestamp time.Time          `bson:"t" json:"t"`
-	Targets   []string           `bson:"x" json:"x"`
-	Latency   []int              `bson:"l" json:"l"`
-	Errors    []string           `bson:"r" json:"r"`
+	Endpoint  bson.ObjectID `bson:"e" json:"e"`
+	Timestamp time.Time     `bson:"t" json:"t"`
+	Targets   []string      `bson:"x" json:"x"`
+	Latency   []int         `bson:"l" json:"l"`
+	Errors    []string      `bson:"r" json:"r"`
 }
 
 type Header struct {

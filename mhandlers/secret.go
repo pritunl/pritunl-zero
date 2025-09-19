@@ -9,8 +9,7 @@ import (
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/demo"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -20,13 +19,13 @@ import (
 )
 
 type secretData struct {
-	Id      primitive.ObjectID `json:"id"`
-	Name    string             `json:"name"`
-	Comment string             `json:"comment"`
-	Type    string             `json:"type"`
-	Key     string             `json:"key"`
-	Value   string             `json:"value"`
-	Region  string             `json:"region"`
+	Id      bson.ObjectID `json:"id"`
+	Name    string        `json:"name"`
+	Comment string        `json:"comment"`
+	Type    string        `json:"type"`
+	Key     string        `json:"key"`
+	Value   string        `json:"value"`
+	Region  string        `json:"region"`
 }
 
 type secretsData struct {
@@ -183,7 +182,7 @@ func secretsDelete(c *gin.Context) {
 	}
 
 	db := c.MustGet("db").(*database.Database)
-	data := []primitive.ObjectID{}
+	data := []bson.ObjectID{}
 
 	err := c.Bind(&data)
 	if err != nil {

@@ -5,22 +5,22 @@ import (
 
 	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type Secret struct {
-	Id         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name       string             `bson:"name" json:"name"`
-	Comment    string             `bson:"comment" json:"comment"`
-	Type       string             `bson:"type" json:"type"`
-	Key        string             `bson:"key" json:"key"`
-	Value      string             `bson:"value" json:"value"`
-	Region     string             `bson:"region" json:"region"`
-	PublicKey  string             `bson:"public_key" json:"public_key"`
-	PrivateKey string             `bson:"private_key" json:"-"`
+	Id         bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Comment    string        `bson:"comment" json:"comment"`
+	Type       string        `bson:"type" json:"type"`
+	Key        string        `bson:"key" json:"key"`
+	Value      string        `bson:"value" json:"value"`
+	Region     string        `bson:"region" json:"region"`
+	PublicKey  string        `bson:"public_key" json:"public_key"`
+	PrivateKey string        `bson:"private_key" json:"-"`
 }
 
 func (c *Secret) Validate(db *database.Database) (

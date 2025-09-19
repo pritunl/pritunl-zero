@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dropbox/godropbox/errors"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -57,7 +57,7 @@ var AddCmd = &cobra.Command{
 
 		Init()
 
-		objId, err := primitive.ObjectIDFromHex(config.Config.NodeId)
+		objId, err := bson.ObjectIDFromHex(config.Config.NodeId)
 		if err != nil {
 			err = &errortypes.ParseError{
 				errors.Wrap(err, "cmd: Failed to parse ObjectId"),

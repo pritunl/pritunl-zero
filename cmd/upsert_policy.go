@@ -6,8 +6,7 @@ import (
 	"slices"
 
 	"github.com/dropbox/godropbox/container/set"
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/authority"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/event"
@@ -251,7 +250,7 @@ var UpsertPolicyCmd = &cobra.Command{
 		adminSecondary, _ := cmd.Flags().GetString("admin-secondary")
 		if adminSecondary != "" {
 			fields.Add("admin_secondary")
-			adminSecondaryId, e := primitive.ObjectIDFromHex(adminSecondary)
+			adminSecondaryId, e := bson.ObjectIDFromHex(adminSecondary)
 			if e != nil {
 				fmt.Fprintf(
 					os.Stderr,
@@ -266,7 +265,7 @@ var UpsertPolicyCmd = &cobra.Command{
 		userSecondary, _ := cmd.Flags().GetString("user-secondary")
 		if userSecondary != "" {
 			fields.Add("user_secondary")
-			userSecondaryId, e := primitive.ObjectIDFromHex(userSecondary)
+			userSecondaryId, e := bson.ObjectIDFromHex(userSecondary)
 			if e != nil {
 				fmt.Fprintf(
 					os.Stderr,
@@ -281,7 +280,7 @@ var UpsertPolicyCmd = &cobra.Command{
 		proxySecondary, _ := cmd.Flags().GetString("proxy-secondary")
 		if proxySecondary != "" {
 			fields.Add("proxy_secondary")
-			proxySecondaryId, e := primitive.ObjectIDFromHex(proxySecondary)
+			proxySecondaryId, e := bson.ObjectIDFromHex(proxySecondary)
 			if e != nil {
 				fmt.Fprintf(
 					os.Stderr,
@@ -296,7 +295,7 @@ var UpsertPolicyCmd = &cobra.Command{
 		authoritySecondary, _ := cmd.Flags().GetString("authority-secondary")
 		if authoritySecondary != "" {
 			fields.Add("authority_secondary")
-			authoritySecondaryId, e := primitive.ObjectIDFromHex(
+			authoritySecondaryId, e := bson.ObjectIDFromHex(
 				authoritySecondary)
 			if e != nil {
 				fmt.Fprintf(

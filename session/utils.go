@@ -4,8 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pritunl/mongo-go-driver/bson"
-	"github.com/pritunl/mongo-go-driver/bson/primitive"
+	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/useragent"
@@ -124,7 +123,7 @@ func GetUpdate(db *database.Database, sessId string, r *http.Request,
 	return
 }
 
-func GetAll(db *database.Database, userId primitive.ObjectID,
+func GetAll(db *database.Database, userId bson.ObjectID,
 	includeRemoved bool) (sessions []*Session, err error) {
 
 	coll := db.Sessions()
@@ -165,7 +164,7 @@ func GetAll(db *database.Database, userId primitive.ObjectID,
 	return
 }
 
-func New(db *database.Database, r *http.Request, userId primitive.ObjectID,
+func New(db *database.Database, r *http.Request, userId bson.ObjectID,
 	typ string) (sess *Session, sig string, err error) {
 
 	id, err := utils.RandStr(32)
@@ -224,7 +223,7 @@ func Remove(db *database.Database, id string) (err error) {
 	return
 }
 
-func RemoveAll(db *database.Database, userId primitive.ObjectID) (err error) {
+func RemoveAll(db *database.Database, userId bson.ObjectID) (err error) {
 	coll := db.Sessions()
 
 	_, err = coll.UpdateMany(db, &bson.M{
