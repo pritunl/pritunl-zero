@@ -7,20 +7,11 @@ ln -sf ./esm/* ./
 cd ../../../../
 ```
 
-#### lint
-
-```
-tslint -c tslint.json app/*.ts*
-tslint -c tslint.json app/**/*.ts*
-tslint -c tslint.json uapp/*.ts*
-tslint -c tslint.json uapp/**/*.ts*
-```
-
 ### development
 
 ```
-tsc --watch
-webpack-cli --config webpack.dev.config --progress --color --watch
+./node_modules/.bin/tsc --watch
+./node_modules/.bin/webpack-cli --config webpack.dev.config --progress --color --watch
 ```
 
 #### production
