@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Refactor database code
+
 Version 1.0.3565.94 2025-08-28
 ------------------------------
 
