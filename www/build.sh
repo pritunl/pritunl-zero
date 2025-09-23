@@ -1,4 +1,4 @@
-tsc
+./node_modules/.bin/tsc
 
 # development
 rm -rf dist-dev/static
@@ -23,8 +23,7 @@ cp static/RobotoMono-Regular.ttf dist-dev/static/
 cp static/RobotoMono-Medium.ttf dist-dev/static/
 sed -i 's|../../resources/icons/||g' dist-dev/static/blueprint-icons.css
 
-npm link webpack
-webpack --config webpack.dev.config
+./node_modules/.bin/webpack --config webpack.dev.config
 
 cp index.html dist-dev/index.html
 cp uindex.html dist-dev/uindex.html
@@ -53,7 +52,7 @@ cp static/RobotoMono-Regular.ttf dist/static/
 cp static/RobotoMono-Medium.ttf dist/static/
 sed -i 's|../../resources/icons/||g' dist/static/blueprint-icons.css
 
-webpack
+./node_modules/.bin/webpack
 
 cp index_dist.html dist/index.html
 cp uindex_dist.html dist/uindex.html
