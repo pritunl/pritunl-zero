@@ -11,10 +11,10 @@ import (
 )
 
 func FindProject(fields ...string) *options.FindOptionsBuilder {
-	prcj := []bson.D{}
+	prcj := bson.D{}
 
 	for _, field := range fields {
-		prcj = append(prcj, bson.D{{field, 1}})
+		prcj = append(prcj, bson.E{Key: field, Value: 1})
 	}
 
 	opts := options.Find()
@@ -24,10 +24,10 @@ func FindProject(fields ...string) *options.FindOptionsBuilder {
 }
 
 func FindOneProject(fields ...string) *options.FindOneOptionsBuilder {
-	prcj := []bson.D{}
+	prcj := bson.D{}
 
 	for _, field := range fields {
-		prcj = append(prcj, bson.D{{field, 1}})
+		prcj = append(prcj, bson.E{Key: field, Value: 1})
 	}
 
 	opts := options.FindOne()
