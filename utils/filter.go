@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/dropbox/godropbox/container/set"
+	"strings"
 )
 
 const nameSafeLimit = 128
@@ -81,12 +82,12 @@ func FilterName(s string) string {
 		s = s[:nameSafeLimit]
 	}
 
-	ns := ""
+	var ns strings.Builder
 	for _, c := range s {
 		if safeChars.Contains(c) {
-			ns += string(c)
+			ns.WriteString(string(c))
 		}
 	}
 
-	return ns
+	return ns.String()
 }
