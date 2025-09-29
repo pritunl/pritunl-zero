@@ -2,6 +2,7 @@ package twilio
 
 import (
 	"github.com/dropbox/godropbox/container/set"
+	"strings"
 )
 
 var safeCharsPhone = set.NewSet(
@@ -172,14 +173,14 @@ func filterStr(s string, n int, safe set.Set) string {
 		s = s[:n]
 	}
 
-	ns := ""
+	var ns strings.Builder
 	for _, c := range s {
 		if safe.Contains(c) {
-			ns += string(c)
+			ns.WriteString(string(c))
 		}
 	}
 
-	return ns
+	return ns.String()
 }
 
 func FilterStrPhone(s string, n int) string {

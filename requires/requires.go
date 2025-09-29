@@ -5,6 +5,7 @@ import (
 	"container/list"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/dropbox/godropbox/container/set"
 )
@@ -78,16 +79,17 @@ Loop:
 		i := modules.Front()
 		for i != nil {
 			module := i.Value.(*Module)
-			line := module.name
+			var line strings.Builder
+			line.WriteString(module.name)
 
 			for val := range module.before.Iter() {
-				line += fmt.Sprintf("   before: %s", val.(string))
+				line.WriteString(fmt.Sprintf("   before: %s", val.(string)))
 			}
 			for val := range module.after.Iter() {
-				line += fmt.Sprintf("   after: %s", val.(string))
+				line.WriteString(fmt.Sprintf("   after: %s", val.(string)))
 			}
 
-			fmt.Fprint(os.Stderr, line+"\n")
+			fmt.Fprint(os.Stderr, line.String()+"\n")
 			i = i.Next()
 		}
 
