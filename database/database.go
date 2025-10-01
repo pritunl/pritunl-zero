@@ -1075,8 +1075,8 @@ func addCollections() (err error) {
 			bson.D{
 				{"create", "events"},
 				{"capped", true},
-				{"max", 1000},
-				{"size", 5242880},
+				{"max", 5000},
+				{"size", 20971520},
 			},
 		).Err()
 		if err != nil {
