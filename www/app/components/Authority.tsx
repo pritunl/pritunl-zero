@@ -139,7 +139,7 @@ export default class Authority extends React.Component<Props, {}> {
 			<div className="bp5-cell" style={css.item}>
 				<span
 					style={css.icon}
-					className="bp5-icon-standard bp5-text-muted bp5-icon-code"
+					className="bp5-icon-standard bp5-text-muted bp5-icon-key"
 				/>
 				{authority.info?.key_alg || "Unknown"}
 			</div>
