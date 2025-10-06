@@ -333,7 +333,7 @@ export default class Authorities extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!authoritiesDom.length}
-				iconClass="bp5-icon-ip-address"
+				iconClass="bp5-icon-office"
 				title="No authorities"
 				description="Add a new authority to get started."
 			/>
