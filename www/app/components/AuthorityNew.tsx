@@ -455,6 +455,17 @@ export default class AuthorityDetailed extends React.Component<Props, State> {
 						>
 							<option value="local">Local</option>
 						</PageSelect>
+						<PageSelect
+							label="Algorithm"
+							help="Authority algorithm"
+							value={authority.algorithm}
+							onChange={(val): void => {
+								this.set('algorithm', val);
+							}}
+						>
+							<option value="rsa4096">RSA4096</option>
+							<option value="ecp384">ECP384</option>
+						</PageSelect>
 						<PageSwitch
 							label="Host certificates"
 							help="Allow servers to validate and sign SSH host keys. This should be disabled for most configurations."
