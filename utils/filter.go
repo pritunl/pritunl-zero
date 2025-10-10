@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/dropbox/godropbox/container/set"
 	"strings"
+
+	"github.com/dropbox/godropbox/container/set"
 )
 
 const nameSafeLimit = 128

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"container/list"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"runtime/debug"
 	"strings"
@@ -224,7 +224,7 @@ func IsSystemd() bool {
 		return *isSystemd
 	}
 
-	data, err := ioutil.ReadFile("/proc/1/cmdline")
+	data, err := os.ReadFile("/proc/1/cmdline")
 	if err == nil {
 		parts := strings.Split(string(data), "\x00")
 		if len(parts) > 0 && strings.Contains(
@@ -236,7 +236,7 @@ func IsSystemd() bool {
 		}
 	}
 
-	data, err = ioutil.ReadFile("/proc/1/comm")
+	data, err = os.ReadFile("/proc/1/comm")
 	if err == nil {
 		if strings.Contains(strings.ToLower(string(data)), "systemd") {
 			isSysd := true

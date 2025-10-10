@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"io/ioutil"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -194,7 +194,7 @@ func LoadAverage() (ld *LoadStat, err error) {
 
 	ld = &LoadStat{}
 
-	line, err := ioutil.ReadFile("/proc/loadavg")
+	line, err := os.ReadFile("/proc/loadavg")
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrap(err, "utils: Failed to read loadavg"),

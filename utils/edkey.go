@@ -31,9 +31,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/* Writes ed25519 private keys into the new OpenSSH private key format.
+/*
+	Writes ed25519 private keys into the new OpenSSH private key format.
+
 I have no idea why this isn't implemented anywhere yet, you can do seemingly
-everything except write it to disk in the OpenSSH private key format. */
+everything except write it to disk in the OpenSSH private key format.
+*/
 func MarshalED25519PrivateKey(key ed25519.PrivateKey) []byte {
 	// Add our key header (followed by a null byte)
 	magic := append([]byte("openssh-key-v1"), 0)

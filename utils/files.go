@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bufio"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -106,7 +105,7 @@ func ExistsRemove(pth string) (err error) {
 }
 
 func ReadExists(path string) (data string, err error) {
-	dataByt, err := ioutil.ReadFile(path)
+	dataByt, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			err = nil
@@ -166,7 +165,7 @@ func ContainsDir(pth string) (hasDir bool, err error) {
 		return
 	}
 
-	entries, err := ioutil.ReadDir(pth)
+	entries, err := os.ReadDir(pth)
 	if err != nil {
 		err = &errortypes.ReadError{
 			errors.Wrapf(err, "queue: Failed to read dir %s", pth),
