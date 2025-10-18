@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin/render"
 	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -344,6 +345,58 @@ func GetOrigin(r *http.Request) string {
 	}
 
 	return origin
+}
+
+func CheckRequestN(resp *http.Response, msg string, codes []int) (err error) {
+	for _, code := range codes {
+		if resp.StatusCode == code {
+			return
+		}
+	}
+
+	bodyStr := ""
+	bodyBytes, readErr := io.ReadAll(io.LimitReader(resp.Body, 10*1024))
+	if readErr != nil {
+		bodyStr = fmt.Sprintf("[%v]", readErr)
+	} else {
+		bodyStr = string(bodyBytes)
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"body":        bodyStr,
+		"status_code": resp.StatusCode,
+		"message":     msg,
+	}).Error(msg)
+
+	err = &errortypes.RequestError{
+		errors.Newf("request: Response status error %d", resp.StatusCode),
+	}
+	return
+}
+
+func CheckRequest(resp *http.Response, msg string) (err error) {
+	if resp.StatusCode == 200 {
+		return
+	}
+
+	bodyStr := ""
+	bodyBytes, readErr := io.ReadAll(io.LimitReader(resp.Body, 10*1024))
+	if readErr != nil {
+		bodyStr = fmt.Sprintf("[%v]", readErr)
+	} else {
+		bodyStr = string(bodyBytes)
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"body":        bodyStr,
+		"status_code": resp.StatusCode,
+		"message":     msg,
+	}).Error(msg)
+
+	err = &errortypes.RequestError{
+		errors.Newf("request: Response status error %d", resp.StatusCode),
+	}
+	return
 }
 
 func init() {
