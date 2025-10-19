@@ -81,10 +81,8 @@ func AzureRequest(db *database.Database, location, query string,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Newf("auth: Auth server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Azure server error")
+	if err != nil {
 		return
 	}
 
@@ -173,10 +171,8 @@ func azureGetToken(provider *settings.Provider) (token string, err error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Azure server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Azure server error")
+	if err != nil {
 		return
 	}
 
@@ -272,10 +268,8 @@ func AzureRoles(provider *settings.Provider, username string) (
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != 200 {
-			err = &errortypes.RequestError{
-				errors.Newf("auth: Azure server error %d", resp.StatusCode),
-			}
+		err = utils.CheckRequest(resp, "auth: Azure server error")
+		if err != nil {
 			return
 		}
 
@@ -361,10 +355,8 @@ func AzureSync(provider *settings.Provider, username string) (
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Newf("auth: Azure server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Azure server error")
+	if err != nil {
 		return
 	}
 
