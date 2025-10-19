@@ -75,10 +75,8 @@ func GoogleRequest(db *database.Database, location, query string) (
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
