@@ -79,10 +79,8 @@ func AuthZeroRequest(db *database.Database, location, query string,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
@@ -342,10 +340,8 @@ func authZeroGetToken(provider *settings.Provider) (token string, err error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
@@ -412,10 +408,8 @@ func AuthZeroRoles(provider *settings.Provider, username string) (
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
@@ -501,10 +495,8 @@ func AuthZeroSync(db *database.Database, usr *user.User,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Auth0 server error %d", resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
