@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
@@ -18,6 +16,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 var (
@@ -114,22 +113,8 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: Okta users request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: Okta users request bad status"),
-		}
+	err = utils.CheckRequest(resp, "secondary: Okta request error")
+	if err != nil {
 		return
 	}
 
@@ -171,22 +156,8 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != 200 {
-			body := ""
-			data, _ := ioutil.ReadAll(resp.Body)
-			if data != nil {
-				body = string(data)
-			}
-
-			logrus.WithFields(logrus.Fields{
-				"username":    usr.Username,
-				"status_code": resp.StatusCode,
-				"body":        body,
-			}).Info("secondary: Okta users request bad status")
-
-			err = &errortypes.RequestError{
-				errors.New("secondary: Okta users request bad status"),
-			}
+		err = utils.CheckRequest(resp, "secondary: Okta request error")
+		if err != nil {
 			return
 		}
 
@@ -252,22 +223,8 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: Okta factors request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: Okta factors request bad status"),
-		}
+	err = utils.CheckRequest(resp, "secondary: Okta request error")
+	if err != nil {
 		return
 	}
 
@@ -280,7 +237,7 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 		return
 	}
 
-	if factors == nil || len(factors) == 0 {
+	if len(factors) == 0 {
 		err = &errortypes.NotFoundError{
 			errors.New("secondary: Okta user has no factors"),
 		}
@@ -358,24 +315,11 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 && resp.StatusCode != 201 &&
-		resp.StatusCode != 403 {
-
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: Okta verify request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: Okta verify request bad status"),
-		}
+	err = utils.CheckRequestN(
+		resp, "secondary: Okta request error",
+		[]int{200, 201},
+	)
+	if err != nil {
 		return
 	}
 
@@ -440,22 +384,11 @@ func okta(db *database.Database, provider *settings.SecondaryProvider,
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != 200 && resp.StatusCode != 201 {
-				body := ""
-				data, _ := ioutil.ReadAll(resp.Body)
-				if data != nil {
-					body = string(data)
-				}
-
-				logrus.WithFields(logrus.Fields{
-					"username":    usr.Username,
-					"status_code": resp.StatusCode,
-					"body":        body,
-				}).Info("secondary: Okta verify request bad status")
-
-				err = &errortypes.RequestError{
-					errors.New("secondary: Okta verify request bad status"),
-				}
+			err = utils.CheckRequestN(
+				resp, "secondary: Okta request error",
+				[]int{200, 201},
+			)
+			if err != nil {
 				return
 			}
 
