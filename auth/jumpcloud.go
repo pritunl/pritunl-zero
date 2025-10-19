@@ -11,6 +11,7 @@ import (
 	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -69,11 +70,8 @@ func jumpcloudCheckApp(provider *settings.Provider, userId string) (
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Jumpcloud server error %d",
-				resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
@@ -134,11 +132,8 @@ func JumpcloudSync(db *database.Database, usr *user.User,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		err = &errortypes.RequestError{
-			errors.Wrapf(err, "auth: Jumpcloud server error %d",
-				resp.StatusCode),
-		}
+	err = utils.CheckRequest(resp, "auth: Auth server error")
+	if err != nil {
 		return
 	}
 
