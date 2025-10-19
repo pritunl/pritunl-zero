@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/audit"
 	"github.com/pritunl/pritunl-zero/database"
@@ -18,6 +16,7 @@ import (
 	"github.com/pritunl/pritunl-zero/node"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/pritunl/pritunl-zero/user"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 var (
@@ -162,22 +161,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: OneLogin auth request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: OneLogin auth request bad status"),
-		}
+	err = utils.CheckRequest(resp, "secondary: OneLogin request error")
+	if err != nil {
 		return
 	}
 
@@ -225,22 +210,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: OneLogin users request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: OneLogin users request bad status"),
-		}
+	err = utils.CheckRequest(resp, "secondary: OneLogin request error")
+	if err != nil {
 		return
 	}
 
@@ -406,22 +377,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body := ""
-		data, _ := ioutil.ReadAll(resp.Body)
-		if data != nil {
-			body = string(data)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"username":    usr.Username,
-			"status_code": resp.StatusCode,
-			"body":        body,
-		}).Info("secondary: OneLogin devices request bad status")
-
-		err = &errortypes.RequestError{
-			errors.New("secondary: OneLogin devices request bad status"),
-		}
+	err = utils.CheckRequest(resp, "secondary: OneLogin request error")
+	if err != nil {
 		return
 	}
 
@@ -522,22 +479,8 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != 200 {
-			body := ""
-			data, _ := ioutil.ReadAll(resp.Body)
-			if data != nil {
-				body = string(data)
-			}
-
-			logrus.WithFields(logrus.Fields{
-				"username":    usr.Username,
-				"status_code": resp.StatusCode,
-				"body":        body,
-			}).Info("secondary: OneLogin activate request bad status")
-
-			err = &errortypes.RequestError{
-				errors.New("secondary: OneLogin activate request bad status"),
-			}
+		err = utils.CheckRequest(resp, "secondary: OneLogin request error")
+		if err != nil {
 			return
 		}
 
@@ -649,22 +592,11 @@ func onelogin(db *database.Database, provider *settings.SecondaryProvider,
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != 200 && resp.StatusCode != 401 {
-			body := ""
-			data, _ := ioutil.ReadAll(resp.Body)
-			if data != nil {
-				body = string(data)
-			}
-
-			logrus.WithFields(logrus.Fields{
-				"username":    usr.Username,
-				"status_code": resp.StatusCode,
-				"body":        body,
-			}).Info("secondary: OneLogin verify request bad status")
-
-			err = &errortypes.RequestError{
-				errors.New("secondary: OneLogin verify request bad status"),
-			}
+		err = utils.CheckRequestN(
+			resp, "secondary: OneLogin verify request failed",
+			[]int{200, 401},
+		)
+		if err != nil {
 			return
 		}
 
