@@ -182,7 +182,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 		}
 
 		let acmeDomains = [
-			...cert.acme_domains,
+			...(cert.acme_domains || []),
 			'',
 		];
 
@@ -211,7 +211,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 		}
 
 		let acmeDomains = [
-			...cert.acme_domains,
+			...(cert.acme_domains || []),
 		];
 
 		acmeDomains[i] = state;
@@ -240,7 +240,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 		}
 
 		let acmeDomains = [
-			...cert.acme_domains,
+			...(cert.acme_domains || []),
 		];
 
 		acmeDomains.splice(i, 1);
