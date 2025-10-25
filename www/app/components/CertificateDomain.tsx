@@ -3,6 +3,7 @@ import * as React from 'react';
 
 interface Props {
 	domain: string;
+	disabled: boolean;
 	onChange: (state: string) => void;
 	onRemove: () => void;
 }
@@ -29,6 +30,7 @@ export default class CertificateDomain extends React.Component<Props, {}> {
 				<input
 					className="bp5-input"
 					style={css.domain}
+					disabled={this.props.disabled}
 					type="text"
 					autoCapitalize="off"
 					spellCheck={false}
@@ -41,6 +43,7 @@ export default class CertificateDomain extends React.Component<Props, {}> {
 			</div>
 			<button
 				className="bp5-button bp5-minimal bp5-intent-danger bp5-icon-remove"
+				disabled={this.props.disabled}
 				onClick={(): void => {
 					this.props.onRemove();
 				}}
