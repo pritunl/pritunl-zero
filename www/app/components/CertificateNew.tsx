@@ -291,7 +291,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 							}}
 						/>
 						<PageTextArea
-							readOnly={cert.type !== 'text'}
+							readOnly={cert.type && cert.type !== 'text'}
 							label="Private Key"
 							help="Certificate private key in PEM format"
 							placeholder="Private key"
@@ -302,7 +302,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 							}}
 						/>
 						<PageTextArea
-							readOnly={cert.type !== 'text'}
+							readOnly={cert.type && cert.type !== 'text'}
 							label="Certificate Chain"
 							help="Certificate followed by certificate chain in PEM format"
 							placeholder="Certificate chain"
