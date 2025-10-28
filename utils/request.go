@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -95,7 +94,7 @@ var httpErrCodes = map[int]string{
 }
 
 func CopyBody(r *http.Request) (buffer *bytes.Buffer, err error) {
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		err = &errortypes.ParseError{
 			errors.Wrap(err, "handler: Request read error"),
@@ -104,7 +103,7 @@ func CopyBody(r *http.Request) (buffer *bytes.Buffer, err error) {
 	}
 	_ = r.Body.Close()
 
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	r.Body = io.NopCloser(bytes.NewBuffer(body))
 	buffer = bytes.NewBuffer(body)
 
 	return
