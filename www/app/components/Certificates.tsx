@@ -69,7 +69,7 @@ export default class Certificates extends React.Component<{}, State> {
 		super(props, context);
 		this.state = {
 			certificates: CertificatesStore.certificates,
-			secrets: SecretsStore.secrets,
+			secrets: SecretsStore.secretsName,
 			filter: CertificatesStore.filter,
 			selected: {},
 			opened: {},
@@ -91,7 +91,7 @@ export default class Certificates extends React.Component<{}, State> {
 		CertificatesStore.addChangeListener(this.onChange);
 		SecretsStore.addChangeListener(this.onChange);
 		CertificateActions.sync();
-		SecretActions.sync();
+		SecretActions.syncNames();
 	}
 
 	componentWillUnmount(): void {
@@ -118,7 +118,7 @@ export default class Certificates extends React.Component<{}, State> {
 		this.setState({
 			...this.state,
 			certificates: CertificatesStore.certificates,
-			secrets: SecretsStore.secrets,
+			secrets: SecretsStore.secretsName,
 			filter: CertificatesStore.filter,
 			selected: selected,
 			opened: opened,
