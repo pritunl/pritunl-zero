@@ -18,12 +18,12 @@ found at [docs.pritunl.com](https://docs.pritunl.com/kb/zero)
 # Install Go
 sudo dnf -y install git-core
 
-wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
-echo "68097bd680839cbc9d464a0edce4f7c333975e27a90246890e9f1078c7e702ad go1.24.2.linux-amd64.tar.gz" | sha256sum -c -
+wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
+echo "7716a0d940a0f6ae8e1f3b3f4f36299dc53e31b16840dbd171254312c41ca12e go1.25.1.linux-amd64.tar.gz" | sha256sum -c -
 
 sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xf go1.24.2.linux-amd64.tar.gz
-rm -f go1.24.2.linux-amd64.tar.gz
+sudo tar -C /usr/local -xf go1.25.1.linux-amd64.tar.gz
+rm -f go1.25.1.linux-amd64.tar.gz
 
 tee -a ~/.bashrc << EOF
 export GOPATH=\$HOME/go
