@@ -76,7 +76,6 @@ const css = {
 		right: 0,
 		padding: '4px',
 		height: '39px',
-		backgroundColor: 'rgba(0, 0, 0, 0.13)',
 	} as React.CSSProperties,
 	label: {
 		width: '100%',
