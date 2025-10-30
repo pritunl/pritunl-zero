@@ -536,6 +536,9 @@ func GetAllPaged(db *database.Database, query *bson.M,
 		}
 	}
 
+	if pageCount == 0 {
+		pageCount = 20
+	}
 	maxPage := count / pageCount
 	if count == pageCount {
 		maxPage = 0
