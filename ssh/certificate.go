@@ -110,6 +110,9 @@ func GetCertificates(db *database.Database, userId bson.ObjectID,
 		SetSort(bson.D{{"timestamp", -1}})
 
 	if pageCount != 0 {
+		if pageCount == 0 {
+			pageCount = 20
+		}
 		maxPage := count / pageCount
 		if count == pageCount {
 			maxPage = 0
