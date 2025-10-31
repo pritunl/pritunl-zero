@@ -1,0 +1,89 @@
+targets=(
+    "oraclelinux-10"
+)
+pkgname="pritunl-zero"
+pkgver="1.0.3565.94"
+pkgrel="2"
+pkgdesc="Pritunl Zero"
+pkgdesclong=(
+    "Pritunl Zero"
+)
+maintainer="Pritunl <contact@pritunl.com>"
+arch="amd64"
+license=("custom")
+section="utils"
+priority="optional"
+url="https://github.com/pritunl/${pkgname}"
+depends:yum=(
+    "openssl"
+)
+depends:apt=(
+    "openssl"
+)
+makedepends:yum=(
+    "git"
+)
+makedepends:apt=(
+    "git"
+)
+provides=("${pkgname}")
+conflicts=(
+    "${pkgname}"
+)
+sources=(
+    "pritunl-zero.tar"
+)
+hashsums=(
+    "690c2aab9a0ea6a940b4390b6e95ec55c10951e3634e51115a36051402d686bc"
+)
+backup=(
+    "etc/${pkgname}.json"
+    "var/log/${pkgname}.log"
+    "var/log/${pkgname}.log.1"
+)
+
+build() {
+    mkdir -p /go/src/github.com/pritunl/${pkgname}/
+    mv "${srcdir}"/* /go/src/github.com/pritunl/${pkgname}/
+    cd /go/src/github.com/pritunl/${pkgname}
+    go get
+    go install
+
+    cd /go/src/github.com/pritunl/${pkgname}/redirect
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o redirect
+    mv ./redirect /go/bin/${pkgname}-redirect
+}
+
+package() {
+    mkdir -p ${pkgdir}/usr/bin
+    cp /go/bin/${pkgname} ${pkgdir}/usr/bin/${pkgname}
+    chmod 755 ${pkgdir}/usr/bin/${pkgname}
+    cp /go/bin/${pkgname}-redirect ${pkgdir}/usr/bin/${pkgname}-redirect
+    chmod 755 ${pkgdir}/usr/bin/${pkgname}-redirect
+
+    mkdir -p ${pkgdir}/usr/share/${pkgname}/www
+    cp -r /go/src/github.com/pritunl/${pkgname}/www/dist/. ${pkgdir}/usr/share/${pkgname}/www/
+
+    mkdir -p ${pkgdir}/etc
+    echo "{}" > ${pkgdir}/etc/${pkgname}.json
+    chmod 600 ${pkgdir}/etc/${pkgname}.json
+
+    mkdir -p ${pkgdir}/etc/systemd/system
+    cp /go/src/github.com/pritunl/${pkgname}/tools/pritunl-zero.service ${pkgdir}/etc/systemd/system
+    cp /go/src/github.com/pritunl/${pkgname}/tools/pritunl-zero-redirect.socket ${pkgdir}/etc/systemd/system
+    cp /go/src/github.com/pritunl/${pkgname}/tools/pritunl-zero-redirect.service ${pkgdir}/etc/systemd/system
+
+    mkdir -p ${pkgdir}/var/log
+    touch ${pkgdir}/var/log/${pkgname}.log
+    touch ${pkgdir}/var/log/${pkgname}.log.1
+}
+
+postinst() {
+    useradd -r -s /sbin/nologin -c 'Pritunl Zero web server' pritunl-zero-web &> /dev/null || true
+    systemctl daemon-reload &> /dev/null || true
+    systemctl is-active --quiet pritunl-zero && systemctl restart pritunl-zero || true
+}
+
+postrm() {
+    systemctl daemon-reload &> /dev/null || true
+}
