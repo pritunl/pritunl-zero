@@ -129,6 +129,9 @@ func GetAll(db *database.Database, query *bson.M, page, pageCount int64) (
 			}
 		}
 
+		if pageCount == 0 {
+			pageCount = 20
+		}
 		maxPage := count / pageCount
 		if count == pageCount {
 			maxPage = 0
