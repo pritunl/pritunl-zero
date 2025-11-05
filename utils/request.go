@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -348,10 +349,8 @@ func GetOrigin(r *http.Request) string {
 }
 
 func CheckRequestN(resp *http.Response, msg string, codes []int) (err error) {
-	for _, code := range codes {
-		if resp.StatusCode == code {
-			return
-		}
+	if slices.Contains(codes, resp.StatusCode) {
+		return
 	}
 
 	bodyStr := ""
