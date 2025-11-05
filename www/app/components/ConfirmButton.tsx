@@ -83,7 +83,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		};
 	}
 
-	openDialog = (): void => {
+	openDialog = (evt?: React.MouseEvent<HTMLElement>): void => {
 		this.setState({
 			...this.state,
 			dialog: true,
@@ -270,10 +270,11 @@ export default class ConfirmButton extends React.Component<Props, State> {
 						key="menu-new-unit"
 						className={className}
 						disabled={this.props.disabled}
+						hidden={this.props.hidden}
 						onClick={(evt): void => {
 							evt.preventDefault()
 							evt.stopPropagation()
-							this.openDialog()
+							this.openDialog(evt as React.MouseEvent<HTMLElement>)
 						}}
 						text={this.props.label}
 					>{this.props.children}</Blueprint.MenuItem>
@@ -291,7 +292,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 					onMouseDown={dialog ? undefined : this.confirm}
 					onMouseUp={dialog ? undefined : this.clearConfirm}
 					onMouseLeave={dialog ? undefined : this.clearConfirm}
-					onClick={dialog ? this.openDialog : undefined}
+					onClick={dialog ? (evt) => this.openDialog(evt) : undefined}
 				>
 					{this.props.children || this.props.label}
 				</button>
