@@ -57,6 +57,7 @@ const css = {
 		height: '4px',
 	} as React.CSSProperties,
 	dialog: {
+		scrollbarGutter: "stable",
 		width: '340px',
 		position: 'absolute',
 	} as React.CSSProperties,
