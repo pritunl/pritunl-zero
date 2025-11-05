@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Refactor database code
+Add reset node web server command
 
 Version 1.0.3565.94 2025-08-28
 ------------------------------
