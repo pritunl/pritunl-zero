@@ -135,7 +135,7 @@ func parseRegistration(buf []byte) (*Registration, []byte, error) {
 	return &r, sig, nil
 }
 
-// UnmarshalBinary implements encoding.BinaryMarshaler.
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.
 func (r *Registration) UnmarshalBinary(data []byte) error {
 	reg, _, err := parseRegistration(data)
 	if err != nil {
@@ -145,7 +145,7 @@ func (r *Registration) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// MarshalBinary implements encoding.BinaryUnmarshaler.
+// MarshalBinary implements encoding.BinaryMarshaler.
 func (r *Registration) MarshalBinary() ([]byte, error) {
 	return r.Raw, nil
 }
@@ -189,7 +189,7 @@ func getRegisteredKey(appID string, r Registration) RegisteredKey {
 	}
 }
 
-// fixCertIfNeed fixes broken certificates described in
+// fixCertIfNeed fixes broken certificates described in the Yubico PHP U2F library
 // https://github.com/Yubico/php-u2flib-server/blob/master/src/u2flib_server/U2F.php#L84
 func fixCertIfNeed(cert []byte) {
 	h := sha256.Sum256(cert)
