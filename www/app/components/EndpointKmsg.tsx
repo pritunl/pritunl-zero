@@ -210,7 +210,7 @@ export default class EndpointKmsg extends React.Component<Props, State> {
 					}}
 					options={{
 						folding: false,
-						fontSize: 12,
+						fontSize: 11,
 						fontFamily: Theme.monospaceFont,
 						fontWeight: Theme.monospaceWeight,
 						tabSize: 4,
