@@ -19,6 +19,7 @@ const css = {
 		width: '100%',
 		marginTop: '-3px',
 		display: 'table',
+		tableLayout: 'fixed',
 		borderSpacing: '0 3px',
 	} as React.CSSProperties,
 	logsBox: {
