@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as Blueprint from '@blueprintjs/core';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as LogTypes from '../types/LogTypes';
+import * as Theme from "../Theme";
 
 interface State {
 	stack: boolean;
@@ -60,8 +61,9 @@ const css = {
 	} as React.CSSProperties,
 	textarea: {
 		resize: 'none',
-		fontSize: '12px',
-		fontFamily: '"Lucida Console", Monaco, monospace',
+		fontSize: Theme.monospaceSize,
+		fontFamily: Theme.monospaceFont,
+		fontWeight: Theme.monospaceWeight,
 		marginBottom: 0,
 	} as React.CSSProperties,
 };
