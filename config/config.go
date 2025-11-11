@@ -161,27 +161,28 @@ func init() {
 		if Config.NodeId == "" && nodeId == "" {
 			save = true
 			Config.NodeId = bson.NewObjectID().Hex()
-		}
-		if Config.MongoUri == "" && mongoUri == "" {
-			save = true
 
-			data, err := utils.ReadExists("/var/lib/mongo/credentials.txt")
-			if err != nil {
-				err = nil
-			} else {
-				lines := strings.Split(string(data), "\n")
-				for _, line := range lines {
-					if strings.HasPrefix(strings.TrimSpace(line),
-						"mongodb://pritunl-zero") {
+			if Config.MongoUri == "mongodb://localhost:27017/pritunl-zero" &&
+				mongoUri == "" {
 
-						Config.MongoUri = strings.TrimSpace(line)
-						break
+				data, err := utils.ReadExists("/var/lib/mongo/credentials.txt")
+				if err != nil {
+					err = nil
+				} else {
+					lines := strings.Split(string(data), "\n")
+					for _, line := range lines {
+						if strings.HasPrefix(strings.TrimSpace(line),
+							"mongodb://pritunl-zero") {
+
+							Config.MongoUri = strings.TrimSpace(line)
+							break
+						}
 					}
 				}
-			}
 
-			if Config.MongoUri == "" {
-				Config.MongoUri = DefaultMongoUri
+				if Config.MongoUri == "" {
+					Config.MongoUri = DefaultMongoUri
+				}
 			}
 		}
 
