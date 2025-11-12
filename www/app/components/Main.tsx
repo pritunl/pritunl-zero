@@ -18,25 +18,10 @@ import Checks from './Checks';
 import Logs from './Logs';
 import Services from './Services';
 import Settings from './Settings';
+import * as Router from '../Router';
 import RouterRoute from './RouterRoute';
 import RouterRoutes from './RouterRoutes';
 import RouterLink from './RouterLink';
-import * as UserActions from '../actions/UserActions';
-import * as SessionActions from '../actions/SessionActions';
-import * as DeviceActions from '../actions/DeviceActions';
-import * as AlertActions from '../actions/AlertActions';
-import * as CheckActions from '../actions/CheckActions';
-import * as AuditActions from '../actions/AuditActions';
-import * as SshcertificateActions from '../actions/SshcertificateActions';
-import * as NodeActions from '../actions/NodeActions';
-import * as PolicyActions from '../actions/PolicyActions';
-import * as AuthorityActions from '../actions/AuthorityActions';
-import * as CertificateActions from '../actions/CertificateActions';
-import * as SecretActions from '../actions/SecretActions';
-import * as EndpointActions from '../actions/EndpointActions';
-import * as LogActions from '../actions/LogActions';
-import * as ServiceActions from '../actions/ServiceActions';
-import * as SettingsActions from '../actions/SettingsActions';
 import * as SubscriptionActions from '../actions/SubscriptionActions';
 
 interface State {
@@ -220,237 +205,16 @@ export default class Main extends React.Component<{}, State> {
 						className="bp5-button bp5-minimal bp5-icon-refresh"
 						disabled={this.state.disabled}
 						onClick={() => {
-							let pathname = window.location.hash.replace(/^#/, '');
-
 							this.setState({
 								...this.state,
 								disabled: true,
 							});
-
-							if (pathname === '/users') {
-								UserActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname.startsWith('/user/')) {
-								UserActions.reload().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-								SessionActions.reload().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-								DeviceActions.reload().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-								SshcertificateActions.reload().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-								AuditActions.reload().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/nodes') {
-								ServiceActions.syncNames();
-								NodeActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/policies') {
-								ServiceActions.syncNames();
-								AuthorityActions.sync();
-								SettingsActions.sync();
-								PolicyActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/authorities') {
-								AuthorityActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/certificates') {
-								CertificateActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/secrets') {
-								SecretActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/alerts') {
-								AlertActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/checks') {
-								CheckActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/endpoints') {
-								AuthorityActions.sync();
-								EndpointActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/logs') {
-								LogActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/services') {
-								AuthorityActions.sync();
-								ServiceActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/settings') {
-								SettingsActions.sync().then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else if (pathname === '/subscription') {
-								SubscriptionActions.sync(true).then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								});
-							} else {
+							Router.refresh(() => {
 								this.setState({
 									...this.state,
 									disabled: false,
 								});
-							}
+							})
 						}}
 					>Refresh</button>
 					<button
