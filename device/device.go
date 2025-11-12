@@ -14,7 +14,6 @@ import (
 	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
-	"github.com/pritunl/pritunl-zero/u2flib"
 	"github.com/pritunl/pritunl-zero/utils"
 )
 
@@ -208,49 +207,6 @@ func (d *Device) UnmarshalWebauthn() (cred webauthn.Credential, err error) {
 		AttestationType: d.WanAttestationType,
 		Authenticator:   *d.WanAuthenticator,
 	}
-	return
-}
-
-func (d *Device) MarshalRegistration(reg *u2flib.Registration) (err error) {
-	pubPkix, err := x509.MarshalPKIXPublicKey(&reg.PubKey)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "device: Failed to marshal device public key"),
-		}
-		return
-	}
-
-	d.U2fRaw = reg.Raw
-	d.U2fKeyHandle = reg.KeyHandle
-	d.U2fPublicKey = pubPkix
-
-	return
-}
-
-func (d *Device) UnmarshalRegistration() (
-	reg u2flib.Registration, err error) {
-
-	pubKeyItf, err := x509.ParsePKIXPublicKey(d.U2fPublicKey)
-	if err != nil {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "device: Failed to parse device public key"),
-		}
-		return
-	}
-
-	pubKey, ok := pubKeyItf.(*ecdsa.PublicKey)
-	if !ok {
-		err = &errortypes.ParseError{
-			errors.Wrap(err, "device: Device public key invalid type"),
-		}
-		return
-	}
-
-	reg = u2flib.Registration{
-		KeyHandle: d.U2fKeyHandle,
-		PubKey:    *pubKey,
-	}
-
 	return
 }
 
