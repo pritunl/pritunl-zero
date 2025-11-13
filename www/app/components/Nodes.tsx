@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as MiscUtils from '../utils/MiscUtils';
 import * as NodeTypes from '../types/NodeTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as AuthorityTypes from '../types/AuthorityTypes';
@@ -69,7 +70,7 @@ const css = {
 };
 
 export default class Nodes extends React.Component<{}, State> {
-	interval: NodeJS.Timer;
+	sync: MiscUtils.SyncInterval;
 
 	constructor(props: any, context: any) {
 		super(props, context);
@@ -104,9 +105,10 @@ export default class Nodes extends React.Component<{}, State> {
 		AuthorityActions.sync();
 		CertificateActions.sync();
 
-		this.interval = setInterval(() => {
-			NodeActions.sync(true);
-		}, 1000);
+		this.sync = new MiscUtils.SyncInterval(
+			() => NodeActions.sync(true),
+			2000,
+		)
 	}
 
 	componentWillUnmount(): void {
@@ -114,7 +116,8 @@ export default class Nodes extends React.Component<{}, State> {
 		ServicesStore.removeChangeListener(this.onChange);
 		AuthoritiesStore.removeChangeListener(this.onChange);
 		CertificatesStore.removeChangeListener(this.onChange);
-		clearInterval(this.interval);
+
+		this.sync?.stop()
 	}
 
 	onChange = (): void => {
