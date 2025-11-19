@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3648.46 2025-11-19
+------------------------------
 
 Web interface improvements
 Add mongodb auto configuration
