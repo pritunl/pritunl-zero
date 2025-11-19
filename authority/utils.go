@@ -24,6 +24,12 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+type Named struct {
+	Id           bson.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name         string        `bson:"name" json:"name"`
+	ProxyHosting bool          `bson:"proxy_hosting" json:"proxy_hosting"`
+}
+
 func parseSubnetMatch(subnetMatch string) (
 	match string, err error) {
 
@@ -478,17 +484,22 @@ func GetAll(db *database.Database) (authrs []*Authority, err error) {
 }
 
 func GetAllNames(db *database.Database, query *bson.M) (
-	authrs []*database.Named, err error) {
+	authrs []*Named, err error) {
 
 	coll := db.Authorities()
-	authrs = []*database.Named{}
+	authrs = []*Named{}
 
 	cursor, err := coll.Find(
 		db,
 		query,
 		options.Find().
 			SetSort(bson.D{{"name", 1}}).
-			SetProjection(bson.D{{"name", 1}}),
+			SetProjection(
+				bson.D{
+					{"name", 1},
+					{"proxy_hosting", 1},
+				},
+			),
 	)
 	if err != nil {
 		err = database.ParseError(err)
@@ -497,7 +508,7 @@ func GetAllNames(db *database.Database, query *bson.M) (
 	defer cursor.Close(db)
 
 	for cursor.Next(db) {
-		authr := &database.Named{}
+		authr := &Named{}
 		err = cursor.Decode(authr)
 		if err != nil {
 			err = database.ParseError(err)
