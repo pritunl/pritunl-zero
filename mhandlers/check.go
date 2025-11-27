@@ -240,7 +240,37 @@ func checksGet(c *gin.Context) {
 
 	role := strings.TrimSpace(c.Query("role"))
 	if role != "" {
-		query["roles"] = role
+		if strings.HasPrefix(role, "~") {
+			role := role[1:]
+			if strings.HasPrefix(role, "!") {
+				query["roles"] = &bson.M{
+					"$not": &bson.M{
+						"$regex": fmt.Sprintf(".*%s.*",
+							regexp.QuoteMeta(role[1:])),
+						"$options": "i",
+					},
+				}
+			} else {
+				query["$or"] = []*bson.M{
+					&bson.M{
+						"roles": &bson.M{
+							"$regex": fmt.Sprintf(".*%s.*",
+								regexp.QuoteMeta(role)),
+							"$options": "i",
+						},
+					},
+				}
+			}
+		} else {
+			if strings.HasPrefix(role, "!") {
+				role = strings.TrimLeft(role, "!")
+				query["roles"] = &bson.M{
+					"$ne": role,
+				}
+			} else {
+				query["roles"] = role
+			}
+		}
 	}
 
 	checks, count, err := check.GetAllPaged(
