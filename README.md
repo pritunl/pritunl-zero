@@ -15,7 +15,7 @@ found at [docs.pritunl.com](https://docs.pritunl.com/kb/zero)
 ## Install from Source
 
 ```bash
-# Install Go
+# Install Required Tools
 sudo dnf -y install git-core
 
 sudo rm -rf /usr/local/go
@@ -43,11 +43,11 @@ EOF
 sudo dnf -y install mongodb-org
 sudo systemctl enable --now mongod
 
-# Install Pritunl Zero
-go install -v github.com/pritunl/pritunl-zero@latest
-go install -v github.com/pritunl/pritunl-zero/redirect@latest
+# Build Pritunl Zero (update with latest version from releases)
+go install -v github.com/pritunl/pritunl-zero@1.0.3648.46
+go install -v github.com/pritunl/pritunl-zero/redirect@1.0.3648.46
 
-# Setup systemd units
+# Install Systemd Units
 sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero.service /etc/systemd/system/
 sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero-redirect.socket /etc/systemd/system/
 sudo cp $(ls -d ~/go/pkg/mod/github.com/pritunl/pritunl-zero@v* | sort -V | tail -n 1)/tools/pritunl-zero-redirect.service /etc/systemd/system/
