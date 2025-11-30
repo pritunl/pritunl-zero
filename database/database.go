@@ -250,7 +250,7 @@ func (d *Database) AcmeChallenges() (coll *Collection) {
 }
 
 func (d *Database) Logs() (coll *Collection) {
-	coll = d.getCollection("logs")
+	coll = d.getCollectionWeak("logs")
 	return
 }
 
@@ -260,7 +260,7 @@ func (d *Database) Audits() (coll *Collection) {
 }
 
 func (d *Database) Geo() (coll *Collection) {
-	coll = d.getCollection("geo")
+	coll = d.getCollectionWeak("geo")
 	return
 }
 
