@@ -45,7 +45,7 @@ func (d *Database) Err() error {
 	return nil
 }
 
-func (d *Database) Value(key interface{}) interface{} {
+func (d *Database) Value(key any) any {
 	if d.ctx != nil {
 		return d.ctx.Value(key)
 	}

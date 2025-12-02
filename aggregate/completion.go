@@ -16,8 +16,8 @@ type Completion struct {
 }
 
 func get(db *database.Database, coll *database.Collection,
-	query, projection *bson.M, new func() interface{},
-	add func(interface{})) (err error) {
+	query, projection *bson.M, new func() any,
+	add func(any)) (err error) {
 
 	cursor, err := coll.Find(db, query, options.Find().
 		SetProjection(projection))
@@ -62,10 +62,10 @@ func GetCompletion(db *database.Database, orgId bson.ObjectID) (
 			"cpu_units_res":    1,
 			"memory_units_res": 1,
 		},
-		func() interface{} {
+		func() any {
 			return &node.Node{}
 		},
-		func(item interface{}) {
+		func(item any) {
 			nde := item.(*node.Node)
 
 			cmpl.Nodes = append(
@@ -88,10 +88,10 @@ func GetCompletion(db *database.Database, orgId bson.ObjectID) (
 			"organization": 1,
 			"type":         1,
 		},
-		func() interface{} {
+		func() any {
 			return &certificate.Certificate{}
 		},
-		func(item interface{}) {
+		func(item any) {
 			cmpl.Certificates = append(
 				cmpl.Certificates,
 				item.(*certificate.Certificate),
@@ -112,10 +112,10 @@ func GetCompletion(db *database.Database, orgId bson.ObjectID) (
 			"organization": 1,
 			"type":         1,
 		},
-		func() interface{} {
+		func() any {
 			return &secret.Secret{}
 		},
-		func(item interface{}) {
+		func(item any) {
 			cmpl.Secrets = append(
 				cmpl.Secrets,
 				item.(*secret.Secret),

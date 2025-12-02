@@ -278,10 +278,10 @@ func init() {
 			"whitelist_networks": nil,
 		}, &bson.M{
 			"$set": &bson.M{
-				"domains":            []interface{}{},
-				"roles":              []interface{}{},
-				"servers":            []interface{}{},
-				"whitelist_networks": []interface{}{},
+				"domains":            []any{},
+				"roles":              []any{},
+				"servers":            []any{},
+				"whitelist_networks": []any{},
 			},
 		})
 		if err != nil {

@@ -28,13 +28,13 @@ type system struct {
 	TwilioNumber                   string `bson:"twilio_number"`
 }
 
-func newSystem() interface{} {
+func newSystem() any {
 	return &system{
 		Id: "system",
 	}
 }
 
-func updateSystem(data interface{}) {
+func updateSystem(data any) {
 	System = data.(*system)
 }
 

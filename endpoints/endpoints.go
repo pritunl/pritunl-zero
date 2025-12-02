@@ -26,8 +26,8 @@ type Doc interface {
 }
 
 type Point struct {
-	X int64       `json:"x"`
-	Y interface{} `json:"y"`
+	X int64 `json:"x"`
+	Y any   `json:"y"`
 }
 
 type ChartData = map[string][]*Point
@@ -123,14 +123,14 @@ type Chart struct {
 	curTimes map[string]int64
 }
 
-func (c *Chart) add(resource string, timestamp int64, value interface{}) {
+func (c *Chart) add(resource string, timestamp int64, value any) {
 	c.data[resource] = append(c.data[resource], &Point{
 		X: timestamp,
 		Y: value,
 	})
 }
 
-func (c *Chart) Add(resource string, timestamp int64, value interface{}) {
+func (c *Chart) Add(resource string, timestamp int64, value any) {
 	cur := c.curTimes[resource]
 	if cur == 0 {
 		cur = c.start - c.intv

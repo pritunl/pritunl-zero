@@ -29,12 +29,12 @@ type EventPublish struct {
 	Id        bson.ObjectID `bson:"_id,omitempty" json:"id"`
 	Channel   string        `bson:"channel" json:"channel"`
 	Timestamp time.Time     `bson:"timestamp" json:"timestamp"`
-	Data      interface{}   `bson:"data" json:"data"`
+	Data      any           `bson:"data" json:"data"`
 }
 
 type CustomEvent interface {
 	GetId() bson.ObjectID
-	GetData() interface{}
+	GetData() any
 }
 
 type Dispatch struct {
@@ -121,7 +121,7 @@ func getCursorIdRetry(channels []string) bson.ObjectID {
 	}
 }
 
-func Publish(db *database.Database, channel string, data interface{}) (
+func Publish(db *database.Database, channel string, data any) (
 	err error) {
 
 	coll := db.Events()
@@ -166,7 +166,7 @@ func Subscribe(channels []string, duration time.Duration,
 
 	cursorId := getCursorIdRetry(channels)
 
-	var channelBson interface{}
+	var channelBson any
 	if len(channels) == 1 {
 		channelBson = channels[0]
 	} else {
@@ -312,7 +312,7 @@ func SubscribeType(channels []string, duration time.Duration,
 
 	cursorId := getCursorIdRetry(channels)
 
-	var channelBson interface{}
+	var channelBson any
 	if len(channels) == 1 {
 		channelBson = channels[0]
 	} else {

@@ -22,7 +22,7 @@ type Index struct {
 	Collection *Collection
 	Keys       *bson.D
 	Unique     bool
-	Partial    interface{}
+	Partial    any
 	Expire     time.Duration
 }
 

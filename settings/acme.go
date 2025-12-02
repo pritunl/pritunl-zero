@@ -13,13 +13,13 @@ type acme struct {
 	DnsOracleCloudTtl int    `bson:"dns_oracle_cloud_ttl" default:"30"`
 }
 
-func newAcme() interface{} {
+func newAcme() any {
 	return &acme{
 		Id: "acme",
 	}
 }
 
-func updateAcme(data interface{}) {
+func updateAcme(data any) {
 	Acme = data.(*acme)
 }
 
