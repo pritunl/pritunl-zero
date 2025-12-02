@@ -36,7 +36,7 @@ func (l *Listener) Close() {
 func (l *Listener) sub(cursorId bson.ObjectID) {
 	coll := l.db.Events()
 
-	var channelBson interface{}
+	var channelBson any
 	if len(l.channels) == 1 {
 		channelBson = l.channels[0]
 	} else {

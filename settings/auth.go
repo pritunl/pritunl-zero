@@ -257,7 +257,7 @@ func (a *auth) GetSecondaryProvider(id bson.ObjectID) *SecondaryProvider {
 	return nil
 }
 
-func newAuth() interface{} {
+func newAuth() any {
 	return &auth{
 		Id:                 "auth",
 		Providers:          []*Provider{},
@@ -265,7 +265,7 @@ func newAuth() interface{} {
 	}
 }
 
-func updateAuth(data interface{}) {
+func updateAuth(data any) {
 	Auth = data.(*auth)
 }
 

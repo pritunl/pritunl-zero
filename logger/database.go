@@ -60,7 +60,7 @@ func databaseSend(entry *logrus.Entry) (err error) {
 		Level:     level,
 		Timestamp: entry.Time,
 		Message:   entry.Message,
-		Fields:    map[string]interface{}{},
+		Fields:    map[string]any{},
 	}
 
 	for key, val := range entry.Data {

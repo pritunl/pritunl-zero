@@ -51,7 +51,7 @@ func (h *HsmEvent) GetId() bson.ObjectID {
 	return h.Id
 }
 
-func (h *HsmEvent) GetData() interface{} {
+func (h *HsmEvent) GetData() any {
 	if h.Data == nil {
 		return nil
 	}

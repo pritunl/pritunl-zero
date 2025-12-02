@@ -34,7 +34,7 @@ var SetCmd = &cobra.Command{
 		key := args[1]
 		val := args[2]
 
-		var valParsed interface{}
+		var valParsed any
 		err := json.Unmarshal([]byte(val), &valParsed)
 		if err != nil {
 			err = &errortypes.ParseError{

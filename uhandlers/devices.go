@@ -192,8 +192,8 @@ func devicesGet(c *gin.Context) {
 }
 
 type devicesWanRegisterRespData struct {
-	Token   string      `json:"token"`
-	Options interface{} `json:"options"`
+	Token   string `json:"token"`
+	Options any    `json:"options"`
 }
 
 func deviceWanRegisterGet(c *gin.Context) {
@@ -527,7 +527,7 @@ func deviceSecondaryPut(c *gin.Context) {
 		return
 	}
 
-	var jsonResp interface{}
+	var jsonResp any
 	if data.DeviceType != device.SmartCard {
 		jsonResp, errData, err = secd.DeviceRegisterRequest(db,
 			utils.GetOrigin(c.Request))
@@ -697,7 +697,7 @@ func deviceWanRespondPost(c *gin.Context) {
 		return
 	}
 
-	var jsonResp interface{}
+	var jsonResp any
 	if data.DeviceType != device.SmartCard {
 		jsonResp, errData, err = secd.DeviceRegisterRequest(db,
 			utils.GetOrigin(c.Request))

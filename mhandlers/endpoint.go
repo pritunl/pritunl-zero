@@ -35,8 +35,8 @@ type endpointsData struct {
 }
 
 type endpointChartData struct {
-	HasData bool        `json:"has_data"`
-	Data    interface{} `json:"data"`
+	HasData bool `json:"has_data"`
+	Data    any  `json:"data"`
 }
 
 func endpointPut(c *gin.Context) {

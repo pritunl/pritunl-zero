@@ -16,7 +16,7 @@ type Collection struct {
 	*mongo.Collection
 }
 
-func (c *Collection) FindOneId(id interface{}, data interface{}) (err error) {
+func (c *Collection) FindOneId(id any, data any) (err error) {
 	err = c.FindOne(c.db, &bson.M{
 		"_id": id,
 	}).Decode(data)
@@ -28,7 +28,7 @@ func (c *Collection) FindOneId(id interface{}, data interface{}) (err error) {
 	return
 }
 
-func (c *Collection) UpdateId(id interface{}, data interface{}) (err error) {
+func (c *Collection) UpdateId(id any, data any) (err error) {
 	_, err = c.UpdateOne(c.db, &bson.M{
 		"_id": id,
 	}, data)
@@ -40,7 +40,7 @@ func (c *Collection) UpdateId(id interface{}, data interface{}) (err error) {
 	return
 }
 
-func (c *Collection) Commit(id interface{}, data interface{}) (err error) {
+func (c *Collection) Commit(id any, data any) (err error) {
 	_, err = c.UpdateOne(c.db, &bson.M{
 		"_id": id,
 	}, &bson.M{
@@ -54,7 +54,7 @@ func (c *Collection) Commit(id interface{}, data interface{}) (err error) {
 	return
 }
 
-func (c *Collection) CommitFields(id interface{}, data interface{},
+func (c *Collection) CommitFields(id any, data any,
 	fields set.Set) (err error) {
 
 	_, err = c.UpdateOne(c.db, &bson.M{
@@ -68,7 +68,7 @@ func (c *Collection) CommitFields(id interface{}, data interface{},
 	return
 }
 
-func (c *Collection) Upsert(query *bson.M, data interface{}) (err error) {
+func (c *Collection) Upsert(query *bson.M, data any) (err error) {
 	opts := options.UpdateOne().SetUpsert(true)
 
 	_, err = c.UpdateOne(c.db, query, bson.M{
@@ -81,7 +81,7 @@ func (c *Collection) Upsert(query *bson.M, data interface{}) (err error) {
 	return
 }
 
-func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
+func SelectFields(obj any, fields set.Set) (data bson.M) {
 	val := reflect.ValueOf(obj).Elem()
 	data = bson.M{}
 
@@ -165,7 +165,7 @@ func SelectFields(obj interface{}, fields set.Set) (data bson.M) {
 	return
 }
 
-func SelectFieldsAll(obj interface{}, fields set.Set) (data bson.M) {
+func SelectFieldsAll(obj any, fields set.Set) (data bson.M) {
 	val := reflect.ValueOf(obj).Elem()
 
 	dataSet := bson.M{}
@@ -275,8 +275,8 @@ type ArraySelectFields struct {
 	count       int
 	setFields   bson.M
 	unsetFields bson.M
-	filters     []interface{}
-	push        []interface{}
+	filters     []any
+	push        []any
 	pull        []bson.ObjectID
 	rootKey     string
 	idKey       string
@@ -306,7 +306,7 @@ func (a *ArraySelectFields) Update(docId bson.ObjectID,
 	})
 }
 
-func (a *ArraySelectFields) Push(doc interface{}) {
+func (a *ArraySelectFields) Push(doc any) {
 	a.modified = true
 	a.push = append(a.push, doc)
 }
@@ -316,7 +316,7 @@ func (a *ArraySelectFields) Delete(docId bson.ObjectID) {
 	a.pull = append(a.pull, docId)
 }
 
-func (a *ArraySelectFields) GetQuery() (query bson.M, filters []interface{}) {
+func (a *ArraySelectFields) GetQuery() (query bson.M, filters []any) {
 	query = bson.M{}
 	if len(a.setFields) > 0 {
 		query["$set"] = a.setFields
@@ -348,7 +348,7 @@ func (a *ArraySelectFields) GetQuery() (query bson.M, filters []interface{}) {
 	return
 }
 
-func NewArraySelectFields(obj interface{}, rootKey string, fields set.Set) (
+func NewArraySelectFields(obj any, rootKey string, fields set.Set) (
 	arraySel *ArraySelectFields) {
 
 	selectFields := SelectFieldsAll(obj, fields)
@@ -363,8 +363,8 @@ func NewArraySelectFields(obj interface{}, rootKey string, fields set.Set) (
 		count:       1,
 		setFields:   setFields,
 		unsetFields: unsetFields,
-		filters:     []interface{}{},
-		push:        []interface{}{},
+		filters:     []any{},
+		push:        []any{},
 		pull:        []bson.ObjectID{},
 		rootKey:     rootKey,
 		idKey:       "id",

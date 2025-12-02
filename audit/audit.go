@@ -10,7 +10,7 @@ import (
 	"github.com/pritunl/pritunl-zero/useragent"
 )
 
-type Fields map[string]interface{}
+type Fields map[string]any
 
 type Audit struct {
 	Id        bson.ObjectID    `bson:"_id,omitempty" json:"id"`

@@ -324,7 +324,7 @@ func (s *Secondary) Sms(db *database.Database, r *http.Request) (
 }
 
 func (s *Secondary) DeviceRegisterRequest(db *database.Database,
-	origin string) (jsonResp interface{}, errData *errortypes.ErrorData,
+	origin string) (jsonResp any, errData *errortypes.ErrorData,
 	err error) {
 
 	if s.Disabled {
@@ -447,7 +447,7 @@ func (s *Secondary) DeviceRegisterResponse(db *database.Database,
 }
 
 func (s *Secondary) DeviceRequest(db *database.Database, origin string) (
-	jsonResp interface{}, errData *errortypes.ErrorData, err error) {
+	jsonResp any, errData *errortypes.ErrorData, err error) {
 
 	if s.Disabled {
 		errData = &errortypes.ErrorData{
