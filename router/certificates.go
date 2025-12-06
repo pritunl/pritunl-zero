@@ -121,6 +121,10 @@ func (c *Certificates) Update(db *database.Database) (err error) {
 	domainMap := map[string]*tls.Certificate{}
 	wildcardMap := map[string]*tls.Certificate{}
 	for _, cert := range certificates {
+		if cert.Certificate == "" || cert.Key == "" {
+			continue
+		}
+
 		keypair, e := tls.X509KeyPair(
 			[]byte(cert.Certificate),
 			[]byte(cert.Key),
