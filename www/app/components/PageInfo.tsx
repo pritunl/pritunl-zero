@@ -11,6 +11,7 @@ export interface Field {
 	hover?: JSX.Element;
 	copy?: boolean;
 	embedded?: Props;
+	maxLines?: number;
 }
 
 export interface Bar {
@@ -35,6 +36,13 @@ const css = {
 	} as React.CSSProperties,
 	value: {
 		wordWrap: 'break-word',
+	} as React.CSSProperties,
+	valueLimit: {
+		wordWrap: 'break-word',
+		display: '-webkit-box',
+		WebkitBoxOrient: 'vertical',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
 	} as React.CSSProperties,
 	item: {
 		marginTop: '0px',
@@ -134,12 +142,18 @@ export default class PageInfo extends React.Component<Props, {}> {
 					/>,
 				);
 			} else {
+				let style = css.value
+				if (field.maxLines) {
+					style = {...css.valueLimit}
+					style.WebkitLineClamp = field.maxLines
+				}
+
 				fields.push(
 					<div key={field.label} style={itemStyle}>
 						{field.label}
 						<div
 							className={field.valueClass || 'bp5-text-muted'}
-							style={css.value}
+							style={style}
 						>
 							{value}{copyBtn}
 						</div>
