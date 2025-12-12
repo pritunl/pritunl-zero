@@ -1,6 +1,7 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
 import Help from './Help';
+import * as Theme from '../Theme';
 
 interface Props {
 	hidden?: boolean;
@@ -27,8 +28,9 @@ const css = {
 	textarea: {
 		width: '100%',
 		resize: 'none',
-		fontSize: '12px',
-		fontFamily: '"Lucida Console", Monaco, monospace',
+		fontSize: Theme.monospaceSize,
+		fontFamily: Theme.monospaceFont,
+		fontWeight: Theme.monospaceWeight,
 	} as React.CSSProperties,
 	tab: {
 		fontSize: '12px',
