@@ -105,7 +105,7 @@ export default class Policies extends React.Component<{}, State> {
 		SettingsStore.addChangeListener(this.onChange);
 		PolicyActions.sync();
 		ServiceActions.syncNames();
-		AuthorityActions.sync();
+		AuthorityActions.syncNames();
 		SettingsActions.sync();
 	}
 
@@ -136,7 +136,7 @@ export default class Policies extends React.Component<{}, State> {
 			...this.state,
 			policies: policies,
 			services: ServicesStore.servicesName,
-			authorities: AuthoritiesStore.authorities,
+			authorities: AuthoritiesStore.authoritiesName,
 			providers: SettingsStore.settings ?
 				SettingsStore.settings.auth_secondary_providers : [],
 			filter: PoliciesStore.filter,
