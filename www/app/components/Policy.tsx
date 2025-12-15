@@ -148,9 +148,14 @@ export default class Policy extends React.Component<Props, {}> {
 			<div className="bp5-cell" style={css.item}>
 				<span
 					style={css.icon}
-					className="bp5-icon-standard bp5-text-muted bp5-icon-code"
+					className={"bp5-icon-standard bp5-icon-shield " +
+						(policy.disabled ? "bp5-text-intent-danger" : "bp5-text-muted")}
 				/>
-				{policy.id}
+				<span
+					className={policy.disabled ? "bp5-text-intent-danger" : ""}
+				>
+					{policy.disabled ? "Disabled" : "Enabled"}
+				</span>
 			</div>
 		</div>;
 	}
