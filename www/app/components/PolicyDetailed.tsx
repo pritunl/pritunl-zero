@@ -91,7 +91,6 @@ const css = {
 		right: 0,
 		padding: '4px',
 		height: '39px',
-		backgroundColor: 'rgba(0, 0, 0, 0.13)',
 	} as React.CSSProperties,
 	select: {
 		margin: '7px 0px 0px 6px',
