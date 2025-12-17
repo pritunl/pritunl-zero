@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as Router from '../Router';
 
 interface Props {
 	className?: string;
@@ -15,10 +16,9 @@ export default class RouterLink extends React.Component<Props, {}> {
 			className={this.props.className}
 			style={this.props.style}
 			hidden={this.props.hidden}
+			href={"#" + this.props.to}
 			onClick={(): void => {
-				window.location.hash = this.props.to;
-				let evt = new Event("router_update")
-				window.dispatchEvent(evt)
+				Router.setLocation(this.props.to);
 			}}
 		>{this.props.children}</a>
 	}
