@@ -156,7 +156,7 @@ var Logs = []*log.Entry{
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting redirect server",
 		Stack:     "",
-		Fields: map[string]interface{}{
+		Fields: map[string]any{
 			"port":       80,
 			"production": true,
 			"protocol":   "http",
@@ -168,7 +168,7 @@ var Logs = []*log.Entry{
 		Timestamp: time.Unix(1498018860, 0),
 		Message:   "router: Starting web server",
 		Stack:     "",
-		Fields: map[string]interface{}{
+		Fields: map[string]any{
 			"port":       443,
 			"production": true,
 			"protocol":   "https",

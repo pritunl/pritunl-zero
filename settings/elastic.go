@@ -10,13 +10,13 @@ type elastic struct {
 	ProxyRequests bool     `bson:"proxy_requests"`
 }
 
-func newElastic() interface{} {
+func newElastic() any {
 	return &elastic{
 		Id: "elastic",
 	}
 }
 
-func updateElastic(data interface{}) {
+func updateElastic(data any) {
 	Elastic = data.(*elastic)
 }
 

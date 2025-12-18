@@ -14,12 +14,12 @@ import (
 var published = false
 
 type Entry struct {
-	Id        bson.ObjectID          `bson:"_id,omitempty" json:"id"`
-	Level     string                 `bson:"level" json:"level"`
-	Timestamp time.Time              `bson:"timestamp" json:"timestamp"`
-	Message   string                 `bson:"message" json:"message"`
-	Stack     string                 `bson:"stack" json:"stack"`
-	Fields    map[string]interface{} `bson:"fields" json:"fields"`
+	Id        bson.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Level     string         `bson:"level" json:"level"`
+	Timestamp time.Time      `bson:"timestamp" json:"timestamp"`
+	Message   string         `bson:"message" json:"message"`
+	Stack     string         `bson:"stack" json:"stack"`
+	Fields    map[string]any `bson:"fields" json:"fields"`
 }
 
 func (e *Entry) Insert(db *database.Database) (err error) {

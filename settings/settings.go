@@ -18,7 +18,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Commit(db *database.Database, group interface{}, fields set.Set) (
+func Commit(db *database.Database, group any, fields set.Set) (
 	err error) {
 
 	coll := db.Settings()
@@ -43,11 +43,11 @@ func Commit(db *database.Database, group interface{}, fields set.Set) (
 }
 
 func Get(db *database.Database, group string, key string) (
-	val interface{}, err error) {
+	val any, err error) {
 
 	coll := db.Settings()
 
-	grp := map[string]interface{}{}
+	grp := map[string]any{}
 
 	err = coll.FindOne(
 		db,
@@ -76,7 +76,7 @@ func Get(db *database.Database, group string, key string) (
 	return
 }
 
-func Set(db *database.Database, group string, key string, val interface{}) (
+func Set(db *database.Database, group string, key string, val any) (
 	err error) {
 
 	coll := db.Settings()
@@ -126,7 +126,7 @@ func Unset(db *database.Database, group string, key string) (
 	return
 }
 
-func setDefaults(obj interface{}) {
+func setDefaults(obj any) {
 	val := reflect.ValueOf(obj)
 	elm := val.Elem()
 

@@ -17,7 +17,7 @@ import (
 type Document struct {
 	Index    string
 	Id       string
-	Data     interface{}
+	Data     any
 	NoRetry  bool
 	attempts int
 }
@@ -31,7 +31,7 @@ type searchBulkReq struct {
 	Index *searchBulkReqData `json:"index"`
 }
 
-func Index(index string, data interface{}, noRetry bool) {
+func Index(index string, data any, noRetry bool) {
 	clnt := Default
 
 	if clnt == nil {

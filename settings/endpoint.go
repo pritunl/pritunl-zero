@@ -9,13 +9,13 @@ type endpoint struct {
 	CheckDisplayLimit int64  `bson:"check_display_limit" default:"5000"`
 }
 
-func newEndpoint() interface{} {
+func newEndpoint() any {
 	return &endpoint{
 		Id: "endpoint",
 	}
 }
 
-func updateEndpoint(data interface{}) {
+func updateEndpoint(data any) {
 	Endpoint = data.(*endpoint)
 }
 

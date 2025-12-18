@@ -4,8 +4,8 @@ var (
 	registry = map[string]*group{}
 )
 
-type newFunc func() interface{}
-type updateFunc func(interface{})
+type newFunc func() any
+type updateFunc func(any)
 
 type group struct {
 	New    newFunc
