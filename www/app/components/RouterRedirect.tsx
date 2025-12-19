@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as Router from '../Router';
 
 interface Props {
 	to: string;
@@ -7,9 +8,7 @@ interface Props {
 
 export default class RouterRedirect extends React.Component<Props, {}> {
 	render(): JSX.Element {
-		window.location.hash = this.props.to
-		let evt = new Event("router_update")
-		window.dispatchEvent(evt)
+		Router.setLocation(this.props.to);
 		return <div></div>
 	}
 }
