@@ -18,19 +18,25 @@ export default class RouterRoutes extends React.Component<Props, State> {
 		}
 	}
 
+
 	componentDidMount() {
 		window.addEventListener("router_update", this.refresh)
+		window.addEventListener("hashchange", this.refresh)
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener("router_update", this.refresh)
+		window.removeEventListener("hashchange", this.refresh)
 	}
 
 	refresh = () => {
-		this.setState({
-			...this.state,
-			path: window.location.hash,
-		})
+		let newPath = window.location.hash
+		if (this.state.path !== newPath) {
+			this.setState({
+				...this.state,
+				path: window.location.hash,
+			})
+		}
 	}
 
 	render(): JSX.Element {
