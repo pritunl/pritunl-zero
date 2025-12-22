@@ -321,7 +321,7 @@ export default class Secrets extends React.Component<{}, State> {
 			</div>
 			<NonState
 				hidden={!!secretsDom.length}
-				iconClass="bp5-icon-ip-address"
+				iconClass="bp5-icon-key"
 				title="No secrets"
 				description="Add a new secret to get started."
 			/>
