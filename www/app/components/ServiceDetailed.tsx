@@ -606,13 +606,11 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 			this.props.service;
 
 		let domains: JSX.Element[] = [];
-		for (let i = 0; i < service.domains.length; i++) {
-			let index = i;
-
+		(service.domains || []).forEach((domn, index) => {
 			domains.push(
 				<ServiceDomain
 					key={index}
-					domain={service.domains[index]}
+					domain={domn}
 					onChange={(state: ServiceTypes.Domain): void => {
 						this.onChangeDomain(index, state);
 					}}
