@@ -80,7 +80,11 @@ export default class ServiceServer extends React.Component<Props, {}> {
 				value={server.port}
 				onChange={(evt): void => {
 					let state = this.clone();
-					state.port = parseInt(evt.target.value, 10);
+					if (evt.target.value) {
+						state.port = parseInt(evt.target.value, 10);
+					} else {
+						state.port = 0;
+					}
 					this.props.onChange(state);
 				}}
 			/>
