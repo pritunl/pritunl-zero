@@ -619,10 +619,10 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					}}
 				/>,
 			);
-		}
+		})
 
 		let roles: JSX.Element[] = [];
-		for (let role of service.roles) {
+		(service.roles || []).forEach((role) => {
 			roles.push(
 				<div
 					className="bp5-tag bp5-tag-removable bp5-intent-primary"
@@ -638,12 +638,10 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					/>
 				</div>,
 			);
-		}
+		})
 
 		let servers: JSX.Element[] = [];
-		for (let i = 0; i < service.servers.length; i++) {
-			let index = i;
-
+		(service.servers || []).forEach((server, index) => {
 			servers.push(
 				<ServiceServer
 					key={index}
@@ -656,7 +654,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					}}
 				/>,
 			);
-		}
+		})
 
 		let authorities: JSX.Element[] = [
 			<option key="null" value="">None</option>,
@@ -671,7 +669,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 		}
 
 		let whitelistNets: JSX.Element[] = [];
-		for (let whitelistNet of service.whitelist_networks) {
+		(service.whitelist_networks || []).forEach((whitelistNet) => {
 			whitelistNets.push(
 				<div
 					className="bp5-tag bp5-tag-removable bp5-intent-primary"
@@ -687,16 +685,14 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					/>
 				</div>,
 			);
-		}
+		});
 
 		let whitelistPaths: JSX.Element[] = [];
-		for (let i = 0; i < (service.whitelist_paths || []).length; i++) {
-			let index = i;
-
+		(service.whitelist_paths || []).forEach((path, index) => {
 			whitelistPaths.push(
 				<ServiceWhitelistPath
 					key={index}
-					path={service.whitelist_paths[index]}
+					path={path}
 					onChange={(state: ServiceTypes.Path): void => {
 						this.onChangeWhitelistPath(index, state);
 					}}
@@ -705,7 +701,7 @@ export default class ServiceDetailed extends React.Component<Props, State> {
 					}}
 				/>,
 			);
-		}
+		});
 
 		return <td
 			className="bp5-cell"
