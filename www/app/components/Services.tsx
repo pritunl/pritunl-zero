@@ -7,6 +7,7 @@ import AuthoritiesStore from '../stores/AuthoritiesStore';
 import * as ServiceActions from '../actions/ServiceActions';
 import * as AuthorityActions from '../actions/AuthorityActions';
 import Service from './Service';
+import ServiceNew from './ServiceNew';
 import ServicesFilter from './ServicesFilter';
 import ServicesPage from './ServicesPage';
 import Page from './Page';
@@ -239,6 +240,19 @@ export default class Services extends React.Component<{}, State> {
 			}
 		}
 
+		let newServiceDom: JSX.Element;
+		if (this.state.newOpened) {
+			newServiceDom = <ServiceNew
+				authorities={this.state.authorities}
+				onClose={(): void => {
+					this.setState({
+						...this.state,
+						newOpened: false,
+					});
+				}}
+			/>;
+		}
+
 		return <Page>
 			<PageHeader>
 				<div className="layout horizontal wrap" style={css.header}>
@@ -288,27 +302,12 @@ export default class Services extends React.Component<{}, State> {
 						<button
 							className="bp5-button bp5-intent-success bp5-icon-add"
 							style={css.button}
-							disabled={this.state.disabled}
+							disabled={this.state.disabled || this.state.newOpened}
 							type="button"
 							onClick={(): void => {
 								this.setState({
 									...this.state,
-									disabled: true,
-								});
-								ServiceActions.create({
-									id: null,
-									share_session: true,
-									websockets: true,
-								}).then((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
-								}).catch((): void => {
-									this.setState({
-										...this.state,
-										disabled: false,
-									});
+									newOpened: true,
 								});
 							}}
 						>New</button>
@@ -324,6 +323,7 @@ export default class Services extends React.Component<{}, State> {
 			/>
 			<div style={css.itemsBox}>
 				<div style={css.items}>
+					{newServiceDom}
 					{servicesDom}
 					<tr className="bp5-card bp5-row" style={css.placeholder}>
 						<td colSpan={5} style={css.placeholder}/>
