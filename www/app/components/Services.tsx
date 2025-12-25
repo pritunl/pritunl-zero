@@ -39,6 +39,7 @@ const css = {
 		width: '100%',
 		marginTop: '-5px',
 		display: 'table',
+		tableLayout: 'fixed',
 		borderSpacing: '0 5px',
 	} as React.CSSProperties,
 	itemsBox: {
