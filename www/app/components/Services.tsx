@@ -91,7 +91,7 @@ export default class Services extends React.Component<{}, State> {
 		ServicesStore.addChangeListener(this.onChange);
 		AuthoritiesStore.addChangeListener(this.onChange);
 		ServiceActions.sync();
-		AuthorityActions.sync();
+		AuthorityActions.syncNames();
 	}
 
 	componentWillUnmount(): void {
@@ -119,7 +119,7 @@ export default class Services extends React.Component<{}, State> {
 			...this.state,
 			services: services,
 			filter: ServicesStore.filter,
-			authorities: AuthoritiesStore.authorities,
+			authorities: AuthoritiesStore.authoritiesName,
 			selected: selected,
 			opened: opened,
 		});
