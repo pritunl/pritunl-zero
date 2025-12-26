@@ -36,7 +36,6 @@ const css = {
 	} as React.CSSProperties,
 	secondaryProviders: {
 		paddingBottom: '6px',
-		marginTop: '5px',
 		marginBottom: '5px',
 		borderBottomStyle: 'solid',
 	} as React.CSSProperties,
