@@ -66,6 +66,9 @@ const css = {
 	buttons: {
 		margin: '0 auto',
 	} as React.CSSProperties,
+	buttonsEnd: {
+		marginBottom: '10px',
+	} as React.CSSProperties,
 };
 
 export default class Subscription extends React.Component<{}, State> {
@@ -317,7 +320,10 @@ export default class Subscription extends React.Component<{}, State> {
 							this.state.subscription.url_key}
 					>Manage Account</a>
 				</div>
-				<div className="layout horizontal center-justified">
+				<div
+					className="layout horizontal center-justified"
+					style={css.buttonsEnd}
+				>
 					<ConfirmButton
 						className="bp5-intent-danger bp5-icon-delete"
 						progressClassName="bp5-intent-danger"
