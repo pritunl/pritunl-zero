@@ -209,7 +209,11 @@ export default class Settings extends React.Component<{}, State> {
 					</PageSelectButton>
 				</PagePanel>
 				<PagePanel>
-					<div className="bp5-border" style={css.secondaryProviders}>
+					<div
+						className="bp5-border"
+						style={css.secondaryProviders}
+						hidden={!subscriptionActive}
+					>
 						<h5 style={css.providersLabel}>Two-Factor Providers</h5>
 					</div>
 					{secondaryProviders}
@@ -232,6 +236,7 @@ export default class Settings extends React.Component<{}, State> {
 							];
 							this.set('auth_secondary_providers', authProviders);
 						}}
+						hidden={!subscriptionActive}
 					>
 						<option value="duo">Duo</option>
 						<option value="one_login">OneLogin</option>
