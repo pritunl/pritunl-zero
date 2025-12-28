@@ -29,6 +29,7 @@ type Request struct {
 	Query     url.Values  `json:"query"`
 	Header    http.Header `json:"header"`
 	Body      string      `json:"body"`
+	Size      int         `json:"size"`
 }
 
 func (r *Request) Index() {
