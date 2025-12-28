@@ -234,8 +234,8 @@ func deviceMethodPost(c *gin.Context) {
 }
 
 type devicesWanRegisterRespData struct {
-	Token   string      `json:"token"`
-	Options interface{} `json:"options"`
+	Token   string `json:"token"`
+	Options any    `json:"options"`
 }
 
 func deviceWanRegisterGet(c *gin.Context) {

@@ -27,13 +27,13 @@ type router struct {
 	SkipVerify             bool   `bson:"skip_verify"`
 }
 
-func newRouter() interface{} {
+func newRouter() any {
 	return &router{
 		Id: "router",
 	}
 }
 
-func updateRouter(data interface{}) {
+func updateRouter(data any) {
 	Router = data.(*router)
 }
 

@@ -9,9 +9,9 @@ import (
 )
 
 type StateProvider struct {
-	Id    interface{} `json:"id"`
-	Type  string      `json:"type"`
-	Label string      `json:"label"`
+	Id    any    `json:"id"`
+	Type  string `json:"type"`
+	Label string `json:"label"`
 }
 
 type StateProviders []*StateProvider

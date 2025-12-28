@@ -40,7 +40,7 @@ type searchMappingObject struct {
 	Enabled bool `json:"enabled"`
 }
 
-type searchMappings map[string]interface{}
+type searchMappings map[string]any
 
 type searchProperties struct {
 	Properties searchMappings `json:"properties"`
