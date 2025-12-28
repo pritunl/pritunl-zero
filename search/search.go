@@ -102,16 +102,20 @@ func watchSearch() {
 func workerBuffer() {
 	for {
 		entry := <-buffer
+		entrySize := len(entry.Data)
 
 		groupsLock.Lock()
 
-		group := groups.Back().Value.(*list.List)
-		if group.Len() >= GroupLimit {
-			group = list.New()
+		group := groups.Back().Value.(*IndexList)
+		if group.Len()+1 > settings.Elastic.GroupLength ||
+			group.Size+entrySize > settings.Elastic.GroupSize {
+
+			group = NewIndexList()
 			groups.PushBack(group)
 		}
 
 		group.PushBack(entry)
+		group.Size += entrySize
 
 		groupsLock.Unlock()
 	}
@@ -120,16 +124,20 @@ func workerBuffer() {
 func workerFailedBuffer() {
 	for {
 		entry := <-failedBuffer
+		entrySize := len(entry.Data)
 
 		failedGroupsLock.Lock()
 
-		failedGroup := failedGroups.Back().Value.(*list.List)
-		if failedGroup.Len() >= FailedGroupLimit {
-			failedGroup = list.New()
+		failedGroup := failedGroups.Back().Value.(*IndexList)
+		if failedGroup.Len()+1 > settings.Elastic.GroupLength ||
+			failedGroup.Size+entrySize > settings.Elastic.GroupSize {
+
+			failedGroup = NewIndexList()
 			failedGroups.PushBack(failedGroup)
 		}
 
 		failedGroup.PushBack(entry)
+		failedGroup.Size += entrySize
 
 		failedGroupsLock.Unlock()
 	}
@@ -139,12 +147,12 @@ func workerGroup() {
 	for {
 		groupsLock.Lock()
 		curGrps := groups
-		groups = list.New()
-		groups.PushBack(list.New())
+		groups = NewIndexList()
+		groups.PushBack(NewIndexList())
 		groupsLock.Unlock()
 
 		clnt := Default
-		if clnt == nil || curGrps.Front().Value.(*list.List).Len() == 0 {
+		if clnt == nil || curGrps.Front().Value.(*IndexList).Len() == 0 {
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -154,14 +162,14 @@ func workerGroup() {
 			count := 0
 
 			for elem := curGrps.Front(); elem != nil; elem = curGrps.Front() {
-				group := curGrps.Remove(elem).(*list.List)
+				group := curGrps.Remove(elem).(*IndexList)
 				if group.Len() == 0 {
 					continue
 				}
 
 				count += 1
 				waiters.Add(1)
-				go func(group *list.List) {
+				go func(group *IndexList) {
 					err := clnt.BulkDocuments(group, true)
 					if err != nil {
 						if logLimit() {
@@ -192,12 +200,12 @@ func workerFailedGroup() {
 	for {
 		failedGroupsLock.Lock()
 		curGrps := failedGroups
-		failedGroups = list.New()
-		failedGroups.PushBack(list.New())
+		failedGroups = NewIndexList()
+		failedGroups.PushBack(NewIndexList())
 		failedGroupsLock.Unlock()
 
 		clnt := Default
-		if clnt == nil || curGrps.Front().Value.(*list.List).Len() == 0 {
+		if clnt == nil || curGrps.Front().Value.(*IndexList).Len() == 0 {
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -207,14 +215,14 @@ func workerFailedGroup() {
 			count := 0
 
 			for elem := curGrps.Front(); elem != nil; elem = curGrps.Front() {
-				group := curGrps.Remove(elem).(*list.List)
+				group := curGrps.Remove(elem).(*IndexList)
 				if group.Len() == 0 {
 					continue
 				}
 
 				count += 1
 				waiters.Add(1)
-				go func(group *list.List) {
+				go func(group *IndexList) {
 					err := clnt.BulkDocuments(group, false)
 					if err != nil {
 						if logLimit() {
@@ -242,12 +250,12 @@ func workerFailedGroup() {
 }
 
 func init() {
-	buffer = make(chan *Document, BufferSize+500)
-	failedBuffer = make(chan *Document, BufferSize+500)
-	groups = list.New()
-	groups.PushBack(list.New())
-	failedGroups = list.New()
-	failedGroups.PushBack(list.New())
+	buffer = make(chan *Document, BufferLenMax)
+	failedBuffer = make(chan *Document, BufferLenMax)
+	groups = NewIndexList()
+	groups.PushBack(NewIndexList())
+	failedGroups = NewIndexList()
+	failedGroups.PushBack(NewIndexList())
 
 	module := requires.New("search")
 	module.After("settings")
