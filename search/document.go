@@ -2,7 +2,6 @@ package search
 
 import (
 	"bytes"
-	"container/list"
 	"encoding/json"
 	"io/ioutil"
 	"time"
@@ -11,13 +10,15 @@ import (
 	"github.com/opensearch-project/opensearch-go/opensearchapi"
 	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/pritunl-zero/errortypes"
+	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/sirupsen/logrus"
 )
 
 type Document struct {
 	Index    string
 	Id       string
-	Data     interface{}
+	Data     []byte
+	Size     int
 	NoRetry  bool
 	attempts int
 }
@@ -38,21 +39,35 @@ func Index(index string, data interface{}, noRetry bool) {
 		return
 	}
 
+	dataJson, err := json.Marshal(data)
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrap(err, "search: Failed to marshal doc"),
+		}
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("search: Failed to marshal index")
+		return
+	}
+
 	doc := &Document{
 		Index:   index + dateSuffix(),
 		Id:      bson.NewObjectID().Hex(),
-		Data:    data,
+		Data:    dataJson,
 		NoRetry: noRetry,
 	}
 
-	if len(buffer) <= BufferSize {
-		buffer <- doc
+	if len(buffer) <= settings.Elastic.BufferLength {
+		select {
+		case buffer <- doc:
+		default:
+		}
 	}
 
 	return
 }
 
-func (c *Client) BulkDocuments(docs *list.List, log bool) (err error) {
+func (c *Client) BulkDocuments(docs *IndexList, log bool) (err error) {
 	var resp *opensearchapi.Response
 
 	for i := 0; i < 3; i++ {
@@ -89,15 +104,7 @@ func (c *Client) BulkDocuments(docs *list.List, log bool) (err error) {
 			reqsData.Write(indexReq)
 			reqsData.Write([]byte("\n"))
 
-			indexDoc, e := json.Marshal(doc.Data)
-			if e != nil {
-				err = &errortypes.ParseError{
-					errors.Wrap(e, "search: Failed to marshal doc"),
-				}
-				return
-			}
-
-			reqsData.Write(indexDoc)
+			reqsData.Write(doc.Data)
 			reqsData.Write([]byte("\n"))
 		}
 
@@ -139,8 +146,11 @@ func (c *Client) BulkDocuments(docs *list.List, log bool) (err error) {
 				continue
 			}
 
-			if len(failedBuffer) <= BufferSize {
-				failedBuffer <- doc
+			if len(failedBuffer) <= settings.Elastic.BufferLength {
+				select {
+				case failedBuffer <- doc:
+				default:
+				}
 			}
 		}
 
