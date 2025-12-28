@@ -18,19 +18,29 @@ var (
 	buffer           chan *Document
 	failedBuffer     chan *Document
 	reconnect        = false
-	groups           *list.List
+	groups           *IndexList
 	groupsLock       = sync.Mutex{}
-	failedGroups     *list.List
+	failedGroups     *IndexList
 	failedGroupsLock = sync.Mutex{}
 )
 
 const (
-	BufferSize       = 2048
-	GroupLimit       = 100
-	FailedGroupLimit = 10
-	RetryCount       = 5
-	ThreadLimit      = 10
+	BufferLenMax = 2048
+	RetryCount   = 5
+	ThreadLimit  = 10
 )
+
+type IndexList struct {
+	*list.List
+	Size int
+}
+
+func NewIndexList() *IndexList {
+	return &IndexList{
+		List: list.New(),
+		Size: 0,
+	}
+}
 
 func hashConf(username, password string, addrs []string) []byte {
 	hash := md5.New()
