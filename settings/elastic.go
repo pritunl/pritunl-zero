@@ -10,6 +10,8 @@ type elastic struct {
 	ProxyRequests bool     `bson:"proxy_requests"`
 	BufferLength  int      `bson:"buffer_length" default:"1024"`
 	BufferSize    int      `bson:"buffer_size" default:"536870912"`
+	GroupLength   int      `bson:"group_length" default:"100"`
+	GroupSize     int      `bson:"group_size" default:"10485760"`
 }
 
 func newElastic() interface{} {
