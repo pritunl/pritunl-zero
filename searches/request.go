@@ -33,7 +33,6 @@ type Request struct {
 
 func (r *Request) Index() {
 	search.Index("zero-requests", r, false)
-	return
 }
 
 func init() {
