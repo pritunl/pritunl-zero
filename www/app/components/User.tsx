@@ -1,6 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
-import * as ReactRouter from 'react-router-dom';
+import RouterLink from './RouterLink';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as UserTypes from '../types/UserTypes';
 
