@@ -8,6 +8,8 @@ type elastic struct {
 	Username      string   `bson:"username"`
 	Password      string   `bson:"password"`
 	ProxyRequests bool     `bson:"proxy_requests"`
+	BufferLength  int      `bson:"buffer_length" default:"1024"`
+	BufferSize    int      `bson:"buffer_size" default:"536870912"`
 }
 
 func newElastic() interface{} {
