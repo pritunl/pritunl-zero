@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Improve elastic search indexing performance
+
 Version 1.0.3648.46 2025-11-19
 ------------------------------
 
