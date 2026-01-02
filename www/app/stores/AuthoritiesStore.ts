@@ -6,12 +6,14 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class AuthoritiesStore extends EventEmitter {
 	_authorities: AuthorityTypes.AuthoritiesRo = Object.freeze([]);
+	_authoritiesName: AuthorityTypes.AuthoritiesRo = Object.freeze([]);
 	_secrets: {[key: string]: string} = {};
 	_page: number;
 	_pageCount: number;
 	_filter: AuthorityTypes.Filter = null;
 	_count: number;
 	_map: {[key: string]: number} = {};
+	_mapName: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get authorities(): AuthorityTypes.AuthoritiesRo {
@@ -21,6 +23,22 @@ class AuthoritiesStore extends EventEmitter {
 	get authoritiesM(): AuthorityTypes.Authorities {
 		let authorities: AuthorityTypes.Authorities = [];
 		this._authorities.forEach((authority: AuthorityTypes.AuthorityRo): void => {
+			authorities.push({
+				...authority,
+			});
+		});
+		return authorities;
+	}
+
+	get authoritiesName(): AuthorityTypes.AuthoritiesRo {
+		return this._authoritiesName || [];
+	}
+
+	get authoritiesNameM(): AuthorityTypes.Authorities {
+		let authorities: AuthorityTypes.Authorities = [];
+		this._authoritiesName.forEach((
+			authority: AuthorityTypes.AuthorityRo): void => {
+
 			authorities.push({
 				...authority,
 			});
@@ -54,6 +72,14 @@ class AuthoritiesStore extends EventEmitter {
 			return null;
 		}
 		return this._authorities[i];
+	}
+
+	authorityName(id: string): AuthorityTypes.AuthorityRo {
+		let i = this._mapName[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._authoritiesName[i];
 	}
 
 	authoritySecret(id: string): string {
@@ -102,6 +128,17 @@ class AuthoritiesStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_syncNames(authorities: AuthorityTypes.Authority[]): void {
+		this._mapName = {};
+		for (let i = 0; i < authorities.length; i++) {
+			authorities[i] = Object.freeze(authorities[i]);
+			this._mapName[authorities[i].id] = i;
+		}
+
+		this._authoritiesName = Object.freeze(authorities);
+		this.emitChange();
+	}
+
 	_syncSecret(id: string, secret: string): void {
 		if (!secret) {
 			delete this._secrets[id];
@@ -127,6 +164,10 @@ class AuthoritiesStore extends EventEmitter {
 
 			case AuthorityTypes.SYNC_SECRET:
 				this._syncSecret(action.data.id, action.data.secret);
+				break;
+
+			case AuthorityTypes.SYNC_NAMES:
+				this._syncNames(action.data.authorities);
 				break;
 		}
 	}
