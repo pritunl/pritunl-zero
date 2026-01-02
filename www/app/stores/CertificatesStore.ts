@@ -6,20 +6,38 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class CertificatesStore extends EventEmitter {
 	_certificates: CertificateTypes.CertificatesRo = Object.freeze([]);
+	_certificatesName: CertificateTypes.CertificatesRo = Object.freeze([]);
 	_page: number;
 	_pageCount: number;
 	_filter: CertificateTypes.Filter = null;
 	_count: number;
 	_map: {[key: string]: number} = {};
+	_mapName: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get certificates(): CertificateTypes.CertificatesRo {
-		return this._certificates;
+		return this._certificates || [];
 	}
 
 	get certificatesM(): CertificateTypes.Certificates {
 		let certificates: CertificateTypes.Certificates = [];
 		this._certificates.forEach((
+			certificate: CertificateTypes.CertificateRo): void => {
+
+			certificates.push({
+				...certificate,
+			});
+		});
+		return certificates;
+	}
+
+	get certificatesName(): CertificateTypes.CertificatesRo {
+		return this._certificatesName || [];
+	}
+
+	get certificatesNameM(): CertificateTypes.Certificates {
+		let certificates: CertificateTypes.Certificates = [];
+		this._certificatesName.forEach((
 			certificate: CertificateTypes.CertificateRo): void => {
 
 			certificates.push({
@@ -55,6 +73,14 @@ class CertificatesStore extends EventEmitter {
 			return null;
 		}
 		return this._certificates[i];
+	}
+
+	certificateName(id: string): CertificateTypes.CertificateRo {
+		let i = this._mapName[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._certificatesName[i];
 	}
 
 	emitChange(): void {
@@ -99,6 +125,17 @@ class CertificatesStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_syncNames(certificates: CertificateTypes.Certificate[]): void {
+		this._mapName = {};
+		for (let i = 0; i < certificates.length; i++) {
+			certificates[i] = Object.freeze(certificates[i]);
+			this._mapName[certificates[i].id] = i;
+		}
+
+		this._certificatesName = Object.freeze(certificates);
+		this.emitChange();
+	}
+
 	_callback(action: CertificateTypes.CertificateDispatch): void {
 		switch (action.type) {
 			case CertificateTypes.TRAVERSE:
@@ -111,6 +148,10 @@ class CertificatesStore extends EventEmitter {
 
 			case CertificateTypes.SYNC:
 				this._sync(action.data.certificates, action.data.count);
+				break;
+
+			case CertificateTypes.SYNC_NAMES:
+				this._syncNames(action.data.certificates);
 				break;
 		}
 	}
