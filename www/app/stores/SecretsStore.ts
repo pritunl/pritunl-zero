@@ -6,11 +6,13 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class SecretsStore extends EventEmitter {
 	_secrets: SecretTypes.SecretsRo = Object.freeze([]);
+	_secretsName: SecretTypes.SecretsRo = Object.freeze([]);
 	_page: number;
 	_pageCount: number;
 	_filter: SecretTypes.Filter = null;
 	_count: number;
 	_map: {[key: string]: number} = {};
+	_mapName: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get secrets(): SecretTypes.SecretsRo {
@@ -20,6 +22,22 @@ class SecretsStore extends EventEmitter {
 	get secretsM(): SecretTypes.Secrets {
 		let secrets: SecretTypes.Secrets = [];
 		this._secrets.forEach((secret: SecretTypes.SecretRo): void => {
+			secrets.push({
+				...secret,
+			});
+		});
+		return secrets;
+	}
+
+	get secretsName(): SecretTypes.SecretsRo {
+		return this._secretsName || [];
+	}
+
+	get secretsNameM(): SecretTypes.Secrets {
+		let secrets: SecretTypes.Secrets = [];
+		this._secretsName.forEach((
+			secret: SecretTypes.SecretRo): void => {
+
 			secrets.push({
 				...secret,
 			});
@@ -53,6 +71,14 @@ class SecretsStore extends EventEmitter {
 			return null;
 		}
 		return this._secrets[i];
+	}
+
+	secretName(id: string): SecretTypes.SecretRo {
+		let i = this._mapName[id];
+		if (i === undefined) {
+			return null;
+		}
+		return this._secretsName[i];
 	}
 
 	emitChange(): void {
@@ -97,6 +123,17 @@ class SecretsStore extends EventEmitter {
 		this.emitChange();
 	}
 
+	_syncNames(secrets: SecretTypes.Secret[]): void {
+		this._mapName = {};
+		for (let i = 0; i < secrets.length; i++) {
+			secrets[i] = Object.freeze(secrets[i]);
+			this._mapName[secrets[i].id] = i;
+		}
+
+		this._secretsName = Object.freeze(secrets);
+		this.emitChange();
+	}
+
 	_callback(action: SecretTypes.SecretDispatch): void {
 		switch (action.type) {
 			case SecretTypes.TRAVERSE:
@@ -109,6 +146,10 @@ class SecretsStore extends EventEmitter {
 
 			case SecretTypes.SYNC:
 				this._sync(action.data.secrets, action.data.count);
+				break;
+
+			case SecretTypes.SYNC_NAMES:
+				this._syncNames(action.data.secrets);
 				break;
 		}
 	}
