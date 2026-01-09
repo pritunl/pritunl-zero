@@ -34,7 +34,7 @@
     "react-dom": "18.3.1",
     "react-lifecycles-compat": "3.0.4",
     "react-markdown": "9.0.1",
-    "react-router-dom": "6.23.1",
+    "react-router-dom": "6.30.3",
     "react-transition-group": "4.4.5",
     "superagent": "9.0.2",
     "systemjs": "6.15.1",
