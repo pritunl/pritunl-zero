@@ -6,17 +6,17 @@ import * as GlobalTypes from '../types/GlobalTypes';
 
 class ServicesStore extends EventEmitter {
 	_services: ServiceTypes.ServicesRo = Object.freeze([]);
-	_services_name: ServiceTypes.ServicesRo = Object.freeze([]);
+	_servicesName: ServiceTypes.ServicesRo = Object.freeze([]);
 	_page: number;
 	_pageCount: number;
 	_filter: ServiceTypes.Filter = null;
 	_count: number;
 	_map: {[key: string]: number} = {};
-	_map_name: {[key: string]: number} = {};
+	_mapName: {[key: string]: number} = {};
 	_token = Dispatcher.register((this._callback).bind(this));
 
 	get services(): ServiceTypes.ServicesRo {
-		return this._services;
+		return this._services || [];
 	}
 
 	get servicesM(): ServiceTypes.Services {
@@ -30,12 +30,12 @@ class ServicesStore extends EventEmitter {
 	}
 
 	get servicesName(): ServiceTypes.ServicesRo {
-		return this._services_name;
+		return this._servicesName || [];
 	}
 
 	get servicesNameM(): ServiceTypes.Services {
 		let services: ServiceTypes.Services = [];
-		this._services_name.forEach((service: ServiceTypes.ServiceRo): void => {
+		this._servicesName.forEach((service: ServiceTypes.ServiceRo): void => {
 			services.push({
 				...service,
 			});
@@ -72,11 +72,11 @@ class ServicesStore extends EventEmitter {
 	}
 
 	serviceName(id: string): ServiceTypes.ServiceRo {
-		let i = this._map_name[id];
+		let i = this._mapName[id];
 		if (i === undefined) {
 			return null;
 		}
-		return this._services_name[i];
+		return this._servicesName[i];
 	}
 
 	emitChange(): void {
@@ -121,14 +121,14 @@ class ServicesStore extends EventEmitter {
 		this.emitChange();
 	}
 
-	_sync_names(services: ServiceTypes.Service[]): void {
-		this._map_name = {};
+	_syncNames(services: ServiceTypes.Service[]): void {
+		this._mapName = {};
 		for (let i = 0; i < services.length; i++) {
 			services[i] = Object.freeze(services[i]);
-			this._map_name[services[i].id] = i;
+			this._mapName[services[i].id] = i;
 		}
 
-		this._services_name = Object.freeze(services);
+		this._servicesName = Object.freeze(services);
 		this.emitChange();
 	}
 
@@ -147,7 +147,7 @@ class ServicesStore extends EventEmitter {
 				break;
 
 			case ServiceTypes.SYNC_NAMES:
-				this._sync_names(action.data.services);
+				this._syncNames(action.data.services);
 				break;
 		}
 	}
