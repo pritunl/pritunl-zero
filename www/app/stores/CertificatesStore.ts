@@ -139,19 +139,27 @@ class CertificatesStore extends EventEmitter {
 	_callback(action: CertificateTypes.CertificateDispatch): void {
 		switch (action.type) {
 			case CertificateTypes.TRAVERSE:
-				this._traverse(action.data.page);
+				if (action.data && action.data.page !== undefined) {
+					this._traverse(action.data.page);
+				}
 				break;
 
 			case CertificateTypes.FILTER:
-				this._filterCallback(action.data.filter);
+				if (action.data) {
+					this._filterCallback(action.data.filter);
+				}
 				break;
 
 			case CertificateTypes.SYNC:
-				this._sync(action.data.certificates, action.data.count);
+				if (action.data && action.data.certificates && action.data.count !== undefined) {
+					this._sync(action.data.certificates, action.data.count);
+				}
 				break;
 
 			case CertificateTypes.SYNC_NAMES:
-				this._syncNames(action.data.certificates);
+				if (action.data && action.data.certificates) {
+					this._syncNames(action.data.certificates);
+				}
 				break;
 		}
 	}

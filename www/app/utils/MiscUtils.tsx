@@ -316,3 +316,18 @@ export function highlightMatch(input: string, query: string): React.ReactNode {
 		{input.substring(index + query.length)}
 	</span>;
 }
+
+export class SyncInterval {
+	private interval: number | null = null;
+
+	constructor(callback: () => void, delay: number) {
+		this.interval = window.setInterval(callback, delay);
+	}
+
+	stop(): void {
+		if (this.interval !== null) {
+			window.clearInterval(this.interval);
+			this.interval = null;
+		}
+	}
+}

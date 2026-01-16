@@ -129,7 +129,9 @@ export default class CheckDetailed extends React.Component<Props, State> {
 			message: '',
 			addRole: '',
 			addTarget: '',
-			check: {},
+			check: {
+			id: null,
+		},
 		};
 	}
 

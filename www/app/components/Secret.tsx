@@ -108,6 +108,9 @@ export default class Secret extends React.Component<Props, {}> {
 			case 'oracle_cloud':
 				secType = 'Oracle Cloud';
 				break;
+			case 'gcp':
+				secType = 'GCP';
+				break;
 			default:
 				secType = 'Unknown';
 		}
