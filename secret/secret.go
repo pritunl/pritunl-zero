@@ -44,6 +44,11 @@ func (c *Secret) Validate(db *database.Database) (
 		break
 	case OracleCloud:
 		break
+	case GCP:
+		c.Value = ""
+		c.Region = ""
+
+		break
 	default:
 		errData = &errortypes.ErrorData{
 			Error:   "invalid_secret_type",

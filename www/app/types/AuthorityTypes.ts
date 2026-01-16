@@ -4,13 +4,14 @@ export const CHANGE = 'authority.change';
 export const TRAVERSE = 'authority.traverse';
 export const FILTER = 'authority.filter';
 export const SYNC_SECRET = 'authority.sync_secret';
+export const SYNC_NAMES = 'authority.sync_names';
 
 export interface Info {
 	key_alg?: string;
 }
 
 export interface Authority {
-	id: string;
+	id: string | null;
 	name?: string;
 	type?: string;
 	algorithm?: string;

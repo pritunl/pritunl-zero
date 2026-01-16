@@ -11,6 +11,7 @@ type acme struct {
 	DnsAwsTtl         int    `bson:"dns_aws_ttl" default:"30"`
 	DnsCloudflareTtl  int    `bson:"dns_cloudflare_ttl" default:"60"`
 	DnsOracleCloudTtl int    `bson:"dns_oracle_cloud_ttl" default:"30"`
+	DnsGcpTtl         int    `bson:"dns_gcp_ttl" default:"30"`
 }
 
 func newAcme() interface{} {

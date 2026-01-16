@@ -224,6 +224,20 @@ export default class SecretDetailed extends React.Component<Props, State> {
 				publicKeyHelp = "Public key for Oracle Cloud API authentication.";
 				publicKeyPlaceholder = "Oracle Cloud Public Key";
 				break;
+			case "gcp":
+				keyLabel = "GCP Service Account JSON";
+				keyHelp = "Service account JSON credentials for GCP API authentication.";
+				keyPlaceholder = "Service Account JSON";
+				valLabel = "";
+				valHelp = "";
+				valPlaceholder = "";
+				regionLabel = "";
+				regionHelp = "";
+				regionPlaceholder = "";
+				publicKeyLabel = "";
+				publicKeyHelp = "";
+				publicKeyPlaceholder = "";
+				break;
 		}
 
 		return <td
@@ -296,17 +310,31 @@ export default class SecretDetailed extends React.Component<Props, State> {
 							this.set('comment', val);
 						}}
 					/>
-					<PageInput
-						label={keyLabel}
-						help={keyHelp}
-						hidden={keyLabel === ""}
-						type="text"
-						placeholder={keyPlaceholder}
-						value={secr.key}
-						onChange={(val: string): void => {
-							this.set('key', val);
-						}}
-					/>
+					{secr.type === "gcp" ? (
+						<PageTextArea
+							disabled={this.state.disabled}
+							label={keyLabel}
+							help={keyHelp}
+							placeholder={keyPlaceholder}
+							rows={10}
+							value={secr.key}
+							onChange={(val: string): void => {
+								this.set('key', val);
+							}}
+						/>
+					) : (
+						<PageInput
+							label={keyLabel}
+							help={keyHelp}
+							hidden={keyLabel === ""}
+							type="text"
+							placeholder={keyPlaceholder}
+							value={secr.key}
+							onChange={(val: string): void => {
+								this.set('key', val);
+							}}
+						/>
+					)}
 					<PageInput
 						label={valLabel}
 						help={valHelp}
@@ -351,6 +379,7 @@ export default class SecretDetailed extends React.Component<Props, State> {
 						<option value="aws">AWS</option>
 						<option value="cloudflare">Cloudflare</option>
 						<option value="oracle_cloud">Oracle Cloud</option>
+						<option value="gcp">GCP</option>
 					</PageSelect>
 					<PageTextArea
 						disabled={this.state.disabled}

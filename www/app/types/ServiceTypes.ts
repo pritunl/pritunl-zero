@@ -21,7 +21,7 @@ export interface Server {
 }
 
 export interface Service {
-	id: string;
+	id: string | null;
 	name?: string;
 	type?: string;
 	http2?: boolean;
