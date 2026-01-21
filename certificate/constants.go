@@ -10,5 +10,5 @@ const (
 	AcmeAWS         = "acme_aws"
 	AcmeCloudflare  = "acme_cloudflare"
 	AcmeOracleCloud = "acme_oracle_cloud"
-	AcmeGCP         = "acme_gcp"
+	AcmeGoogleCloud = "acme_google_cloud"
 )
