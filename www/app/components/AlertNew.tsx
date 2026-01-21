@@ -127,6 +127,7 @@ export default class AlertDetailed extends React.Component<Props, State> {
 			addRole: '',
 			addIgnore: '',
 			alert: {
+				id: null,
 				resource: "system_memory_level",
 				level: 5,
 			},

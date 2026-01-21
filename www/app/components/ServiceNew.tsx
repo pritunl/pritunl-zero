@@ -110,7 +110,9 @@ export default class ServiceNew extends React.Component<Props, State> {
 			message: '',
 			addRole: '',
 			addWhitelistNet: '',
-			service: {},
+			service: {
+			id: null,
+		},
 		};
 	}
 

@@ -125,6 +125,11 @@ class SecretsStore extends EventEmitter {
 
 	_syncNames(secrets: SecretTypes.Secret[]): void {
 		this._mapName = {};
+		if (!secrets || !Array.isArray(secrets)) {
+			this._secretsName = Object.freeze([]);
+			this.emitChange();
+			return;
+		}
 		for (let i = 0; i < secrets.length; i++) {
 			secrets[i] = Object.freeze(secrets[i]);
 			this._mapName[secrets[i].id] = i;
@@ -149,7 +154,11 @@ class SecretsStore extends EventEmitter {
 				break;
 
 			case SecretTypes.SYNC_NAMES:
-				this._syncNames(action.data.secrets);
+				if (action.data && action.data.secrets) {
+					this._syncNames(action.data.secrets);
+				} else {
+					this._syncNames([]);
+				}
 				break;
 		}
 	}

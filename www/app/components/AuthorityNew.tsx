@@ -112,6 +112,7 @@ export default class AuthorityDetailed extends React.Component<Props, State> {
 			addMatch: null,
 			addSubnet: null,
 			authority: {
+				id: null,
 				name: 'New Authority',
 			},
 		};

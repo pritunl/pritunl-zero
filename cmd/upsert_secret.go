@@ -63,6 +63,11 @@ func init() {
 		"",
 		"Oracle Cloud region",
 	)
+	UpsertSecretCmd.PersistentFlags().String(
+		"gcp-credentials",
+		"",
+		"GCP service account JSON credentials",
+	)
 	UpsertCmd.AddCommand(UpsertSecretCmd)
 }
 
@@ -117,6 +122,8 @@ var UpsertSecretCmd = &cobra.Command{
 				secr.Type = secret.Cloudflare
 			case "oracle_cloud":
 				secr.Type = secret.OracleCloud
+			case "gcp":
+				secr.Type = secret.GCP
 			default:
 				fmt.Fprintf(
 					os.Stderr,
@@ -161,6 +168,13 @@ var UpsertSecretCmd = &cobra.Command{
 			if cmd.Flags().Changed("oracle-region") {
 				fields.Add("region")
 				secr.Region, _ = cmd.Flags().GetString("oracle-region")
+			}
+		}
+
+		if secr.Type == secret.GCP {
+			if cmd.Flags().Changed("gcp-credentials") {
+				fields.Add("key")
+				secr.Key, _ = cmd.Flags().GetString("gcp-credentials")
 			}
 		}
 
