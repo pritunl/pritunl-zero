@@ -54,7 +54,7 @@ func init() {
 	UpsertCertificateCmd.PersistentFlags().String(
 		"acme-api",
 		"",
-		"ACME DNS provider (aws, cloudflare, oracle_cloud, gcp)",
+		"ACME DNS provider (aws, cloudflare, oracle_cloud, google_cloud)",
 	)
 	UpsertCertificateCmd.PersistentFlags().String(
 		"acme-secret",
@@ -171,8 +171,8 @@ var UpsertCertificateCmd = &cobra.Command{
 				cert.AcmeAuth = certificate.AcmeCloudflare
 			case "oracle_cloud":
 				cert.AcmeAuth = certificate.AcmeOracleCloud
-			case "gcp":
-				cert.AcmeAuth = certificate.AcmeGCP
+			case "google_cloud":
+				cert.AcmeAuth = certificate.AcmeGoogleCloud
 			case "":
 				cert.AcmeAuth = ""
 			default:
