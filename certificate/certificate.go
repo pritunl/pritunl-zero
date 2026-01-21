@@ -86,7 +86,7 @@ func (c *Certificate) Validate(db *database.Database) (
 			break
 		case AcmeOracleCloud:
 			break
-		case AcmeGCP:
+		case AcmeGoogleCloud:
 			break
 		default:
 			errData = &errortypes.ErrorData{
