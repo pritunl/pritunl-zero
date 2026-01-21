@@ -37,6 +37,7 @@ function connect(): void {
 
 		setTimeout(() => {
 			if (pendingEvents[eventId]) {
+				console.log(eventData);
 				EventDispatcher.dispatch(eventData);
 
 				delete pendingEvents[eventId];

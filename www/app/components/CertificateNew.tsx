@@ -95,7 +95,6 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 			message: '',
 			addDomain: null,
 			certificate: {
-				id: null,
 				name: 'New Certificate',
 			},
 		};
@@ -376,7 +375,6 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 							<option value="acme_aws">AWS</option>
 							<option value="acme_cloudflare">Cloudflare</option>
 							<option value="acme_oracle_cloud">Oracle Cloud</option>
-							<option value="acme_gcp">GCP</option>
 						</PageSelect>
 						<PageSelect
 							disabled={this.state.disabled}

@@ -8,7 +8,7 @@ export const FILTER = 'endpoint.filter';
 export const CHANGE = 'endpoint.change';
 
 export interface Endpoint {
-	id: string | null;
+	id: string;
 	name?: string;
 	roles?: string[];
 	client_key?: ClientKey;

@@ -112,9 +112,7 @@ export default class EndpointNew extends React.Component<Props, State> {
 			message: '',
 			addRole: '',
 			showCharts: true,
-			endpoint: {
-			id: null,
-		},
+			endpoint: {},
 		};
 	}
 

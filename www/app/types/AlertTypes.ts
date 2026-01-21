@@ -6,7 +6,7 @@ export const FILTER = 'alert.filter';
 export const CHANGE = 'alert.change';
 
 export interface Alert {
-	id: string | null;
+	id: string;
 	name?: string;
 	roles?: string[];
 	resource?: string;

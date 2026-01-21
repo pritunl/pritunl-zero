@@ -1,6 +1,5 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'secret.sync';
-export const SYNC_NAMES = 'secret.sync_names';
 export const TRAVERSE = 'secret.traverse';
 export const FILTER = 'secret.filter';
 export const CHANGE = 'secret.change';

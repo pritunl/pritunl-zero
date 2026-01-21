@@ -1,9 +1,6 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'certificate.sync';
 export const CHANGE = 'certificate.change';
-export const SYNC_NAMES = 'certificate.sync_names';
-export const TRAVERSE = 'certificate.traverse';
-export const FILTER = 'certificate.filter';
 
 export interface Info {
 	signature_alg?: string;
@@ -15,7 +12,7 @@ export interface Info {
 }
 
 export interface Certificate {
-	id: string | null;
+	id: string;
 	name?: string;
 	comment?: string;
 	type?: string;
@@ -26,11 +23,6 @@ export interface Certificate {
 	acme_auth?: string;
 	acme_secret?: string;
 	acme_domains?: string[];
-}
-
-export interface Filter {
-	id?: string;
-	name?: string;
 }
 
 export type Certificates = Certificate[];
@@ -44,8 +36,5 @@ export interface CertificateDispatch {
 		id?: string;
 		certificate?: Certificate;
 		certificates?: Certificates;
-		page?: number;
-		filter?: Filter;
-		count?: number;
 	};
 }
