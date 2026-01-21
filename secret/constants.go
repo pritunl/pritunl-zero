@@ -4,5 +4,5 @@ const (
 	AWS         = "aws"
 	Cloudflare  = "cloudflare"
 	OracleCloud = "oracle_cloud"
-	GCP         = "gcp"
+	GoogleCloud = "google_cloud"
 )
