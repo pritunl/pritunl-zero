@@ -123,7 +123,7 @@ var UpsertSecretCmd = &cobra.Command{
 			case "oracle_cloud":
 				secr.Type = secret.OracleCloud
 			case "gcp":
-				secr.Type = secret.GCP
+				secr.Type = secret.GoogleCloud
 			default:
 				fmt.Fprintf(
 					os.Stderr,
@@ -171,10 +171,10 @@ var UpsertSecretCmd = &cobra.Command{
 			}
 		}
 
-		if secr.Type == secret.GCP {
-			if cmd.Flags().Changed("gcp-credentials") {
+		if secr.Type == secret.GoogleCloud {
+			if cmd.Flags().Changed("google-service-key") {
 				fields.Add("key")
-				secr.Key, _ = cmd.Flags().GetString("gcp-credentials")
+				secr.Key, _ = cmd.Flags().GetString("google-service-key")
 			}
 		}
 
