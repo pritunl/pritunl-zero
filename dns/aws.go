@@ -116,10 +116,11 @@ func (a *Aws) DnsCommit(db *database.Database,
 			Value: aws.String(op.Value),
 		}
 
-		if op.Operation == UPSERT || op.Operation == RETAIN {
+		switch op.Operation {
+		case UPSERT, RETAIN:
 			operations = append(operations, "add:"+op.Value)
 			updateResourceRecs = append(updateResourceRecs, resourceRec)
-		} else {
+		case DELETE:
 			curVals, e := a.DnsFind(db, domain, recordType)
 			if e != nil {
 				err = e
