@@ -120,6 +120,28 @@ func (a *Aws) DnsCommit(db *database.Database,
 			operations = append(operations, "add:"+op.Value)
 			updateResourceRecs = append(updateResourceRecs, resourceRec)
 		} else {
+			curVals, e := a.DnsFind(db, domain, recordType)
+			if e != nil {
+				err = e
+				return
+			}
+
+			exists := false
+			for _, val := range curVals {
+				if val == op.Value {
+					exists = true
+					break
+				}
+			}
+
+			if !exists {
+				logrus.WithFields(logrus.Fields{
+					"domain":    domain,
+					"operation": "remove:" + op.Value,
+				}).Info("domain: Skipping delete on changed record")
+				continue
+			}
+
 			operations = append(operations, "remove:"+op.Value)
 			deleteResourceRecs = append(deleteResourceRecs, resourceRec)
 		}
@@ -130,7 +152,7 @@ func (a *Aws) DnsCommit(db *database.Database,
 		"operations": operations,
 	}).Info("domain: AWS dns batch operation")
 
-	if len(deleteResourceRecs) > 0 {
+	if len(updateResourceRecs) == 0 && len(deleteResourceRecs) > 0 {
 		input := &route53.ChangeResourceRecordSetsInput{
 			ChangeBatch: &route53.ChangeBatch{
 				Changes: []*route53.Change{
