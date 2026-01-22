@@ -44,7 +44,7 @@ func (c *Secret) Validate(db *database.Database) (
 		break
 	case OracleCloud:
 		break
-	case GCP:
+	case GoogleCloud:
 		c.Value = ""
 		c.Region = ""
 
