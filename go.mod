@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.49.21
 	github.com/cloudflare/cloudflare-go v0.103.0
 	github.com/dropbox/godropbox v0.0.0-20230623171840-436d2007a9fd
-	github.com/duosecurity/duo_api_golang v0.0.0-20230418202038-096d3306c029
+	github.com/duosecurity/duo_api_golang v0.0.0-20250430191550-ac36954387e7
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.12.3
 	github.com/gorilla/securecookie v1.1.2
