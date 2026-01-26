@@ -1,5 +1,8 @@
 /// <reference path="../References.d.ts"/>
 export const SYNC = 'certificate.sync';
+export const SYNC_NAMES = 'certificate.sync_names';
+export const TRAVERSE = 'certificate.traverse';
+export const FILTER = 'certificate.filter';
 export const CHANGE = 'certificate.change';
 
 export interface Info {
