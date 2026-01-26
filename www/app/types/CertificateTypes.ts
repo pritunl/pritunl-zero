@@ -12,7 +12,7 @@ export interface Info {
 }
 
 export interface Certificate {
-	id: string;
+	id?: string;
 	name?: string;
 	comment?: string;
 	type?: string;
