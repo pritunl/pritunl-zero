@@ -11,7 +11,7 @@ export interface Info {
 }
 
 export interface Authority {
-	id: string;
+	id?: string;
 	name?: string;
 	type?: string;
 	algorithm?: string;
