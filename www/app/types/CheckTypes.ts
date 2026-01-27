@@ -6,7 +6,7 @@ export const FILTER = 'check.filter';
 export const CHANGE = 'check.change';
 
 export interface Check {
-	id: string;
+	id?: string;
 	name?: string;
 	roles?: string[];
 	frequency?: number;
