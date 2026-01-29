@@ -669,7 +669,7 @@ export default class ServiceNew extends React.Component<Props, State> {
 						</PageSelect>
 						<PageInput
 							label="Logout Path"
-							help="Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards."
+							help="Optional, path such as '/logout' that will end the Pritunl Zero users session. Supports '*' and '?' wildcards. This can cause unintentional logouts due to Chrome prefetching pages."
 							type="text"
 							placeholder="Enter logout path"
 							value={service.logout_path}
