@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Update Duo API
+
 Version 1.0.3688.99 2025-12-29
 ------------------------------
 
