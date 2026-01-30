@@ -58,7 +58,7 @@ const css = {
 	} as React.CSSProperties,
 	tag: {
 		margin: '8px 5px 0 5px',
-		height: '20px',
+		minHeight: '20px',
 	} as React.CSSProperties,
 	bars: {
 		verticalAlign: 'top',

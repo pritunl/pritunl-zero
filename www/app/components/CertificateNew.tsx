@@ -48,7 +48,7 @@ const css = {
 	} as React.CSSProperties,
 	domain: {
 		margin: '9px 5px 0 5px',
-		height: '20px',
+		minHeight: '20px',
 	} as React.CSSProperties,
 	itemsLabel: {
 		display: 'block',
