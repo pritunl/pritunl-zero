@@ -11,46 +11,61 @@ import CompletionStore from '../stores/CompletionStore';
 import * as MiscUtils from '../utils/MiscUtils';
 
 let syncId: string;
+let lastSyncTime: number | null = null;
+let syncInProgress: boolean = false;
 
 export function sync(): Promise<void> {
+	if (syncInProgress) {
+		return Promise.resolve();
+	}
+
+	syncInProgress = true;
 	let curSyncId = MiscUtils.uuid();
 	syncId = curSyncId;
 
 	return new Promise<void>((resolve, reject): void => {
-		SuperAgent
-			.get('/completion')
-			.query({
-				...CompletionStore.filter,
-			})
-			.set('Accept', 'application/json')
-			.set('Csrf-Token', Csrf.token)
-			.end((err: any, res: SuperAgent.Response): void => {
-				if (res && res.status === 401) {
-					window.location.href = '/login';
+		try {
+			SuperAgent
+				.get('/completion')
+				.query({
+					...CompletionStore.filter,
+				})
+				.set('Accept', 'application/json')
+				.set('Csrf-Token', Csrf.token)
+				.end((err: any, res: SuperAgent.Response): void => {
+					syncInProgress = false;
+
+					if (res && res.status === 401) {
+						window.location.href = '/login';
+						resolve();
+						return;
+					}
+
+					if (curSyncId !== syncId) {
+						resolve();
+						return;
+					}
+
+					if (err) {
+						Alert.errorRes(res, 'Failed to load completion data');
+						reject(err);
+						return;
+					}
+
+					Dispatcher.dispatch({
+						type: CompletionTypes.SYNC,
+						data: {
+							completion: res.body,
+						},
+					});
+
+					lastSyncTime = Date.now();
 					resolve();
-					return;
-				}
-
-				if (curSyncId !== syncId) {
-					resolve();
-					return;
-				}
-
-				if (err) {
-					Alert.errorRes(res, 'Failed to load completion data');
-					reject(err);
-					return;
-				}
-
-				Dispatcher.dispatch({
-					type: CompletionTypes.SYNC,
-					data: {
-						completion: res.body,
-					},
 				});
-
-				resolve();
-			});
+		} catch (e) {
+			syncInProgress = false;
+			reject(e);
+		}
 	});
 }
 
