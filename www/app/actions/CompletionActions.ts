@@ -69,6 +69,10 @@ export function sync(): Promise<void> {
 	});
 }
 
+export function lastSync(): number | null {
+	return lastSyncTime;
+}
+
 export function filter(filt: CompletionTypes.Filter): Promise<void> {
 	Dispatcher.dispatch({
 		type: CompletionTypes.FILTER,
