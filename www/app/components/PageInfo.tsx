@@ -9,6 +9,7 @@ export interface Field {
 	label: string;
 	value?: string | number | string[];
 	hover?: JSX.Element;
+	link?: string;
 	copy?: boolean;
 	embedded?: Props;
 	maxLines?: number;
@@ -58,6 +59,16 @@ const css = {
 	embedded: {
 		minWidth: '300px',
 		padding: '10px',
+		maxHeight: '320px',
+		overflowY: 'auto',
+	} as React.CSSProperties,
+	link: {
+		verticalAlign: 'middle',
+		cursor: 'pointer',
+		marginLeft: '3px',
+		position: 'relative',
+		top: '-1px',
+		opacity: 0.8,
 	} as React.CSSProperties,
 };
 
@@ -67,13 +78,18 @@ export default class PageInfo extends React.Component<Props, {}> {
 		let bars: JSX.Element[] = [];
 		let itemStyle = this.props.compact ? css.itemCompact : css.item;
 
-		for (let field of this.props.fields || []) {
+		(this.props.fields || []).forEach((field, index, array) => {
 			if (field == null) {
-				continue;
+				return;
+			}
+
+			if (this.props.embedded && index === array.length - 1) {
+				itemStyle = css.itemLast
 			}
 
 			let value: string | JSX.Element[];
 			let copyBtn: JSX.Element;
+			let linkBtn: JSX.Element;
 
 			if (typeof field.value === 'string') {
 				value = field.value;
@@ -115,6 +131,18 @@ export default class PageInfo extends React.Component<Props, {}> {
 				}
 			}
 
+			if (field.link) {
+				linkBtn = <a
+					target="_blank"
+					href={field.link}
+				>
+					<span
+						style={css.link}
+						className="bp5-icon-standard bp5-icon-document-open bp5-intent-primary"
+					/>
+				</a>
+			}
+
 			if (field.hover || field.embedded) {
 				fields.push(
 					<Blueprint.Popover
@@ -125,12 +153,12 @@ export default class PageInfo extends React.Component<Props, {}> {
 						content={field.hover || <div
 							style={css.embedded}
 							className="bp5-content-popover">
-								<PageInfo {...field.embedded}/>
+								<PageInfo embedded={true} {...field.embedded}/>
 							</div>
 						}
 						renderTarget={({isOpen, ...targetProps}): JSX.Element => {
 								return <div {...targetProps} style={itemStyle}>
-								{field.label}
+								{field.label}{linkBtn}
 								<div
 									className={field.valueClass || 'bp5-text-muted'}
 									style={css.value}
@@ -150,7 +178,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 
 				fields.push(
 					<div key={field.label} style={itemStyle}>
-						{field.label}
+						{field.label}{linkBtn}
 						<div
 							className={field.valueClass || 'bp5-text-muted'}
 							style={style}
@@ -160,7 +188,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 					</div>,
 				);
 			}
-		}
+		})
 
 		if (this.props.bars) {
 			for (let i = 0; i < this.props.bars.length; i++) {
