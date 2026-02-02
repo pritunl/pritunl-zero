@@ -28,12 +28,18 @@ export interface Props {
 	fields?: Field[];
 	bars?: Bar[];
 	compact?: boolean;
+	embedded?: boolean;
 }
 
 const css = {
 	label: {
 		width: '100%',
 		maxWidth: '320px',
+	} as React.CSSProperties,
+	labelEmbedded: {
+		width: '100%',
+		maxWidth: '320px',
+		marginBottom: '0px',
 	} as React.CSSProperties,
 	value: {
 		wordWrap: 'break-word',
@@ -48,6 +54,10 @@ const css = {
 	item: {
 		marginTop: '0px',
 		marginBottom: '5px',
+	} as React.CSSProperties,
+	itemLast: {
+		marginTop: '0px',
+		marginBottom: '0px',
 	} as React.CSSProperties,
 	itemCompact: {
 		marginTop: '0px',
@@ -217,13 +227,17 @@ export default class PageInfo extends React.Component<Props, {}> {
 		}
 
 		let labelStyle: React.CSSProperties;
+		if (this.props.embedded) {
+			labelStyle = css.labelEmbedded
+		} else {
+			labelStyle = css.label
+		}
+
 		if (this.props.style) {
 			labelStyle = {
-				...css.label,
+				...labelStyle,
 				...this.props.style,
 			};
-		} else {
-			labelStyle = css.label;
 		}
 
 		return <label
