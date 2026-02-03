@@ -108,17 +108,21 @@ export function dark(): void {
 	});
 }
 
-export function toggle(): void {
-  if (theme === "dark" && themeVer === 3) {
+export function toggle(ver3: boolean): void {
+  if (theme === "dark") {
 		light();
-  } else if (theme === "light" && themeVer === 3) {
+		if (ver3) {
+    	themeVer3();
+		} else {
+    	themeVer5();
+		}
+  } else if (theme === "light") {
 		dark();
-    themeVer5();
-  } else if (theme === "dark" && themeVer === 5) {
-		light();
-  } else if (theme === "light" && themeVer === 5) {
-		dark();
-    themeVer3();
+		if (ver3) {
+    	themeVer3();
+		} else {
+    	themeVer5();
+		}
   }
 }
 
