@@ -6,6 +6,7 @@ import CopyButton from './CopyButton';
 export interface Field {
 	valueClass?: string;
 	valueClasses?: string[];
+	key?: string;
 	label: string;
 	value?: string | number | string[];
 	hover?: JSX.Element;
@@ -187,7 +188,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 				}
 
 				fields.push(
-					<div key={field.label} style={itemStyle}>
+					<div key={field.key || field.label} style={itemStyle}>
 						{field.label}{linkBtn}
 						<div
 							className={field.valueClass || 'bp5-text-muted'}
