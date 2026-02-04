@@ -109,21 +109,21 @@ export function dark(): void {
 }
 
 export function toggle(ver3: boolean): void {
-  if (theme === "dark") {
+	if (theme === "dark") {
 		light();
 		if (ver3) {
-    	themeVer3();
+			themeVer3();
 		} else {
-    	themeVer5();
+			themeVer5();
 		}
-  } else if (theme === "light") {
+	} else if (theme === "light") {
 		dark();
 		if (ver3) {
-    	themeVer3();
+			themeVer3();
 		} else {
-    	themeVer5();
+			themeVer5();
 		}
-  }
+	}
 }
 
 export function getEditorTheme(): string {
