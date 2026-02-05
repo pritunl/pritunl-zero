@@ -3,7 +3,6 @@ import * as React from 'react';
 import LoadingStore from '../stores/LoadingStore';
 
 interface Props {
-	style?: React.CSSProperties;
 	size?: string;
 	intent?: string;
 }
@@ -13,6 +12,14 @@ interface State {
 }
 
 const css = {
+	loadingBar: {
+		position: 'fixed',
+		top: '1px',
+		left: '1px',
+		right: '1px',
+		zIndex: 1000,
+		pointerEvents: 'none',
+	} as React.CSSProperties,
 	progress: {
 		width: '100%',
 		height: '4px',
@@ -65,7 +72,7 @@ export default class LoadingBar extends React.Component<Props, State> {
 			</div>;
 		}
 
-		return <div style={this.props.style}>
+		return <div style={css.loadingBar}>
 			{progress}
 		</div>;
 	}
