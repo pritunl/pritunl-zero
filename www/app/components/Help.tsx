@@ -4,8 +4,8 @@ import * as Blueprint from '@blueprintjs/core';
 
 interface Props {
 	title: string;
-	content?: string;
-	contents?: string[];
+	content: string | JSX.Element;
+	examples?: string[];
 }
 
 interface State {
@@ -39,6 +39,14 @@ const css = {
 		maxWidth: '400px',
 		margin: '30px 20px',
 	} as React.CSSProperties,
+	inputFirst: {
+		width: '100%',
+		marginTop: '15px',
+	} as React.CSSProperties,
+	input: {
+		width: '100%',
+		marginTop: '5px',
+	} as React.CSSProperties,
 };
 
 let dialog = true;
@@ -51,19 +59,30 @@ export default class Help extends React.Component<Props, State> {
 		};
 	}
 
-	render(): JSX.Element {
-		let helpElm: JSX.Element;
+	autoSelect = (evt: React.MouseEvent<HTMLInputElement>): void => {
+		evt.currentTarget.select();
+	}
 
-		let helpContent: string | JSX.Element[];
-		if (this.props.contents) {
-			helpContent = [];
-			for (let content of this.props.contents) {
-				helpContent.push(<div>{content}</div>);
-			}
-		} else {
-			helpContent = this.props.content;
+	render(): JSX.Element {
+		let examplesElem: JSX.Element[] = [];
+		for (let i = 0; i < (this.props.examples || []).length; i++) {
+			examplesElem.push(
+				<input
+					key={'example-' + i}
+					className="bp5-input"
+					style={i === 0 ? css.inputFirst : css.input}
+					disabled={false}
+					readOnly={true}
+					type="text"
+					autoCapitalize="off"
+					spellCheck={false}
+					value={this.props.examples[i]}
+					onClick={this.autoSelect}
+				/>
+			);
 		}
 
+		let helpElm: JSX.Element;
 		if (this.state.popover) {
 			if (dialog) {
 				helpElm = <Blueprint.Dialog
@@ -80,7 +99,8 @@ export default class Help extends React.Component<Props, State> {
 					}}
 				>
 					<div className="bp5-dialog-body">
-						{helpContent}
+						{this.props.content}
+						{examplesElem}
 					</div>
 					<div className="bp5-dialog-footer">
 						<div className="bp5-dialog-footer-actions">
@@ -136,7 +156,10 @@ export default class Help extends React.Component<Props, State> {
 									style={css.content}
 								>
 									<h5>{this.props.title}</h5>
-									<div>{helpContent}</div>
+									<div>
+										{this.props.content}
+										{examplesElem}
+									</div>
 								</div>
 							</div>
 						</div>
