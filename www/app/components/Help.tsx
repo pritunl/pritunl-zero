@@ -14,19 +14,22 @@ interface State {
 
 const css = {
 	box: {
-		position: 'relative',
 		display: 'inline',
 	} as React.CSSProperties,
 	content: {
 		padding: '20px',
 	} as React.CSSProperties,
 	button: {
-		position: 'absolute',
-		top: '-7px',
-		left: '-2px',
-		padding: '7px',
+		display: 'inline-block',
 		background: 'none',
 		opacity: 0.3,
+		marginLeft: '5px',
+		height: '16px',
+		minHeight: '16px',
+		width: '16px',
+		minWidth: '16px',
+		position: 'relative',
+		top: '-1px',
 	} as React.CSSProperties,
 	popover: {
 		width: '230px',
