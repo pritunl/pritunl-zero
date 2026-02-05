@@ -225,8 +225,8 @@ export default class Main extends React.Component<{}, State> {
 					>Logout</button>
 					<button
 						className="bp5-button bp5-minimal bp5-icon-moon"
-						onClick={(): void => {
-							Theme.toggle();
+						onClick={(evt): void => {
+							Theme.toggle(evt.shiftKey);
 							Theme.save();
 						}}
 					/>
