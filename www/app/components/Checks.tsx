@@ -91,7 +91,7 @@ export default class Checks extends React.Component<{}, State> {
 		ChecksStore.addChangeListener(this.onChange);
 		AuthoritiesStore.addChangeListener(this.onChange);
 		CheckActions.sync();
-		AuthorityActions.sync();
+		AuthorityActions.syncNames();
 	}
 
 	componentWillUnmount(): void {
