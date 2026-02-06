@@ -39,6 +39,7 @@ const css = {
 	nav: {
 		height: 'auto',
 		userSelect: 'none',
+		gap: '5px',
 	} as React.CSSProperties,
 	navTitle: {
 		height: 'auto',
