@@ -2,9 +2,11 @@
 import * as React from 'react';
 import * as AuthorityTypes from '../types/AuthorityTypes';
 import AuthoritiesStore from '../stores/AuthoritiesStore';
+import ServicesStore from '../stores/ServicesStore';
 import * as AuthorityActions from '../actions/AuthorityActions';
 import NodesStore from "../stores/NodesStore";
 import * as NodeActions from "../actions/NodeActions";
+import * as ServiceActions from "../actions/ServiceActions";
 import * as NodeTypes from "../types/NodeTypes";
 import Authority from './Authority';
 import AuthorityNew from './AuthorityNew';
@@ -90,13 +92,16 @@ export default class Authorities extends React.Component<{}, State> {
 	componentDidMount(): void {
 		AuthoritiesStore.addChangeListener(this.onChange);
 		NodesStore.addChangeListener(this.onChange);
+		ServicesStore.addChangeListener(this.onChange);
 		AuthorityActions.sync();
-		NodeActions.sync();
+		NodeActions.sync(); // TODO Needs node.user_domain
+		ServiceActions.syncNames();
 	}
 
 	componentWillUnmount(): void {
 		AuthoritiesStore.removeChangeListener(this.onChange);
 		NodesStore.removeChangeListener(this.onChange);
+		ServicesStore.removeChangeListener(this.onChange);
 	}
 
 
