@@ -30,11 +30,15 @@ interface State {
 }
 
 const css = {
+	app: {
+		display: 'grid',
+		gridTemplateRows: 'auto 1fr',
+		height: '100vh',
+		overflow: 'hidden',
+	} as React.CSSProperties,
 	nav: {
-		overflowX: 'auto',
-		overflowY: 'auto',
-		userSelect: 'none',
 		height: 'auto',
+		userSelect: 'none',
 	} as React.CSSProperties,
 	navTitle: {
 		height: 'auto',
@@ -56,6 +60,10 @@ const css = {
 		fontSize: '18px',
 		fontWeight: 'bold',
 		width: '100px',
+	} as React.CSSProperties,
+	content: {
+		overflowY: 'auto',
+		minHeight: 0,
 	} as React.CSSProperties,
 };
 
@@ -89,7 +97,7 @@ export default class Main extends React.Component<{}, State> {
 			return <div/>;
 		}
 
-		return <div>
+		return <div style={css.appContainer}>
 			<nav className="bp5-navbar layout horizontal" style={css.nav}>
 				<div
 					className="bp5-navbar-group bp5-align-left flex"
@@ -231,58 +239,60 @@ export default class Main extends React.Component<{}, State> {
 						}}
 					/>
 				</div>
+				<LoadingBar intent="primary"/>
 			</nav>
-			<LoadingBar intent="primary"/>
-			<RouterRoutes>
-				<RouterRoute path="/" render={() => (
-					<Users/>
-				)}/>
-				<RouterRoute path="/users" render={() => (
-					<Users/>
-				)}/>
-				<RouterRoute path="/user" render={() => (
-					<UserDetailed/>
-				)}/>
-				<RouterRoute path="/user/:userId" render={(data) => (
-					<UserDetailed userId={data.params.userId}/>
-				)}/>
-				<RouterRoute path="/nodes" render={() => (
-					<Nodes/>
-				)}/>
-				<RouterRoute path="/policies" render={() => (
-					<Policies/>
-				)}/>
-				<RouterRoute path="/authorities" render={() => (
-					<Authorities/>
-				)}/>
-				<RouterRoute path="/certificates" render={() => (
-					<Certificates/>
-				)}/>
-				<RouterRoute path="/secrets" render={() => (
-					<Secrets/>
-				)}/>
-				<RouterRoute path="/alerts" render={() => (
-					<Alerts/>
-				)}/>
-				<RouterRoute path="/checks" render={() => (
-					<Checks/>
-				)}/>
-				<RouterRoute path="/endpoints" render={() => (
-					<Endpoints/>
-				)}/>
-				<RouterRoute path="/logs" render={() => (
-					<Logs/>
-				)}/>
-				<RouterRoute path="/services" render={() => (
-					<Services/>
-				)}/>
-				<RouterRoute path="/settings" render={() => (
-					<Settings/>
-				)}/>
-				<RouterRoute path="/subscription" render={() => (
-					<Subscription/>
-				)}/>
-			</RouterRoutes>
+			<div style={css.content}>
+				<RouterRoutes>
+					<RouterRoute path="/" render={() => (
+						<Users/>
+					)}/>
+					<RouterRoute path="/users" render={() => (
+						<Users/>
+					)}/>
+					<RouterRoute path="/user" render={() => (
+						<UserDetailed/>
+					)}/>
+					<RouterRoute path="/user/:userId" render={(data) => (
+						<UserDetailed userId={data.params.userId}/>
+					)}/>
+					<RouterRoute path="/nodes" render={() => (
+						<Nodes/>
+					)}/>
+					<RouterRoute path="/policies" render={() => (
+						<Policies/>
+					)}/>
+					<RouterRoute path="/authorities" render={() => (
+						<Authorities/>
+					)}/>
+					<RouterRoute path="/certificates" render={() => (
+						<Certificates/>
+					)}/>
+					<RouterRoute path="/secrets" render={() => (
+						<Secrets/>
+					)}/>
+					<RouterRoute path="/alerts" render={() => (
+						<Alerts/>
+					)}/>
+					<RouterRoute path="/checks" render={() => (
+						<Checks/>
+					)}/>
+					<RouterRoute path="/endpoints" render={() => (
+						<Endpoints/>
+					)}/>
+					<RouterRoute path="/logs" render={() => (
+						<Logs/>
+					)}/>
+					<RouterRoute path="/services" render={() => (
+						<Services/>
+					)}/>
+					<RouterRoute path="/settings" render={() => (
+						<Settings/>
+					)}/>
+					<RouterRoute path="/subscription" render={() => (
+						<Subscription/>
+					)}/>
+				</RouterRoutes>
+			</div>
 		</div>;
 	}
 }
