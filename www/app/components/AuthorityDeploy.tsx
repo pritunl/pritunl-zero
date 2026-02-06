@@ -146,7 +146,7 @@ export default class AuthorityDeploy extends React.Component<Props, State> {
 				}
 			}
 
-			if (!this.props.authority.host_tokens.length || servers.size === 0) {
+			if (!this.props.authority.host_tokens?.length || servers.size === 0) {
 				hostCertificate = false;
 				hostCertificateDisabled = true;
 			}
