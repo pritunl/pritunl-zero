@@ -91,7 +91,7 @@ export default class Endpoints extends React.Component<{}, State> {
 		EndpointsStore.addChangeListener(this.onChange);
 		AuthoritiesStore.addChangeListener(this.onChange);
 		EndpointActions.sync();
-		AuthorityActions.sync();
+		AuthorityActions.syncNames();
 	}
 
 	componentWillUnmount(): void {
