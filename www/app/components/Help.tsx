@@ -4,7 +4,8 @@ import * as Blueprint from '@blueprintjs/core';
 
 interface Props {
 	title: string;
-	content: string | JSX.Element;
+	content?: string | JSX.Element;
+	contents?: string[];
 	examples?: string[];
 }
 
@@ -67,6 +68,16 @@ export default class Help extends React.Component<Props, State> {
 	}
 
 	render(): JSX.Element {
+		let helpContent: string | JSX.Element | JSX.Element[];
+		if (this.props.contents) {
+			helpContent = [];
+			for (let content of this.props.contents) {
+				helpContent.push(<div>{content}</div>);
+			}
+		} else {
+			helpContent = this.props.content;
+		}
+
 		let examplesElem: JSX.Element[] = [];
 		for (let i = 0; i < (this.props.examples || []).length; i++) {
 			examplesElem.push(
@@ -160,7 +171,7 @@ export default class Help extends React.Component<Props, State> {
 								>
 									<h5>{this.props.title}</h5>
 									<div>
-										{this.props.content}
+										{helpContent}
 										{examplesElem}
 									</div>
 								</div>
