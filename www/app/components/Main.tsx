@@ -43,6 +43,7 @@ const css = {
 	} as React.CSSProperties,
 	navTitle: {
 		height: 'auto',
+		alignContent: 'center',
 	} as React.CSSProperties,
 	navGroup: {
 		flexWrap: 'wrap',
@@ -98,7 +99,7 @@ export default class Main extends React.Component<{}, State> {
 			return <div/>;
 		}
 
-		return <div style={css.appContainer}>
+		return <div style={css.app}>
 			<nav className="bp5-navbar layout horizontal" style={css.nav}>
 				<div
 					className="bp5-navbar-group bp5-align-left flex"
