@@ -379,7 +379,6 @@ export default class NodeDetailed extends React.Component<Props, State> {
 		}
 
 		let certId = this.state.addCert || this.props.certificates[0].id;
-
 		if (this.state.changed) {
 			node = {
 				...this.state.node,
