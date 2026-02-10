@@ -431,14 +431,14 @@ func create(db *database.Database, cert *certificate.Certificate,
 	return
 }
 
-func Renew(db *database.Database, cert *certificate.Certificate) (
+func Renew(db *database.Database, cert *certificate.Certificate, force bool) (
 	err error) {
 
 	if cert.Type != certificate.LetsEncrypt {
 		return
 	}
 
-	if cert.AcmeHash != cert.Hash() || (cert.Info != nil &&
+	if force || cert.AcmeHash != cert.Hash() || (cert.Info != nil &&
 		!cert.Info.ExpiresOn.IsZero() &&
 		time.Until(cert.Info.ExpiresOn) < 168*time.Hour) {
 
