@@ -233,7 +233,7 @@ var UpsertCertificateCmd = &cobra.Command{
 
 		_ = event.PublishDispatch(db, "certificate.change")
 
-		err = acme.Renew(db, cert)
+		err = acme.Renew(db, cert, false)
 		if err != nil {
 			return
 		}
