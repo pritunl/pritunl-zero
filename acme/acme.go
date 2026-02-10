@@ -451,12 +451,12 @@ func Renew(db *database.Database, cert *certificate.Certificate, force bool) (
 	return
 }
 
-func RenewBackground(cert *certificate.Certificate) {
+func RenewBackground(cert *certificate.Certificate, force bool) {
 	go func() {
 		db := database.GetDatabase()
 		defer db.Close()
 
-		err := Renew(db, cert)
+		err := Renew(db, cert, force)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"certificate_id":   cert.Id.Hex(),
