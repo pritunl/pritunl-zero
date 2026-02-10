@@ -26,7 +26,7 @@ func acmeRenewHandler(db *database.Database) (err error) {
 			continue
 		}
 
-		err = acme.Renew(db, cert)
+		err = acme.Renew(db, cert, false)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"certificate_id":   cert.Id.Hex(),
