@@ -450,7 +450,10 @@ export default class NodeDetailed extends React.Component<Props, State> {
 		for (let serviceId of (node.services || [])) {
 			let service = ServicesStore.serviceName(serviceId);
 			if (!service) {
-				continue;
+				service = {
+					id: serviceId,
+					name: serviceId,
+				}
 			}
 
 			servicesSelected.push({
