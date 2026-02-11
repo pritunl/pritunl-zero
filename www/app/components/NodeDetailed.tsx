@@ -474,7 +474,7 @@ export default class NodeDetailed extends React.Component<Props, State> {
 
 		let authorities: JSX.Element[] = [];
 		for (let authorityId of (node.authorities || [])) {
-			let authority = AuthoritiesStore.authority(authorityId);
+			let authority = AuthoritiesStore.authorityName(authorityId);
 			if (!authority || !authority.proxy_hosting) {
 				continue;
 			}
