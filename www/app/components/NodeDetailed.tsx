@@ -517,7 +517,7 @@ export default class NodeDetailed extends React.Component<Props, State> {
 
 		let certificates: JSX.Element[] = [];
 		for (let certId of (node.certificates || [])) {
-			let cert = CertificatesStore.certificate(certId);
+			let cert = CertificatesStore.certificateName(certId);
 			if (!cert) {
 				continue;
 			}
