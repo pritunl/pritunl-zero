@@ -20,6 +20,24 @@ const (
 	Azure = "azure"
 )
 
+func azureGetUrls(provider *settings.Provider) (loginUrl, graphUrl string) {
+	switch provider.Region {
+	case "us-gov", "us-gov2":
+		loginUrl = "https://login.microsoftonline.us"
+		graphUrl = "https://graph.microsoft.us"
+	case "us-dod", "us-dod2":
+		loginUrl = "https://login.microsoftonline.us"
+		graphUrl = "https://dod-graph.microsoft.us"
+	case "china", "china2":
+		loginUrl = "https://login.partner.microsoftonline.cn"
+		graphUrl = "https://microsoftgraph.chinacloudapi.cn"
+	default:
+		loginUrl = "https://login.microsoftonline.com"
+		graphUrl = "https://graph.microsoft.com"
+	}
+	return
+}
+
 func AzureRequest(db *database.Database, location, query string,
 	provider *settings.Provider) (redirect string, err error) {
 
@@ -139,16 +157,19 @@ type azureGroupData struct {
 }
 
 func azureGetToken(provider *settings.Provider) (token string, err error) {
+	loginUrl, graphUrl := azureGetUrls(provider)
+
 	reqForm := url.Values{}
 	reqForm.Add("grant_type", "client_credentials")
 	reqForm.Add("client_id", provider.ClientId)
 	reqForm.Add("client_secret", provider.ClientSecret)
-	reqForm.Add("resource", "https://graph.microsoft.com")
+	reqForm.Add("resource", graphUrl)
 
 	req, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf(
-			"https://login.microsoftonline.com/%s/oauth2/token",
+			"%s/%s/oauth2/token",
+			loginUrl,
 			provider.Tenant,
 		),
 		strings.NewReader(reqForm.Encode()),
@@ -193,6 +214,8 @@ func azureGetToken(provider *settings.Provider) (token string, err error) {
 func AzureRoles(provider *settings.Provider, username string) (
 	roles []string, err error) {
 
+	_, graphUrl := azureGetUrls(provider)
+
 	userId, active, err := AzureSync(provider, username)
 	if err != nil {
 		return
@@ -220,7 +243,8 @@ func AzureRoles(provider *settings.Provider, username string) (
 	}
 
 	reqUrlStr := fmt.Sprintf(
-		"https://graph.microsoft.com/v1.0/users/%s/memberOf",
+		"%s/v1.0/users/%s/memberOf",
+		graphUrl,
 		userId,
 	)
 	start := time.Now()
@@ -311,13 +335,16 @@ func AzureRoles(provider *settings.Provider, username string) (
 func AzureSync(provider *settings.Provider, username string) (
 	userId string, active bool, err error) {
 
+	_, graphUrl := azureGetUrls(provider)
+
 	token, err := azureGetToken(provider)
 	if err != nil {
 		return
 	}
 
 	reqUrl, err := url.Parse(fmt.Sprintf(
-		"https://graph.microsoft.com/v1.0/%s/users/%s",
+		"%s/v1.0/%s/users/%s",
+		graphUrl,
 		provider.Tenant,
 		url.QueryEscape(username),
 	))
