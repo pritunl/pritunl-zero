@@ -102,7 +102,7 @@ export default class Nodes extends React.Component<{}, State> {
 		CertificatesStore.addChangeListener(this.onChange);
 		NodeActions.sync();
 		ServiceActions.syncNames();
-		AuthorityActions.sync();
+		AuthorityActions.syncNames();
 		CertificateActions.syncNames();
 
 		this.sync = new MiscUtils.SyncInterval(
@@ -141,7 +141,7 @@ export default class Nodes extends React.Component<{}, State> {
 			nodes: nodes,
 			filter: NodesStore.filter,
 			services: ServicesStore.servicesName,
-			authorities: AuthoritiesStore.authorities,
+			authorities: AuthoritiesStore.authoritiesName,
 			certificates: CertificatesStore.certificatesName,
 			selected: selected,
 			opened: opened,
