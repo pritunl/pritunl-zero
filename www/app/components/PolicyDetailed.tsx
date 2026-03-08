@@ -1,5 +1,6 @@
 /// <reference path="../References.d.ts"/>
 import * as React from 'react';
+import * as Icons from '@blueprintjs/icons';
 import * as PolicyTypes from '../types/PolicyTypes';
 import * as ServiceTypes from '../types/ServiceTypes';
 import * as AuthorityTypes from '../types/AuthorityTypes';
@@ -18,6 +19,7 @@ import PageSave from './PageSave';
 import ConfirmButton from './ConfirmButton';
 import Help from './Help';
 import * as Alert from '../Alert';
+import * as PageSelector from './PageSelector';
 
 interface Props {
 	policy: PolicyTypes.PolicyRo;
@@ -34,7 +36,6 @@ interface State {
 	changed: boolean;
 	message: string;
 	policy: PolicyTypes.Policy;
-	addService: string;
 	addAuthority: string;
 	addRole: string;
 }
@@ -106,7 +107,6 @@ export default class PolicyNew extends React.Component<Props, State> {
 			changed: false,
 			message: '',
 			policy: null,
-			addService: null,
 			addAuthority: null,
 			addRole: null,
 		};
@@ -224,14 +224,8 @@ export default class PolicyNew extends React.Component<Props, State> {
 		});
 	}
 
-	onAddService = (): void => {
+	onAddService = (serviceId: string): void => {
 		let policy: PolicyTypes.Policy;
-
-		if (!this.state.addService && !this.props.services.length) {
-			return;
-		}
-
-		let serviceId = this.state.addService || this.props.services[0].id;
 
 		if (this.state.changed) {
 			policy = {
@@ -244,7 +238,7 @@ export default class PolicyNew extends React.Component<Props, State> {
 		}
 
 		let services = [
-			...policy.services,
+			...(policy.services || []),
 		];
 
 		if (services.indexOf(serviceId) === -1) {
@@ -262,7 +256,7 @@ export default class PolicyNew extends React.Component<Props, State> {
 		});
 	}
 
-	onRemoveService = (service: string): void => {
+	onRemoveService = (serviceId: string): void => {
 		let policy: PolicyTypes.Policy;
 
 		if (this.state.changed) {
@@ -276,10 +270,10 @@ export default class PolicyNew extends React.Component<Props, State> {
 		}
 
 		let services = [
-			...policy.services,
+			...(policy.services || []),
 		];
 
-		let i = services.indexOf(service);
+		let i = services.indexOf(serviceId);
 		if (i === -1) {
 			return;
 		}
@@ -444,47 +438,35 @@ export default class PolicyNew extends React.Component<Props, State> {
 		let policy: PolicyTypes.Policy = this.state.policy ||
 			this.props.policy;
 
-		let services: JSX.Element[] = [];
-		for (let serviceId of policy.services || []) {
+		let servicesSelected: PageSelector.Item[] = [];
+		for (let serviceId of (policy.services || [])) {
 			let service = ServicesStore.serviceName(serviceId);
 			if (!service) {
-				continue;
+				service = {
+					id: serviceId,
+					name: serviceId,
+				}
 			}
 
-			services.push(
-				<div
-					className="bp5-tag bp5-tag-removable bp5-intent-primary"
-					style={css.item}
-					key={service.id}
-				>
-					{service.name}
-					<button
-						className="bp5-tag-remove"
-						onMouseUp={(): void => {
-							this.onRemoveService(service.id);
-						}}
-					/>
-				</div>,
-			);
+			servicesSelected.push({
+				id: service.id,
+				name: service.name,
+			});
 		}
 
-		let servicesSelect: JSX.Element[] = [];
+		let servicesOptions: PageSelector.Item[] = [];
 		if (this.props.services.length) {
 			for (let service of this.props.services) {
-				servicesSelect.push(
-					<option
-						key={service.id}
-						value={service.id}
-					>{service.name}</option>,
-				);
+				servicesOptions.push({
+					id: service.id,
+					name: service.name,
+				});
 			}
-		} else {
-			servicesSelect.push(<option key="null" value="">None</option>);
 		}
 
 		let authorities: JSX.Element[] = [];
 		for (let authorityId of policy.authorities || []) {
-			let authority = AuthoritiesStore.authority(authorityId);
+			let authority = AuthoritiesStore.authorityName(authorityId);
 			if (!authority) {
 				continue;
 			}
@@ -691,34 +673,18 @@ export default class PolicyNew extends React.Component<Props, State> {
 						}}
 						onSubmit={this.onAddRole}
 					/>
-					<label
-						className="bp5-label"
-						style={css.label}
-					>
-						Services
-						<Help
-							title="Services"
-							content="Services associated with this policy. All requests to the associated services must pass this policy check."
-						/>
-						<div>
-							{services}
-						</div>
-					</label>
-					<PageSelectButton
-						label="Add Service"
-						value={this.state.addService}
-						disabled={!this.props.services.length}
-						buttonClass="bp5-intent-success"
-						onChange={(val: string): void => {
-							this.setState({
-								...this.state,
-								addService: val,
-							});
-						}}
-						onSubmit={this.onAddService}
-					>
-						{servicesSelect}
-					</PageSelectButton>
+					<PageSelector.PageSelector
+						disabled={this.state.disabled || !this.props.services.length}
+						title="Services"
+						help="Services that can be accessed from this node. The nodes certificate must be valid for all the service domains. The node also needs to be able to access all the interal servers of the services."
+						addLabel="Add Service"
+						menuLabel="Manage Services"
+						icon={<Icons.Cloud/>}
+						selected={servicesSelected}
+						options={servicesOptions}
+						onAdd={this.onAddService}
+						onRemove={this.onRemoveService}
+					/>
 					<label
 						className="bp5-label"
 						style={css.label}
