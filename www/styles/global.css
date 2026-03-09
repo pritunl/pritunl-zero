@@ -29,6 +29,7 @@ html.dark5-scroll {
 
 body {
   font-family: Roboto, Noto, sans-serif;
+  min-width: 800px;
 }
 
 body {
