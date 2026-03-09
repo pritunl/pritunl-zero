@@ -24,6 +24,7 @@ type nodeData struct {
 	Name                 string          `json:"name"`
 	Type                 string          `json:"type"`
 	Port                 int             `json:"port"`
+	Http2                bool            `json:"http2"`
 	NoRedirectServer     bool            `json:"no_redirect_server"`
 	Protocol             string          `json:"protocol"`
 	Certificates         []bson.ObjectID `json:"certificates"`
@@ -74,6 +75,7 @@ func nodePut(c *gin.Context) {
 	nde.Name = data.Name
 	nde.Type = data.Type
 	nde.Port = data.Port
+	nde.Http2 = data.Http2
 	nde.NoRedirectServer = data.NoRedirectServer
 	nde.Protocol = data.Protocol
 	nde.Certificates = data.Certificates
@@ -90,6 +92,7 @@ func nodePut(c *gin.Context) {
 		"name",
 		"type",
 		"port",
+		"http2",
 		"no_redirect_server",
 		"protocol",
 		"certificates",
