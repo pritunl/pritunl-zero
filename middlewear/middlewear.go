@@ -45,6 +45,7 @@ func Database(c *gin.Context) {
 func Headers(c *gin.Context) {
 	headers := c.Writer.Header()
 
+	headers.Add("Cache-Control", "no-store")
 	headers.Add("X-Frame-Options", "DENY")
 	headers.Add("X-XSS-Protection", "1; mode=block")
 	headers.Add("X-Content-Type-Options", "nosniff")
