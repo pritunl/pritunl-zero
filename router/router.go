@@ -50,6 +50,7 @@ type Router struct {
 	managementType       bool
 	userType             bool
 	proxyType            bool
+	http2                bool
 	port                 int
 	noRedirectServer     bool
 	redirectSystemd      bool
@@ -438,6 +439,7 @@ func (r *Router) initWeb() (err error) {
 	r.managementDomain = node.Self.ManagementDomain
 	r.userDomain = node.Self.UserDomain
 	r.endpointDomain = node.Self.EndpointDomain
+	r.http2 = node.Self.Http2
 	r.noRedirectServer = node.Self.NoRedirectServer
 	r.redirectSystemd = utils.IsSystemd() ||
 		settings.Router.ForceRedirectSystemd
@@ -509,7 +511,12 @@ func (r *Router) initWeb() (err error) {
 		MaxHeaderBytes:    settings.Router.MaxHeaderBytes,
 	}
 
-	if r.protocol == "http" {
+	if !r.http2 {
+		r.webServer.TLSNextProto = make(map[string]func(
+			*http.Server, *tls.Conn, http.Handler))
+	}
+
+	if r.http2 && r.protocol == "http" {
 		h2s := &http2.Server{
 			IdleTimeout:     idleTimeout,
 			ReadIdleTimeout: readTimeout,
@@ -528,6 +535,7 @@ func (r *Router) startWeb() {
 		"production":          constants.Production,
 		"protocol":            r.protocol,
 		"port":                r.port,
+		"http2":               r.http2,
 		"read_timeout":        settings.Router.ReadTimeout,
 		"write_timeout":       settings.Router.WriteTimeout,
 		"idle_timeout":        settings.Router.IdleTimeout,
@@ -553,7 +561,6 @@ func (r *Router) startWeb() {
 		tlsConfig := &tls.Config{
 			MinVersion: tls.VersionTLS12,
 			MaxVersion: tls.VersionTLS13,
-			NextProtos: []string{"h2"},
 			CipherSuites: []uint16{
 				tls.TLS_AES_128_GCM_SHA256,                        // 0x1301
 				tls.TLS_AES_256_GCM_SHA384,                        // 0x1302
@@ -566,6 +573,9 @@ func (r *Router) startWeb() {
 				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,   // 0xcca8
 			},
 			GetCertificate: r.certificates.GetCertificate,
+		}
+		if r.http2 {
+			tlsConfig.NextProtos = []string{"h2"}
 		}
 		tlsConfig.Certificates = []tls.Certificate{}
 
@@ -710,6 +720,7 @@ func (r *Router) hashNode() []byte {
 	_, _ = io.WriteString(hash, node.Self.EndpointDomain)
 	_, _ = io.WriteString(hash, strconv.Itoa(node.Self.Port))
 	_, _ = io.WriteString(hash, fmt.Sprintf("%t", node.Self.NoRedirectServer))
+	_, _ = io.WriteString(hash, fmt.Sprintf("%t", node.Self.Http2))
 	_, _ = io.WriteString(hash, node.Self.Protocol)
 
 	_, _ = io.WriteString(hash, strconv.Itoa(settings.Router.ReadTimeout))
