@@ -36,6 +36,7 @@ type Node struct {
 	Timestamp            time.Time                  `bson:"timestamp" json:"timestamp"`
 	Port                 int                        `bson:"port" json:"port"`
 	NoRedirectServer     bool                       `bson:"no_redirect_server" json:"no_redirect_server"`
+	Http2                bool                       `bson:"http2" json:"http2"`
 	Protocol             string                     `bson:"protocol" json:"protocol"`
 	Certificate          bson.ObjectID              `bson:"certificate" json:"certificate"`
 	Certificates         []bson.ObjectID            `bson:"certificates" json:"certificates"`
@@ -444,6 +445,7 @@ func (n *Node) update(db *database.Database) (err error) {
 	n.Name = nde.Name
 	n.Type = nde.Type
 	n.Port = nde.Port
+	n.Http2 = nde.Http2
 	n.NoRedirectServer = nde.NoRedirectServer
 	n.Protocol = nde.Protocol
 	n.Certificates = nde.Certificates
