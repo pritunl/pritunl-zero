@@ -6,6 +6,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func getRedirectPath(redirectUrl string) string {
+	if redirectUrl != "" {
+		parsed, e := url.Parse(redirectUrl)
+		if e == nil {
+			return parsed.Path
+		}
+	}
+	return ""
+}
+
 type redirectData struct {
 	Redirect string `json:"redirect"`
 }
@@ -15,15 +25,10 @@ func redirectQuery(c *gin.Context, query string) {
 
 	vals, err := url.ParseQuery(query)
 	if err == nil {
-		redirect = vals.Get("redirect_url")
+		redirect = getRedirectPath(vals.Get("redirect_url"))
 	}
 
 	if redirect != "" {
-		// Prevent open redirect by ensuring the URL is a relative path
-		parsed, err := url.Parse(redirect)
-		if err != nil || parsed.Host != "" || parsed.Scheme != "" {
-			redirect = "/"
-		}
 		c.Redirect(302, redirect)
 	} else {
 		c.Redirect(302, "/")
