@@ -1,7 +1,8 @@
 pritunl-zero changelog
 ======================
 
-<%= version %>
+Version 1.0.3778.98 2026-03-29
+------------------------------
 
 Fix service open redirect
 Optimize database indexes
