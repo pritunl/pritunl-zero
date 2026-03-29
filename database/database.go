@@ -79,6 +79,18 @@ func (d *Database) getCollectionWeak(name string) (coll *Collection) {
 	return
 }
 
+func (d *Database) getCollectionStrong(name string) (coll *Collection) {
+	opts := options.Collection()
+	opts.SetWriteConcern(writeconcern.Majority())
+	opts.SetReadConcern(readconcern.Local())
+
+	coll = &Collection{
+		db:         d,
+		Collection: d.database.Collection(name, opts),
+	}
+	return
+}
+
 func (d *Database) Users() (coll *Collection) {
 	coll = d.GetCollection("users")
 	return
