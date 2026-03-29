@@ -7,16 +7,22 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dropbox/godropbox/container/set"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/mongo-go-driver/v2/bson"
 	"github.com/pritunl/mongo-go-driver/v2/mongo"
 	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
+	"github.com/sirupsen/logrus"
 )
 
 var (
-	indexes     = []string{}
+	indexes     = map[string]set.Set{}
 	indexesLock = sync.Mutex{}
 )
+
+type bsonIndex struct {
+	Name string `bson:"name"`
+}
 
 type Index struct {
 	Collection *Collection
@@ -142,9 +148,79 @@ func (i *Index) Create() (err error) {
 		}
 	}
 
+	collName := i.Collection.Name()
 	indexesLock.Lock()
-	indexes = append(indexes, name)
+	collIndexes, ok := indexes[collName]
+	if !ok {
+		collIndexes = set.NewSet()
+		indexes[collName] = collIndexes
+	}
+	collIndexes.Add(name)
 	indexesLock.Unlock()
+
+	return
+}
+
+func CleanIndexes(db *Database) (err error) {
+	indexesLock.Lock()
+	curIndexes := indexes
+	indexesLock.Unlock()
+
+	for collName, collIndexes := range curIndexes {
+		coll := db.GetCollection(collName)
+
+		cursor, e := coll.Indexes().List(db)
+		if e != nil {
+			err = e
+			return
+		}
+
+		for cursor.Next(db) {
+			index := &bsonIndex{}
+
+			err = cursor.Decode(index)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"collection": collName,
+					"error":      err,
+				}).Error("database: Failed to decode index")
+				err = nil
+				continue
+			}
+
+			if index.Name == "_id" || index.Name == "_id_" {
+				continue
+			}
+
+			if collIndexes.Contains(index.Name) {
+				continue
+			}
+
+			logrus.WithFields(logrus.Fields{
+				"collection": collName,
+				"index":      index.Name,
+			}).Info("database: Dropping unused index")
+
+			err = coll.Indexes().DropOne(
+				db,
+				index.Name,
+			)
+			if err != nil {
+				cursor.Close(db)
+				return
+			}
+		}
+
+		err = cursor.Err()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"collection": collName,
+				"error":      err,
+			}).Error("database: Cursor error listing indexes")
+		}
+
+		cursor.Close(db)
+	}
 
 	return
 }
