@@ -315,6 +315,14 @@ func Connect() (err error) {
 		return
 	}
 
+	cleanDb := GetDatabase()
+	defer cleanDb.Close()
+
+	err = CleanIndexes(cleanDb)
+	if err != nil {
+		return
+	}
+
 	return
 }
 
