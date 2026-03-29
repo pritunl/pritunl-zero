@@ -59,7 +59,7 @@ func (d *Database) String() string {
 func (d *Database) Close() {
 }
 
-func (d *Database) getCollection(name string) (coll *Collection) {
+func (d *Database) GetCollection(name string) (coll *Collection) {
 	coll = &Collection{
 		db:         d,
 		Collection: d.database.Collection(name),
@@ -80,132 +80,132 @@ func (d *Database) getCollectionWeak(name string) (coll *Collection) {
 }
 
 func (d *Database) Users() (coll *Collection) {
-	coll = d.getCollection("users")
+	coll = d.GetCollection("users")
 	return
 }
 
 func (d *Database) Services() (coll *Collection) {
-	coll = d.getCollection("services")
+	coll = d.GetCollection("services")
 	return
 }
 
 func (d *Database) Policies() (coll *Collection) {
-	coll = d.getCollection("policies")
+	coll = d.GetCollection("policies")
 	return
 }
 
 func (d *Database) Devices() (coll *Collection) {
-	coll = d.getCollection("devices")
+	coll = d.GetCollection("devices")
 	return
 }
 
 func (d *Database) Alerts() (coll *Collection) {
-	coll = d.getCollection("alerts")
+	coll = d.GetCollection("alerts")
 	return
 }
 
 func (d *Database) AlertsEvent() (coll *Collection) {
-	coll = d.getCollection("alerts_event")
+	coll = d.GetCollection("alerts_event")
 	return
 }
 
 func (d *Database) AlertsEventLock() (coll *Collection) {
-	coll = d.getCollection("alerts_event_lock")
+	coll = d.GetCollection("alerts_event_lock")
 	return
 }
 
 func (d *Database) Checks() (coll *Collection) {
-	coll = d.getCollection("checks")
+	coll = d.GetCollection("checks")
 	return
 }
 
 func (d *Database) Endpoints() (coll *Collection) {
-	coll = d.getCollection("endpoints")
+	coll = d.GetCollection("endpoints")
 	return
 }
 
 func (d *Database) EndpointsSystem() (coll *Collection) {
-	coll = d.getCollection("endpoints_system")
+	coll = d.GetCollection("endpoints_system")
 	return
 }
 
 func (d *Database) EndpointsLoad() (coll *Collection) {
-	coll = d.getCollection("endpoints_load")
+	coll = d.GetCollection("endpoints_load")
 	return
 }
 
 func (d *Database) EndpointsDisk() (coll *Collection) {
-	coll = d.getCollection("endpoints_disk")
+	coll = d.GetCollection("endpoints_disk")
 	return
 }
 
 func (d *Database) EndpointsDiskIo() (coll *Collection) {
-	coll = d.getCollection("endpoints_diskio")
+	coll = d.GetCollection("endpoints_diskio")
 	return
 }
 
 func (d *Database) EndpointsNetwork() (coll *Collection) {
-	coll = d.getCollection("endpoints_network")
+	coll = d.GetCollection("endpoints_network")
 	return
 }
 
 func (d *Database) EndpointsCheck() (coll *Collection) {
-	coll = d.getCollection("endpoints_check")
+	coll = d.GetCollection("endpoints_check")
 	return
 }
 
 func (d *Database) EndpointsCheckLog() (coll *Collection) {
-	coll = d.getCollection("endpoints_check_log")
+	coll = d.GetCollection("endpoints_check_log")
 	return
 }
 
 func (d *Database) EndpointsKmsg() (coll *Collection) {
-	coll = d.getCollection("endpoints_kmsg")
+	coll = d.GetCollection("endpoints_kmsg")
 	return
 }
 
 func (d *Database) Sessions() (coll *Collection) {
-	coll = d.getCollection("sessions")
+	coll = d.GetCollection("sessions")
 	return
 }
 
 func (d *Database) Tasks() (coll *Collection) {
-	coll = d.getCollection("tasks")
+	coll = d.GetCollection("tasks")
 	return
 }
 
 func (d *Database) Versions() (coll *Collection) {
-	coll = d.getCollection("versions")
+	coll = d.GetCollection("versions")
 	return
 }
 
 func (d *Database) Tokens() (coll *Collection) {
-	coll = d.getCollection("tokens")
+	coll = d.GetCollection("tokens")
 	return
 }
 
 func (d *Database) CsrfTokens() (coll *Collection) {
-	coll = d.getCollection("csrf_tokens")
+	coll = d.GetCollection("csrf_tokens")
 	return
 }
 
 func (d *Database) SecondaryTokens() (coll *Collection) {
-	coll = d.getCollection("secondary_tokens")
+	coll = d.GetCollection("secondary_tokens")
 	return
 }
 
 func (d *Database) Nonces() (coll *Collection) {
-	coll = d.getCollection("nonces")
+	coll = d.GetCollection("nonces")
 	return
 }
 
 func (d *Database) Rokeys() (coll *Collection) {
-	coll = d.getCollection("rokeys")
+	coll = d.GetCollection("rokeys")
 	return
 }
 
 func (d *Database) Settings() (coll *Collection) {
-	coll = d.getCollection("settings")
+	coll = d.GetCollection("settings")
 	return
 }
 
@@ -215,37 +215,37 @@ func (d *Database) Events() (coll *Collection) {
 }
 
 func (d *Database) Nodes() (coll *Collection) {
-	coll = d.getCollection("nodes")
+	coll = d.GetCollection("nodes")
 	return
 }
 
 func (d *Database) Certificates() (coll *Collection) {
-	coll = d.getCollection("certificates")
+	coll = d.GetCollection("certificates")
 	return
 }
 
 func (d *Database) Secrets() (coll *Collection) {
-	coll = d.getCollection("secrets")
+	coll = d.GetCollection("secrets")
 	return
 }
 
 func (d *Database) Authorities() (coll *Collection) {
-	coll = d.getCollection("authorities")
+	coll = d.GetCollection("authorities")
 	return
 }
 
 func (d *Database) SshChallenges() (coll *Collection) {
-	coll = d.getCollection("ssh_challenges")
+	coll = d.GetCollection("ssh_challenges")
 	return
 }
 
 func (d *Database) SshCertificates() (coll *Collection) {
-	coll = d.getCollection("ssh_certificates")
+	coll = d.GetCollection("ssh_certificates")
 	return
 }
 
 func (d *Database) AcmeChallenges() (coll *Collection) {
-	coll = d.getCollection("acme_challenges")
+	coll = d.GetCollection("acme_challenges")
 	return
 }
 
@@ -255,7 +255,7 @@ func (d *Database) Logs() (coll *Collection) {
 }
 
 func (d *Database) Audits() (coll *Collection) {
-	coll = d.getCollection("audits")
+	coll = d.GetCollection("audits")
 	return
 }
 
