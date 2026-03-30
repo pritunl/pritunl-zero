@@ -393,8 +393,7 @@ func logoutGet(c *gin.Context) {
 }
 
 func authRequestGet(c *gin.Context) {
-	srvc := c.MustGet("service").(*service.Service)
-	auth.Request(c, srvc.GetDomains())
+	auth.Request(c)
 }
 
 func authCallbackGet(c *gin.Context) {
