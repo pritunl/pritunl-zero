@@ -84,6 +84,7 @@ export default class AlertsFilter extends React.Component<Props, {}> {
 				style={css.role}
 				placeholder="Role"
 				value={this.props.filter.role}
+				dynamic={true}
 				onChange={(val: string): void => {
 					let filter = {
 						...this.props.filter,
