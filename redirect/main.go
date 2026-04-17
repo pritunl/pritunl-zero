@@ -54,11 +54,6 @@ func runServer() (err error) {
 		return
 	}
 
-	logger.WithFields(logger.Fields{
-		"port":     80,
-		"web_port": webPort,
-	}).Info("redirect: Starting HTTP redirect server")
-
 	go sandboxTest()
 
 	file := os.NewFile(uintptr(3), "systemd-socket")
@@ -70,8 +65,17 @@ func runServer() (err error) {
 		return
 	}
 
+	// Get actual port from listener for logging
+	listenerAddr := listener.Addr().String()
+
+	logger.WithFields(logger.Fields{
+		"address":  listenerAddr,
+		"web_port": webPort,
+	}).Info("redirect: Starting HTTP redirect server")
+
 	server := &http.Server{
-		Addr:         ":80",
+		// The systemd socket listener determines the port is informational
+		Addr:         listenerAddr,
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 1 * time.Minute,
 
@@ -144,6 +148,14 @@ func runServer() (err error) {
 func sandboxTest() {
 	time.Sleep(3 * time.Second)
 
+	webPort, err := strconv.Atoi(os.Getenv("WEB_PORT"))
+	if err != nil {
+		err = &errortypes.ParseError{
+			errors.Wrapf(err, "redirect: Failed to parse web port"),
+		}
+		return
+	}
+
 	client := &http.Client{
 		Timeout: 3 * time.Second,
 		Transport: &http.Transport{
@@ -154,9 +166,13 @@ func sandboxTest() {
 		},
 	}
 
+	reqUrl := "https://127.0.0.1"
+	if webPort != 443 {
+		reqUrl += fmt.Sprintf(":%d", webPort)
+	}
 	req, err := http.NewRequest(
 		"GET",
-		"https://127.0.0.1",
+		reqUrl,
 		nil,
 	)
 	if err != nil {

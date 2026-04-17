@@ -26,6 +26,7 @@ export interface Certificate {
 	acme_auth?: string;
 	acme_secret?: string;
 	acme_domains?: string[];
+	refresh?: boolean;
 }
 
 export interface Filter {

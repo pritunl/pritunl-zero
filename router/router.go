@@ -18,6 +18,7 @@ import (
 	"github.com/dropbox/godropbox/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/acme"
+	"github.com/pritunl/pritunl-zero/config"
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/crypto"
 	"github.com/pritunl/pritunl-zero/database"
@@ -401,9 +402,15 @@ func (r *Router) sendChallenge(chal any) (err error) {
 		return
 	}
 
+	// Use configured redirect port from config file, default to 80
+	redirectPort := config.Config.RedirectPort
+	if redirectPort == 0 {
+		redirectPort = 80
+	}
+
 	req, err := http.NewRequest(
 		"POST",
-		"http://127.0.0.1:80/token",
+		fmt.Sprintf("http://127.0.0.1:%d/token", redirectPort),
 		bytes.NewReader([]byte(encData)),
 	)
 	if err != nil {
