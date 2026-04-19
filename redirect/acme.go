@@ -41,8 +41,25 @@ func AddChallenge(chal *Challenge) {
 }
 
 func GetChallenge(token string) (chal *Challenge) {
-	challengesLock.Lock()
-	chal = challenges[token]
-	challengesLock.Unlock()
+	// Retry with backoff for race condition handling
+	delays := []time.Duration{
+		0 * time.Millisecond,
+		150 * time.Millisecond,
+		300 * time.Millisecond,
+		800 * time.Millisecond,
+		1600 * time.Millisecond,
+	}
+
+	for i, delay := range delays {
+		if i > 0 {
+			time.Sleep(delay)
+		}
+		challengesLock.Lock()
+		chal = challenges[token]
+		challengesLock.Unlock()
+		if chal != nil {
+			return
+		}
+	}
 	return
 }

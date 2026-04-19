@@ -23,10 +23,11 @@ var (
 )
 
 type ConfigData struct {
-	path     string `json:"-"`
-	loaded   bool   `json:"-"`
-	MongoUri string `json:"mongo_uri"`
-	NodeId   string `json:"node_id"`
+	path         string `json:"-"`
+	loaded       bool   `json:"-"`
+	MongoUri     string `json:"mongo_uri"`
+	NodeId       string `json:"node_id"`
+	RedirectPort int    `json:"redirect_port"`
 }
 
 func (c *ConfigData) Save() (err error) {

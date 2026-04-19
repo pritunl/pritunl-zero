@@ -10,6 +10,7 @@ import PageSelect from './PageSelect';
 import PageInfo from './PageInfo';
 import PageTextArea from './PageTextArea';
 import PageSave from './PageSave';
+import PageSwitch from './PageSwitch';
 import ConfirmButton from './ConfirmButton';
 import Help from './Help';
 import * as Constants from "../Constants";
@@ -256,6 +257,20 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 		});
 	}
 
+	isRenewable(): boolean {
+		let info = this.props.certificate.info;
+		if (!info || !info.expires_on) {
+			return false;
+		}
+
+		let expires = new Date(info.expires_on);
+		let now = new Date();
+		let sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+		// Show renew button if expired or expiring within 7 days
+		return expires.getTime() - now.getTime() < sevenDays;
+	}
+
 	render(): JSX.Element {
 		let cert: CertificateTypes.Certificate = this.state.certificate ||
 			this.props.certificate;
@@ -499,6 +514,16 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 					>
 						{secretsSelect}
 					</PageSelect>
+					<PageSwitch
+						label="Renew Certificate"
+						hidden={cert.type !== 'lets_encrypt' || !this.isRenewable()}
+						help="Renew the LetsEncrypt certificate immediately."
+						disabled={this.state.disabled}
+						checked={cert.refresh}
+						onToggle={(): void => {
+							this.set('refresh', !cert.refresh);
+						}}
+					/>
 				</div>
 			</div>
 			<PageSave
