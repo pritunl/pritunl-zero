@@ -249,22 +249,30 @@ func CloneHeader(src http.Header) (dst http.Header) {
 	return dst
 }
 
-func GetLocation(r *http.Request) string {
+func GetLocation(r *http.Request, domains []string) string {
 	host := ""
 
-	switch {
-	case r.Header.Get("X-Host") != "":
-		host = r.Header.Get("X-Host")
-		break
-	case r.Host != "":
+	if r.Host != "" {
 		host = r.Host
-		break
-	case r.URL.Host != "":
+	} else if r.URL.Host != "" {
 		host = r.URL.Host
-		break
 	}
 
-	return "https://" + host
+	if host != "" {
+		for _, domain := range domains {
+			if domain == host {
+				return "https://" + domain
+			}
+		}
+	}
+
+	for _, domain := range domains {
+		if domain != "" {
+			return "https://" + domain
+		}
+	}
+
+	return ""
 }
 
 func ProxyUrl(srcUrl *url.URL, dstScheme, dstHost string) (
