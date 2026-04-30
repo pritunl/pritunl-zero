@@ -3,6 +3,8 @@ package dns
 import (
 	"net"
 	"strings"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 func matchDomains(x, y string) bool {
@@ -30,11 +32,11 @@ func normalizeIp(addr string) string {
 
 func extractDomain(domain string) string {
 	domain = strings.Trim(domain, ".")
-	parts := strings.Split(domain, ".")
-	if len(parts) >= 2 {
-		return parts[len(parts)-2] + "." + parts[len(parts)-1]
+	topDomain, err := publicsuffix.EffectiveTLDPlusOne(domain)
+	if err != nil {
+		return domain
 	}
-	return domain
+	return topDomain
 }
 
 func cleanDomain(domain string) string {
