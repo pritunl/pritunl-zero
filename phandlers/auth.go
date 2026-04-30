@@ -393,7 +393,7 @@ func logoutGet(c *gin.Context) {
 }
 
 func authRequestGet(c *gin.Context) {
-	auth.Request(c)
+	auth.Request(c, auth.Service)
 }
 
 func authCallbackGet(c *gin.Context) {
