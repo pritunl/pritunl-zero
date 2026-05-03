@@ -24,7 +24,7 @@ export function save(): Promise<void> {
 			.put('/theme')
 			.send({
 				theme: theme + `-${themeVer}`,
-        		editor_theme: editorThemeName,
+						editor_theme: editorThemeName,
 			})
 			.set('Accept', 'application/json')
 			.set('Csrf-Token', Csrf.token)
@@ -47,12 +47,12 @@ export function save(): Promise<void> {
 }
 
 export function themeVer3(): void {
-  const blueprintTheme3 = document.getElementById(
-    "blueprint3-theme") as HTMLLinkElement
-  const blueprintTheme5 = document.getElementById(
-    "blueprint5-theme") as HTMLLinkElement
-  blueprintTheme3.disabled = false;
-  blueprintTheme5.disabled = true;
+	const blueprintTheme3 = document.getElementById(
+		"blueprint3-theme") as HTMLLinkElement
+	const blueprintTheme5 = document.getElementById(
+		"blueprint5-theme") as HTMLLinkElement
+	blueprintTheme3.disabled = false;
+	blueprintTheme5.disabled = true;
 	if (theme === "dark") {
 		document.body.className = 'bp3-theme bp5-dark';
 		document.documentElement.className = 'dark3-scroll';
@@ -60,16 +60,16 @@ export function themeVer3(): void {
 		document.body.className = 'bp3-theme';
 		document.documentElement.className = '';
 	}
-  themeVer = 3;
+	themeVer = 3;
 }
 
 export function themeVer5(): void {
-  const blueprintTheme3 = document.getElementById(
-    "blueprint3-theme") as HTMLLinkElement
-  const blueprintTheme5 = document.getElementById(
-    "blueprint5-theme") as HTMLLinkElement
-  blueprintTheme3.disabled = true;
-  blueprintTheme5.disabled = false;
+	const blueprintTheme3 = document.getElementById(
+		"blueprint3-theme") as HTMLLinkElement
+	const blueprintTheme5 = document.getElementById(
+		"blueprint5-theme") as HTMLLinkElement
+	blueprintTheme3.disabled = true;
+	blueprintTheme5.disabled = false;
 	if (theme === "dark") {
 		document.body.className = 'bp5-dark';
 		document.documentElement.className = 'dark5-scroll';
@@ -77,7 +77,7 @@ export function themeVer5(): void {
 		document.body.className = '';
 		document.documentElement.className = '';
 	}
-  themeVer = 5;
+	themeVer = 5;
 }
 
 export function light(): void {
@@ -127,14 +127,14 @@ export function toggle(ver3: boolean): void {
 }
 
 export function getEditorTheme(): string {
-  if (!editorThemeName) {
-    if (theme === "light") {
-      return "github-light";
-    } else {
-      return "github-dark";
-    }
-  }
-  return editorThemeName
+	if (!editorThemeName) {
+		if (theme === "light") {
+			return "github-light";
+		} else {
+			return "github-dark";
+		}
+	}
+	return editorThemeName
 }
 
 export function setEditorTheme(name: string) {
