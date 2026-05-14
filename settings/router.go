@@ -21,6 +21,7 @@ type router struct {
 	MaxResponseHeaderBytes int    `bson:"max_response_header_bytes" default:"33554432"`
 	ForceRedirectSystemd   bool   `bson:"force_redirect_systemd"`
 	RootDomainCookie       bool   `bson:"root_domain_cookie"`
+	RedirectQuery          bool   `bson:"redirect_query"`
 	UnsafeRequests         bool   `bson:"unsafe_requests"`
 	UnsafeRemoteHeader     bool   `bson:"unsafe_remote_header"`
 	DebugWebSocket         bool   `bson:"debug_websocket"`
