@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pritunl/pritunl-zero/service"
+	"github.com/pritunl/pritunl-zero/settings"
 )
 
 func getRedirectPath(c *gin.Context, srvc *service.Service,
@@ -33,11 +34,15 @@ func getRedirectPath(c *gin.Context, srvc *service.Service,
 			parsed.Host = redirectHost
 			parsed.User = nil
 			parsed.Opaque = ""
+			if !settings.Router.RedirectQuery {
+				parsed.RawQuery = ""
+				parsed.Fragment = ""
+			}
 			return parsed.String()
 		}
 	}
 
-	return ""
+	return "/"
 }
 
 type redirectData struct {
