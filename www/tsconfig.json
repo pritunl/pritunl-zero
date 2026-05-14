@@ -9,7 +9,8 @@
     "removeComments": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "jsx": "react"
+    "jsx": "react",
+    "strict": false
   },
   "exclude": [
     "node_modules",
