@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Fix service open redirect
+
 Version 1.0.3779.61 2026-03-30
 ------------------------------
 
