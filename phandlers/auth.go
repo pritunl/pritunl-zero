@@ -191,7 +191,8 @@ func authSessionPost(c *gin.Context) {
 		return
 	}
 
-	redirectJson(c, getRedirectPath(c.Request.URL.Query().Get("redirect_url")))
+	redirectJson(c, getRedirectPath(
+		c, srvc, c.Request.URL.Query().Get("redirect_url")))
 }
 
 type secondaryData struct {
@@ -359,7 +360,8 @@ func authSecondaryPost(c *gin.Context) {
 		return
 	}
 
-	redirectJson(c, getRedirectPath(c.Request.URL.Query().Get("redirect_url")))
+	redirectJson(c, getRedirectPath(
+		c, srvc, c.Request.URL.Query().Get("redirect_url")))
 }
 
 func logoutGet(c *gin.Context) {
@@ -575,7 +577,7 @@ func authCallbackGet(c *gin.Context) {
 		return
 	}
 
-	redirectQuery(c, tokn.Query)
+	redirectQuery(c, srvc, tokn.Query)
 }
 
 func authWanRegisterGet(c *gin.Context) {
