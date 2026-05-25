@@ -22,6 +22,7 @@ type system struct {
 	HsmResponseTimeout             int    `bson:"hsm_response_timeout" default:"10"`
 	DisableBastionHostCertificates bool   `bson:"disable_bastion_host_certificates"`
 	BastionDockerImage             string `bson:"bastion_docker_image" default:"docker.io/pritunl/pritunl-bastion"`
+	BastionPermitOpen              string `bson:"bastion_permit_open" default:"*:22"`
 	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
 	TwilioAccount                  string `bson:"twilio_account"`
 	TwilioSecret                   string `bson:"twilio_secret"`
