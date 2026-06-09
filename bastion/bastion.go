@@ -186,6 +186,8 @@ func (b *Bastion) Start(db *database.Database,
 			"BASTION_HOST_KEY=%s", authr.ProxyPrivateKey),
 		"-e", fmt.Sprintf(
 			"BASTION_HOST_PUB_KEY=%s", authr.ProxyPublicKey),
+		"-e", fmt.Sprintf(
+			"BASTION_PERMIT_OPEN=%s", settings.System.BastionPermitOpen),
 		settings.System.BastionDockerImage,
 	)
 	if err != nil {
