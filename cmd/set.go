@@ -1,13 +1,10 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
-	"github.com/pritunl/pritunl-zero/errortypes"
 	"github.com/pritunl/pritunl-zero/settings"
 	"github.com/spf13/cobra"
 )
@@ -34,12 +31,8 @@ var SetCmd = &cobra.Command{
 		key := args[1]
 		val := args[2]
 
-		var valParsed interface{}
-		err := json.Unmarshal([]byte(val), &valParsed)
+		valParsed, err := settings.ParseValue(group, key, val)
 		if err != nil {
-			err = &errortypes.ParseError{
-				errors.Wrap(err, "cmd.settings: Failed to parse value"),
-			}
 			cobra.CheckErr(err)
 			return
 		}
