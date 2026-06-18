@@ -1,4 +1,4 @@
-"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[83148],{83148:(E,S,e)=>{e.r(S),e.d(S,{conf:()=>T,language:()=>R});
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[83148],{83148(E,S,e){e.r(S),e.d(S,{conf:()=>T,language:()=>R});
 /*!-----------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Version: 0.50.0(c321d0fbecb50ab8a5365fa1965476b0ae63fc87)

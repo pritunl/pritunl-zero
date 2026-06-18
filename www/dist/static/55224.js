@@ -1,4 +1,4 @@
-"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[55224],{55224:(e,t,n)=>{n.r(t),n.d(t,{conf:()=>u,language:()=>b});var r,i,o=n(8280),a=Object.defineProperty,s=Object.getOwnPropertyDescriptor,d=Object.getOwnPropertyNames,p=Object.prototype.hasOwnProperty,l=(e,t,n,r)=>{if(t&&"object"==typeof t||"function"==typeof t)for(let i of d(t))p.call(e,i)||i===n||a(e,i,{get:()=>t[i],enumerable:!(r=s(t,i))||r.enumerable});return e},m={};
+"use strict";(self.webpackChunkpritunl_zero=self.webpackChunkpritunl_zero||[]).push([[55224],{55224(e,t,n){n.r(t),n.d(t,{conf:()=>u,language:()=>b});var r,i,o=n(8280),a=Object.defineProperty,s=Object.getOwnPropertyDescriptor,d=Object.getOwnPropertyNames,p=Object.prototype.hasOwnProperty,l=(e,t,n,r)=>{if(t&&"object"==typeof t||"function"==typeof t)for(let i of d(t))p.call(e,i)||i===n||a(e,i,{get:()=>t[i],enumerable:!(r=s(t,i))||r.enumerable});return e},m={};
 /*!-----------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Version: 0.50.0(c321d0fbecb50ab8a5365fa1965476b0ae63fc87)
