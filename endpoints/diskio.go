@@ -8,6 +8,7 @@ import (
 	"github.com/pritunl/mongo-go-driver/v2/mongo/options"
 	"github.com/pritunl/pritunl-zero/alert"
 	"github.com/pritunl/pritunl-zero/database"
+	"github.com/pritunl/pritunl-zero/utils"
 )
 
 type DiskIo struct {
@@ -61,6 +62,9 @@ func (d *DiskIo) Format(id bson.ObjectID) time.Time {
 	d.Endpoint = id
 	d.Timestamp = d.Timestamp.UTC().Truncate(1 * time.Minute)
 	d.Id = GenerateId(id, d.Timestamp)
+	for _, dsk := range d.Disks {
+		dsk.Name = utils.FilterStr(dsk.Name, 32)
+	}
 	return d.Timestamp
 }
 
