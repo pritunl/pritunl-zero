@@ -215,13 +215,20 @@ func setDefaults(obj interface{}) {
 	return
 }
 
-func Update(name string) (err error) {
+func Load(name string) (data interface{}, err error) {
+	group, ok := registry[name]
+	if !ok {
+		err = &errortypes.NotFoundError{
+			errors.Newf("settings: Group '%s' does not exist", name),
+		}
+		return
+	}
+
 	db := database.GetDatabase()
 	defer db.Close()
 
 	coll := db.Settings()
-	group := registry[name]
-	data := group.New()
+	data = group.New()
 
 	err = database.IgnoreNotFoundError(coll.FindOneId(name, data))
 	if err != nil {
@@ -230,7 +237,16 @@ func Update(name string) (err error) {
 
 	setDefaults(data)
 
-	group.Update(data)
+	return
+}
+
+func Update(name string) (err error) {
+	data, err := Load(name)
+	if err != nil {
+		return
+	}
+
+	registry[name].Update(data)
 
 	return
 }
