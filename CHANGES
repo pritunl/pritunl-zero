@@ -1,6 +1,10 @@
 pritunl-zero changelog
 ======================
 
+<%= version %>
+
+Update bastion server configuration
+
 Version 1.0.3825.98 2026-05-15
 ------------------------------
 
