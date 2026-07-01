@@ -147,6 +147,7 @@ func newProxyStore(srvc *service.Service,
 	)
 	cookieStore.Options.Secure = true
 	cookieStore.Options.HttpOnly = true
+	cookieStore.Options.SameSite = http.SameSiteLaxMode
 
 	if srvc.ShareSession {
 		cookieStore.Options.Domain = getCookieTopDomain(r.Host)
