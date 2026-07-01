@@ -123,7 +123,11 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string,
 			utils.WriteUnauthorized(w, "CSRF origin invalid")
 			return false
 		}
-		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		if u.Scheme == "" && u.Host == "" {
+			origin = ""
+		} else {
+			origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		}
 	}
 
 	if wildcard {
