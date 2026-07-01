@@ -117,17 +117,17 @@ func CsrfCheck(w http.ResponseWriter, r *http.Request, domain string,
 	matchSec := fmt.Sprintf("https://%s%s", domain, port)
 
 	origin := r.Header.Get("Origin")
+	if origin == "null" {
+		origin = ""
+	}
+
 	if origin != "" {
 		u, err := url.Parse(origin)
 		if err != nil {
 			utils.WriteUnauthorized(w, "CSRF origin invalid")
 			return false
 		}
-		if u.Scheme == "" && u.Host == "" {
-			origin = ""
-		} else {
-			origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		}
+		origin = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	}
 
 	if wildcard {
