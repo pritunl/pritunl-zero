@@ -3,7 +3,7 @@ module github.com/pritunl/pritunl-zero
 go 1.25.0
 
 require (
-	github.com/aws/aws-sdk-go v1.49.21
+	github.com/aws/aws-sdk-go v1.55.8
 	github.com/cloudflare/cloudflare-go v0.103.0
 	github.com/dropbox/godropbox v0.0.0-20230623171840-436d2007a9fd
 	github.com/duosecurity/duo_api_golang v0.0.0-20250430191550-ac36954387e7
@@ -20,8 +20,8 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/twilio/twilio-go v1.16.0
 	github.com/ua-parser/uap-go v0.0.0-20250213224047-9c035f085b90
-	golang.org/x/crypto v0.52.0
-	golang.org/x/net v0.55.0
+	golang.org/x/crypto v0.54.0
+	golang.org/x/net v0.56.0
 	golang.org/x/oauth2 v0.34.0
 	google.golang.org/api v0.154.0
 )
@@ -84,10 +84,10 @@ require (
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.opentelemetry.io/otel/trace v1.43.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/term v0.43.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/term v0.45.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7 // indirect
 	google.golang.org/grpc v1.79.3 // indirect
