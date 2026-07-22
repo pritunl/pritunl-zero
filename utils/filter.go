@@ -84,7 +84,7 @@ func FilterName(s string) string {
 
 	var ns strings.Builder
 	for _, c := range s {
-		if safeChars.Contains(c) {
+		if nameSafeChar.Contains(c) {
 			ns.WriteString(string(c))
 		}
 	}
