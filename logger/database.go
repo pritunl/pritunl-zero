@@ -7,6 +7,7 @@ import (
 	"github.com/pritunl/pritunl-zero/constants"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/log"
+	"github.com/pritunl/pritunl-zero/node"
 	"github.com/sirupsen/logrus"
 )
 
@@ -69,6 +70,10 @@ func databaseSend(entry *logrus.Entry) (err error) {
 		} else {
 			ent.Fields[key] = val
 		}
+	}
+
+	if node.Self != nil {
+		ent.Fields["node"] = node.Self.Id.Hex()
 	}
 
 	err = ent.Insert(db)
