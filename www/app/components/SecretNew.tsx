@@ -147,6 +147,7 @@ export default class SecretNew extends React.Component<Props, State> {
 		let keyLabel = "";
 		let keyHelp = "";
 		let keyPlaceholder = "";
+		let keyArea = false;
 		let valLabel = "";
 		let valHelp = "";
 		let valPlaceholder = "";
@@ -200,6 +201,21 @@ export default class SecretNew extends React.Component<Props, State> {
 				publicKeyHelp = "Public key for Oracle Cloud API authentication.";
 				publicKeyPlaceholder = "Oracle Cloud Public Key";
 				break;
+			case "google_cloud":
+				keyLabel = "Google Cloud Service Account JSON";
+				keyHelp = "Google Cloud service account JSON authentication key.";
+				keyPlaceholder = "Service Account";
+				keyArea = true;
+				valLabel = "";
+				valHelp = "";
+				valPlaceholder = "";
+				regionLabel = "";
+				regionHelp = "";
+				regionPlaceholder = "";
+				publicKeyLabel = "";
+				publicKeyHelp = "";
+				publicKeyPlaceholder = "";
+				break;
 		}
 
 		return <div
@@ -238,9 +254,20 @@ export default class SecretNew extends React.Component<Props, State> {
 						<PageInput
 							label={keyLabel}
 							help={keyHelp}
-							hidden={keyLabel === ""}
+							hidden={keyLabel === "" || keyArea}
 							type="text"
 							placeholder={keyPlaceholder}
+							value={secr.key}
+							onChange={(val: string): void => {
+								this.set('key', val);
+							}}
+						/>
+						<PageTextArea
+							label={keyLabel}
+							help={keyHelp}
+							hidden={keyLabel === "" || !keyArea}
+							placeholder={keyPlaceholder}
+							rows={6}
 							value={secr.key}
 							onChange={(val: string): void => {
 								this.set('key', val);
@@ -282,6 +309,7 @@ export default class SecretNew extends React.Component<Props, State> {
 							<option value="aws">AWS</option>
 							<option value="cloudflare">Cloudflare</option>
 							<option value="oracle_cloud">Oracle Cloud</option>
+							<option value="google_cloud">Google Cloud</option>
 						</PageSelect>
 						<PageTextArea
 							disabled={this.state.disabled}
