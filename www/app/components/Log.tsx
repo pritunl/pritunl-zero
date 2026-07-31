@@ -126,7 +126,7 @@ export default class Log extends React.Component<Props, State> {
 			style={css.card}
 		>
 			<div className={className} style={css.timestamp}>
-				{MiscUtils.formatDateShortTime(log.timestamp) || 'Unknown'}
+				{MiscUtils.formatDate(log.timestamp) || 'Unknown'}
 			</div>
 			<div className={className} style={css.level}>
 				{log.level}
