@@ -546,7 +546,7 @@ export default class CertificateDetailed extends React.Component<Props, State> {
 				onSave={this.onSave}
 			>
 				<ConfirmButton
-					label="Refresh"
+					label="Renew"
 					className="bp5-intent-success bp5-icon-refresh"
 					progressClassName="bp5-intent-success"
 					style={css.controlButton}
