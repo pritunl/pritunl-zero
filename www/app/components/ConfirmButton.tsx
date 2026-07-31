@@ -184,6 +184,9 @@ export default class ConfirmButton extends React.Component<Props, State> {
 		if (!this.props.label) {
 			className += ' bp5-button-empty';
 		}
+		if (this.props.disabled) {
+			className += ' bp5-disabled';
+		}
 
 		let dialogClassName = this.props.dialogClassName ||
 			this.props.className || '';
