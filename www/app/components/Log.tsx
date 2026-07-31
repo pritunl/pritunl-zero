@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as Blueprint from '@blueprintjs/core';
 import * as MiscUtils from '../utils/MiscUtils';
 import * as LogTypes from '../types/LogTypes';
-import * as Theme from "../Theme";
+import * as Theme from '../Theme';
 
 interface State {
 	stack: boolean;
@@ -24,11 +24,13 @@ const css = {
 		verticalAlign: 'top',
 		display: 'table-cell',
 		padding: '6px',
+		width: '220px',
 	} as React.CSSProperties,
 	level: {
 		verticalAlign: 'top',
 		display: 'table-cell',
 		padding: '6px',
+		width: '70px',
 	} as React.CSSProperties,
 	message: {
 		verticalAlign: 'top',
@@ -39,6 +41,7 @@ const css = {
 		verticalAlign: 'top',
 		display: 'table-cell',
 		padding: '6px',
+		wordBreak: 'break-all',
 	} as React.CSSProperties,
 	buttons: {
 		verticalAlign: 'top',
