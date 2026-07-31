@@ -739,6 +739,14 @@ export default class NodeDetailed extends React.Component<Props, State> {
 						</div>
 					</label>
 					<PageSwitch
+						label="Web server HTTP/2 support"
+						help="Support HTTP/2 traffic to the web server."
+						checked={node.http2}
+						onToggle={(): void => {
+							this.set('http2', !node.http2);
+						}}
+					/>
+					<PageSwitch
 						disabled={this.state.disabled}
 						label="Web redirect server"
 						help="Enable redirect server for HTTP requests to HTTPS. Required for Lets Encrypt certificates."
