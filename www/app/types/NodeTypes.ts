@@ -9,6 +9,7 @@ export interface Node {
 	type?: string;
 	name?: string;
 	port?: number;
+	http2?: boolean;
 	no_redirect_server?: boolean;
 	protocol?: string;
 	timestamp?: string;
