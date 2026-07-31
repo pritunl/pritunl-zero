@@ -92,7 +92,7 @@ export function getChartLabels(resource: string, data: any): Labels {
 				title: 'Disks',
 				resource_label: 'Usage',
 				resource_type: 'float',
-				resource_suffix: '',
+				resource_suffix: '%',
 				resource_fixed: 2,
 				resource_min: 0,
 				resource_max: 100,
