@@ -296,6 +296,7 @@ func Connect() (err error) {
 	opts := options.Client().ApplyURI(config.Config.MongoUri)
 	opts.SetRetryReads(true)
 	opts.SetRetryWrites(true)
+	opts.SetTimeout(60 * time.Second)
 
 	client, err := mongo.Connect(opts)
 	if err != nil {
