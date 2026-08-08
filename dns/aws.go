@@ -1,12 +1,13 @@
 package dns
 
 import (
+	"context"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/route53"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/route53"
+	"github.com/aws/aws-sdk-go-v2/service/route53/types"
 	"github.com/dropbox/godropbox/errors"
 	"github.com/pritunl/pritunl-zero/database"
 	"github.com/pritunl/pritunl-zero/errortypes"
@@ -16,8 +17,7 @@ import (
 )
 
 type Aws struct {
-	sess        *session.Session
-	sessRoute53 *route53.Route53
+	client      *route53.Client
 	cacheZoneId map[string]string
 }
 
@@ -33,19 +33,11 @@ func (a *Aws) Connect(db *database.Database,
 
 	a.cacheZoneId = map[string]string{}
 
-	a.sess, err = session.NewSession(&aws.Config{
-		Region: aws.String(secr.Region),
-		Credentials: credentials.NewStaticCredentials(
+	a.client = route53.NewFromConfig(aws.Config{
+		Region: secr.Region,
+		Credentials: credentials.NewStaticCredentialsProvider(
 			secr.Key, secr.Value, ""),
 	})
-	if err != nil {
-		err = &errortypes.ApiError{
-			errors.Wrap(err, "acme: AWS session error"),
-		}
-		return
-	}
-
-	a.sessRoute53 = route53.New(a.sess)
 
 	return
 }
@@ -60,7 +52,7 @@ func (a *Aws) DnsZoneFind(domain string) (zoneId string, err error) {
 
 	input := &route53.ListHostedZonesInput{}
 
-	result, err := a.sessRoute53.ListHostedZones(input)
+	result, err := a.client.ListHostedZones(context.Background(), input)
 	if err != nil {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: AWS route53 zone lookup error"),
@@ -69,7 +61,7 @@ func (a *Aws) DnsZoneFind(domain string) (zoneId string, err error) {
 	}
 
 	for _, zone := range result.HostedZones {
-		if matchDomains(*zone.Name, domain) {
+		if zone.Name != nil && matchDomains(*zone.Name, domain) {
 			zoneId = *zone.Id
 			break
 		}
@@ -97,8 +89,8 @@ func (a *Aws) DnsCommit(db *database.Database,
 		return
 	}
 
-	deleteResourceRecs := []*route53.ResourceRecord{}
-	updateResourceRecs := []*route53.ResourceRecord{}
+	deleteResourceRecs := []types.ResourceRecord{}
+	updateResourceRecs := []types.ResourceRecord{}
 	operations := []string{}
 	for _, op := range ops {
 		if recordType == "AAAA" {
@@ -112,7 +104,7 @@ func (a *Aws) DnsCommit(db *database.Database,
 			op.Value = val
 		}
 
-		resourceRec := &route53.ResourceRecord{
+		resourceRec := types.ResourceRecord{
 			Value: aws.String(op.Value),
 		}
 
@@ -155,13 +147,13 @@ func (a *Aws) DnsCommit(db *database.Database,
 
 	if len(updateResourceRecs) == 0 && len(deleteResourceRecs) > 0 {
 		input := &route53.ChangeResourceRecordSetsInput{
-			ChangeBatch: &route53.ChangeBatch{
-				Changes: []*route53.Change{
+			ChangeBatch: &types.ChangeBatch{
+				Changes: []types.Change{
 					{
-						Action: aws.String("DELETE"),
-						ResourceRecordSet: &route53.ResourceRecordSet{
+						Action: types.ChangeActionDelete,
+						ResourceRecordSet: &types.ResourceRecordSet{
 							Name: aws.String(domain),
-							Type: aws.String(recordType),
+							Type: types.RRType(recordType),
 							TTL: aws.Int64(int64(
 								settings.Acme.DnsAwsTtl)),
 							ResourceRecords: deleteResourceRecs,
@@ -173,7 +165,8 @@ func (a *Aws) DnsCommit(db *database.Database,
 			HostedZoneId: aws.String(zoneId),
 		}
 
-		_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+		_, err = a.client.ChangeResourceRecordSets(
+			context.Background(), input)
 		if err != nil {
 			if strings.Contains(err.Error(), "delete") &&
 				strings.Contains(err.Error(), "not found") {
@@ -190,13 +183,13 @@ func (a *Aws) DnsCommit(db *database.Database,
 
 	if len(updateResourceRecs) > 0 {
 		input := &route53.ChangeResourceRecordSetsInput{
-			ChangeBatch: &route53.ChangeBatch{
-				Changes: []*route53.Change{
+			ChangeBatch: &types.ChangeBatch{
+				Changes: []types.Change{
 					{
-						Action: aws.String("UPSERT"),
-						ResourceRecordSet: &route53.ResourceRecordSet{
+						Action: types.ChangeActionUpsert,
+						ResourceRecordSet: &types.ResourceRecordSet{
 							Name: aws.String(domain),
-							Type: aws.String(recordType),
+							Type: types.RRType(recordType),
 							TTL: aws.Int64(int64(
 								settings.Acme.DnsAwsTtl)),
 							ResourceRecords: updateResourceRecs,
@@ -208,7 +201,8 @@ func (a *Aws) DnsCommit(db *database.Database,
 			HostedZoneId: aws.String(zoneId),
 		}
 
-		_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+		_, err = a.client.ChangeResourceRecordSets(
+			context.Background(), input)
 		if err != nil {
 			err = &errortypes.ApiError{
 				errors.Wrap(err, "acme: AWS record update error"),
@@ -234,10 +228,11 @@ func (a *Aws) DnsFind(db *database.Database, domain, recordType string) (
 	input := &route53.ListResourceRecordSetsInput{
 		HostedZoneId:    aws.String(zoneId),
 		StartRecordName: aws.String(domain),
-		StartRecordType: aws.String(recordType),
+		StartRecordType: types.RRType(recordType),
 	}
 
-	result, err := a.sessRoute53.ListResourceRecordSets(input)
+	result, err := a.client.ListResourceRecordSets(
+		context.Background(), input)
 	if err != nil {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: AWS record list error"),
@@ -246,7 +241,7 @@ func (a *Aws) DnsFind(db *database.Database, domain, recordType string) (
 	}
 
 	for _, recordSet := range result.ResourceRecordSets {
-		if recordSet.Type != nil && *recordSet.Type == recordType &&
+		if string(recordSet.Type) == recordType &&
 			recordSet.Name != nil && matchDomains(*recordSet.Name, domain) {
 
 			for _, record := range recordSet.ResourceRecords {
@@ -283,10 +278,11 @@ func (a *Aws) DnsTxtGet(db *database.Database, domain string) (
 	input := &route53.ListResourceRecordSetsInput{
 		HostedZoneId:    aws.String(zoneId),
 		StartRecordName: aws.String(domain),
-		StartRecordType: aws.String("TXT"),
+		StartRecordType: types.RRTypeTxt,
 	}
 
-	result, err := a.sessRoute53.ListResourceRecordSets(input)
+	result, err := a.client.ListResourceRecordSets(
+		context.Background(), input)
 	if err != nil {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: AWS route53 record set error"),
@@ -295,7 +291,7 @@ func (a *Aws) DnsTxtGet(db *database.Database, domain string) (
 	}
 
 	for _, recordSet := range result.ResourceRecordSets {
-		if recordSet.Type != nil && *recordSet.Type == "TXT" &&
+		if recordSet.Type == types.RRTypeTxt &&
 			recordSet.Name != nil && matchDomains(*recordSet.Name, domain) {
 
 			for _, record := range recordSet.ResourceRecords {
@@ -318,15 +314,15 @@ func (a *Aws) DnsTxtUpsert(db *database.Database,
 	}
 
 	input := &route53.ChangeResourceRecordSetsInput{
-		ChangeBatch: &route53.ChangeBatch{
-			Changes: []*route53.Change{
+		ChangeBatch: &types.ChangeBatch{
+			Changes: []types.Change{
 				{
-					Action: aws.String("UPSERT"),
-					ResourceRecordSet: &route53.ResourceRecordSet{
+					Action: types.ChangeActionUpsert,
+					ResourceRecordSet: &types.ResourceRecordSet{
 						Name: aws.String(domain),
-						Type: aws.String("TXT"),
+						Type: types.RRTypeTxt,
 						TTL:  aws.Int64(int64(settings.Acme.DnsAwsTtl)),
-						ResourceRecords: []*route53.ResourceRecord{
+						ResourceRecords: []types.ResourceRecord{
 							{
 								Value: aws.String(val),
 							},
@@ -339,7 +335,7 @@ func (a *Aws) DnsTxtUpsert(db *database.Database,
 		HostedZoneId: aws.String(zoneId),
 	}
 
-	_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+	_, err = a.client.ChangeResourceRecordSets(context.Background(), input)
 	if err != nil {
 		err = &errortypes.ApiError{
 			errors.Wrap(err, "acme: AWS route53 record set error"),
@@ -359,15 +355,15 @@ func (a *Aws) DnsTxtDelete(db *database.Database,
 	}
 
 	input := &route53.ChangeResourceRecordSetsInput{
-		ChangeBatch: &route53.ChangeBatch{
-			Changes: []*route53.Change{
+		ChangeBatch: &types.ChangeBatch{
+			Changes: []types.Change{
 				{
-					Action: aws.String("DELETE"),
-					ResourceRecordSet: &route53.ResourceRecordSet{
+					Action: types.ChangeActionDelete,
+					ResourceRecordSet: &types.ResourceRecordSet{
 						Name: aws.String(domain),
-						Type: aws.String("TXT"),
+						Type: types.RRTypeTxt,
 						TTL:  aws.Int64(int64(settings.Acme.DnsAwsTtl)),
-						ResourceRecords: []*route53.ResourceRecord{
+						ResourceRecords: []types.ResourceRecord{
 							{
 								Value: aws.String(val),
 							},
@@ -380,7 +376,7 @@ func (a *Aws) DnsTxtDelete(db *database.Database,
 		HostedZoneId: aws.String(zoneId),
 	}
 
-	_, err = a.sessRoute53.ChangeResourceRecordSets(input)
+	_, err = a.client.ChangeResourceRecordSets(context.Background(), input)
 	if err != nil {
 		if strings.Contains(err.Error(), "delete") &&
 			strings.Contains(err.Error(), "not found") {
