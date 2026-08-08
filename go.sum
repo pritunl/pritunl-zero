@@ -155,8 +155,6 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pritunl/mongo-go-driver/v2 v2.3.0 h1:ZQ8ZujYwwY+1TEXwf8pGytdprmgGpe/HRP7fa4xbRow=
 github.com/pritunl/mongo-go-driver/v2 v2.3.0/go.mod h1:U8W2Evrwe7KTE6DFgMV1Ub/WLXzJht/lyXnLHEK5E+8=
-github.com/pritunl/pritunl-cloud v0.0.0-20260807233600-a256622091d2 h1:lqZ5zOfiHSEX2LJfPbsQ853gvGKW8gMr6V1uRn2C4Uw=
-github.com/pritunl/pritunl-cloud v0.0.0-20260807233600-a256622091d2/go.mod h1:j67VyFgaXzxT1wKjLELrLkUDwWRiaylDXwqFzkoDdK4=
 github.com/pritunl/tools v1.2.5 h1:qbVj1QQdhhgQLBa2JnjBlVbPJt/t33veI/QN+kJq28s=
 github.com/pritunl/tools v1.2.5/go.mod h1:BiNzTb2ZCesQ5k/Mx0mhOwGXNJNdZk+4jqg39GjRXKU=
 github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
