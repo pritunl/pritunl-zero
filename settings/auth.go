@@ -145,6 +145,8 @@ func (p *Provider) Validate(db *database.Database) (
 		return
 	}
 
+	p.Domain = utils.FilterDomain(p.Domain)
+
 	return
 }
 
