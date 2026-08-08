@@ -145,7 +145,9 @@ func (p *Provider) Validate(db *database.Database) (
 		return
 	}
 
+	p.Region = utils.FilterDomain(p.Region)
 	p.Domain = utils.FilterDomain(p.Domain)
+	p.Tenant = utils.FilterDomain(p.Tenant)
 
 	return
 }
