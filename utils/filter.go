@@ -26,6 +26,15 @@ var nameCmdSafeChar = set.NewSet(
 	'-', '.',
 )
 
+var domainSafeChar = set.NewSet(
+	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+	'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+	'-', '.',
+)
+
 var unitSafeChar = set.NewSet(
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 	'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -128,7 +137,26 @@ func FilterId(s string) string {
 }
 
 func FilterDomain(s string) string {
-	s = FilterName(strings.ToLower(s))
+	if len(s) == 0 {
+		return ""
+	}
+
+	if s == "self" {
+		s = "invalid-name"
+	}
+
+	if len(s) > nameSafeLimit {
+		s = s[:nameSafeLimit]
+	}
+
+	var ns strings.Builder
+	for _, c := range s {
+		if nameSafeChar.Contains(c) {
+			ns.WriteString(string(c))
+		}
+	}
+
+	s = ns.String()
 	s = strings.TrimPrefix(s, ".")
 	s = strings.TrimSuffix(s, ".")
 	return s
