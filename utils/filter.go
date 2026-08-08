@@ -151,7 +151,7 @@ func FilterDomain(s string) string {
 
 	var ns strings.Builder
 	for _, c := range s {
-		if nameSafeChar.Contains(c) {
+		if domainSafeChar.Contains(c) {
 			ns.WriteString(string(c))
 		}
 	}
