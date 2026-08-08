@@ -300,12 +300,13 @@ type authZeroUser struct {
 //}
 
 func authZeroGetToken(provider *settings.Provider) (token string, err error) {
+	domain := utils.FilterDomain(provider.Domain)
+
 	reqData := &authZeroTokenReq{
 		GrantType:    "client_credentials",
 		ClientId:     provider.ClientId,
 		ClientSecret: provider.ClientSecret,
-		Audience: fmt.Sprintf(
-			"https://%s.auth0.com/api/v2/", provider.Domain),
+		Audience:     fmt.Sprintf("https://%s.auth0.com/api/v2/", domain),
 	}
 
 	reqDataBuf := &bytes.Buffer{}
@@ -319,7 +320,7 @@ func authZeroGetToken(provider *settings.Provider) (token string, err error) {
 
 	req, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("https://%s.auth0.com/oauth/token", provider.Domain),
+		fmt.Sprintf("https://%s.auth0.com/oauth/token", domain),
 		reqDataBuf,
 	)
 	if err != nil {
@@ -371,7 +372,7 @@ func AuthZeroRoles(provider *settings.Provider, username string) (
 
 	reqUrl, err := url.Parse(fmt.Sprintf(
 		"https://%s.auth0.com/api/v2/users",
-		provider.Domain,
+		utils.FilterDomain(provider.Domain),
 	))
 	if err != nil {
 		err = &errortypes.ParseError{
