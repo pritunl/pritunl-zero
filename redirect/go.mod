@@ -1,6 +1,6 @@
 module github.com/pritunl/pritunl-zero/redirect
 
-go 1.26.0
+go 1.26.5
 
 require (
 	github.com/pritunl/tools v1.2.6
