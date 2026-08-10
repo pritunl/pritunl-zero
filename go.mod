@@ -1,6 +1,6 @@
 module github.com/pritunl/pritunl-zero
 
-go 1.26.0
+go 1.26.5
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.43.4
