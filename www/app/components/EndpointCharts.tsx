@@ -231,18 +231,18 @@ export default class EndpointCharts extends React.Component<Props, State> {
 							});
 						}}
 					>
-						<option value="60">1 hour</option>
-						<option value="180">3 hours</option>
-						<option value="360">6 hours</option>
-						<option value="720">12 hours</option>
-						<option value="1440">24 hours</option>
-						<option value="4320">3 days</option>
-						<option value="10080">7 days</option>
-						<option value="20160">14 days</option>
-						<option value="43200">30 days</option>
-						<option value="86400">60 days</option>
-						<option value="129600" hidden={true}>90 days</option>
-						<option value="172800" hidden={true}>120 days</option>
+						<option value="60">1 Hour</option>
+						<option value="180">3 Hours</option>
+						<option value="360">6 Hours</option>
+						<option value="720">12 Hours</option>
+						<option value="1440">24 Hours</option>
+						<option value="4320">3 Days</option>
+						<option value="10080">7 Days</option>
+						<option value="20160">14 Days</option>
+						<option value="43200">30 Days</option>
+						<option value="86400">60 Days</option>
+						<option value="129600" hidden={true}>90 Days</option>
+						<option value="172800" hidden={true}>120 Days</option>
 					</PageSelect>
 				</div>
 				<div style={css.group}>
