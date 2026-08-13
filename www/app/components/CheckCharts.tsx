@@ -260,43 +260,43 @@ export default class CheckCharts extends React.Component<Props, State> {
 						<option
 							value="1"
 							hidden={1 < intervalMin || 1 > intervalMax}
-						>1 minute</option>
+						>1 Minute</option>
 						<option
 							value="5"
 							hidden={5 < intervalMin || 5 > intervalMax}
-						>5 minutes</option>
+						>5 Minutes</option>
 						<option
 							value="30"
 							hidden={30 < intervalMin || 30 > intervalMax}
-						>30 minutes</option>
+						>30 Minutes</option>
 						<option
 							value="60"
 							hidden={60 < intervalMin || 60 > intervalMax}
-						>1 hour</option>
+						>1 Hour</option>
 						<option
 							value="120"
 							hidden={120 < intervalMin || 120 > intervalMax}
-						>2 hours</option>
+						>2 Hours</option>
 						<option
 							value="360"
 							hidden={360 < intervalMin || 360 > intervalMax}
-						>6 hours</option>
+						>6 Hours</option>
 						<option
 							value="720"
 							hidden={720 < intervalMin || 720 > intervalMax}
-						>12 hours</option>
+						>12 Hours</option>
 						<option
 							value="1440"
 							hidden={1440 < intervalMin || 1440 > intervalMax}
-						>24 hours</option>
+						>24 Hours</option>
 						<option
 							value="4320"
 							hidden={4320 < intervalMin || 4320 > intervalMax}
-						>3 days</option>
+						>3 Days</option>
 						<option
 							value="10080"
 							hidden={10080 < intervalMin || 10080 > intervalMax}
-						>7 days</option>
+						>7 Days</option>
 					</PageSelect>
 				</div>
 			</div>
