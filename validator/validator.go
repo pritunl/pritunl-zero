@@ -72,24 +72,24 @@ func ValidateAdmin(db *database.Database, usr *user.User,
 			return
 		}
 
-		for _, polcy := range policies {
-			errData, err = polcy.ValidateUser(db, usr, r)
+		for _, policyItem := range policies {
+			errData, err = policyItem.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
 			}
 		}
 
-		for _, polcy := range policies {
-			if polcy.Disabled {
+		for _, policyItem := range policies {
+			if policyItem.Disabled {
 				continue
 			}
 
-			if polcy.AdminDeviceSecondary {
+			if policyItem.AdminDeviceSecondary {
 				deviceAuth = true
 			}
 
-			if !polcy.AdminSecondary.IsZero() && secProvider.IsZero() {
-				secProvider = polcy.AdminSecondary
+			if !policyItem.AdminSecondary.IsZero() && secProvider.IsZero() {
+				secProvider = policyItem.AdminSecondary
 			}
 		}
 	}
@@ -141,24 +141,24 @@ func ValidateUser(db *database.Database, usr *user.User,
 			return
 		}
 
-		for _, polcy := range policies {
-			errData, err = polcy.ValidateUser(db, usr, r)
+		for _, policyItem := range policies {
+			errData, err = policyItem.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
 			}
 		}
 
-		for _, polcy := range policies {
-			if polcy.Disabled {
+		for _, policyItem := range policies {
+			if policyItem.Disabled {
 				continue
 			}
 
-			if polcy.UserDeviceSecondary {
+			if policyItem.UserDeviceSecondary {
 				deviceAuth = true
 			}
 
-			if !polcy.UserSecondary.IsZero() && secProvider.IsZero() {
-				secProvider = polcy.UserSecondary
+			if !policyItem.UserSecondary.IsZero() && secProvider.IsZero() {
+				secProvider = policyItem.UserSecondary
 			}
 		}
 	}
@@ -236,24 +236,24 @@ func ValidateProxy(db *database.Database, usr *user.User,
 			return
 		}
 
-		for _, polcy := range policies {
-			errData, err = polcy.ValidateUser(db, usr, r)
+		for _, policyItem := range policies {
+			errData, err = policyItem.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
 			}
 		}
 
-		for _, polcy := range policies {
-			if polcy.Disabled {
+		for _, policyItem := range policies {
+			if policyItem.Disabled {
 				continue
 			}
 
-			if polcy.ProxyDeviceSecondary {
+			if policyItem.ProxyDeviceSecondary {
 				deviceAuth = true
 			}
 
-			if !polcy.ProxySecondary.IsZero() && secProvider.IsZero() {
-				secProvider = polcy.ProxySecondary
+			if !policyItem.ProxySecondary.IsZero() && secProvider.IsZero() {
+				secProvider = policyItem.ProxySecondary
 			}
 		}
 
@@ -262,24 +262,24 @@ func ValidateProxy(db *database.Database, usr *user.User,
 			return
 		}
 
-		for _, polcy := range policies {
-			errData, err = polcy.ValidateUser(db, usr, r)
+		for _, policyItem := range policies {
+			errData, err = policyItem.ValidateUser(db, usr, r)
 			if err != nil || errData != nil {
 				return
 			}
 		}
 
-		for _, polcy := range policies {
-			if polcy.Disabled {
+		for _, policyItem := range policies {
+			if policyItem.Disabled {
 				continue
 			}
 
-			if polcy.ProxyDeviceSecondary {
+			if policyItem.ProxyDeviceSecondary {
 				deviceAuth = true
 			}
 
-			if !polcy.ProxySecondary.IsZero() && secProvider.IsZero() {
-				secProvider = polcy.ProxySecondary
+			if !policyItem.ProxySecondary.IsZero() && secProvider.IsZero() {
+				secProvider = policyItem.ProxySecondary
 			}
 		}
 	}
