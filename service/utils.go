@@ -186,6 +186,10 @@ func GetAllPaged(db *database.Database, query *bson.M,
 			SetSkip(skip).
 			SetLimit(pageCount),
 	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
 	defer cursor.Close(db)
 
 	for cursor.Next(db) {
