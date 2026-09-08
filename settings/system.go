@@ -24,6 +24,7 @@ type system struct {
 	BastionDockerImage             string `bson:"bastion_docker_image" default:"docker.io/pritunl/pritunl-bastion"`
 	BastionPermitOpen              string `bson:"bastion_permit_open" default:"*:22"`
 	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
+	NtpServer                      string `bson:"ntp_server" default:"time.cloudflare.com:123"`
 	TwilioAccount                  string `bson:"twilio_account"`
 	TwilioSecret                   string `bson:"twilio_secret"`
 	TwilioNumber                   string `bson:"twilio_number"`
