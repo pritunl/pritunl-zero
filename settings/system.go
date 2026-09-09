@@ -25,6 +25,7 @@ type system struct {
 	BastionPermitOpen              string `bson:"bastion_permit_open" default:"*:22"`
 	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
 	NtpServer                      string `bson:"ntp_server" default:"time.cloudflare.com:123"`
+	NtpMaxSkew                     int    `bson:"ntp_max_skew" default:"3"`
 	TwilioAccount                  string `bson:"twilio_account"`
 	TwilioSecret                   string `bson:"twilio_secret"`
 	TwilioNumber                   string `bson:"twilio_number"`
