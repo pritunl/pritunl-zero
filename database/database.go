@@ -137,42 +137,42 @@ func (d *Database) Endpoints() (coll *Collection) {
 }
 
 func (d *Database) EndpointsSystem() (coll *Collection) {
-	coll = d.GetCollection("endpoints_system")
+	coll = d.getCollectionWeak("endpoints_system")
 	return
 }
 
 func (d *Database) EndpointsLoad() (coll *Collection) {
-	coll = d.GetCollection("endpoints_load")
+	coll = d.getCollectionWeak("endpoints_load")
 	return
 }
 
 func (d *Database) EndpointsDisk() (coll *Collection) {
-	coll = d.GetCollection("endpoints_disk")
+	coll = d.getCollectionWeak("endpoints_disk")
 	return
 }
 
 func (d *Database) EndpointsDiskIo() (coll *Collection) {
-	coll = d.GetCollection("endpoints_diskio")
+	coll = d.getCollectionWeak("endpoints_diskio")
 	return
 }
 
 func (d *Database) EndpointsNetwork() (coll *Collection) {
-	coll = d.GetCollection("endpoints_network")
+	coll = d.getCollectionWeak("endpoints_network")
 	return
 }
 
 func (d *Database) EndpointsCheck() (coll *Collection) {
-	coll = d.GetCollection("endpoints_check")
+	coll = d.getCollectionWeak("endpoints_check")
 	return
 }
 
 func (d *Database) EndpointsCheckLog() (coll *Collection) {
-	coll = d.GetCollection("endpoints_check_log")
+	coll = d.getCollectionWeak("endpoints_check_log")
 	return
 }
 
 func (d *Database) EndpointsKmsg() (coll *Collection) {
-	coll = d.GetCollection("endpoints_kmsg")
+	coll = d.getCollectionWeak("endpoints_kmsg")
 	return
 }
 
