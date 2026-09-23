@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime/debug"
 	"slices"
+	"sync/atomic"
 	"time"
 
 	"github.com/pritunl/pritunl-zero/database"
@@ -29,6 +30,7 @@ type Task struct {
 	Local      bool
 	DebugNodes []string
 	timestamp  time.Time
+	running    atomic.Int64
 }
 
 func (t *Task) scheduled(hour, min int) bool {
@@ -173,20 +175,18 @@ func (t *Task) run(now time.Time) {
 			}
 		}
 
-		curTimestamp := t.timestamp
-		if !curTimestamp.IsZero() {
-			if time.Since(curTimestamp) > 10*time.Minute {
+		start := time.Now()
+		if !t.running.CompareAndSwap(0, start.UnixNano()) {
+			runtime := time.Since(time.Unix(0, t.running.Load()))
+			if runtime > 10*time.Minute {
 				logrus.WithFields(logrus.Fields{
 					"task_name": t.Name,
-					"runtime":   time.Since(curTimestamp),
+					"runtime":   runtime,
 				}).Error("task: Task stuck running")
 			}
 			return
 		}
-		t.timestamp = time.Now()
-		defer func() {
-			t.timestamp = time.Time{}
-		}()
+		defer t.running.Store(0)
 
 		if t.Local {
 			t.runLocal(db, now)
