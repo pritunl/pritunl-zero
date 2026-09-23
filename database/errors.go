@@ -28,6 +28,10 @@ type UnknownError struct {
 	errors.DropboxError
 }
 
+type UnsupportedError struct {
+	errors.DropboxError
+}
+
 type CertificateError struct {
 	errors.DropboxError
 }
