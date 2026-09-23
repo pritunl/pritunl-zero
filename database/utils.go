@@ -122,6 +122,11 @@ func ParseError(err error) (newErr error) {
 				errors.New("database: Duplicate key"),
 			}
 			return
+		case 59, 115, 303, 40415:
+			newErr = &UnsupportedError{
+				errors.New("database: Unsupported"),
+			}
+			return
 		}
 	}
 
