@@ -838,131 +838,136 @@ func addIndexes() (err error) {
 		return
 	}
 
-	index = &Index{
-		Collection: db.EndpointsSystem(),
-		Keys: &bson.D{
-			{"t", 1},
-			{"e", 1},
-		},
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsSystem(),
-		Keys: &bson.D{
-			{"t", 1},
-		},
-		Expire: 2160 * time.Hour,
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsLoad(),
-		Keys: &bson.D{
-			{"t", 1},
-			{"e", 1},
-		},
-	}
-	err = index.Create()
-	if err != nil {
-		return
+	if !IsTimeSeries("endpoints_system") {
+		index = &Index{
+			Collection: db.EndpointsSystem(),
+			Keys: &bson.D{
+				{"e", 1},
+				{"t", 1},
+			},
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
+		index = &Index{
+			Collection: db.EndpointsSystem(),
+			Keys: &bson.D{
+				{"t", 1},
+			},
+			Expire: 2160 * time.Hour,
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
 	}
 
-	index = &Index{
-		Collection: db.EndpointsLoad(),
-		Keys: &bson.D{
-			{"t", 1},
-		},
-		Expire: 2160 * time.Hour,
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsDisk(),
-		Keys: &bson.D{
-			{"t", 1},
-			{"e", 1},
-		},
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsDisk(),
-		Keys: &bson.D{
-			{"t", 1},
-		},
-		Expire: 2160 * time.Hour,
-	}
-	err = index.Create()
-	if err != nil {
-		return
+	if !IsTimeSeries("endpoints_load") {
+		index = &Index{
+			Collection: db.EndpointsLoad(),
+			Keys: &bson.D{
+				{"e", 1},
+				{"t", 1},
+			},
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
+		index = &Index{
+			Collection: db.EndpointsLoad(),
+			Keys: &bson.D{
+				{"t", 1},
+			},
+			Expire: 2160 * time.Hour,
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
 	}
 
-	index = &Index{
-		Collection: db.EndpointsDiskIo(),
-		Keys: &bson.D{
-			{"t", 1},
-			{"e", 1},
-		},
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsDiskIo(),
-		Keys: &bson.D{
-			{"t", 1},
-		},
-		Expire: 2160 * time.Hour,
-	}
-	err = index.Create()
-	if err != nil {
-		return
-	}
-
-	index = &Index{
-		Collection: db.EndpointsNetwork(),
-		Keys: &bson.D{
-			{"t", 1},
-			{"e", 1},
-		},
-	}
-	err = index.Create()
-	if err != nil {
-		return
+	if !IsTimeSeries("endpoints_disk") {
+		index = &Index{
+			Collection: db.EndpointsDisk(),
+			Keys: &bson.D{
+				{"e", 1},
+				{"t", 1},
+			},
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
+		index = &Index{
+			Collection: db.EndpointsDisk(),
+			Keys: &bson.D{
+				{"t", 1},
+			},
+			Expire: 2160 * time.Hour,
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
 	}
 
-	index = &Index{
-		Collection: db.EndpointsNetwork(),
-		Keys: &bson.D{
-			{"t", 1},
-		},
-		Expire: 2160 * time.Hour,
+	if !IsTimeSeries("endpoints_diskio") {
+		index = &Index{
+			Collection: db.EndpointsDiskIo(),
+			Keys: &bson.D{
+				{"e", 1},
+				{"t", 1},
+			},
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
+		index = &Index{
+			Collection: db.EndpointsDiskIo(),
+			Keys: &bson.D{
+				{"t", 1},
+			},
+			Expire: 2160 * time.Hour,
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
 	}
-	err = index.Create()
-	if err != nil {
-		return
+
+	if !IsTimeSeries("endpoints_network") {
+		index = &Index{
+			Collection: db.EndpointsNetwork(),
+			Keys: &bson.D{
+				{"e", 1},
+				{"t", 1},
+			},
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
+		index = &Index{
+			Collection: db.EndpointsNetwork(),
+			Keys: &bson.D{
+				{"t", 1},
+			},
+			Expire: 2160 * time.Hour,
+		}
+		err = index.Create()
+		if err != nil {
+			return
+		}
 	}
 
 	index = &Index{
 		Collection: db.EndpointsCheck(),
 		Keys: &bson.D{
-			{"t", 1},
 			{"c", 1},
+			{"t", 1},
 		},
 	}
 	err = index.Create()
@@ -985,8 +990,8 @@ func addIndexes() (err error) {
 	index = &Index{
 		Collection: db.EndpointsCheckLog(),
 		Keys: &bson.D{
-			{"t", -1},
 			{"c", -1},
+			{"t", -1},
 		},
 	}
 	err = index.Create()
@@ -1048,10 +1053,12 @@ func addCollections() (err error) {
 
 	eventsExists := false
 	isCapped := false
+	collTypes := map[string]string{}
 
 	for cursor.Next(db) {
 		item := &struct {
 			Name    string `bson:"name"`
+			Type    string `bson:"type"`
 			Options bson.M `bson:"options"`
 		}{}
 		err = cursor.Decode(item)
@@ -1060,6 +1067,8 @@ func addCollections() (err error) {
 			return
 		}
 
+		collTypes[item.Name] = item.Type
+
 		if item.Name == "events" {
 			eventsExists = true
 			if options, ok := item.Options["capped"]; ok {
@@ -1067,7 +1076,6 @@ func addCollections() (err error) {
 					isCapped = true
 				}
 			}
-			break
 		}
 	}
 
@@ -1104,6 +1112,11 @@ func addCollections() (err error) {
 			err = ParseError(err)
 			return
 		}
+	}
+
+	err = addTimeSeriesCollections(db, collTypes)
+	if err != nil {
+		return
 	}
 
 	return
