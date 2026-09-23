@@ -60,6 +60,9 @@ func SamlRequest(db *database.Database, location, query string,
 		IssuerUrl: provider.IssuerUrl,
 		Cert:      provider.SamlCert,
 	})
+	if err != nil {
+		return
+	}
 
 	req, err := http.NewRequest(
 		"POST",
