@@ -265,9 +265,11 @@ label.bp5-label .bp5-button-group {
   height: 10px;
   border-width: 2px;
   border-style: solid;
-  top: 4px;
-  left: 3px;
+  box-sizing: border-box;
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 3px;
 }
 
 /*******************************
