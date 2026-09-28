@@ -318,6 +318,11 @@ func Connect() (err error) {
 		"mongodb_version": version,
 	}).Info("database: Connected to MongoDB server")
 
+	err = CheckDatabaseVersion()
+	if err != nil {
+		return
+	}
+
 	err = addCollections()
 	if err != nil {
 		return
