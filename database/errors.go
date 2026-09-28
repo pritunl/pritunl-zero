@@ -8,6 +8,10 @@ type ConnectionError struct {
 	errors.DropboxError
 }
 
+type VersionError struct {
+	errors.DropboxError
+}
+
 type IndexError struct {
 	errors.DropboxError
 }
