@@ -8,12 +8,17 @@ export interface Field {
 	valueClasses?: string[];
 	key?: string;
 	label: string;
-	value?: string | number | string[];
+	value?: string | number | string[] | LinkValue[];
 	hover?: JSX.Element;
 	link?: string;
 	copy?: boolean;
 	embedded?: Props;
 	maxLines?: number;
+}
+
+export interface LinkValue {
+	value?: string;
+	link?: string;
 }
 
 export interface Bar {
