@@ -69,6 +69,15 @@ const css = {
 		marginTop: '0px',
 		marginBottom: '2px',
 	} as React.CSSProperties,
+	hoverValue: {
+		display: 'inline',
+		textDecoration: 'underline',
+	} as React.CSSProperties,
+	hoveredValue: {
+		display: 'inline',
+		textDecoration: 'underline',
+		fontWeight: 'bold',
+	} as React.CSSProperties,
 	bar: {
 		maxWidth: '280px',
 	} as React.CSSProperties,
@@ -124,12 +133,33 @@ export default class PageInfo extends React.Component<Props, {}> {
 			} else if (field.value) {
 				value = [];
 				for (let i = 0; i < field.value.length; i++) {
+					let item = field.value[i];
+					let itemValue: string;
+					let itemLink: string;
+
+					if (typeof item === 'object') {
+						itemValue = item.value;
+						itemLink = item.link;
+					} else {
+						itemValue = item;
+					}
+
 					let copyItemBtn: JSX.Element;
 
 					if (field.copy) {
 						copyItemBtn = <CopyButton
-							value={field.value[i]}
+							value={itemValue}
 						/>;
+					}
+
+					let itemContent: string | JSX.Element = itemValue;
+					if (itemLink) {
+						itemContent = <a
+							target="_blank"
+							href={itemLink}
+						>
+							{itemValue}
+						</a>;
 					}
 
 					value.push(
@@ -141,7 +171,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 								(field.valueClass || 'bp5-text-muted')
 							}
 						>
-							{field.value[i]}{copyItemBtn}
+							{itemContent}{copyItemBtn}
 						</div>
 					);
 				}
@@ -161,29 +191,37 @@ export default class PageInfo extends React.Component<Props, {}> {
 
 			if (field.hover || field.embedded) {
 				fields.push(
-					<Blueprint.Popover
-						key={field.label}
-						interactionKind="hover"
-						placement="bottom"
-						minimal={true}
-						content={field.hover || <div
-							style={css.embedded}
-							className="bp5-content-popover">
-								<PageInfo embedded={true} {...field.embedded}/>
-							</div>
-						}
-						renderTarget={({isOpen, ...targetProps}): JSX.Element => {
-								return <div {...targetProps} style={itemStyle}>
-								{field.label}{linkBtn}
-								<div
-									className={field.valueClass || 'bp5-text-muted'}
-									style={css.value}
-								>
-									{value}{copyBtn}
-								</div>
-							</div>
-						}}
-					/>,
+					<div style={itemStyle}>
+						{field.label}{linkBtn}
+						<div
+							className={field.valueClass || 'bp5-text-muted'}
+							style={css.value}
+						>
+							<Blueprint.Popover
+								key={field.label}
+								interactionKind="hover"
+								placement="bottom"
+								minimal={true}
+								hoverCloseDelay={150}
+								hoverOpenDelay={0}
+								content={field.hover || <div
+									style={css.embedded}
+									className="bp5-content-popover">
+										<PageInfo embedded={true} {...field.embedded}/>
+									</div>
+								}
+								renderTarget={({isOpen, ...targetProps}): JSX.Element => {
+									return <span
+										{...targetProps}
+										style={field.embedded ? {} : (
+											isOpen ? css.hoveredValue : css.hoverValue)}
+									>
+										{value}{copyBtn}
+									</span>
+								}}
+							/>
+						</div>
+					</div>,
 				);
 			} else {
 				let style = css.value
