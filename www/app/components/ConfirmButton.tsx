@@ -69,6 +69,10 @@ const css = {
 	input: {
 		width: '100%',
 	} as React.CSSProperties,
+	items: {
+		maxHeight: "350px",
+		overflowY: "auto",
+	} as React.CSSProperties,
 };
 
 export default class ConfirmButton extends React.Component<Props, State> {
@@ -233,7 +237,7 @@ export default class ConfirmButton extends React.Component<Props, State> {
 				for (let item of this.props.items) {
 					items.push(<li key={item}>{item}</li>);
 				}
-				itemsList = <ul>{items}</ul>;
+				itemsList = <ul style={css.items}>{items}</ul>;
 			}
 
 			let dialogElem = <Blueprint.Dialog
