@@ -73,11 +73,6 @@ const css = {
 		display: 'inline',
 		textDecoration: 'underline',
 	} as React.CSSProperties,
-	hoveredValue: {
-		display: 'inline',
-		textDecoration: 'underline',
-		fontWeight: 'bold',
-	} as React.CSSProperties,
 	bar: {
 		maxWidth: '280px',
 	} as React.CSSProperties,
@@ -213,8 +208,7 @@ export default class PageInfo extends React.Component<Props, {}> {
 								renderTarget={({isOpen, ...targetProps}): JSX.Element => {
 									return <span
 										{...targetProps}
-										style={field.embedded ? {} : (
-											isOpen ? css.hoveredValue : css.hoverValue)}
+										style={field.embedded ? {} : css.hoverValue}
 									>
 										{value}{copyBtn}
 									</span>
