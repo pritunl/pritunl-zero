@@ -1,6 +1,9 @@
 package task
 
 const (
+	Timer  = "timer"
+	Runner = "runner"
+
 	Running  = "running"
 	Failed   = "failed"
 	Finished = "finished"
