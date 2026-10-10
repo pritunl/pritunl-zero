@@ -24,6 +24,10 @@ type system struct {
 	BastionDockerImage             string `bson:"bastion_docker_image" default:"docker.io/pritunl/pritunl-bastion"`
 	BastionPermitOpen              string `bson:"bastion_permit_open" default:"*:22"`
 	ClientCertCacheTtl             int    `bson:"client_cert_cache_ttl" default:"60"`
+	TaskRunnerCheck                int    `bson:"task_runner_check" default:"60"`
+	TaskRunnerHeartbeat            int    `bson:"task_runner_heartbeat" default:"20"`
+	TaskRunnerTtl                  int    `bson:"task_runner_ttl" default:"60"`
+	TaskRunnerCooldown             int    `bson:"task_runner_cooldown" default:"65"`
 	NtpServer                      string `bson:"ntp_server" default:"time.cloudflare.com:123"`
 	NtpMaxSkew                     int    `bson:"ntp_max_skew" default:"3"`
 	TwilioAccount                  string `bson:"twilio_account"`
