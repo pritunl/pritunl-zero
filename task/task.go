@@ -1,9 +1,9 @@
 package task
 
 import (
+	"context"
 	"fmt"
 	"runtime/debug"
-	"slices"
 	"sync/atomic"
 	"time"
 
@@ -19,25 +19,31 @@ var (
 )
 
 type Task struct {
-	Name       string
-	Version    int
-	Hours      []int
-	Minutes    []int
-	Seconds    time.Duration
-	Retry      bool
-	Handler    func(*database.Database) error
-	RunOnStart bool
-	Local      bool
-	DebugNodes []string
-	timestamp  time.Time
-	running    atomic.Int64
+	Name          string
+	Type          string
+	Version       int
+	Hours         []int
+	Minutes       []int
+	Seconds       time.Duration
+	Retry         bool
+	Handler       func(*database.Database) error
+	Duration      time.Duration
+	Workers       func() int
+	RunnerHandler func(context.Context, *database.Database) error
+	RunOnStart    bool
+	Local         bool
+	DebugNodes    []string
+	running       atomic.Int64
+	cooldown      atomic.Int64
 }
 
 func (t *Task) scheduled(hour, min int) bool {
 	for _, h := range t.Hours {
 		if h == hour {
-			if slices.Contains(t.Minutes, min) {
-				return true
+			for _, m := range t.Minutes {
+				if m == min {
+					return true
+				}
 			}
 		}
 	}
@@ -202,7 +208,13 @@ func runScheduler() {
 	curMin := now.Minute()
 	curSecBlocks := map[time.Duration]int{}
 
+	runnerChecked := time.Time{}
+
 	for _, task := range registry {
+		if task.Type == Runner {
+			continue
+		}
+
 		if task.Seconds != 0 {
 			curSecBlocks[task.Seconds] = GetBlock(now, task.Seconds)
 		}
@@ -219,13 +231,23 @@ func runScheduler() {
 		hour := now.Hour()
 		min := now.Minute()
 
+		if now.Sub(runnerChecked) >= runnerCheck() {
+			runnerChecked = now
+
+			for _, task := range registry {
+				if task.Type == Runner {
+					task.runRunner()
+				}
+			}
+		}
+
 		for block, curSecBlock := range curSecBlocks {
 			secBlock := GetBlock(now, block)
 
 			if curSecBlock != secBlock {
 				for _, task := range registry {
-					if task.Seconds != 0 && task.Seconds == block &&
-						task.scheduled(hour, min) {
+					if task.Type != Runner && task.Seconds != 0 &&
+						task.Seconds == block && task.scheduled(hour, min) {
 
 						task.run(now)
 					}
@@ -242,7 +264,8 @@ func runScheduler() {
 		curMin = min
 
 		for _, task := range registry {
-			if task.Seconds == 0 && task.scheduled(hour, min) {
+			if task.Type != Runner && task.Seconds == 0 &&
+				task.scheduled(hour, min) {
 				task.run(now)
 			}
 		}
@@ -250,6 +273,16 @@ func runScheduler() {
 }
 
 func register(task *Task) {
+	if task.Type == "" {
+		task.Type = Timer
+	}
+
+	if task.Type == Runner {
+		if task.RunnerHandler == nil || task.Duration <= 0 {
+			panic(fmt.Sprintf("task: Invalid runner task '%s'", task.Name))
+		}
+	}
+
 	registry = append(registry, task)
 }
 
