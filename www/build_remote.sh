@@ -7,7 +7,6 @@ ssh cloud@$NPM_SERVER "
 cd /home/cloud/pritunl-zero-www/
 rm -rf node_modules
 npm install
-npm audit fix
 cd ./node_modules/@github/webauthn-json/dist/
 ln -sf ./esm/* ./
 cd ../../../../
