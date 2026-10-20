@@ -31,6 +31,10 @@ func getRolesName(db *database.Database, roles []string) (
 		options.Find().
 			SetProjection(bson.D{{"name", 1}}),
 	)
+	if err != nil {
+		err = database.ParseError(err)
+		return
+	}
 	defer cursor.Close(db)
 
 	for cursor.Next(db) {
