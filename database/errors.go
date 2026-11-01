@@ -43,3 +43,7 @@ type CertificateError struct {
 type IndexConflict struct {
 	errors.DropboxError
 }
+
+type ResumeError struct {
+	errors.DropboxError
+}
