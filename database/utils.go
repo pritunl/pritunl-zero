@@ -1,6 +1,7 @@
 package database
 
 import (
+	stderrors "errors"
 	"fmt"
 	"strings"
 
@@ -91,6 +92,11 @@ func GetErrorCodes(err error) (errCodes []int) {
 			}
 		}
 		break
+	default:
+		var cmdErr mongo.CommandError
+		if stderrors.As(err, &cmdErr) {
+			errCodes = GetErrorCodes(cmdErr)
+		}
 	}
 
 	return
@@ -127,7 +133,24 @@ func ParseError(err error) (newErr error) {
 				errors.New("database: Unsupported"),
 			}
 			return
+		case 40573:
+			newErr = &UnsupportedError{
+				errors.Wrap(err, "database: Change streams unsupported"),
+			}
+			return
+		case 260, 280, 286:
+			newErr = &ResumeError{
+				errors.Wrap(err, "database: Change stream resume failed"),
+			}
+			return
 		}
+	}
+
+	if strings.Contains(err.Error(), "only supported on replica sets") {
+		newErr = &UnsupportedError{
+			errors.Wrap(err, "database: Change streams unsupported"),
+		}
+		return
 	}
 
 	newErr = &UnknownError{
