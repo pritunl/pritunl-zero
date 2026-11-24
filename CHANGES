@@ -4,6 +4,7 @@ pritunl-zero changelog
 <%= version %>
 
 Prevent single sign-on callback from reaching internal service (Security)
+Restrict Azure and Google Workspace to admin groups (Security)
 
 Version 1.0.3860.72 2026-06-19
 ------------------------------
