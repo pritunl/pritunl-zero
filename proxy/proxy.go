@@ -158,6 +158,17 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	if wiProxies != nil && wiLen > 0 &&
 		host.Service.MatchWhitelistPath(r.URL.Path) {
 
+		if strings.HasPrefix(r.URL.Path, "/auth/callback") {
+			query := r.URL.Query()
+			if query.Get("state") != "" && query.Get("sig") != "" {
+				err := &errortypes.AuthenticationError{
+					errors.New("proxy: Login session already active"),
+				}
+				WriteErrorLog(w, r, 404, err)
+				return true
+			}
+		}
+
 		wiProxies[rand.Intn(wLen)].ServeHTTP(
 			w, r, authorizer.NewProxy(nil))
 		return true
@@ -165,6 +176,17 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 	if r.Method == "OPTIONS" && wiProxies != nil && wiLen > 0 &&
 		host.Service.WhitelistOptions {
+
+		if strings.HasPrefix(r.URL.Path, "/auth/callback") {
+			query := r.URL.Query()
+			if query.Get("state") != "" && query.Get("sig") != "" {
+				err := &errortypes.AuthenticationError{
+					errors.New("proxy: Login session already active"),
+				}
+				WriteErrorLog(w, r, 404, err)
+				return true
+			}
+		}
 
 		wiProxies[rand.Intn(wLen)].ServeOptionsHTTP(
 			w, r, authorizer.NewProxy(nil))
@@ -223,6 +245,17 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		}
 
 		return false
+	}
+
+	if strings.HasPrefix(r.URL.Path, "/auth/callback") {
+		query := r.URL.Query()
+		if query.Get("state") != "" && query.Get("sig") != "" {
+			err := &errortypes.AuthenticationError{
+				errors.New("proxy: Login session already active"),
+			}
+			WriteErrorLog(w, r, 404, err)
+			return true
+		}
 	}
 
 	_, _, errAudit, errData, err := validator.ValidateProxy(
