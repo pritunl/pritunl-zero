@@ -157,6 +157,9 @@ func GoogleRoles(provider *settings.Provider, username string) (
 	}
 
 	for _, group := range results.Groups {
+		if settings.Auth.GoogleAdminGroupsOnly && !group.AdminCreated {
+			continue
+		}
 		roles = append(roles, group.Name)
 	}
 
