@@ -153,7 +153,8 @@ type azureUserData struct {
 }
 
 type azureGroupData struct {
-	DisplayName string `json:"displayName"`
+	DisplayName     string `json:"displayName"`
+	SecurityEnabled bool   `json:"securityEnabled"`
 }
 
 func azureGetToken(provider *settings.Provider) (token string, err error) {
@@ -215,6 +216,7 @@ func AzureRoles(provider *settings.Provider, username string) (
 	roles []string, err error) {
 
 	_, graphUrl := azureGetUrls(provider)
+	securityGroupsOnly := settings.Auth.AzureSecurityGroupsOnly
 
 	userId, active, err := AzureSync(provider, username)
 	if err != nil {
@@ -258,10 +260,15 @@ func AzureRoles(provider *settings.Provider, username string) (
 			return
 		}
 
+		securityEnabledOnly := "false"
+		if securityGroupsOnly {
+			securityEnabledOnly = "true"
+		}
+
 		reqData, e := json.Marshal(struct {
 			SecurityEnabledOnly string `json:"securityEnabledOnly"`
 		}{
-			SecurityEnabledOnly: "false",
+			SecurityEnabledOnly: securityEnabledOnly,
 		})
 		if e != nil {
 			err = e
@@ -307,6 +314,10 @@ func AzureRoles(provider *settings.Provider, username string) (
 		}
 
 		for _, groupData := range data.Value {
+			if securityGroupsOnly && !groupData.SecurityEnabled {
+				continue
+			}
+
 			groupName := groupData.DisplayName
 			if groupName == "" {
 				continue
